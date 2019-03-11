@@ -1,4 +1,5 @@
 {
+   "title": "pbd-schema",
    "type": "object",
    "properties": {
       "atom_type": {
