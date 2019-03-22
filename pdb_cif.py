@@ -66,17 +66,19 @@ tables['_entry_id'] = {
     'name': '_entry_id'
 }
 
-hostname = 'dev.isrd.isi.edu'
+hostname = 'pdb.isrd.isi.edu'
 credential = get_credential(hostname)
-catalog_ermrest = ErmrestCatalog('https', hostname, 57291, credentials=credential)
+catalog_ermrest = ErmrestCatalog('https', hostname, 1, credentials=credential)
 
 catalog = model_elements.DerivaCatalog(catalog_ermrest)
 schema_name = 'PDB'
 
 if schema_name not in catalog.model.schemas.keys():
-    schema = catalog.create_schema(schema_name, comment="PBD Schema from {}".format(pdb['title']))
+    schema = catalog.create_schema(schema_name, comment=pdb['title'])
 else:
     schema = catalog.model.schemas[schema_name]
+
+
 
 for tname, t in tables.items():
     if tname == '_entry_id':
@@ -86,17 +88,20 @@ for tname, t in tables.items():
                                                                                    em.builtin_types[c['type']],
                                                                                    nullok=c['nullok'],
                                                                                    comment=c['comment']
-                                                                                   ) for c in t.columns],
-                                                                 key_defs=t.keys
+                                                                                   ) for c in t.columns]
+                                                                 # key_defs=t.keys
                                                                  ))
-    table = DerivaTableConfigure(catalog, schema_name, tname)
-    table.configure_table_defaults()
-model_root = catalog_ermrest.getCatalogModel()
-for v in vocab:
-    model_root.create_table(em.Table.define_vocabulary())
 
-for t in tables:
-    T.link_vo()
+    table = DerivaTableConfigure(catalog,schema_name,tname)
+    table.configure_table_defaults()
+    # table.apply()
+
+# model_root = catalog_ermrest.getCatalogModel()
+# for v in vocab:
+#     model_root.create_table(em.Table.define_vocabulary())
+
+# for t in tables:
+#     T.link_vo()
 
 # Create tables
 # Create vocabulary
