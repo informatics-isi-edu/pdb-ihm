@@ -7,7 +7,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "B_iso_or_equiv": {
                   "type": "number",
@@ -44,8 +45,8 @@
                "group_PDB": {
                   "type": "string",
                   "enum": [
-                     "HETATM",
-                     "ATOM"
+                     "ATOM",
+                     "HETATM"
                   ],
                   "description": "The group of atoms to which the atom site belongs. This data\n item is provided for compatibility with the original Protein\n Data Bank format, and only for that purpose."
                },
@@ -61,7 +62,8 @@
                      "C_a_phe_83_a_0",
                      "Zn_Zn_301_A_0"
                   ],
-                  "description": "The value of _atom_site.id must uniquely identify a record in the\n ATOM_SITE list.\n\n Note that this item need not be a number; it can be any unique\n identifier.\n\n This data item was introduced to provide compatibility between\n small-molecule and macromolecular CIFs. In a small-molecule\n CIF, _atom_site_label is the identifier for the atom. In a\n macromolecular CIF, the atom identifier is the aggregate of\n _atom_site.label_alt_id, _atom_site.label_asym_id,\n _atom_site.label_atom_id, _atom_site.label_comp_id and\n _atom_site.label_seq_id. For the two types of files to be\n compatible, a formal identifier for the category had to be\n introduced that was independent of the different modes of\n identifying the atoms. For compatibility with older CIFs,\n _atom_site_label is aliased to _atom_site.id."
+                  "description": "The value of _atom_site.id must uniquely identify a record in the\n ATOM_SITE list.\n\n Note that this item need not be a number; it can be any unique\n identifier.\n\n This data item was introduced to provide compatibility between\n small-molecule and macromolecular CIFs. In a small-molecule\n CIF, _atom_site_label is the identifier for the atom. In a\n macromolecular CIF, the atom identifier is the aggregate of\n _atom_site.label_alt_id, _atom_site.label_asym_id,\n _atom_site.label_atom_id, _atom_site.label_comp_id and\n _atom_site.label_seq_id. For the two types of files to be\n compatible, a formal identifier for the category had to be\n introduced that was independent of the different modes of\n identifying the atoms. For compatibility with older CIFs,\n _atom_site_label is aliased to _atom_site.id.",
+                  "_primary_key": true
                },
                "ihm_model_id": {
                   "$ref": "#ihm_model_list/model_id"
@@ -149,7 +151,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "symbol": {
                   "type": "string",
@@ -160,7 +163,8 @@
                      "dummy",
                      "FeNi"
                   ],
-                  "description": "The code used to identify the atom species (singular or plural)\n representing this atom type. Normally this code is the element\n symbol. The code may be composed of any character except\n an underscore with the additional proviso that digits designate\n an oxidation state and must be followed by a + or - character."
+                  "description": "The code used to identify the atom species (singular or plural)\n representing this atom type. Normally this code is the element\n symbol. The code may be composed of any character except\n an underscore with the additional proviso that digits designate\n an oxidation state and must be followed by a + or - character.",
+                  "_primary_key": true
                }
             },
             "required": [
@@ -178,7 +182,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "name": {
                   "type": "string",
@@ -198,7 +203,8 @@
                      "2",
                      "3"
                   ],
-                  "description": "This data item defines the order of the author's name in the\n list of audit authors."
+                  "description": "This data item defines the order of the author's name in the\n list of audit authors.",
+                  "_primary_key": true
                }
             },
             "required": [
@@ -217,7 +223,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "dict_location": {
                   "type": "string",
@@ -225,11 +232,13 @@
                },
                "dict_name": {
                   "type": "string",
-                  "description": "The string identifying the highest-level dictionary defining\n data names used in this file."
+                  "description": "The string identifying the highest-level dictionary defining\n data names used in this file.",
+                  "_primary_key": true
                },
                "dict_version": {
                   "type": "string",
-                  "description": "The version number of the dictionary to which the current\n data block conforms."
+                  "description": "The version number of the dictionary to which the current\n data block conforms.",
+                  "_primary_key": true
                }
             },
             "required": [
@@ -248,7 +257,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "formula": {
                   "type": "string",
@@ -270,15 +280,16 @@
                      "DG",
                      "C"
                   ],
-                  "description": "The value of _chem_comp.id must uniquely identify each item in\n the CHEM_COMP list.\n\n For protein polymer entities, this is the three-letter code for\n the amino acid.\n\n For nucleic acid polymer entities, this is the one-letter code\n for the base."
+                  "description": "The value of _chem_comp.id must uniquely identify each item in\n the CHEM_COMP list.\n\n For protein polymer entities, this is the three-letter code for\n the amino acid.\n\n For nucleic acid polymer entities, this is the one-letter code\n for the base.",
+                  "_primary_key": true
                },
                "mon_nstd_flag": {
                   "type": "string",
                   "enum": [
                      "no",
-                     "y",
+                     "yes",
                      "n",
-                     "yes"
+                     "y"
                   ],
                   "description": "'yes' indicates that this is a 'standard' monomer, 'no'\n indicates that it is 'nonstandard'. Nonstandard monomers\n should be described in more detail using the\n _chem_comp.mon_nstd_parent, _chem_comp.mon_nstd_class and\n _chem_comp.mon_nstd_details data items."
                },
@@ -295,35 +306,35 @@
                "type": {
                   "type": "string",
                   "enum": [
-                     "peptide-like",
-                     "D-peptide linking",
-                     "RNA linking",
-                     "L-gamma-peptide, C-delta linking",
-                     "L-peptide COOH carboxy terminus",
-                     "L-DNA linking",
-                     "D-beta-peptide, C-gamma linking",
-                     "D-saccharide 1,4 and 1,4 linking",
-                     "L-peptide linking",
-                     "saccharide",
-                     "L-saccharide",
                      "D-saccharide",
-                     "peptide linking",
-                     "RNA OH 5 prime terminus",
-                     "D-peptide COOH carboxy terminus",
+                     "L-gamma-peptide, C-delta linking",
                      "L-RNA linking",
-                     "DNA OH 3 prime terminus",
-                     "D-gamma-peptide, C-delta linking",
-                     "D-saccharide 1,4 and 1,6 linking",
-                     "DNA linking",
-                     "RNA OH 3 prime terminus",
-                     "DNA OH 5 prime terminus",
-                     "L-saccharide 1,4 and 1,4 linking",
                      "non-polymer",
-                     "D-peptide NH3 amino terminus",
-                     "L-saccharide 1,4 and 1,6 linking",
-                     "other",
+                     "L-DNA linking",
+                     "L-saccharide 1,4 and 1,4 linking",
+                     "D-gamma-peptide, C-delta linking",
+                     "D-peptide linking",
+                     "peptide-like",
+                     "RNA OH 3 prime terminus",
+                     "saccharide",
                      "L-peptide NH3 amino terminus",
-                     "L-beta-peptide, C-gamma linking"
+                     "RNA OH 5 prime terminus",
+                     "DNA OH 3 prime terminus",
+                     "other",
+                     "DNA linking",
+                     "L-saccharide 1,4 and 1,6 linking",
+                     "L-peptide linking",
+                     "D-saccharide 1,4 and 1,6 linking",
+                     "DNA OH 5 prime terminus",
+                     "D-peptide COOH carboxy terminus",
+                     "peptide linking",
+                     "D-saccharide 1,4 and 1,4 linking",
+                     "L-peptide COOH carboxy terminus",
+                     "RNA linking",
+                     "L-saccharide",
+                     "L-beta-peptide, C-gamma linking",
+                     "D-peptide NH3 amino terminus",
+                     "D-beta-peptide, C-gamma linking"
                   ],
                   "description": "For standard polymer components, the type of the monomer.\n Note that monomers that will form polymers are of three types:\n linking monomers, monomers with some type of N-terminal (or 5')\n cap and monomers with some type of C-terminal (or 3') cap."
                }
@@ -344,7 +355,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "alt_atom_id": {
                   "type": "string",
@@ -352,7 +364,8 @@
                },
                "atom_id": {
                   "type": "string",
-                  "description": "The value of _chem_comp_atom.atom_id must uniquely identify\n each atom in each monomer in the CHEM_COMP_ATOM list.\n\n The atom identifiers need not be unique over all atoms in the\n data block; they need only be unique for each atom in a\n component.\n\n Note that this item need not be a number; it can be any unique\n identifier."
+                  "description": "The value of _chem_comp_atom.atom_id must uniquely identify\n each atom in each monomer in the CHEM_COMP_ATOM list.\n\n The atom identifiers need not be unique over all atoms in the\n data block; they need only be unique for each atom in a\n component.\n\n Note that this item need not be a number; it can be any unique\n identifier.",
+                  "_primary_key": true
                },
                "charge": {
                   "type": "integer",
@@ -365,7 +378,8 @@
                   "description": "The net integer charge assigned to this atom. This is the\n formal charge assignment normally found in chemical diagrams."
                },
                "comp_id": {
-                  "$ref": "#chem_comp/id"
+                  "$ref": "#chem_comp/id",
+                  "_primary_key": true
                },
                "model_Cartn_x": {
                   "type": "number",
@@ -484,8 +498,8 @@
                   "type": "string",
                   "enum": [
                      "S",
-                     "R",
-                     "N"
+                     "N",
+                     "R"
                   ],
                   "description": "The chiral configuration of the atom that is a chiral center."
                },
@@ -496,12 +510,12 @@
                "substruct_code": {
                   "type": "string",
                   "enum": [
-                     "phos",
-                     "side",
-                     "none",
-                     "main",
                      "sugar",
-                     "base"
+                     "none",
+                     "side",
+                     "phos",
+                     "base",
+                     "main"
                   ],
                   "description": "This data item assigns the atom to a substructure of the\n component, if appropriate."
                },
@@ -532,7 +546,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "country": {
                   "type": "string",
@@ -545,7 +560,8 @@
                      "1",
                      "2"
                   ],
-                  "description": "The value of _citation.id must uniquely identify a record in the\n CITATION list.\n\n The _citation.id 'primary' should be used to indicate the\n citation that the author(s) consider to be the most pertinent to\n the contents of the data block.\n\n Note that this item need not be a number; it can be any unique\n identifier."
+                  "description": "The value of _citation.id must uniquely identify a record in the\n CITATION list.\n\n The _citation.id 'primary' should be used to indicate the\n citation that the author(s) consider to be the most pertinent to\n the contents of the data block.\n\n Note that this item need not be a number; it can be any unique\n identifier.",
+                  "_primary_key": true
                },
                "journal_abbrev": {
                   "type": "string",
@@ -629,10 +645,12 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "citation_id": {
-                  "$ref": "#citation/id"
+                  "$ref": "#citation/id",
+                  "_primary_key": true
                },
                "name": {
                   "type": "string",
@@ -643,11 +661,13 @@
                      "Yang, D.-L.",
                      "Simonov, Yu.A"
                   ],
-                  "description": "Name of an author of the citation; relevant for journal\n articles, books and book chapters.\n\n The family name(s), followed by a comma and including any\n dynastic components, precedes the first name(s) or initial(s)."
+                  "description": "Name of an author of the citation; relevant for journal\n articles, books and book chapters.\n\n The family name(s), followed by a comma and including any\n dynastic components, precedes the first name(s) or initial(s).",
+                  "_primary_key": true
                },
                "ordinal": {
                   "type": "integer",
-                  "description": "This data item defines the order of the author's name in the\n list of authors of a citation."
+                  "description": "This data item defines the order of the author's name in the\n list of authors of a citation.",
+                  "_primary_key": true
                }
             },
             "required": [
@@ -667,7 +687,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "details": {
                   "type": "string",
@@ -680,7 +701,8 @@
                },
                "id": {
                   "type": "string",
-                  "description": "The value of _entity.id must uniquely identify a record in the\n ENTITY list.\n\n Note that this item need not be a number; it can be any unique\n identifier."
+                  "description": "The value of _entity.id must uniquely identify a record in the\n ENTITY list.\n\n Note that this item need not be a number; it can be any unique\n identifier.",
+                  "_primary_key": true
                },
                "pdbx_description": {
                   "type": "string",
@@ -712,10 +734,10 @@
                "type": {
                   "type": "string",
                   "enum": [
-                     "branched",
-                     "water",
-                     "macrolide",
                      "non-polymer",
+                     "branched",
+                     "macrolide",
+                     "water",
                      "polymer"
                   ],
                   "description": "Defines the type of the entity.\n\n Polymer entities are expected to have corresponding\n ENTITY_POLY and associated entries.\n\n Non-polymer entities are expected to have corresponding\n CHEM_COMP and associated entries.\n\n Water entities are not expected to have corresponding\n entries in the ENTITY category."
@@ -736,10 +758,12 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "entity_id": {
-                  "$ref": "#entity/id"
+                  "$ref": "#entity/id",
+                  "_primary_key": true
                },
                "name": {
                   "type": "string",
@@ -767,10 +791,12 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "entity_id": {
-                  "$ref": "#entity/id"
+                  "$ref": "#entity/id",
+                  "_primary_key": true
                },
                "name": {
                   "type": "string",
@@ -797,18 +823,20 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "entity_id": {
-                  "$ref": "#entity/id"
+                  "$ref": "#entity/id",
+                  "_primary_key": true
                },
                "nstd_chirality": {
                   "type": "string",
                   "enum": [
                      "no",
-                     "y",
+                     "yes",
                      "n",
-                     "yes"
+                     "y"
                   ],
                   "description": "A flag to indicate whether the polymer contains at least\n one monomer unit with chirality different from that specified in\n _entity_poly.type."
                },
@@ -816,9 +844,9 @@
                   "type": "string",
                   "enum": [
                      "no",
-                     "y",
+                     "yes",
                      "n",
-                     "yes"
+                     "y"
                   ],
                   "description": "A flag to indicate whether the polymer contains at least\n one monomer-to-monomer link different from that implied by\n _entity_poly.type."
                },
@@ -826,9 +854,9 @@
                   "type": "string",
                   "enum": [
                      "no",
-                     "y",
+                     "yes",
                      "n",
-                     "yes"
+                     "y"
                   ],
                   "description": "A flag to indicate whether the polymer contains at least\n one monomer that is not considered standard."
                },
@@ -849,8 +877,8 @@
                "pdbx_sequence_evidence_code": {
                   "type": "string",
                   "enum": [
-                     "depositor provided",
-                     "derived from coordinates"
+                     "derived from coordinates",
+                     "depositor provided"
                   ],
                   "description": "Evidence for the assignment of the polymer sequence."
                },
@@ -866,16 +894,16 @@
                "type": {
                   "type": "string",
                   "enum": [
-                     "cyclic-pseudo-peptide",
                      "other",
-                     "polydeoxyribonucleotide/polyribonucleotide hybrid",
-                     "polyribonucleotide",
-                     "polypeptide(D)",
-                     "polypeptide(L)",
-                     "peptide nucleic acid",
                      "polysaccharide(L)",
+                     "peptide nucleic acid",
+                     "polyribonucleotide",
                      "polydeoxyribonucleotide",
-                     "polysaccharide(D)"
+                     "cyclic-pseudo-peptide",
+                     "polysaccharide(D)",
+                     "polypeptide(D)",
+                     "polydeoxyribonucleotide/polyribonucleotide hybrid",
+                     "polypeptide(L)"
                   ],
                   "description": "The type of the polymer."
                }
@@ -895,28 +923,32 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "entity_id": {
-                  "$ref": "#entity_poly/entity_id"
+                  "$ref": "#entity_poly/entity_id",
+                  "_primary_key": true
                },
                "hetero": {
                   "type": "string",
                   "enum": [
                      "no",
-                     "y",
+                     "yes",
                      "n",
-                     "yes"
+                     "y"
                   ],
                   "description": "A flag to indicate whether this monomer in the polymer is\n heterogeneous in sequence."
                },
                "mon_id": {
-                  "$ref": "#chem_comp/id"
+                  "$ref": "#chem_comp/id",
+                  "_primary_key": true
                },
                "num": {
                   "type": "integer",
                   "minimum": 1,
-                  "description": "The value of _entity_poly_seq.num must uniquely and sequentially\n identify a record in the ENTITY_POLY_SEQ list.\n\n Note that this item must be a number and that the sequence\n numbers must progress in increasing numerical order."
+                  "description": "The value of _entity_poly_seq.num must uniquely and sequentially\n identify a record in the ENTITY_POLY_SEQ list.\n\n Note that this item must be a number and that the sequence\n numbers must progress in increasing numerical order.",
+                  "_primary_key": true
                }
             },
             "required": [
@@ -936,10 +968,12 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "entity_id": {
-                  "$ref": "#entity/id"
+                  "$ref": "#entity/id",
+                  "_primary_key": true
                },
                "gene_src_common_name": {
                   "type": "string",
@@ -976,7 +1010,8 @@
                },
                "pdbx_src_id": {
                   "type": "integer",
-                  "description": "This data item is an ordinal identifier for entity_src_gen data records."
+                  "description": "This data item is an ordinal identifier for entity_src_gen data records.",
+                  "_primary_key": true
                }
             },
             "required": [
@@ -993,11 +1028,13 @@
          "type": "object",
          "properties": {
             "structure_id": {
-               "$ref": "#entry/id"
+               "$ref": "#entry/id",
+               "_primary_key": true
             },
             "id": {
                "type": "string",
-               "description": "The value of _entry.id identifies the data block.\n\n Note that this item need not be a number; it can be any unique\n identifier."
+               "description": "The value of _entry.id identifies the data block.\n\n Note that this item need not be a number; it can be any unique\n identifier.",
+               "_primary_key": true
             }
          },
          "required": [
@@ -1012,7 +1049,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "cross_correlation_coefficient": {
                   "type": "number",
@@ -1023,7 +1061,8 @@
                },
                "ordinal_id": {
                   "type": "integer",
-                  "description": "A unique identifier for the 2dem class average fitting data."
+                  "description": "A unique identifier for the 2dem class average fitting data.",
+                  "_primary_key": true
                },
                "restraint_id": {
                   "$ref": "#ihm_2dem_class_average_restraint/id"
@@ -1095,14 +1134,16 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "dataset_list_id": {
                   "$ref": "#ihm_dataset_list/id"
                },
                "id": {
                   "type": "integer",
-                  "description": "A unique identifier for the 2dem class average."
+                  "description": "A unique identifier for the 2dem class average.",
+                  "_primary_key": true
                },
                "image_resolution": {
                   "type": "number",
@@ -1111,8 +1152,8 @@
                "image_segment_flag": {
                   "type": "string",
                   "enum": [
-                     "NO",
-                     "YES"
+                     "YES",
+                     "NO"
                   ],
                   "description": "A flag that indicates whether or not the 2DEM class average image is segmented i.e.,\n whether the whole image is used or only a portion of it is used (by masking \n or by other means) as restraint in the modeling."
                },
@@ -1157,7 +1198,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "cross_correlation_coefficient": {
                   "type": "number",
@@ -1185,7 +1227,8 @@
                },
                "ordinal_id": {
                   "type": "integer",
-                  "description": "A unique identifier for the 3DEM restraint description."
+                  "description": "A unique identifier for the 3DEM restraint description.",
+                  "_primary_key": true
                },
                "struct_assembly_id": {
                   "$ref": "#ihm_struct_assembly/assembly_id"
@@ -1210,7 +1253,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "comp_id_1": {
                   "$ref": "#entity_poly_seq/mon_id"
@@ -1239,20 +1283,21 @@
                },
                "id": {
                   "type": "integer",
-                  "description": "A unique identifier for the cross link restraint."
+                  "description": "A unique identifier for the cross link restraint.",
+                  "_primary_key": true
                },
                "linker_type": {
                   "type": "string",
                   "enum": [
-                     "DST",
-                     "sulfo-SDA",
-                     "Other",
                      "BS3",
+                     "EDC",
+                     "DST",
                      "BS2G",
                      "sulfo-SMCC",
-                     "DSS",
                      "DSSO",
-                     "EDC",
+                     "Other",
+                     "sulfo-SDA",
+                     "DSS",
                      "EGS"
                   ],
                   "description": "The type of crosslinker used."
@@ -1288,7 +1333,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "asym_id_1": {
                   "$ref": "#struct_asym/id"
@@ -1331,14 +1377,15 @@
                },
                "id": {
                   "type": "integer",
-                  "description": "A unique identifier for the cross link record."
+                  "description": "A unique identifier for the cross link record.",
+                  "_primary_key": true
                },
                "model_granularity": {
                   "type": "string",
                   "enum": [
-                     "by-residue",
+                     "by-feature",
                      "by-atom",
-                     "by-feature"
+                     "by-residue"
                   ],
                   "description": "The coarse-graining information for the crosslink implementation."
                },
@@ -1352,8 +1399,8 @@
                   "type": "string",
                   "enum": [
                      "harmonic",
-                     "lower bound",
-                     "upper bound"
+                     "upper bound",
+                     "lower bound"
                   ],
                   "description": "The type of the cross link restraint applied."
                },
@@ -1398,14 +1445,16 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "model_id": {
                   "$ref": "#ihm_model_list/model_id"
                },
                "ordinal_id": {
                   "type": "integer",
-                  "description": "A unique identifier for the restraint/model combination."
+                  "description": "A unique identifier for the restraint/model combination.",
+                  "_primary_key": true
                },
                "psi": {
                   "type": "number",
@@ -1442,7 +1491,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "dataset_list_id": {
                   "$ref": "#ihm_dataset_list/id"
@@ -1452,7 +1502,8 @@
                },
                "id": {
                   "type": "integer",
-                  "description": "A unique identifier for the external data."
+                  "description": "A unique identifier for the external data.",
+                  "_primary_key": true
                }
             },
             "required": [
@@ -1472,7 +1523,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "dataset_list_id": {
                   "$ref": "#ihm_dataset_list/id"
@@ -1483,7 +1535,8 @@
                },
                "ordinal_id": {
                   "type": "integer",
-                  "description": "A unique identifier for the entry."
+                  "description": "A unique identifier for the entry.",
+                  "_primary_key": true
                }
             },
             "required": [
@@ -1503,39 +1556,40 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "data_type": {
                   "type": "string",
                   "enum": [
+                     "Yeast two-hybrid screening data",
                      "2DEM class average",
-                     "Single molecule FRET data",
-                     "H/D exchange data",
-                     "Integrative model",
-                     "Hydroxyl radical footprinting data",
-                     "Mutagenesis data",
-                     "CX-MS data",
                      "Mass Spectrometry data",
-                     "Other",
-                     "EM raw micrographs",
-                     "Predicted contacts",
-                     "NMR data",
-                     "3DEM volume",
-                     "DNA footprinting data",
-                     "EPR data",
-                     "Comparative model",
-                     "Experimental model",
                      "SAS data",
+                     "DNA footprinting data",
+                     "Comparative model",
+                     "Hydroxyl radical footprinting data",
+                     "3DEM volume",
+                     "CX-MS data",
                      "De Novo model",
-                     "Yeast two-hybrid screening data"
+                     "Integrative model",
+                     "Single molecule FRET data",
+                     "NMR data",
+                     "Mutagenesis data",
+                     "Experimental model",
+                     "EM raw micrographs",
+                     "Other",
+                     "EPR data",
+                     "H/D exchange data",
+                     "Predicted contacts"
                   ],
                   "description": "The type of data held in the dataset."
                },
                "database_hosted": {
                   "type": "string",
                   "enum": [
-                     "NO",
-                     "YES"
+                     "YES",
+                     "NO"
                   ],
                   "description": "A flag that indicates whether the dataset is archived in \n an IHM related database or elsewhere."
                },
@@ -1545,7 +1599,8 @@
                },
                "id": {
                   "type": "integer",
-                  "description": "A unique identifier for the dataset."
+                  "description": "A unique identifier for the dataset.",
+                  "_primary_key": true
                }
             },
             "required": [
@@ -1565,7 +1620,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "accession_code": {
                   "type": "string",
@@ -1586,16 +1642,16 @@
                "db_name": {
                   "type": "string",
                   "enum": [
+                     "BioGRID",
+                     "MASSIVE",
+                     "EMPIAR",
+                     "EMDB",
                      "PRIDE",
                      "BMRB",
-                     "MASSIVE",
-                     "EMDB",
                      "MODEL ARCHIVE",
                      "SASBDB",
-                     "PDB",
                      "Other",
-                     "EMPIAR",
-                     "BioGRID"
+                     "PDB"
                   ],
                   "description": "The name of the database containing the dataset entry."
                },
@@ -1608,7 +1664,8 @@
                },
                "id": {
                   "type": "integer",
-                  "description": "A unique identifier for the related database entry."
+                  "description": "A unique identifier for the related database entry.",
+                  "_primary_key": true
                },
                "version": {
                   "type": "string",
@@ -1633,7 +1690,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "dataset_list_id": {
                   "$ref": "#ihm_dataset_list/id"
@@ -1662,7 +1720,8 @@
                },
                "id": {
                   "type": "integer",
-                  "description": "A unique identifier for the derived distance restraint."
+                  "description": "A unique identifier for the derived distance restraint.",
+                  "_primary_key": true
                },
                "random_exclusion_fraction": {
                   "type": "number",
@@ -1671,9 +1730,9 @@
                "restraint_type": {
                   "type": "string",
                   "enum": [
-                     "lower bound",
+                     "upper bound",
                      "lower and upper bound",
-                     "upper bound"
+                     "lower bound"
                   ],
                   "description": "The type of distance restraint applied."
                }
@@ -1697,13 +1756,14 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "ensemble_clustering_feature": {
                   "type": "string",
                   "enum": [
-                     "dRMSD",
                      "other",
+                     "dRMSD",
                      "RMSD"
                   ],
                   "description": "The parameter/feature used for clustering the models, if applicable."
@@ -1711,9 +1771,9 @@
                "ensemble_clustering_method": {
                   "type": "string",
                   "enum": [
+                     "Partitioning (k-means)",
                      "Other",
-                     "Hierarchical",
-                     "Partitioning (k-means)"
+                     "Hierarchical"
                   ],
                   "description": "The clustering method used to obtain the ensemble, if applicable."
                },
@@ -1722,7 +1782,8 @@
                },
                "ensemble_id": {
                   "type": "integer",
-                  "description": "A unique id for the ensemble."
+                  "description": "A unique id for the ensemble.",
+                  "_primary_key": true
                },
                "ensemble_name": {
                   "type": "string",
@@ -1771,16 +1832,17 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "content_type": {
                   "type": "string",
                   "enum": [
-                     "Other",
-                     "Modeling workflow or script",
-                     "Visualization script",
+                     "Modeling or post-processing output",
                      "Input data or restraints",
-                     "Modeling or post-processing output"
+                     "Modeling workflow or script",
+                     "Other",
+                     "Visualization script"
                   ],
                   "description": "The type of content in the file."
                },
@@ -1796,25 +1858,25 @@
                "file_format": {
                   "type": "string",
                   "enum": [
-                     "TIF",
-                     "DCD",
                      "PDF",
-                     "A2M",
-                     "TXT",
-                     "FASTA",
-                     "A3M",
-                     "HDF5",
-                     "PGM",
-                     "Other",
-                     "CCP4",
-                     "PNG",
-                     "JPG",
+                     "TIF",
                      "MRC",
-                     "CIF",
+                     "PGM",
                      "PIR/NBRF",
-                     "PDB",
+                     "CCP4",
                      "CLUSTALW",
-                     "GIF"
+                     "HDF5",
+                     "PNG",
+                     "A2M",
+                     "DCD",
+                     "TXT",
+                     "PDB",
+                     "GIF",
+                     "CIF",
+                     "Other",
+                     "A3M",
+                     "FASTA",
+                     "JPG"
                   ],
                   "description": "Format of the external file."
                },
@@ -1834,7 +1896,8 @@
                },
                "id": {
                   "type": "integer",
-                  "description": "A unique identifier for each external file."
+                  "description": "A unique identifier for each external file.",
+                  "_primary_key": true
                },
                "reference_id": {
                   "$ref": "#ihm_external_reference_info/reference_id"
@@ -1858,7 +1921,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "associated_url": {
                   "type": "string",
@@ -1873,7 +1937,8 @@
                },
                "reference_id": {
                   "type": "integer",
-                  "description": "A unique identifier for the external reference."
+                  "description": "A unique identifier for the external reference.",
+                  "_primary_key": true
                },
                "reference_provider": {
                   "type": "string",
@@ -1887,18 +1952,18 @@
                "reference_type": {
                   "type": "string",
                   "enum": [
-                     "Supplementary Files",
-                     "DOI"
+                     "DOI",
+                     "Supplementary Files"
                   ],
                   "description": "The type of external reference. \n Currently, only Digital Object Identifiers (DOIs) and supplementary files \n stored locally are supported."
                },
                "refers_to": {
                   "type": "string",
                   "enum": [
-                     "Other",
                      "File",
+                     "Archive",
                      "Publication",
-                     "Archive"
+                     "Other"
                   ],
                   "description": "The type of object that the external reference points to, usually\n a single file or an archive."
                }
@@ -1921,27 +1986,22 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "entity_type": {
-                  "type": "string",
-                  "enum": [
-                     "polymer",
-                     "non-polymer",
-                     "water",
-                     "other"
-                  ],
-                  "description": "The type of entity."
+                  "$ref": "#entity/type"
                },
                "feature_id": {
                   "type": "integer",
-                  "description": "A unique identifier for the feature."
+                  "description": "A unique identifier for the feature.",
+                  "_primary_key": true
                },
                "feature_type": {
                   "type": "string",
                   "enum": [
-                     "residue range",
                      "residue",
+                     "residue range",
                      "atom",
                      "ligand"
                   ],
@@ -1965,7 +2025,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "axis_type": {
                   "type": "string",
@@ -1977,7 +2038,8 @@
                   "description": "The type of axis."
                },
                "object_id": {
-                  "$ref": "#ihm_geometric_object_list/object_id"
+                  "$ref": "#ihm_geometric_object_list/object_id",
+                  "_primary_key": true
                }
             },
             "required": [
@@ -1996,11 +2058,13 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "id": {
                   "type": "integer",
-                  "description": "A unique identifier for the center."
+                  "description": "A unique identifier for the center.",
+                  "_primary_key": true
                },
                "xcoord": {
                   "type": "number",
@@ -2033,7 +2097,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "distance_lower_limit": {
                   "type": "number",
@@ -2060,17 +2125,18 @@
                },
                "id": {
                   "type": "integer",
-                  "description": "A unique id for the geometric object distance restraint."
+                  "description": "A unique id for the geometric object distance restraint.",
+                  "_primary_key": true
                },
                "object_characteristic": {
                   "type": "string",
                   "enum": [
-                     "inner surface",
                      "other",
-                     "axis",
-                     "center",
+                     "plane",
                      "outer surface",
-                     "plane"
+                     "inner surface",
+                     "center",
+                     "axis"
                   ],
                   "description": "The characteristic of the geometric object used in the restraint."
                },
@@ -2081,10 +2147,10 @@
                   "type": "string",
                   "enum": [
                      "other",
-                     "harmonic",
-                     "lower bound",
+                     "upper bound",
                      "lower and upper bound",
-                     "upper bound"
+                     "harmonic",
+                     "lower bound"
                   ],
                   "description": "The type of restraint applied."
                }
@@ -2107,16 +2173,18 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "object_id": {
-                  "$ref": "#ihm_geometric_object_torus/object_id"
+                  "$ref": "#ihm_geometric_object_torus/object_id",
+                  "_primary_key": true
                },
                "section": {
                   "type": "string",
                   "enum": [
-                     "inner half",
                      "other",
+                     "inner half",
                      "outer half"
                   ],
                   "description": "The section of the torus representing the half-torus."
@@ -2143,11 +2211,13 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "object_id": {
                   "type": "integer",
-                  "description": "A unique identifier for the geometric object."
+                  "description": "A unique identifier for the geometric object.",
+                  "_primary_key": true
                },
                "object_name": {
                   "type": "string",
@@ -2159,12 +2229,12 @@
                "object_type": {
                   "type": "string",
                   "enum": [
-                     "sphere",
                      "other",
-                     "axis",
                      "torus",
+                     "plane",
                      "half-torus",
-                     "plane"
+                     "sphere",
+                     "axis"
                   ],
                   "description": "The type of geomtric object."
                }
@@ -2185,10 +2255,12 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "object_id": {
-                  "$ref": "#ihm_geometric_object_list/object_id"
+                  "$ref": "#ihm_geometric_object_list/object_id",
+                  "_primary_key": true
                },
                "plane_type": {
                   "type": "string",
@@ -2216,7 +2288,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "center_id": {
                   "$ref": "#ihm_geometric_object_center/id"
@@ -2230,7 +2303,8 @@
                   "description": "Minor radius \"r\" of the torus."
                },
                "object_id": {
-                  "$ref": "#ihm_geometric_object_list/object_id"
+                  "$ref": "#ihm_geometric_object_list/object_id",
+                  "_primary_key": true
                },
                "transformation_id": {
                   "$ref": "#ihm_geometric_object_transformation/id"
@@ -2254,11 +2328,13 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "id": {
                   "type": "integer",
-                  "description": "A unique identifier for the transformation."
+                  "description": "A unique identifier for the transformation.",
+                  "_primary_key": true
                },
                "rot_matrix_1_1": {
                   "type": "number",
@@ -2324,7 +2400,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "asym_id": {
                   "$ref": "#struct_asym/id"
@@ -2340,7 +2417,8 @@
                },
                "id": {
                   "type": "integer",
-                  "description": "A unique identifier."
+                  "description": "A unique identifier.",
+                  "_primary_key": true
                },
                "seq_id_begin": {
                   "$ref": "#entity_poly_seq/num"
@@ -2370,7 +2448,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "assembly_id": {
                   "$ref": "#ihm_struct_assembly/assembly_id"
@@ -2410,7 +2489,8 @@
                },
                "ordinal_id": {
                   "type": "integer",
-                  "description": "A unique identifier for the model / model group combination."
+                  "description": "A unique identifier for the model / model group combination.",
+                  "_primary_key": true
                },
                "protocol_id": {
                   "$ref": "#ihm_modeling_protocol/protocol_id"
@@ -2439,7 +2519,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "entity_asym_id": {
                   "$ref": "#struct_asym/id"
@@ -2453,10 +2534,10 @@
                "model_granularity": {
                   "type": "string",
                   "enum": [
-                     "by-residue",
+                     "by-feature",
                      "by-atom",
-                     "multi-residue",
-                     "by-feature"
+                     "by-residue",
+                     "multi-residue"
                   ],
                   "description": "The level of detail at which model primitive objects are applied to the structure."
                },
@@ -2475,16 +2556,17 @@
                "model_object_primitive": {
                   "type": "string",
                   "enum": [
-                     "gaussian",
+                     "atomistic",
                      "sphere",
-                     "other",
-                     "atomistic"
+                     "gaussian",
+                     "other"
                   ],
                   "description": "The primitive object used to model this segment."
                },
                "ordinal_id": {
                   "type": "integer",
-                  "description": "A unique identifier for the model details record."
+                  "description": "A unique identifier for the model details record.",
+                  "_primary_key": true
                },
                "representation_id": {
                   "type": "integer",
@@ -2523,11 +2605,13 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "id": {
                   "type": "integer",
-                  "description": "A unique identifier for the representative of the model group."
+                  "description": "A unique identifier for the representative of the model group.",
+                  "_primary_key": true
                },
                "model_group_id": {
                   "$ref": "#ihm_model_list/model_group_id"
@@ -2538,15 +2622,15 @@
                "selection_criteria": {
                   "type": "string",
                   "enum": [
-                     "lowest energy",
+                     "centroid",
+                     "target function",
+                     "medoid",
                      "closest to the average",
                      "fewest violations",
-                     "target function",
+                     "lowest energy",
+                     "minimized average structure",
                      "best scoring model",
-                     "medoid",
-                     "centroid",
-                     "other selction criteria",
-                     "minimized average structure"
+                     "other selction criteria"
                   ],
                   "description": "The selection criteria based on which the representative is chosen."
                }
@@ -2569,7 +2653,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "analysis_id": {
                   "type": "integer",
@@ -2584,8 +2669,8 @@
                      "other",
                      "none",
                      "dRMSD",
-                     "energy/score",
-                     "RMSD"
+                     "RMSD",
+                     "energy/score"
                   ],
                   "description": "The parameter/feature used in the post modeling analysis."
                },
@@ -2599,7 +2684,8 @@
                },
                "id": {
                   "type": "integer",
-                  "description": "A unique identifier for the post modeling analysis/step combination."
+                  "description": "A unique identifier for the post modeling analysis/step combination.",
+                  "_primary_key": true
                },
                "num_models_begin": {
                   "type": "integer",
@@ -2626,11 +2712,11 @@
                   "type": "string",
                   "enum": [
                      "other",
-                     "filter",
+                     "rescore",
+                     "cluster",
                      "validation",
                      "none",
-                     "rescore",
-                     "cluster"
+                     "filter"
                   ],
                   "description": "The type of post modeling analysis being carried out."
                }
@@ -2655,7 +2741,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "dataset_group_id": {
                   "$ref": "#ihm_dataset_group/group_id"
@@ -2663,16 +2750,16 @@
                "multi_scale_flag": {
                   "type": "string",
                   "enum": [
-                     "NO",
-                     "YES"
+                     "YES",
+                     "NO"
                   ],
                   "description": "A flag to indicate if the modeling is multi scale."
                },
                "multi_state_flag": {
                   "type": "string",
                   "enum": [
-                     "NO",
-                     "YES"
+                     "YES",
+                     "NO"
                   ],
                   "description": "A flag to indicate if the modeling is multi state."
                },
@@ -2687,14 +2774,15 @@
                "ordered_flag": {
                   "type": "string",
                   "enum": [
-                     "NO",
-                     "YES"
+                     "YES",
+                     "NO"
                   ],
                   "description": "A flag to indicate if the modeling involves an ensemble ordered by time or other order."
                },
                "ordinal_id": {
                   "type": "integer",
-                  "description": "A unique identifier for the modeling protocol/step combination."
+                  "description": "A unique identifier for the modeling protocol/step combination.",
+                  "_primary_key": true
                },
                "protocol_id": {
                   "type": "integer",
@@ -2764,13 +2852,14 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "experiment_type": {
                   "type": "string",
                   "enum": [
-                     "Fraction of bulk",
-                     "Single molecule"
+                     "Single molecule",
+                     "Fraction of bulk"
                   ],
                   "description": "The type of multi-state modeling experiment carried out."
                },
@@ -2779,7 +2868,8 @@
                },
                "ordinal_id": {
                   "type": "integer",
-                  "description": "A unique identifier for the multiple states being described."
+                  "description": "A unique identifier for the multiple states being described.",
+                  "_primary_key": true
                },
                "population_fraction": {
                   "type": "number",
@@ -2838,11 +2928,13 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "edge_id": {
                   "type": "integer",
-                  "description": "An identifier that describes an edge in a directed graph, which\n represents an ordered ensemble. \n Forms the category key together with _ihm_ordered_ensemble.process_id."
+                  "description": "An identifier that describes an edge in a directed graph, which\n represents an ordered ensemble. \n Forms the category key together with _ihm_ordered_ensemble.process_id.",
+                  "_primary_key": true
                },
                "model_group_id_begin": {
                   "$ref": "#ihm_model_list/model_group_id"
@@ -2862,7 +2954,8 @@
                },
                "process_id": {
                   "type": "integer",
-                  "description": "An identifier for the ordered process. \n Forms the category key together with _ihm_ordered_ensemble.edge_id."
+                  "description": "An identifier for the ordered process. \n Forms the category key together with _ihm_ordered_ensemble.edge_id.",
+                  "_primary_key": true
                },
                "step_description": {
                   "type": "string",
@@ -2893,7 +2986,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "asym_id": {
                   "$ref": "#struct_asym/id"
@@ -2912,21 +3006,22 @@
                },
                "ordinal_id": {
                   "type": "integer",
-                  "description": "A unique identifier for the category."
+                  "description": "A unique identifier for the category.",
+                  "_primary_key": true
                },
                "rep_atom": {
                   "type": "string",
                   "enum": [
-                     "CB",
-                     "CA"
+                     "CA",
+                     "CB"
                   ],
                   "description": "If _ihm_poly_residue_feature.granularity is by-residue, then indicate the atom used to represent \n the residue in three-dimension. Default is the C-alpha atom."
                },
                "residue_range_granularity": {
                   "type": "string",
                   "enum": [
-                     "by-residue",
-                     "by-feature"
+                     "by-feature",
+                     "by-residue"
                   ],
                   "description": "The coarse-graining information, if the feature is a residue range."
                },
@@ -2957,7 +3052,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "asym_id_1": {
                   "$ref": "#struct_asym/id"
@@ -2992,14 +3088,15 @@
                },
                "id": {
                   "type": "integer",
-                  "description": "A unique identifier for the predicted contact restraint."
+                  "description": "A unique identifier for the predicted contact restraint.",
+                  "_primary_key": true
                },
                "model_granularity": {
                   "type": "string",
                   "enum": [
-                     "by-residue",
+                     "by-feature",
                      "by-atom",
-                     "by-feature"
+                     "by-residue"
                   ],
                   "description": "The granularity of the predicted contact as applied to the multi-scale model."
                },
@@ -3012,9 +3109,9 @@
                "restraint_type": {
                   "type": "string",
                   "enum": [
-                     "lower bound",
+                     "upper bound",
                      "lower and upper bound",
-                     "upper bound"
+                     "lower bound"
                   ],
                   "description": "The type of distance restraint applied."
                },
@@ -3054,7 +3151,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "dataset_list_id_derived": {
                   "$ref": "#ihm_dataset_list/id"
@@ -3064,7 +3162,8 @@
                },
                "ordinal_id": {
                   "type": "integer",
-                  "description": "A unique identifier for the entry."
+                  "description": "A unique identifier for the entry.",
+                  "_primary_key": true
                }
             },
             "required": [
@@ -3084,7 +3183,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "chi_value": {
                   "type": "number",
@@ -3116,8 +3216,8 @@
                "fitting_state": {
                   "type": "string",
                   "enum": [
-                     "Multiple",
-                     "Single"
+                     "Single",
+                     "Multiple"
                   ],
                   "description": "An indicator to single or multiple state fitting."
                },
@@ -3126,13 +3226,14 @@
                },
                "ordinal_id": {
                   "type": "integer",
-                  "description": "A unique identifier for the SAS restraint description."
+                  "description": "A unique identifier for the SAS restraint description.",
+                  "_primary_key": true
                },
                "profile_segment_flag": {
                   "type": "string",
                   "enum": [
-                     "NO",
-                     "YES"
+                     "YES",
+                     "NO"
                   ],
                   "description": "A flag that indicates whether or not the SAS profile is segmented i.e.,\n whether the whole SAS profile is used or only a portion of it is used \n (by masking or by other means) as restraint in the modeling."
                },
@@ -3162,7 +3263,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "Cartn_x": {
                   "type": "number",
@@ -3191,7 +3293,8 @@
                },
                "ordinal_id": {
                   "type": "integer",
-                  "description": "A unique identifier for this pseudo atom / sphere object."
+                  "description": "A unique identifier for this pseudo atom / sphere object.",
+                  "_primary_key": true
                },
                "rmsf": {
                   "type": "number",
@@ -3228,14 +3331,16 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "alignment_file_id": {
                   "$ref": "#ihm_external_files/id"
                },
                "ordinal_id": {
                   "type": "integer",
-                  "description": "A unique identifier for the starting comparative model."
+                  "description": "A unique identifier for the starting comparative model.",
+                  "_primary_key": true
                },
                "starting_model_auth_asym_id": {
                   "type": "string",
@@ -3274,11 +3379,11 @@
                "template_sequence_identity_denominator": {
                   "type": "integer",
                   "enum": [
-                     2,
                      3,
+                     2,
+                     4,
                      5,
-                     1,
-                     4
+                     1
                   ],
                   "description": "The denominator used while calculating the sequence identity provided in \n _ihm_starting_comparative_models.template_sequence_identity."
                }
@@ -3302,7 +3407,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "script_file_id": {
                   "$ref": "#ihm_external_files/id"
@@ -3311,7 +3417,8 @@
                   "$ref": "#software/pdbx_ordinal"
                },
                "starting_model_id": {
-                  "$ref": "#ihm_starting_model_details/starting_model_id"
+                  "$ref": "#ihm_starting_model_details/starting_model_id",
+                  "_primary_key": true
                }
             },
             "required": [
@@ -3331,7 +3438,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "B_iso_or_equiv": {
                   "type": "number",
@@ -3364,8 +3472,8 @@
                "group_PDB": {
                   "type": "string",
                   "enum": [
-                     "HETATM",
-                     "ATOM"
+                     "ATOM",
+                     "HETATM"
                   ],
                   "description": "The group of atoms to which the atom site in the starting model belongs. This data\n item is provided for compatibility with the original Protein Data Bank format, \n and only for that purpose."
                },
@@ -3375,7 +3483,8 @@
                },
                "ordinal_id": {
                   "type": "integer",
-                  "description": "A unique identifier for this coordinate position."
+                  "description": "A unique identifier for this coordinate position.",
+                  "_primary_key": true
                },
                "seq_id": {
                   "$ref": "#entity_poly_seq/num"
@@ -3414,7 +3523,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "asym_id": {
                   "$ref": "#struct_asym/id"
@@ -3440,7 +3550,8 @@
                },
                "starting_model_id": {
                   "type": "string",
-                  "description": "A unique identifier for the starting structural model."
+                  "description": "A unique identifier for the starting structural model.",
+                  "_primary_key": true
                },
                "starting_model_sequence_offset": {
                   "type": "integer",
@@ -3450,10 +3561,10 @@
                   "type": "string",
                   "enum": [
                      "other",
-                     "ab initio model",
-                     "comparative model",
                      "integrative model",
-                     "experimental model"
+                     "experimental model",
+                     "ab initio model",
+                     "comparative model"
                   ],
                   "description": "The source of the starting model."
                }
@@ -3478,7 +3589,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "asym_id": {
                   "$ref": "#struct_asym/id"
@@ -3511,7 +3623,8 @@
                },
                "ordinal_id": {
                   "type": "integer",
-                  "description": "A unique identifier for the entry."
+                  "description": "A unique identifier for the entry.",
+                  "_primary_key": true
                },
                "seq_id": {
                   "$ref": "#entity_poly_seq/num"
@@ -3543,7 +3656,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "assembly_id": {
                   "type": "integer",
@@ -3560,7 +3674,8 @@
                },
                "ordinal_id": {
                   "type": "integer",
-                  "description": "A unique identifier for the structural assembly description."
+                  "description": "A unique identifier for the structural assembly description.",
+                  "_primary_key": true
                },
                "parent_assembly_id": {
                   "$ref": "#ihm_struct_assembly/assembly_id"
@@ -3591,14 +3706,16 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "assembly_description": {
                   "type": "string",
                   "description": "Description of the structural assembly."
                },
                "assembly_id": {
-                  "$ref": "#ihm_struct_assembly/assembly_id"
+                  "$ref": "#ihm_struct_assembly/assembly_id",
+                  "_primary_key": true
                },
                "assembly_name": {
                   "type": "string",
@@ -3620,13 +3737,15 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "comp_id": {
                   "$ref": "#chem_comp/id"
                },
                "entity_id": {
-                  "$ref": "#entity/id"
+                  "$ref": "#entity/id",
+                  "_primary_key": true
                },
                "name": {
                   "type": "string",
@@ -3646,10 +3765,12 @@
          "type": "object",
          "properties": {
             "structure_id": {
-               "$ref": "#entry/id"
+               "$ref": "#entry/id",
+               "_primary_key": true
             },
             "entry_id": {
-               "$ref": "#entry/id"
+               "$ref": "#entry/id",
+               "_primary_key": true
             },
             "sequence_details": {
                "type": "string",
@@ -3668,14 +3789,16 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "id": {
                   "type": "integer",
                   "examples": [
                      "1"
                   ],
-                  "description": "Serial number."
+                  "description": "Serial number.",
+                  "_primary_key": true
                },
                "name": {
                   "type": "string",
@@ -3710,14 +3833,16 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "id": {
                   "type": "string",
                   "examples": [
                      "1"
                   ],
-                  "description": "Serial number."
+                  "description": "Serial number.",
+                  "_primary_key": true
                },
                "name": {
                   "type": "string",
@@ -3753,10 +3878,12 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "asym_id": {
-                  "$ref": "#atom_site/label_asym_id"
+                  "$ref": "#atom_site/label_asym_id",
+                  "_primary_key": true
                },
                "auth_mon_id": {
                   "type": "string",
@@ -3774,7 +3901,8 @@
                },
                "ndb_seq_num": {
                   "type": "string",
-                  "description": "NDB/RCSB residue number."
+                  "description": "NDB/RCSB residue number.",
+                  "_primary_key": true
                },
                "pdb_mon_id": {
                   "type": "string",
@@ -3805,10 +3933,12 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "asym_id": {
-                  "$ref": "#struct_asym/id"
+                  "$ref": "#struct_asym/id",
+                  "_primary_key": true
                },
                "auth_mon_id": {
                   "type": "string",
@@ -3819,20 +3949,22 @@
                   "description": "Author provided residue number.   This value may differ from the PDB residue\n number and may not correspond to residue numbering within the coordinate records.\n"
                },
                "entity_id": {
-                  "$ref": "#entity_poly_seq/entity_id"
+                  "$ref": "#entity_poly_seq/entity_id",
+                  "_primary_key": true
                },
                "hetero": {
                   "type": "string",
                   "enum": [
                      "no",
-                     "y",
+                     "yes",
                      "n",
-                     "yes"
+                     "y"
                   ],
                   "description": "Pointer to _entity_poly_seq.hetero"
                },
                "mon_id": {
-                  "$ref": "#entity_poly_seq/mon_id"
+                  "$ref": "#entity_poly_seq/mon_id",
+                  "_primary_key": true
                },
                "ndb_seq_num": {
                   "type": "integer",
@@ -3851,7 +3983,8 @@
                   "description": "PDB strand/chain id."
                },
                "seq_id": {
-                  "$ref": "#entity_poly_seq/num"
+                  "$ref": "#entity_poly_seq/num",
+                  "_primary_key": true
                }
             },
             "required": [
@@ -3872,11 +4005,13 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "id": {
                   "type": "string",
-                  "description": "Serial number."
+                  "description": "Serial number.",
+                  "_primary_key": true
                },
                "name": {
                   "type": "string",
@@ -3904,15 +4039,18 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "auth_asym_id": {
                   "type": "string",
-                  "description": "This data item is a pointer to _atom_site.auth_asym_id in the ATOM_SITE category."
+                  "description": "This data item is a pointer to _atom_site.auth_asym_id in the ATOM_SITE category.",
+                  "_primary_key": true
                },
                "entity_id": {
                   "type": "string",
-                  "description": "This data item is a pointer to _entity_poly.entity_id in the ENTITY_POLY category."
+                  "description": "This data item is a pointer to _entity_poly.entity_id in the ENTITY_POLY category.",
+                  "_primary_key": true
                },
                "one_letter_code": {
                   "type": "string",
@@ -3940,7 +4078,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "PDB_model_num": {
                   "$ref": "#atom_site/pdbx_PDB_model_num"
@@ -3962,7 +4101,8 @@
                },
                "id": {
                   "type": "integer",
-                  "description": "The value of _pdbx_unobs_or_zero_occ_atoms.id must uniquely identify\n each item in the PDBX_UNOBS_OR_ZERO_OCC_ATOMS list.\n\n This is an integer serial number."
+                  "description": "The value of _pdbx_unobs_or_zero_occ_atoms.id must uniquely identify\n each item in the PDBX_UNOBS_OR_ZERO_OCC_ATOMS list.\n\n This is an integer serial number.",
+                  "_primary_key": true
                },
                "label_asym_id": {
                   "$ref": "#struct_asym/id"
@@ -3981,8 +4121,8 @@
                "occupancy_flag": {
                   "type": "integer",
                   "enum": [
-                     0,
-                     1
+                     1,
+                     0
                   ],
                   "description": "The value of occupancy flag indicates whether the atom is\n either unobserved (=1) or has zero occupancy (=0)"
                },
@@ -4017,7 +4157,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "PDB_model_num": {
                   "$ref": "#atom_site/pdbx_PDB_model_num"
@@ -4035,7 +4176,8 @@
                },
                "id": {
                   "type": "integer",
-                  "description": "The value of _pdbx_unobs_or_zero_occ_residues.id must uniquely identify\n  each item in the PDBX_UNOBS_OR_ZERO_OCC_RESIDUES list.\n\n  This is an integer serial number."
+                  "description": "The value of _pdbx_unobs_or_zero_occ_residues.id must uniquely identify\n  each item in the PDBX_UNOBS_OR_ZERO_OCC_RESIDUES list.\n\n  This is an integer serial number.",
+                  "_primary_key": true
                },
                "label_asym_id": {
                   "$ref": "#struct_asym/id"
@@ -4050,8 +4192,8 @@
                "occupancy_flag": {
                   "type": "integer",
                   "enum": [
-                     0,
-                     1
+                     1,
+                     0
                   ],
                   "description": "The value of occupancy flag indicates whether the residue\n is unobserved (= 1) or the coordinates have an occupancy of zero (=0)"
                },
@@ -4085,7 +4227,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "citation_id": {
                   "$ref": "#citation/id"
@@ -4134,17 +4277,18 @@
                      "1",
                      "2"
                   ],
-                  "description": "\nAn ordinal index for this category"
+                  "description": "\nAn ordinal index for this category",
+                  "_primary_key": true
                },
                "type": {
                   "type": "string",
                   "enum": [
                      "other",
-                     "filter",
+                     "jiffy",
                      "library",
                      "program",
-                     "jiffy",
-                     "package"
+                     "package",
+                     "filter"
                   ],
                   "description": "The classification of the software according to the most\n common types."
                },
@@ -4174,10 +4318,12 @@
          "type": "object",
          "properties": {
             "structure_id": {
-               "$ref": "#entry/id"
+               "$ref": "#entry/id",
+               "_primary_key": true
             },
             "entry_id": {
-               "$ref": "#entry/id"
+               "$ref": "#entry/id",
+               "_primary_key": true
             },
             "pdbx_descriptor": {
                "type": "string",
@@ -4209,7 +4355,8 @@
             "type": "object",
             "properties": {
                "structure_id": {
-                  "$ref": "#entry/id"
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
                "details": {
                   "type": "string",
@@ -4228,7 +4375,8 @@
                      "A",
                      "2B3"
                   ],
-                  "description": "The value of _struct_asym.id must uniquely identify a record in\n the STRUCT_ASYM list.\n\n Note that this item need not be a number; it can be any unique\n identifier."
+                  "description": "The value of _struct_asym.id must uniquely identify a record in\n the STRUCT_ASYM list.\n\n Note that this item need not be a number; it can be any unique\n identifier.",
+                  "_primary_key": true
                },
                "pdbx_PDB_id": {
                   "type": "string",
@@ -4263,15 +4411,15 @@
                "pdbx_type": {
                   "type": "string",
                   "enum": [
-                     "ATOMN",
+                     "HETAC",
                      "HETAI",
                      "HETIC",
                      "ATOMP",
-                     "HETAS",
-                     "HETAD",
-                     "HETAC",
                      "ATOMS",
-                     "HETAIN"
+                     "HETAS",
+                     "HETAIN",
+                     "ATOMN",
+                     "HETAD"
                   ],
                   "description": "This data item describes the general type of the structural elements\n in the ATOM_SITE category."
                }
@@ -4288,7 +4436,8 @@
       },
       "_entry_id": {
          "type": "string",
-         "description": "The value of _entry.id identifies the data block.\n\n Note that this item need not be a number; it can be any unique\n identifier."
+         "description": "The value of _entry.id identifies the data block.\n\n Note that this item need not be a number; it can be any unique\n identifier.",
+         "_primary_key": true
       },
       "_schema_version": {
          "type": "string",
