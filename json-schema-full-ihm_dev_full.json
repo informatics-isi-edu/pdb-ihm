@@ -16,37 +16,72 @@
                },
                "Cartn_x": {
                   "type": "number",
-                  "description": "The x atom-site coordinate in angstroms specified according to\n a set of orthogonal Cartesian axes related to the cell axes as\n specified by the description given in\n _atom_sites.Cartn_transform_axes."
+                  "description": "The x atom-site coordinate in angstroms specified according to\n a set of orthogonal Cartesian axes related to the cell axes as\n specified by the description given in\n _atom_sites.Cartn_transform_axes.",
+                  "_attribute_groups": [
+                     {
+                        "id": "cartesian_coordinate"
+                     }
+                  ]
                },
                "Cartn_y": {
                   "type": "number",
-                  "description": "The y atom-site coordinate in angstroms specified according to\n a set of orthogonal Cartesian axes related to the cell axes as\n specified by the description given in\n _atom_sites.Cartn_transform_axes."
+                  "description": "The y atom-site coordinate in angstroms specified according to\n a set of orthogonal Cartesian axes related to the cell axes as\n specified by the description given in\n _atom_sites.Cartn_transform_axes.",
+                  "_attribute_groups": [
+                     {
+                        "id": "cartesian_coordinate"
+                     }
+                  ]
                },
                "Cartn_z": {
                   "type": "number",
-                  "description": "The z atom-site coordinate in angstroms specified according to\n a set of orthogonal Cartesian axes related to the cell axes as\n specified by the description given in\n _atom_sites.Cartn_transform_axes."
+                  "description": "The z atom-site coordinate in angstroms specified according to\n a set of orthogonal Cartesian axes related to the cell axes as\n specified by the description given in\n _atom_sites.Cartn_transform_axes.",
+                  "_attribute_groups": [
+                     {
+                        "id": "cartesian_coordinate"
+                     }
+                  ]
                },
                "auth_asym_id": {
                   "type": "string",
-                  "description": "An alternative identifier for _atom_site.label_asym_id that\n may be provided by an author in order to match the identification\n used in the publication that describes the structure."
+                  "description": "An alternative identifier for _atom_site.label_asym_id that\n may be provided by an author in order to match the identification\n used in the publication that describes the structure.",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_atom_site_auth_label"
+                     }
+                  ]
                },
                "auth_atom_id": {
                   "type": "string",
-                  "description": "An alternative identifier for _atom_site.label_atom_id that\n may be provided by an author in order to match the identification\n used in the publication that describes the structure."
+                  "description": "An alternative identifier for _atom_site.label_atom_id that\n may be provided by an author in order to match the identification\n used in the publication that describes the structure.",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_atom_site_auth_label"
+                     }
+                  ]
                },
                "auth_comp_id": {
                   "type": "string",
-                  "description": "An alternative identifier for _atom_site.label_comp_id that\n may be provided by an author in order to match the identification\n used in the publication that describes the structure."
+                  "description": "An alternative identifier for _atom_site.label_comp_id that\n may be provided by an author in order to match the identification\n used in the publication that describes the structure.",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_atom_site_auth_label"
+                     }
+                  ]
                },
                "auth_seq_id": {
                   "type": "string",
-                  "description": "An alternative identifier for _atom_site.label_seq_id that\n may be provided by an author in order to match the identification\n used in the publication that describes the structure.\n\n Note that this is not necessarily a number, that the values do\n not have to be positive, and that the value does not have to\n correspond to the value of _atom_site.label_seq_id. The value\n of _atom_site.label_seq_id is required to be a sequential list\n of positive integers.\n\n The author may assign values to _atom_site.auth_seq_id in any\n desired way. For instance, the values may be used to relate\n this structure to a numbering scheme in a homologous structure,\n including sequence gaps or insertion codes. Alternatively, a\n scheme may be used for a truncated polymer that maintains the\n numbering scheme of the full length polymer. In all cases, the\n scheme used here must match the scheme used in the publication\n that describes the structure."
+                  "description": "An alternative identifier for _atom_site.label_seq_id that\n may be provided by an author in order to match the identification\n used in the publication that describes the structure.\n\n Note that this is not necessarily a number, that the values do\n not have to be positive, and that the value does not have to\n correspond to the value of _atom_site.label_seq_id. The value\n of _atom_site.label_seq_id is required to be a sequential list\n of positive integers.\n\n The author may assign values to _atom_site.auth_seq_id in any\n desired way. For instance, the values may be used to relate\n this structure to a numbering scheme in a homologous structure,\n including sequence gaps or insertion codes. Alternatively, a\n scheme may be used for a truncated polymer that maintains the\n numbering scheme of the full length polymer. In all cases, the\n scheme used here must match the scheme used in the publication\n that describes the structure.",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_atom_site_auth_label"
+                     }
+                  ]
                },
                "group_PDB": {
                   "type": "string",
                   "enum": [
-                     "ATOM",
-                     "HETATM"
+                     "HETATM",
+                     "ATOM"
                   ],
                   "description": "The group of atoms to which the atom site belongs. This data\n item is provided for compatibility with the original Protein\n Data Bank format, and only for that purpose."
                },
@@ -70,22 +105,44 @@
                },
                "label_alt_id": {
                   "type": "string",
-                  "description": "A component of the identifier for this atom site.\n For further details, see the definition of the ATOM_SITE_ALT\n category.\n\n This data item is a pointer to _atom_sites_alt.id in the\n ATOM_SITES_ALT category."
+                  "description": "A component of the identifier for this atom site.\n For further details, see the definition of the ATOM_SITE_ALT\n category.\n\n This data item is a pointer to _atom_sites_alt.id in the\n ATOM_SITES_ALT category.",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_atom_site_label"
+                     }
+                  ]
                },
                "label_asym_id": {
-                  "$ref": "#struct_asym/id"
+                  "$ref": "#struct_asym/id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_atom_site_label"
+                     }
+                  ]
                },
                "label_atom_id": {
-                  "$ref": "#chem_comp_atom/atom_id"
+                  "type": "string",
+                  "description": "A component of the identifier for this atom site.\n\n This data item is a pointer to _chem_comp_atom.atom_id in the\n CHEM_COMP_ATOM category.",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_atom_site_label"
+                     }
+                  ]
                },
                "label_comp_id": {
-                  "$ref": "#chem_comp/id"
+                  "$ref": "#chem_comp/id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_atom_site_label"
+                     }
+                  ]
                },
                "label_entity_id": {
                   "$ref": "#entity/id"
                },
                "label_seq_id": {
-                  "$ref": "#entity_poly_seq/num"
+                  "type": "integer",
+                  "description": "This data item is a pointer to _entity_poly_seq.num in the\n ENTITY_POLY_SEQ category."
                },
                "occupancy": {
                   "type": "number",
@@ -286,10 +343,10 @@
                "mon_nstd_flag": {
                   "type": "string",
                   "enum": [
-                     "no",
                      "yes",
                      "n",
-                     "y"
+                     "y",
+                     "no"
                   ],
                   "description": "'yes' indicates that this is a 'standard' monomer, 'no'\n indicates that it is 'nonstandard'. Nonstandard monomers\n should be described in more detail using the\n _chem_comp.mon_nstd_parent, _chem_comp.mon_nstd_class and\n _chem_comp.mon_nstd_details data items."
                },
@@ -306,35 +363,35 @@
                "type": {
                   "type": "string",
                   "enum": [
-                     "D-saccharide",
-                     "L-gamma-peptide, C-delta linking",
-                     "L-RNA linking",
-                     "non-polymer",
-                     "L-DNA linking",
-                     "L-saccharide 1,4 and 1,4 linking",
-                     "D-gamma-peptide, C-delta linking",
-                     "D-peptide linking",
-                     "peptide-like",
-                     "RNA OH 3 prime terminus",
-                     "saccharide",
-                     "L-peptide NH3 amino terminus",
-                     "RNA OH 5 prime terminus",
-                     "DNA OH 3 prime terminus",
-                     "other",
-                     "DNA linking",
-                     "L-saccharide 1,4 and 1,6 linking",
-                     "L-peptide linking",
-                     "D-saccharide 1,4 and 1,6 linking",
-                     "DNA OH 5 prime terminus",
-                     "D-peptide COOH carboxy terminus",
-                     "peptide linking",
-                     "D-saccharide 1,4 and 1,4 linking",
-                     "L-peptide COOH carboxy terminus",
-                     "RNA linking",
-                     "L-saccharide",
                      "L-beta-peptide, C-gamma linking",
+                     "RNA OH 5 prime terminus",
+                     "L-saccharide 1,4 and 1,6 linking",
+                     "L-peptide COOH carboxy terminus",
+                     "DNA OH 5 prime terminus",
+                     "peptide linking",
+                     "D-saccharide 1,4 and 1,6 linking",
+                     "L-gamma-peptide, C-delta linking",
+                     "L-peptide linking",
+                     "L-RNA linking",
+                     "D-beta-peptide, C-gamma linking",
+                     "D-peptide linking",
+                     "DNA OH 3 prime terminus",
+                     "D-gamma-peptide, C-delta linking",
+                     "D-saccharide",
+                     "saccharide",
+                     "DNA linking",
+                     "other",
+                     "RNA OH 3 prime terminus",
+                     "L-saccharide 1,4 and 1,4 linking",
+                     "D-peptide COOH carboxy terminus",
+                     "non-polymer",
+                     "RNA linking",
                      "D-peptide NH3 amino terminus",
-                     "D-beta-peptide, C-gamma linking"
+                     "D-saccharide 1,4 and 1,4 linking",
+                     "L-DNA linking",
+                     "peptide-like",
+                     "L-saccharide",
+                     "L-peptide NH3 amino terminus"
                   ],
                   "description": "For standard polymer components, the type of the monomer.\n Note that monomers that will form polymers are of three types:\n linking monomers, monomers with some type of N-terminal (or 5')\n cap and monomers with some type of C-terminal (or 3') cap."
                }
@@ -383,27 +440,57 @@
                },
                "model_Cartn_x": {
                   "type": "number",
-                  "description": "The x component of the coordinates for this atom in this\n component specified as orthogonal angstroms. The choice of\n reference axis frame for the coordinates is arbitrary.\n\n The set of coordinates input for the entity here is intended to\n correspond to the atomic model used to generate restraints for\n structure refinement, not to atom sites in the ATOM_SITE\n list."
+                  "description": "The x component of the coordinates for this atom in this\n component specified as orthogonal angstroms. The choice of\n reference axis frame for the coordinates is arbitrary.\n\n The set of coordinates input for the entity here is intended to\n correspond to the atomic model used to generate restraints for\n structure refinement, not to atom sites in the ATOM_SITE\n list.",
+                  "_attribute_groups": [
+                     {
+                        "id": "cartesian_coordinate"
+                     }
+                  ]
                },
                "model_Cartn_x_esd": {
                   "type": "number",
-                  "description": "The standard uncertainty (estimated standard deviation)\n of _chem_comp_atom.model_Cartn_x."
+                  "description": "The standard uncertainty (estimated standard deviation)\n of _chem_comp_atom.model_Cartn_x.",
+                  "_attribute_groups": [
+                     {
+                        "id": "cartesian_coordinate_esd"
+                     }
+                  ]
                },
                "model_Cartn_y": {
                   "type": "number",
-                  "description": "The y component of the coordinates for this atom in this\n component specified as orthogonal angstroms. The choice of\n reference axis frame for the coordinates is arbitrary.\n\n The set of coordinates input for the entity here is intended to\n correspond to the atomic model used to generate restraints for\n structure refinement, not to atom sites in the ATOM_SITE\n list."
+                  "description": "The y component of the coordinates for this atom in this\n component specified as orthogonal angstroms. The choice of\n reference axis frame for the coordinates is arbitrary.\n\n The set of coordinates input for the entity here is intended to\n correspond to the atomic model used to generate restraints for\n structure refinement, not to atom sites in the ATOM_SITE\n list.",
+                  "_attribute_groups": [
+                     {
+                        "id": "cartesian_coordinate"
+                     }
+                  ]
                },
                "model_Cartn_y_esd": {
                   "type": "number",
-                  "description": "The standard uncertainty (estimated standard deviation)\n of _chem_comp_atom.model_Cartn_y."
+                  "description": "The standard uncertainty (estimated standard deviation)\n of _chem_comp_atom.model_Cartn_y.",
+                  "_attribute_groups": [
+                     {
+                        "id": "cartesian_coordinate_esd"
+                     }
+                  ]
                },
                "model_Cartn_z": {
                   "type": "number",
-                  "description": "The z component of the coordinates for this atom in this\n component specified as orthogonal angstroms. The choice of\n reference axis frame for the coordinates is arbitrary.\n\n The set of coordinates input for the entity here is intended to\n correspond to the atomic model used to generate restraints for\n structure refinement, not to atom sites in the ATOM_SITE\n list."
+                  "description": "The z component of the coordinates for this atom in this\n component specified as orthogonal angstroms. The choice of\n reference axis frame for the coordinates is arbitrary.\n\n The set of coordinates input for the entity here is intended to\n correspond to the atomic model used to generate restraints for\n structure refinement, not to atom sites in the ATOM_SITE\n list.",
+                  "_attribute_groups": [
+                     {
+                        "id": "cartesian_coordinate"
+                     }
+                  ]
                },
                "model_Cartn_z_esd": {
                   "type": "number",
-                  "description": "The standard uncertainty (estimated standard deviation)\n of _chem_comp_atom.model_Cartn_z."
+                  "description": "The standard uncertainty (estimated standard deviation)\n of _chem_comp_atom.model_Cartn_z.",
+                  "_attribute_groups": [
+                     {
+                        "id": "cartesian_coordinate_esd"
+                     }
+                  ]
                },
                "partial_charge": {
                   "type": "number",
@@ -464,15 +551,30 @@
                },
                "pdbx_model_Cartn_x_ideal": {
                   "type": "number",
-                  "description": "An alternative x component of the coordinates for this atom in this\n component specified as orthogonal angstroms."
+                  "description": "An alternative x component of the coordinates for this atom in this\n component specified as orthogonal angstroms.",
+                  "_attribute_groups": [
+                     {
+                        "id": "cartesian_coordinate"
+                     }
+                  ]
                },
                "pdbx_model_Cartn_y_ideal": {
                   "type": "number",
-                  "description": "An alternative y component of the coordinates for this atom in this\n component specified as orthogonal angstroms."
+                  "description": "An alternative y component of the coordinates for this atom in this\n component specified as orthogonal angstroms.",
+                  "_attribute_groups": [
+                     {
+                        "id": "cartesian_coordinate"
+                     }
+                  ]
                },
                "pdbx_model_Cartn_z_ideal": {
                   "type": "number",
-                  "description": "An alternative z component of the coordinates for this atom in this\n component specified as orthogonal angstroms."
+                  "description": "An alternative z component of the coordinates for this atom in this\n component specified as orthogonal angstroms.",
+                  "_attribute_groups": [
+                     {
+                        "id": "cartesian_coordinate"
+                     }
+                  ]
                },
                "pdbx_ordinal": {
                   "type": "integer",
@@ -511,10 +613,10 @@
                   "type": "string",
                   "enum": [
                      "sugar",
+                     "base",
+                     "phos",
                      "none",
                      "side",
-                     "phos",
-                     "base",
                      "main"
                   ],
                   "description": "This data item assigns the atom to a substructure of the\n component, if appropriate."
@@ -726,17 +828,17 @@
                   "type": "string",
                   "enum": [
                      "syn",
-                     "nat",
-                     "man"
+                     "man",
+                     "nat"
                   ],
                   "description": "The method by which the sample for the entity was produced.\n Entities isolated directly from natural sources (tissues, soil\n samples etc.) are expected to have further information in the\n ENTITY_SRC_NAT category. Entities isolated from genetically\n manipulated sources are expected to have further information in\n the ENTITY_SRC_GEN category."
                },
                "type": {
                   "type": "string",
                   "enum": [
+                     "macrolide",
                      "non-polymer",
                      "branched",
-                     "macrolide",
                      "water",
                      "polymer"
                   ],
@@ -833,30 +935,30 @@
                "nstd_chirality": {
                   "type": "string",
                   "enum": [
-                     "no",
                      "yes",
                      "n",
-                     "y"
+                     "y",
+                     "no"
                   ],
                   "description": "A flag to indicate whether the polymer contains at least\n one monomer unit with chirality different from that specified in\n _entity_poly.type."
                },
                "nstd_linkage": {
                   "type": "string",
                   "enum": [
-                     "no",
                      "yes",
                      "n",
-                     "y"
+                     "y",
+                     "no"
                   ],
                   "description": "A flag to indicate whether the polymer contains at least\n one monomer-to-monomer link different from that implied by\n _entity_poly.type."
                },
                "nstd_monomer": {
                   "type": "string",
                   "enum": [
-                     "no",
                      "yes",
                      "n",
-                     "y"
+                     "y",
+                     "no"
                   ],
                   "description": "A flag to indicate whether the polymer contains at least\n one monomer that is not considered standard."
                },
@@ -877,8 +979,8 @@
                "pdbx_sequence_evidence_code": {
                   "type": "string",
                   "enum": [
-                     "derived from coordinates",
-                     "depositor provided"
+                     "depositor provided",
+                     "derived from coordinates"
                   ],
                   "description": "Evidence for the assignment of the polymer sequence."
                },
@@ -894,15 +996,15 @@
                "type": {
                   "type": "string",
                   "enum": [
-                     "other",
-                     "polysaccharide(L)",
-                     "peptide nucleic acid",
-                     "polyribonucleotide",
-                     "polydeoxyribonucleotide",
-                     "cyclic-pseudo-peptide",
                      "polysaccharide(D)",
-                     "polypeptide(D)",
+                     "cyclic-pseudo-peptide",
+                     "other",
+                     "peptide nucleic acid",
                      "polydeoxyribonucleotide/polyribonucleotide hybrid",
+                     "polypeptide(D)",
+                     "polysaccharide(L)",
+                     "polydeoxyribonucleotide",
+                     "polyribonucleotide",
                      "polypeptide(L)"
                   ],
                   "description": "The type of the polymer."
@@ -928,27 +1030,42 @@
                },
                "entity_id": {
                   "$ref": "#entity_poly/entity_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label"
+                     }
+                  ],
                   "_primary_key": true
                },
                "hetero": {
                   "type": "string",
                   "enum": [
-                     "no",
                      "yes",
                      "n",
-                     "y"
+                     "y",
+                     "no"
                   ],
                   "description": "A flag to indicate whether this monomer in the polymer is\n heterogeneous in sequence."
                },
                "mon_id": {
                   "$ref": "#chem_comp/id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label"
+                     }
+                  ],
                   "_primary_key": true
                },
                "num": {
                   "type": "integer",
                   "minimum": 1,
                   "description": "The value of _entity_poly_seq.num must uniquely and sequentially\n identify a record in the ENTITY_POLY_SEQ list.\n\n Note that this item must be a number and that the sequence\n numbers must progress in increasing numerical order.",
-                  "_primary_key": true
+                  "_primary_key": true,
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label"
+                     }
+                  ]
                }
             },
             "required": [
@@ -996,8 +1113,8 @@
                "pdbx_alt_source_flag": {
                   "type": "string",
                   "enum": [
-                     "model",
-                     "sample"
+                     "sample",
+                     "model"
                   ],
                   "description": "This data item identifies cases in which an alternative source\n modeled."
                },
@@ -1056,71 +1173,131 @@
                   "type": "number",
                   "description": "The cross correlation coefficient corresponding to the model to image fitting."
                },
-               "model_id": {
-                  "$ref": "#ihm_model_list/model_id"
-               },
-               "ordinal_id": {
+               "id": {
                   "type": "integer",
                   "description": "A unique identifier for the 2dem class average fitting data.",
                   "_primary_key": true
+               },
+               "model_id": {
+                  "$ref": "#ihm_model_list/model_id"
                },
                "restraint_id": {
                   "$ref": "#ihm_2dem_class_average_restraint/id"
                },
                "rot_matrix_1_1": {
                   "type": "number",
-                  "description": "Data item [1][1] of the rotation matrix used in the fitting of the model to the image."
+                  "description": "Data item [1][1] of the rotation matrix used in the fitting of the model to the image.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
                },
                "rot_matrix_1_2": {
                   "type": "number",
-                  "description": "Data item [1][2] of the rotation matrix used in the fitting of the model to the image."
+                  "description": "Data item [1][2] of the rotation matrix used in the fitting of the model to the image.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
                },
                "rot_matrix_1_3": {
                   "type": "number",
-                  "description": "Data item [1][3] of the rotation matrix used in the fitting of the model to the image."
+                  "description": "Data item [1][3] of the rotation matrix used in the fitting of the model to the image.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
                },
                "rot_matrix_2_1": {
                   "type": "number",
-                  "description": "Data item [2][1] of the rotation matrix used in the fitting of the model to the image."
+                  "description": "Data item [2][1] of the rotation matrix used in the fitting of the model to the image.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
                },
                "rot_matrix_2_2": {
                   "type": "number",
-                  "description": "Data item [2][2] of the rotation matrix used in the fitting of the model to the image."
+                  "description": "Data item [2][2] of the rotation matrix used in the fitting of the model to the image.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
                },
                "rot_matrix_2_3": {
                   "type": "number",
-                  "description": "Data item [2][3] of the rotation matrix used in the fitting of the model to the image."
+                  "description": "Data item [2][3] of the rotation matrix used in the fitting of the model to the image.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
                },
                "rot_matrix_3_1": {
                   "type": "number",
-                  "description": "Data item [3][1] of the rotation matrix used in the fitting of the model to the image."
+                  "description": "Data item [3][1] of the rotation matrix used in the fitting of the model to the image.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
                },
                "rot_matrix_3_2": {
                   "type": "number",
-                  "description": "Data item [3][2] of the rotation matrix used in the fitting of the model to the image."
+                  "description": "Data item [3][2] of the rotation matrix used in the fitting of the model to the image.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
                },
                "rot_matrix_3_3": {
                   "type": "number",
-                  "description": "Data item [3][3] of the rotation matrix used in the fitting of the model to the image."
+                  "description": "Data item [3][3] of the rotation matrix used in the fitting of the model to the image.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
                },
                "tr_vector_1": {
                   "type": "number",
-                  "description": "Data item [1] of the tranlation vector used in the fitting of the model to the image."
+                  "description": "Data item [1] of the tranlation vector used in the fitting of the model to the image.",
+                  "_attribute_groups": [
+                     {
+                        "id": "vector"
+                     }
+                  ]
                },
                "tr_vector_2": {
                   "type": "number",
-                  "description": "Data item [2] of the tranlation vector used in the fitting of the model to the image."
+                  "description": "Data item [2] of the tranlation vector used in the fitting of the model to the image.",
+                  "_attribute_groups": [
+                     {
+                        "id": "vector"
+                     }
+                  ]
                },
                "tr_vector_3": {
                   "type": "number",
-                  "description": "Data item [3] of the tranlation vector used in the fitting of the model to the image."
+                  "description": "Data item [3] of the tranlation vector used in the fitting of the model to the image.",
+                  "_attribute_groups": [
+                     {
+                        "id": "vector"
+                     }
+                  ]
                }
             },
             "required": [
                "structure_id",
                "cross_correlation_coefficient",
+               "id",
                "model_id",
-               "ordinal_id",
                "restraint_id"
             ],
             "additionalProperties": false
@@ -1140,6 +1317,13 @@
                "dataset_list_id": {
                   "$ref": "#ihm_dataset_list/id"
                },
+               "details": {
+                  "type": "string",
+                  "examples": [
+                     "The 2DEM restraint fits a given model to an 2DEM class average and\n        computes a score that quantifies the match. The computation proceeds\n        in three stages: generation of 3D model projections on a 2D grid, \n        alignment of the model projections and the 2DEM class average image, \n        and calculation of the best fitting score."
+                  ],
+                  "description": "Details of how the 2DEM restraint is applied in the modeling algorithm."
+               },
                "id": {
                   "type": "integer",
                   "description": "A unique identifier for the 2dem class average.",
@@ -1152,8 +1336,8 @@
                "image_segment_flag": {
                   "type": "string",
                   "enum": [
-                     "YES",
-                     "NO"
+                     "NO",
+                     "YES"
                   ],
                   "description": "A flag that indicates whether or not the 2DEM class average image is segmented i.e.,\n whether the whole image is used or only a portion of it is used (by masking \n or by other means) as restraint in the modeling."
                },
@@ -1174,7 +1358,7 @@
                   "description": "Pixel size width of the 2dem class average image.\n While fitting the model to the image, _ihm_2dem_class_average_restraint.pixel_size_width\n is used along with _ihm_2dem_class_average_restraint.pixel_size_height to scale the image."
                },
                "struct_assembly_id": {
-                  "$ref": "#ihm_struct_assembly/assembly_id"
+                  "$ref": "#ihm_struct_assembly/id"
                }
             },
             "required": [
@@ -1208,6 +1392,13 @@
                "dataset_list_id": {
                   "$ref": "#ihm_dataset_list/id"
                },
+               "details": {
+                  "type": "string",
+                  "examples": [
+                     "The Nup-84 models generated and the 3DEM maps are converted to 3D Gaussians\n        using Gaussian mixture models (GMMs). The GMMs are then compared to obtain\n        a 3D fit of the map and the model."
+                  ],
+                  "description": "Additional details regarding the model to map fitting."
+               },
                "fitting_method": {
                   "type": "string",
                   "examples": [
@@ -1218,6 +1409,22 @@
                   ],
                   "description": "Method used to fit the model to the 3DEM map."
                },
+               "fitting_method_citation_id": {
+                  "$ref": "#citation/id"
+               },
+               "id": {
+                  "type": "integer",
+                  "description": "A unique identifier for the 3DEM restraint description.",
+                  "_primary_key": true
+               },
+               "map_segment_flag": {
+                  "type": "string",
+                  "enum": [
+                     "NO",
+                     "YES"
+                  ],
+                  "description": "A flag that indicates whether or not the 3DEM map is segmented i.e.,\n whether the whole map is used or only a portion of it is used (by masking\n or by other means) as restraint in the modeling."
+               },
                "model_id": {
                   "$ref": "#ihm_model_list/model_id"
                },
@@ -1225,21 +1432,16 @@
                   "type": "integer",
                   "description": "In case of Gaussian mixture models, the number of gaussians\n is a parameter used to covert the 3DEM maps and models into\n GMMs. This captures the level of granularity used in\n representing the maps and/or models as 3D Gaussians."
                },
-               "ordinal_id": {
-                  "type": "integer",
-                  "description": "A unique identifier for the 3DEM restraint description.",
-                  "_primary_key": true
-               },
                "struct_assembly_id": {
-                  "$ref": "#ihm_struct_assembly/assembly_id"
+                  "$ref": "#ihm_struct_assembly/id"
                }
             },
             "required": [
                "structure_id",
                "cross_correlation_coefficient",
                "dataset_list_id",
+               "id",
                "model_id",
-               "ordinal_id",
                "struct_assembly_id"
             ],
             "additionalProperties": false
@@ -1257,25 +1459,51 @@
                   "_primary_key": true
                },
                "comp_id_1": {
-                  "$ref": "#entity_poly_seq/mon_id"
+                  "$ref": "#entity_poly_seq/mon_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_1"
+                     }
+                  ]
                },
                "comp_id_2": {
-                  "$ref": "#entity_poly_seq/mon_id"
+                  "$ref": "#entity_poly_seq/mon_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_2"
+                     }
+                  ]
                },
                "dataset_list_id": {
                   "$ref": "#ihm_dataset_list/id"
                },
                "entity_description_1": {
-                  "$ref": "#entity/pdbx_description"
+                  "type": "string",
+                  "description": "A text description of molecular entity 1. \n"
                },
                "entity_description_2": {
-                  "$ref": "#entity/pdbx_description"
+                  "type": "string",
+                  "description": "A text description of molecular entity 2. \n"
                },
                "entity_id_1": {
-                  "$ref": "#entity_poly_seq/entity_id"
+                  "$ref": "#entity_poly_seq/entity_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_1"
+                     }
+                  ]
                },
                "entity_id_2": {
-                  "$ref": "#entity_poly_seq/entity_id"
+                  "$ref": "#entity_poly_seq/entity_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_2"
+                     }
+                  ]
                },
                "group_id": {
                   "type": "integer",
@@ -1290,23 +1518,35 @@
                   "type": "string",
                   "enum": [
                      "BS3",
-                     "EDC",
-                     "DST",
-                     "BS2G",
-                     "sulfo-SMCC",
-                     "DSSO",
                      "Other",
                      "sulfo-SDA",
+                     "sulfo-SMCC",
+                     "BS2G",
+                     "DST",
+                     "DSSO",
+                     "EDC",
                      "DSS",
                      "EGS"
                   ],
                   "description": "The type of crosslinker used."
                },
                "seq_id_1": {
-                  "$ref": "#entity_poly_seq/num"
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_1"
+                     }
+                  ]
                },
                "seq_id_2": {
-                  "$ref": "#entity_poly_seq/num"
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_2"
+                     }
+                  ]
                }
             },
             "required": [
@@ -1343,16 +1583,30 @@
                   "$ref": "#struct_asym/id"
                },
                "atom_id_1": {
-                  "$ref": "#chem_comp_atom/atom_id"
+                  "type": "string",
+                  "description": "The atom identifier for the first monomer partner in the cross link.\n This data item is a pointer to _chem_comp_atom.atom_id in the \n CHEM_COMP_ATOM category."
                },
                "atom_id_2": {
-                  "$ref": "#chem_comp_atom/atom_id"
+                  "type": "string",
+                  "description": "The atom identifier for the second monomer partner in the cross link.\n This data item is a pointer to _chem_comp_atom.atom_id in the \n CHEM_COMP_ATOM category."
                },
                "comp_id_1": {
-                  "$ref": "#entity_poly_seq/mon_id"
+                  "$ref": "#entity_poly_seq/mon_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_1"
+                     }
+                  ]
                },
                "comp_id_2": {
-                  "$ref": "#entity_poly_seq/mon_id"
+                  "$ref": "#entity_poly_seq/mon_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_2"
+                     }
+                  ]
                },
                "conditional_crosslink_flag": {
                   "type": "string",
@@ -1367,10 +1621,22 @@
                   "description": "The distance threshold applied to this crosslink in the integrative modeling task."
                },
                "entity_id_1": {
-                  "$ref": "#entity_poly_seq/entity_id"
+                  "$ref": "#entity_poly_seq/entity_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_1"
+                     }
+                  ]
                },
                "entity_id_2": {
-                  "$ref": "#entity_poly_seq/entity_id"
+                  "$ref": "#entity_poly_seq/entity_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_2"
+                     }
+                  ]
                },
                "group_id": {
                   "$ref": "#ihm_cross_link_list/id"
@@ -1383,9 +1649,9 @@
                "model_granularity": {
                   "type": "string",
                   "enum": [
-                     "by-feature",
+                     "by-residue",
                      "by-atom",
-                     "by-residue"
+                     "by-feature"
                   ],
                   "description": "The coarse-graining information for the crosslink implementation."
                },
@@ -1398,17 +1664,29 @@
                "restraint_type": {
                   "type": "string",
                   "enum": [
-                     "harmonic",
+                     "lower bound",
                      "upper bound",
-                     "lower bound"
+                     "harmonic"
                   ],
                   "description": "The type of the cross link restraint applied."
                },
                "seq_id_1": {
-                  "$ref": "#entity_poly_seq/num"
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_1"
+                     }
+                  ]
                },
                "seq_id_2": {
-                  "$ref": "#entity_poly_seq/num"
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_2"
+                     }
+                  ]
                },
                "sigma_1": {
                   "type": "number",
@@ -1439,6 +1717,57 @@
          "minItems": 1,
          "uniqueItems": true
       },
+      "ihm_cross_link_result": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
+               "details": {
+                  "type": "string",
+                  "description": "This records holds any associated details of the results of the particular \n crosslink restraint in the integrative modeling task."
+               },
+               "distance_threshold": {
+                  "type": "number",
+                  "description": "The distance threshold applied to this crosslink in the integrative modeling task."
+               },
+               "ensemble_id": {
+                  "$ref": "#ihm_ensemble_info/ensemble_id"
+               },
+               "id": {
+                  "type": "integer",
+                  "description": "A unique identifier for the restraint/ensemble combination.",
+                  "_primary_key": true
+               },
+               "median_distance": {
+                  "type": "number",
+                  "description": "The median distance between the crosslinked residues in the sampled models."
+               },
+               "num_models": {
+                  "type": "integer",
+                  "description": "Number of models sampled in the integrative modeling task, for which\n the crosslinking distance is provided."
+               },
+               "restraint_id": {
+                  "$ref": "#ihm_cross_link_restraint/id"
+               }
+            },
+            "required": [
+               "structure_id",
+               "distance_threshold",
+               "ensemble_id",
+               "id",
+               "median_distance",
+               "num_models",
+               "restraint_id"
+            ],
+            "additionalProperties": false
+         },
+         "minItems": 1,
+         "uniqueItems": true
+      },
       "ihm_cross_link_result_parameters": {
          "type": "array",
          "items": {
@@ -1448,13 +1777,13 @@
                   "$ref": "#entry/id",
                   "_primary_key": true
                },
-               "model_id": {
-                  "$ref": "#ihm_model_list/model_id"
-               },
-               "ordinal_id": {
+               "id": {
                   "type": "integer",
                   "description": "A unique identifier for the restraint/model combination.",
                   "_primary_key": true
+               },
+               "model_id": {
+                  "$ref": "#ihm_model_list/model_id"
                },
                "psi": {
                   "type": "number",
@@ -1476,8 +1805,8 @@
             },
             "required": [
                "structure_id",
+               "id",
                "model_id",
-               "ordinal_id",
                "restraint_id"
             ],
             "additionalProperties": false
@@ -1526,24 +1855,64 @@
                   "$ref": "#entry/id",
                   "_primary_key": true
                },
+               "application": {
+                  "type": "string",
+                  "enum": [
+                     "validation",
+                     "other",
+                     "restraint",
+                     "representation",
+                     "filter",
+                     "sampling"
+                  ],
+                  "description": "The application / utilization of the dataset group in modeling."
+               },
+               "details": {
+                  "type": "string",
+                  "description": "Additional details regarding the dataset group."
+               },
+               "id": {
+                  "type": "integer",
+                  "description": "A unique identifier for the dataset group.",
+                  "_primary_key": true
+               },
+               "name": {
+                  "type": "string",
+                  "description": "A name for the dataset group."
+               }
+            },
+            "required": [
+               "structure_id",
+               "id",
+               "name"
+            ],
+            "additionalProperties": false
+         },
+         "minItems": 1,
+         "uniqueItems": true
+      },
+      "ihm_dataset_group_link": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
                "dataset_list_id": {
-                  "$ref": "#ihm_dataset_list/id"
+                  "$ref": "#ihm_dataset_list/id",
+                  "_primary_key": true
                },
                "group_id": {
-                  "type": "integer",
-                  "description": "An identifier for the dataset group."
-               },
-               "ordinal_id": {
-                  "type": "integer",
-                  "description": "A unique identifier for the entry.",
+                  "$ref": "#ihm_dataset_group/id",
                   "_primary_key": true
                }
             },
             "required": [
                "structure_id",
                "dataset_list_id",
-               "group_id",
-               "ordinal_id"
+               "group_id"
             ],
             "additionalProperties": false
          },
@@ -1562,34 +1931,34 @@
                "data_type": {
                   "type": "string",
                   "enum": [
-                     "Yeast two-hybrid screening data",
-                     "2DEM class average",
-                     "Mass Spectrometry data",
-                     "SAS data",
-                     "DNA footprinting data",
                      "Comparative model",
+                     "SAS data",
+                     "De Novo model",
                      "Hydroxyl radical footprinting data",
                      "3DEM volume",
-                     "CX-MS data",
-                     "De Novo model",
-                     "Integrative model",
-                     "Single molecule FRET data",
                      "NMR data",
-                     "Mutagenesis data",
-                     "Experimental model",
-                     "EM raw micrographs",
                      "Other",
-                     "EPR data",
                      "H/D exchange data",
-                     "Predicted contacts"
+                     "Mutagenesis data",
+                     "Integrative model",
+                     "CX-MS data",
+                     "2DEM class average",
+                     "Yeast two-hybrid screening data",
+                     "EM raw micrographs",
+                     "Predicted contacts",
+                     "Mass Spectrometry data",
+                     "Single molecule FRET data",
+                     "Experimental model",
+                     "EPR data",
+                     "DNA footprinting data"
                   ],
                   "description": "The type of data held in the dataset."
                },
                "database_hosted": {
                   "type": "string",
                   "enum": [
-                     "YES",
-                     "NO"
+                     "NO",
+                     "YES"
                   ],
                   "description": "A flag that indicates whether the dataset is archived in \n an IHM related database or elsewhere."
                },
@@ -1642,16 +2011,16 @@
                "db_name": {
                   "type": "string",
                   "enum": [
-                     "BioGRID",
-                     "MASSIVE",
-                     "EMPIAR",
-                     "EMDB",
-                     "PRIDE",
                      "BMRB",
+                     "MASSIVE",
+                     "Other",
+                     "EMPIAR",
+                     "PRIDE",
+                     "BioGRID",
                      "MODEL ARCHIVE",
                      "SASBDB",
-                     "Other",
-                     "PDB"
+                     "PDB",
+                     "EMDB"
                   ],
                   "description": "The name of the database containing the dataset entry."
                },
@@ -1696,9 +2065,21 @@
                "dataset_list_id": {
                   "$ref": "#ihm_dataset_list/id"
                },
+               "distance_lower_limit": {
+                  "type": "number",
+                  "description": "The lower limit to the distance threshold applied to this distance restraint\n in the integrative modeling task."
+               },
+               "distance_lower_limit_esd": {
+                  "type": "number",
+                  "description": "The estimated standard deviation of the lower limit distance threshold applied to this distance restraint\n in the integrative modeling task."
+               },
                "distance_upper_limit": {
                   "type": "number",
                   "description": "The upper limit to the distance threshold applied to this distance restraint\n in the integrative modeling task."
+               },
+               "distance_upper_limit_esd": {
+                  "type": "number",
+                  "description": "The estimated standard deviation of the upper limit distance threshold applied to this distance restraint\n in the integrative modeling task."
                },
                "feature_id_1": {
                   "$ref": "#ihm_feature_list/feature_id"
@@ -1723,6 +2104,12 @@
                   "description": "A unique identifier for the derived distance restraint.",
                   "_primary_key": true
                },
+               "probability": {
+                  "type": "number",
+                  "minimum": 0.0,
+                  "maximum": 1.0,
+                  "description": "The real number that indicates the probability that the distance restraint \n is correct. This number should fall between 0.0 and 1.0."
+               },
                "random_exclusion_fraction": {
                   "type": "number",
                   "description": "The fraction of randomly excluded distance restraints during modeling. \n In HADDOCK, this is used along with ambiguous interface restraints (AIRs) \n to account for uncertainties in AIRs."
@@ -1730,9 +2117,9 @@
                "restraint_type": {
                   "type": "string",
                   "enum": [
+                     "lower bound",
                      "upper bound",
-                     "lower and upper bound",
-                     "lower bound"
+                     "lower and upper bound"
                   ],
                   "description": "The type of distance restraint applied."
                }
@@ -1762,8 +2149,8 @@
                "ensemble_clustering_feature": {
                   "type": "string",
                   "enum": [
-                     "other",
                      "dRMSD",
+                     "other",
                      "RMSD"
                   ],
                   "description": "The parameter/feature used for clustering the models, if applicable."
@@ -1771,9 +2158,9 @@
                "ensemble_clustering_method": {
                   "type": "string",
                   "enum": [
+                     "Hierarchical",
                      "Partitioning (k-means)",
-                     "Other",
-                     "Hierarchical"
+                     "Other"
                   ],
                   "description": "The clustering method used to obtain the ensemble, if applicable."
                },
@@ -1802,7 +2189,7 @@
                   "description": "The precision of each cluster or ensemble is calculated as dRMSD, which\n is the average C-alpha distance root mean square deviation (dRMSD) \n between the individual models in the cluster and the cluster centroid.\n The cluster centroid is defined as the model with the minimal sum of\n dRMSDs to the other models in the cluster or ensemble."
                },
                "model_group_id": {
-                  "$ref": "#ihm_model_list/model_group_id"
+                  "$ref": "#ihm_model_group/id"
                },
                "num_ensemble_models": {
                   "type": "integer",
@@ -1826,6 +2213,84 @@
          "minItems": 1,
          "uniqueItems": true
       },
+      "ihm_entity_poly_segment": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
+               "comp_id_begin": {
+                  "$ref": "#entity_poly_seq/mon_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_begin"
+                     }
+                  ]
+               },
+               "comp_id_end": {
+                  "$ref": "#entity_poly_seq/mon_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_end"
+                     }
+                  ]
+               },
+               "entity_id": {
+                  "$ref": "#entity_poly_seq/entity_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_begin"
+                     },
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_end"
+                     }
+                  ]
+               },
+               "id": {
+                  "type": "integer",
+                  "description": "A unique identifier for the polymeric segment.",
+                  "_primary_key": true
+               },
+               "seq_id_begin": {
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_begin"
+                     }
+                  ]
+               },
+               "seq_id_end": {
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_end"
+                     }
+                  ]
+               }
+            },
+            "required": [
+               "structure_id",
+               "comp_id_begin",
+               "comp_id_end",
+               "entity_id",
+               "id",
+               "seq_id_begin",
+               "seq_id_end"
+            ],
+            "additionalProperties": false
+         },
+         "minItems": 1,
+         "uniqueItems": true
+      },
       "ihm_external_files": {
          "type": "array",
          "items": {
@@ -1838,11 +2303,11 @@
                "content_type": {
                   "type": "string",
                   "enum": [
-                     "Modeling or post-processing output",
-                     "Input data or restraints",
-                     "Modeling workflow or script",
                      "Other",
-                     "Visualization script"
+                     "Modeling workflow or script",
+                     "Modeling or post-processing output",
+                     "Visualization script",
+                     "Input data or restraints"
                   ],
                   "description": "The type of content in the file."
                },
@@ -1858,24 +2323,24 @@
                "file_format": {
                   "type": "string",
                   "enum": [
+                     "DCD",
+                     "Other",
+                     "CIF",
+                     "A3M",
                      "PDF",
-                     "TIF",
+                     "HDF5",
+                     "FASTA",
+                     "PIR/NBRF",
+                     "A2M",
                      "MRC",
                      "PGM",
-                     "PIR/NBRF",
-                     "CCP4",
                      "CLUSTALW",
-                     "HDF5",
-                     "PNG",
-                     "A2M",
-                     "DCD",
-                     "TXT",
                      "PDB",
+                     "TXT",
+                     "PNG",
+                     "CCP4",
                      "GIF",
-                     "CIF",
-                     "Other",
-                     "A3M",
-                     "FASTA",
+                     "TIF",
                      "JPG"
                   ],
                   "description": "Format of the external file."
@@ -1952,18 +2417,18 @@
                "reference_type": {
                   "type": "string",
                   "enum": [
-                     "DOI",
-                     "Supplementary Files"
+                     "Supplementary Files",
+                     "DOI"
                   ],
                   "description": "The type of external reference. \n Currently, only Digital Object Identifiers (DOIs) and supplementary files \n stored locally are supported."
                },
                "refers_to": {
                   "type": "string",
                   "enum": [
-                     "File",
-                     "Archive",
                      "Publication",
-                     "Other"
+                     "Archive",
+                     "Other",
+                     "File"
                   ],
                   "description": "The type of object that the external reference points to, usually\n a single file or an archive."
                }
@@ -1990,7 +2455,14 @@
                   "_primary_key": true
                },
                "entity_type": {
-                  "$ref": "#entity/type"
+                  "type": "string",
+                  "enum": [
+                     "non-polymer",
+                     "water",
+                     "other",
+                     "polymer"
+                  ],
+                  "description": "The type of entity."
                },
                "feature_id": {
                   "type": "integer",
@@ -2001,9 +2473,10 @@
                   "type": "string",
                   "enum": [
                      "residue",
-                     "residue range",
+                     "ligand",
                      "atom",
-                     "ligand"
+                     "residue range",
+                     "pseudo site"
                   ],
                   "description": "The type of feature."
                }
@@ -2013,6 +2486,338 @@
                "entity_type",
                "feature_id",
                "feature_type"
+            ],
+            "additionalProperties": false
+         },
+         "minItems": 1,
+         "uniqueItems": true
+      },
+      "ihm_gaussian_obj_ensemble": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
+               "asym_id": {
+                  "$ref": "#struct_asym/id"
+               },
+               "covariance_matrix_1_1": {
+                  "type": "number",
+                  "description": "Data item [1][1] of the covariance matrix representing the Gaussian object.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
+               },
+               "covariance_matrix_1_2": {
+                  "type": "number",
+                  "description": "Data item [1][2] of the covariance matrix representing the Gaussian object.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
+               },
+               "covariance_matrix_1_3": {
+                  "type": "number",
+                  "description": "Data item [1][3] of the covariance matrix representing the Gaussian object.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
+               },
+               "covariance_matrix_2_1": {
+                  "type": "number",
+                  "description": "Data item [2][1] of the covariance matrix representing the Gaussian object.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
+               },
+               "covariance_matrix_2_2": {
+                  "type": "number",
+                  "description": "Data item [2][2] of the covariance matrix representing the Gaussian object.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
+               },
+               "covariance_matrix_2_3": {
+                  "type": "number",
+                  "description": "Data item [2][3] of the covariance matrix representing the Gaussian object.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
+               },
+               "covariance_matrix_3_1": {
+                  "type": "number",
+                  "description": "Data item [3][1] of the covariance matrix representing the Gaussian object.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
+               },
+               "covariance_matrix_3_2": {
+                  "type": "number",
+                  "description": "Data item [3][2] of the covariance matrix representing the Gaussian object.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
+               },
+               "covariance_matrix_3_3": {
+                  "type": "number",
+                  "description": "Data item [3][3] of the covariance matrix representing the Gaussian object.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
+               },
+               "ensemble_id": {
+                  "$ref": "#ihm_ensemble_info/ensemble_id"
+               },
+               "entity_id": {
+                  "$ref": "#entity/id"
+               },
+               "id": {
+                  "type": "integer",
+                  "description": "A unique identifier for this gaussian object.",
+                  "_primary_key": true
+               },
+               "mean_Cartn_x": {
+                  "type": "number",
+                  "description": "The mean Cartesian X component corresponding to this gaussian object."
+               },
+               "mean_Cartn_y": {
+                  "type": "number",
+                  "description": "The mean Cartesian Y component corresponding to this gaussian object."
+               },
+               "mean_Cartn_z": {
+                  "type": "number",
+                  "description": "The mean Cartesian Z component corresponding to this gaussian object."
+               },
+               "seq_id_begin": {
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_begin"
+                     }
+                  ]
+               },
+               "seq_id_end": {
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_end"
+                     }
+                  ]
+               },
+               "weight": {
+                  "type": "number",
+                  "description": "The weight of the gaussian object."
+               }
+            },
+            "required": [
+               "structure_id",
+               "asym_id",
+               "covariance_matrix_1_1",
+               "covariance_matrix_1_2",
+               "covariance_matrix_1_3",
+               "covariance_matrix_2_1",
+               "covariance_matrix_2_2",
+               "covariance_matrix_2_3",
+               "covariance_matrix_3_1",
+               "covariance_matrix_3_2",
+               "covariance_matrix_3_3",
+               "ensemble_id",
+               "entity_id",
+               "id",
+               "mean_Cartn_x",
+               "mean_Cartn_y",
+               "mean_Cartn_z",
+               "seq_id_begin",
+               "seq_id_end",
+               "weight"
+            ],
+            "additionalProperties": false
+         },
+         "minItems": 1,
+         "uniqueItems": true
+      },
+      "ihm_gaussian_obj_site": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
+               "asym_id": {
+                  "$ref": "#struct_asym/id"
+               },
+               "covariance_matrix_1_1": {
+                  "type": "number",
+                  "description": "Data item [1][1] of the covariance matrix representing the Gaussian object.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
+               },
+               "covariance_matrix_1_2": {
+                  "type": "number",
+                  "description": "Data item [1][2] of the covariance matrix representing the Gaussian object.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
+               },
+               "covariance_matrix_1_3": {
+                  "type": "number",
+                  "description": "Data item [1][3] of the covariance matrix representing the Gaussian object.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
+               },
+               "covariance_matrix_2_1": {
+                  "type": "number",
+                  "description": "Data item [2][1] of the covariance matrix representing the Gaussian object.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
+               },
+               "covariance_matrix_2_2": {
+                  "type": "number",
+                  "description": "Data item [2][2] of the covariance matrix representing the Gaussian object.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
+               },
+               "covariance_matrix_2_3": {
+                  "type": "number",
+                  "description": "Data item [2][3] of the covariance matrix representing the Gaussian object.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
+               },
+               "covariance_matrix_3_1": {
+                  "type": "number",
+                  "description": "Data item [3][1] of the covariance matrix representing the Gaussian object.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
+               },
+               "covariance_matrix_3_2": {
+                  "type": "number",
+                  "description": "Data item [3][2] of the covariance matrix representing the Gaussian object.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
+               },
+               "covariance_matrix_3_3": {
+                  "type": "number",
+                  "description": "Data item [3][3] of the covariance matrix representing the Gaussian object.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
+               },
+               "entity_id": {
+                  "$ref": "#entity/id"
+               },
+               "id": {
+                  "type": "integer",
+                  "description": "A unique identifier for this gaussian object in the model.",
+                  "_primary_key": true
+               },
+               "mean_Cartn_x": {
+                  "type": "number",
+                  "description": "The mean Cartesian X component corresponding to this gaussian object."
+               },
+               "mean_Cartn_y": {
+                  "type": "number",
+                  "description": "The mean Cartesian Y component corresponding to this gaussian object."
+               },
+               "mean_Cartn_z": {
+                  "type": "number",
+                  "description": "The mean Cartesian Z component corresponding to this gaussian object."
+               },
+               "model_id": {
+                  "$ref": "#ihm_model_list/model_id"
+               },
+               "seq_id_begin": {
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_begin"
+                     }
+                  ]
+               },
+               "seq_id_end": {
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_end"
+                     }
+                  ]
+               },
+               "weight": {
+                  "type": "number",
+                  "description": "The weight of the gaussian object."
+               }
+            },
+            "required": [
+               "structure_id",
+               "asym_id",
+               "covariance_matrix_1_1",
+               "covariance_matrix_1_2",
+               "covariance_matrix_1_3",
+               "covariance_matrix_2_1",
+               "covariance_matrix_2_2",
+               "covariance_matrix_2_3",
+               "covariance_matrix_3_1",
+               "covariance_matrix_3_2",
+               "covariance_matrix_3_3",
+               "entity_id",
+               "id",
+               "mean_Cartn_x",
+               "mean_Cartn_y",
+               "mean_Cartn_z",
+               "model_id",
+               "seq_id_begin",
+               "seq_id_end",
+               "weight"
             ],
             "additionalProperties": false
          },
@@ -2031,15 +2836,18 @@
                "axis_type": {
                   "type": "string",
                   "enum": [
-                     "y-axis",
+                     "z-axis",
                      "x-axis",
-                     "z-axis"
+                     "y-axis"
                   ],
                   "description": "The type of axis."
                },
                "object_id": {
                   "$ref": "#ihm_geometric_object_list/object_id",
                   "_primary_key": true
+               },
+               "transformation_id": {
+                  "$ref": "#ihm_geometric_object_transformation/id"
                }
             },
             "required": [
@@ -2100,13 +2908,30 @@
                   "$ref": "#entry/id",
                   "_primary_key": true
                },
+               "dataset_list_id": {
+                  "$ref": "#ihm_dataset_list/id"
+               },
                "distance_lower_limit": {
                   "type": "number",
                   "description": "The lower limit to the distance threshold, if applicable."
                },
+               "distance_lower_limit_esd": {
+                  "type": "number",
+                  "description": "The estimated standard deviation of the lower limit distance threshold, if applicable."
+               },
+               "distance_probability": {
+                  "type": "number",
+                  "minimum": 0.0,
+                  "maximum": 1.0,
+                  "description": "The real number that indicates the probability that the distance restraint\n is correct. This number should fall between 0.0 and 1.0."
+               },
                "distance_upper_limit": {
                   "type": "number",
                   "description": "The upper limit to the distance threshold, if applicable."
+               },
+               "distance_upper_limit_esd": {
+                  "type": "number",
+                  "description": "The estimated standard deviation of the upper limit distance threshold, if applicable."
                },
                "feature_id": {
                   "$ref": "#ihm_feature_list/feature_id"
@@ -2131,26 +2956,30 @@
                "object_characteristic": {
                   "type": "string",
                   "enum": [
-                     "other",
-                     "plane",
-                     "outer surface",
-                     "inner surface",
                      "center",
-                     "axis"
+                     "other",
+                     "inner surface",
+                     "plane",
+                     "axis",
+                     "outer surface"
                   ],
                   "description": "The characteristic of the geometric object used in the restraint."
                },
                "object_id": {
                   "$ref": "#ihm_geometric_object_list/object_id"
                },
+               "other_details": {
+                  "type": "string",
+                  "description": "Additional details about the geometric object distance restraints, \n especially if _ihm_geometric_object_distance_restraint.restraint_type or\n _ihm_geometric_object_distance_restraint.object_characteristic is \"other\"."
+               },
                "restraint_type": {
                   "type": "string",
                   "enum": [
-                     "other",
                      "upper bound",
-                     "lower and upper bound",
                      "harmonic",
-                     "lower bound"
+                     "other",
+                     "lower bound",
+                     "lower and upper bound"
                   ],
                   "description": "The type of restraint applied."
                }
@@ -2183,9 +3012,9 @@
                "section": {
                   "type": "string",
                   "enum": [
-                     "other",
+                     "outer half",
                      "inner half",
-                     "outer half"
+                     "other"
                   ],
                   "description": "The section of the torus representing the half-torus."
                },
@@ -2214,6 +3043,13 @@
                   "$ref": "#entry/id",
                   "_primary_key": true
                },
+               "object_description": {
+                  "type": "string",
+                  "examples": [
+                     "Half-torus representing the nuclear membrane"
+                  ],
+                  "description": "Brief description of the geometric object."
+               },
                "object_id": {
                   "type": "integer",
                   "description": "A unique identifier for the geometric object.",
@@ -2230,13 +3066,17 @@
                   "type": "string",
                   "enum": [
                      "other",
-                     "torus",
-                     "plane",
-                     "half-torus",
                      "sphere",
-                     "axis"
+                     "plane",
+                     "axis",
+                     "torus",
+                     "half-torus"
                   ],
                   "description": "The type of geomtric object."
+               },
+               "other_details": {
+                  "type": "string",
+                  "description": "Additional details about the geometric object, especially if\n _ihm_geometric_object_list.object_type is \"other\"."
                }
             },
             "required": [
@@ -2265,17 +3105,55 @@
                "plane_type": {
                   "type": "string",
                   "enum": [
-                     "xy-plane",
                      "yz-plane",
-                     "xz-plane"
+                     "xz-plane",
+                     "xy-plane"
                   ],
                   "description": "The type of plane."
+               },
+               "transformation_id": {
+                  "$ref": "#ihm_geometric_object_transformation/id"
                }
             },
             "required": [
                "structure_id",
                "object_id",
                "plane_type"
+            ],
+            "additionalProperties": false
+         },
+         "minItems": 1,
+         "uniqueItems": true
+      },
+      "ihm_geometric_object_sphere": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
+               "center_id": {
+                  "$ref": "#ihm_geometric_object_center/id"
+               },
+               "object_id": {
+                  "$ref": "#ihm_geometric_object_list/object_id",
+                  "_primary_key": true
+               },
+               "radius_r": {
+                  "type": "number",
+                  "description": "Radius \"r\" of the sphere."
+               },
+               "transformation_id": {
+                  "$ref": "#ihm_geometric_object_transformation/id"
+               }
+            },
+            "required": [
+               "structure_id",
+               "center_id",
+               "object_id",
+               "radius_r"
             ],
             "additionalProperties": false
          },
@@ -2338,56 +3216,250 @@
                },
                "rot_matrix_1_1": {
                   "type": "number",
-                  "description": "Data item [1][1] of the rotation matrix used in the transformation."
+                  "description": "Data item [1][1] of the rotation matrix used in the transformation.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
                },
                "rot_matrix_1_2": {
                   "type": "number",
-                  "description": "Data item [1][2] of the rotation matrix used in the transformation."
+                  "description": "Data item [1][2] of the rotation matrix used in the transformation.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
                },
                "rot_matrix_1_3": {
                   "type": "number",
-                  "description": "Data item [1][3] of the rotation matrix used in the transformation."
+                  "description": "Data item [1][3] of the rotation matrix used in the transformation.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
                },
                "rot_matrix_2_1": {
                   "type": "number",
-                  "description": "Data item [2][1] of the rotation matrix used in the transformation."
+                  "description": "Data item [2][1] of the rotation matrix used in the transformation.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
                },
                "rot_matrix_2_2": {
                   "type": "number",
-                  "description": "Data item [2][2] of the rotation matrix used in the transformation."
+                  "description": "Data item [2][2] of the rotation matrix used in the transformation.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
                },
                "rot_matrix_2_3": {
                   "type": "number",
-                  "description": "Data item [2][3] of the rotation matrix used in the transformation."
+                  "description": "Data item [2][3] of the rotation matrix used in the transformation.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
                },
                "rot_matrix_3_1": {
                   "type": "number",
-                  "description": "Data item [3][1] of the rotation matrix used in the transformation."
+                  "description": "Data item [3][1] of the rotation matrix used in the transformation.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
                },
                "rot_matrix_3_2": {
                   "type": "number",
-                  "description": "Data item [3][2] of the rotation matrix used in the transformation."
+                  "description": "Data item [3][2] of the rotation matrix used in the transformation.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
                },
                "rot_matrix_3_3": {
                   "type": "number",
-                  "description": "Data item [3][3] of the rotation matrix used in the transformation."
+                  "description": "Data item [3][3] of the rotation matrix used in the transformation.",
+                  "_attribute_groups": [
+                     {
+                        "id": "matrix"
+                     }
+                  ]
                },
                "tr_vector_1": {
                   "type": "number",
-                  "description": "Data item [1] of the translation vector used in the transformation."
+                  "description": "Data item [1] of the translation vector used in the transformation.",
+                  "_attribute_groups": [
+                     {
+                        "id": "vector"
+                     }
+                  ]
                },
                "tr_vector_2": {
                   "type": "number",
-                  "description": "Data item [2] of the translation vector used in the transformation."
+                  "description": "Data item [2] of the translation vector used in the transformation.",
+                  "_attribute_groups": [
+                     {
+                        "id": "vector"
+                     }
+                  ]
                },
                "tr_vector_3": {
                   "type": "number",
-                  "description": "Data item [3] of the translation vector used in the transformation."
+                  "description": "Data item [3] of the translation vector used in the transformation.",
+                  "_attribute_groups": [
+                     {
+                        "id": "vector"
+                     }
+                  ]
                }
             },
             "required": [
                "structure_id",
                "id"
+            ],
+            "additionalProperties": false
+         },
+         "minItems": 1,
+         "uniqueItems": true
+      },
+      "ihm_hydroxyl_radical_fp_restraint": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
+               "asym_id": {
+                  "$ref": "#struct_asym/id"
+               },
+               "comp_id": {
+                  "$ref": "#entity_poly_seq/mon_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label"
+                     }
+                  ]
+               },
+               "dataset_list_id": {
+                  "$ref": "#ihm_dataset_list/id"
+               },
+               "entity_description": {
+                  "type": "string",
+                  "description": "A text description of the molecular entity. \n"
+               },
+               "entity_id": {
+                  "$ref": "#entity_poly_seq/entity_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label"
+                     }
+                  ]
+               },
+               "fp_rate": {
+                  "type": "number",
+                  "description": "The footprinting rate."
+               },
+               "fp_rate_error": {
+                  "type": "number",
+                  "description": "The footprinting rate error."
+               },
+               "group_id": {
+                  "type": "integer",
+                  "description": "An identifier to group the hydroxyl radical footprinting restraints."
+               },
+               "id": {
+                  "type": "integer",
+                  "description": "A unique identifier for the hydroxyl radical footprinting restraint.",
+                  "_primary_key": true
+               },
+               "log_pf": {
+                  "type": "number",
+                  "description": "Log (base 10) protection factor."
+               },
+               "log_pf_error": {
+                  "type": "number",
+                  "description": "Error of Log (base 10) protection factor."
+               },
+               "predicted_sasa": {
+                  "type": "number",
+                  "description": "The predicted solvent accessible surface area."
+               },
+               "seq_id": {
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label"
+                     }
+                  ]
+               },
+               "software_id": {
+                  "$ref": "#software/pdbx_ordinal"
+               }
+            },
+            "required": [
+               "structure_id",
+               "asym_id",
+               "comp_id",
+               "dataset_list_id",
+               "entity_id",
+               "id",
+               "predicted_sasa",
+               "seq_id"
+            ],
+            "additionalProperties": false
+         },
+         "minItems": 1,
+         "uniqueItems": true
+      },
+      "ihm_interface_residue_feature": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
+               "binding_partner_asym_id": {
+                  "$ref": "#struct_asym/id"
+               },
+               "binding_partner_entity_id": {
+                  "$ref": "#entity/id"
+               },
+               "dataset_list_id": {
+                  "$ref": "#ihm_dataset_list/id"
+               },
+               "details": {
+                  "type": "string",
+                  "description": "Additional details regarding the interface residue."
+               },
+               "feature_id": {
+                  "$ref": "#ihm_feature_list/feature_id"
+               },
+               "ordinal_id": {
+                  "type": "integer",
+                  "description": "A unique identifier for the category.",
+                  "_primary_key": true
+               }
+            },
+            "required": [
+               "structure_id",
+               "binding_partner_entity_id",
+               "dataset_list_id",
+               "feature_id",
+               "ordinal_id"
             ],
             "additionalProperties": false
          },
@@ -2412,6 +3484,9 @@
                "entity_id": {
                   "$ref": "#entity/id"
                },
+               "entity_poly_segment_id": {
+                  "$ref": "#ihm_entity_poly_segment/id"
+               },
                "file_id": {
                   "$ref": "#ihm_external_files/id"
                },
@@ -2419,12 +3494,6 @@
                   "type": "integer",
                   "description": "A unique identifier.",
                   "_primary_key": true
-               },
-               "seq_id_begin": {
-                  "$ref": "#entity_poly_seq/num"
-               },
-               "seq_id_end": {
-                  "$ref": "#entity_poly_seq/num"
                }
             },
             "required": [
@@ -2432,10 +3501,82 @@
                "asym_id",
                "ensemble_id",
                "entity_id",
+               "entity_poly_segment_id",
                "file_id",
+               "id"
+            ],
+            "additionalProperties": false
+         },
+         "minItems": 1,
+         "uniqueItems": true
+      },
+      "ihm_model_group": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
+               "details": {
+                  "type": "string",
+                  "description": "Additional details about the collection of models."
+               },
+               "id": {
+                  "type": "integer",
+                  "description": "A unique identifier for a collection or group of structural models. \n This data item can be used to group models into structural clusters\n or using other criteria based on experimental data or other\n relationships such as those belonging to the same state or time stamp.\n An ensemble of models and its representative can either be grouped together\n or can be separate groups in the ihm_model_group table. The choice between\n the two options should be decided based on how the modeling was carried out\n and how the representative was chosen. If the representative is a member of\n the ensemble (i.e., best scoring model), then it is recommended that the\n representative and the ensemble belong to the same model group. If the\n representative is calculated from the ensemble (i.e., centroid), then it is\n recommended that the representative be separated into a different group.",
+                  "_primary_key": true
+               },
+               "name": {
+                  "type": "string",
+                  "examples": [
+                     "cluster1",
+                     "cluster2",
+                     "ensemble1",
+                     "ensemble2",
+                     "open state",
+                     "closed state",
+                     "bound state",
+                     "unbound state",
+                     "bound state ensemble 1",
+                     "unbound state ensemble 2"
+                  ],
+                  "description": "A name for the collection of models."
+               }
+            },
+            "required": [
+               "structure_id",
                "id",
-               "seq_id_begin",
-               "seq_id_end"
+               "name"
+            ],
+            "additionalProperties": false
+         },
+         "minItems": 1,
+         "uniqueItems": true
+      },
+      "ihm_model_group_link": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
+               "group_id": {
+                  "$ref": "#ihm_model_group/id",
+                  "_primary_key": true
+               },
+               "model_id": {
+                  "$ref": "#ihm_model_list/model_id",
+                  "_primary_key": true
+               }
+            },
+            "required": [
+               "structure_id",
+               "group_id",
+               "model_id"
             ],
             "additionalProperties": false
          },
@@ -2452,31 +3593,12 @@
                   "_primary_key": true
                },
                "assembly_id": {
-                  "$ref": "#ihm_struct_assembly/assembly_id"
-               },
-               "model_group_id": {
-                  "type": "integer",
-                  "description": "An identifier to group structural models into collections or sets.\n This data item can be used to group models into structural clusters\n or using other criteria based on experimental data or other\n relationships such as those belonging to the same state or time stamp.\n An ensemble of models and its representative can either be grouped together \n or can be separate groups in the ihm_model_list table. The choice between \n the two options should be decided based on how the modeling was carried out \n and how the representative was chosen. If the representative is a member of \n the ensemble (i.e., best scoring model), then it is recommended that the \n representative and the ensemble belong to the same model group. If the \n representative is calculated from the ensemble (i.e., centroid), then it is \n recommended that the representative be separated into a different group. \n If the models do not need to be grouped into collections, then the\n _ihm_model_list.model_group_id is the same as _ihm_model_list.model_id."
-               },
-               "model_group_name": {
-                  "type": "string",
-                  "examples": [
-                     "cluster1",
-                     "cluster2",
-                     "ensemble1",
-                     "ensemble2",
-                     "open state",
-                     "closed state",
-                     "bound state",
-                     "unbound state",
-                     "bound state ensemble 1",
-                     "unbound state ensemble 2"
-                  ],
-                  "description": "A decsriptive name for the model group."
+                  "$ref": "#ihm_struct_assembly/id"
                },
                "model_id": {
                   "type": "integer",
-                  "description": "A unique identifier for the structural model being deposited."
+                  "description": "A unique identifier for the structural model being deposited.",
+                  "_primary_key": true
                },
                "model_name": {
                   "type": "string",
@@ -2487,24 +3609,17 @@
                   ],
                   "description": "A decsriptive name for the model."
                },
-               "ordinal_id": {
-                  "type": "integer",
-                  "description": "A unique identifier for the model / model group combination.",
-                  "_primary_key": true
-               },
                "protocol_id": {
-                  "$ref": "#ihm_modeling_protocol/protocol_id"
+                  "$ref": "#ihm_modeling_protocol/id"
                },
                "representation_id": {
-                  "$ref": "#ihm_model_representation/representation_id"
+                  "$ref": "#ihm_model_representation/id"
                }
             },
             "required": [
                "structure_id",
                "assembly_id",
-               "model_group_id",
                "model_id",
-               "ordinal_id",
                "protocol_id",
                "representation_id"
             ],
@@ -2522,30 +3637,72 @@
                   "$ref": "#entry/id",
                   "_primary_key": true
                },
+               "details": {
+                  "type": "string",
+                  "description": "Additional details about the model representation."
+               },
+               "id": {
+                  "type": "integer",
+                  "description": "A unique identifier for the model representation.",
+                  "_primary_key": true
+               },
+               "name": {
+                  "type": "string",
+                  "description": "Name/brief description for the model representation."
+               }
+            },
+            "required": [
+               "structure_id",
+               "id",
+               "name"
+            ],
+            "additionalProperties": false
+         },
+         "minItems": 1,
+         "uniqueItems": true
+      },
+      "ihm_model_representation_details": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
                "entity_asym_id": {
                   "$ref": "#struct_asym/id"
                },
                "entity_description": {
-                  "$ref": "#entity/pdbx_description"
+                  "type": "string",
+                  "description": "A text description of the molecular entity"
                },
                "entity_id": {
                   "$ref": "#entity/id"
                },
+               "entity_poly_segment_id": {
+                  "$ref": "#ihm_entity_poly_segment/id"
+               },
+               "id": {
+                  "type": "integer",
+                  "description": "A unique identifier for the category.",
+                  "_primary_key": true
+               },
                "model_granularity": {
                   "type": "string",
                   "enum": [
-                     "by-feature",
-                     "by-atom",
+                     "multi-residue",
                      "by-residue",
-                     "multi-residue"
+                     "by-feature",
+                     "by-atom"
                   ],
                   "description": "The level of detail at which model primitive objects are applied to the structure."
                },
                "model_mode": {
                   "type": "string",
                   "enum": [
-                     "flexible",
-                     "rigid"
+                     "rigid",
+                     "flexible"
                   ],
                   "description": "The manner in which the segment is modeled."
                },
@@ -2556,31 +3713,15 @@
                "model_object_primitive": {
                   "type": "string",
                   "enum": [
-                     "atomistic",
                      "sphere",
                      "gaussian",
-                     "other"
+                     "other",
+                     "atomistic"
                   ],
                   "description": "The primitive object used to model this segment."
                },
-               "ordinal_id": {
-                  "type": "integer",
-                  "description": "A unique identifier for the model details record.",
-                  "_primary_key": true
-               },
                "representation_id": {
-                  "type": "integer",
-                  "description": "An identifier that collects or groups together a set of representations.\n This data item may be used to identify a complete model representation."
-               },
-               "segment_id": {
-                  "type": "integer",
-                  "description": "An identifier for the residue range segment within the structural model."
-               },
-               "seq_id_begin": {
-                  "$ref": "#entity_poly_seq/num"
-               },
-               "seq_id_end": {
-                  "$ref": "#entity_poly_seq/num"
+                  "$ref": "#ihm_model_representation/id"
                },
                "starting_model_id": {
                   "$ref": "#ihm_starting_model_details/starting_model_id"
@@ -2590,9 +3731,9 @@
                "structure_id",
                "entity_asym_id",
                "entity_id",
-               "ordinal_id",
-               "representation_id",
-               "segment_id"
+               "entity_poly_segment_id",
+               "id",
+               "representation_id"
             ],
             "additionalProperties": false
          },
@@ -2614,7 +3755,7 @@
                   "_primary_key": true
                },
                "model_group_id": {
-                  "$ref": "#ihm_model_list/model_group_id"
+                  "$ref": "#ihm_model_group/id"
                },
                "model_id": {
                   "$ref": "#ihm_model_list/model_id"
@@ -2622,14 +3763,14 @@
                "selection_criteria": {
                   "type": "string",
                   "enum": [
-                     "centroid",
-                     "target function",
-                     "medoid",
-                     "closest to the average",
                      "fewest violations",
-                     "lowest energy",
                      "minimized average structure",
+                     "closest to the average",
+                     "medoid",
+                     "target function",
+                     "lowest energy",
                      "best scoring model",
+                     "centroid",
                      "other selction criteria"
                   ],
                   "description": "The selection criteria based on which the representative is chosen."
@@ -2661,15 +3802,15 @@
                   "description": "An identifier for the post modeling analysis. This data item accounts for\n multiple post-modeling analyses that can be carried out."
                },
                "dataset_group_id": {
-                  "$ref": "#ihm_dataset_group/group_id"
+                  "$ref": "#ihm_dataset_group/id"
                },
                "feature": {
                   "type": "string",
                   "enum": [
+                     "RMSD",
                      "other",
                      "none",
                      "dRMSD",
-                     "RMSD",
                      "energy/score"
                   ],
                   "description": "The parameter/feature used in the post modeling analysis."
@@ -2696,7 +3837,10 @@
                   "description": "The number of models the the end of the post processing step."
                },
                "protocol_id": {
-                  "$ref": "#ihm_modeling_protocol/protocol_id"
+                  "$ref": "#ihm_modeling_protocol/id"
+               },
+               "script_file_id": {
+                  "$ref": "#ihm_external_files/id"
                },
                "software_id": {
                   "$ref": "#software/pdbx_ordinal"
@@ -2706,17 +3850,17 @@
                   "description": "In a multi-step process, this identifier denotes the particular\n step in the post modeling analysis."
                },
                "struct_assembly_id": {
-                  "$ref": "#ihm_struct_assembly/assembly_id"
+                  "$ref": "#ihm_struct_assembly/id"
                },
                "type": {
                   "type": "string",
                   "enum": [
-                     "other",
-                     "rescore",
                      "cluster",
+                     "other",
                      "validation",
                      "none",
-                     "filter"
+                     "filter",
+                     "rescore"
                   ],
                   "description": "The type of post modeling analysis being carried out."
                }
@@ -2744,22 +3888,77 @@
                   "$ref": "#entry/id",
                   "_primary_key": true
                },
+               "details": {
+                  "type": "string",
+                  "description": "Additional details about the modeling protocol."
+               },
+               "id": {
+                  "type": "integer",
+                  "description": "A unique identifier for the modeling protocol.",
+                  "_primary_key": true
+               },
+               "num_steps": {
+                  "type": "integer",
+                  "description": "Number of independent steps in the modeling protocol."
+               },
+               "protocol_name": {
+                  "type": "string",
+                  "examples": [
+                     "Multi-scale modeling of the Nuclear Pore Complex",
+                     "Multi-state modeling of the RNA 4-Way Junction"
+                  ],
+                  "description": "The name for the modeling protocol."
+               }
+            },
+            "required": [
+               "structure_id",
+               "id",
+               "num_steps",
+               "protocol_name"
+            ],
+            "additionalProperties": false
+         },
+         "minItems": 1,
+         "uniqueItems": true
+      },
+      "ihm_modeling_protocol_details": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
                "dataset_group_id": {
-                  "$ref": "#ihm_dataset_group/group_id"
+                  "$ref": "#ihm_dataset_group/id"
+               },
+               "ensemble_flag": {
+                  "type": "string",
+                  "enum": [
+                     "NO",
+                     "YES"
+                  ],
+                  "description": "A flag to indicate if the modeling involves an ensemble."
+               },
+               "id": {
+                  "type": "integer",
+                  "description": "A unique identifier for the modeling protocol/step combination.",
+                  "_primary_key": true
                },
                "multi_scale_flag": {
                   "type": "string",
                   "enum": [
-                     "YES",
-                     "NO"
+                     "NO",
+                     "YES"
                   ],
                   "description": "A flag to indicate if the modeling is multi scale."
                },
                "multi_state_flag": {
                   "type": "string",
                   "enum": [
-                     "YES",
-                     "NO"
+                     "NO",
+                     "YES"
                   ],
                   "description": "A flag to indicate if the modeling is multi state."
                },
@@ -2774,28 +3973,16 @@
                "ordered_flag": {
                   "type": "string",
                   "enum": [
-                     "YES",
-                     "NO"
+                     "NO",
+                     "YES"
                   ],
                   "description": "A flag to indicate if the modeling involves an ensemble ordered by time or other order."
                },
-               "ordinal_id": {
-                  "type": "integer",
-                  "description": "A unique identifier for the modeling protocol/step combination.",
-                  "_primary_key": true
-               },
                "protocol_id": {
-                  "type": "integer",
-                  "description": "An index for the modeling protocol carried out."
+                  "$ref": "#ihm_modeling_protocol/id"
                },
-               "protocol_name": {
-                  "type": "string",
-                  "examples": [
-                     "Multi-scale modeling",
-                     "Multi-state modeling",
-                     "Multi-scale time-ordered modeling"
-                  ],
-                  "description": "The name for the modeling protocol."
+               "script_file_id": {
+                  "$ref": "#ihm_external_files/id"
                },
                "software_id": {
                   "$ref": "#software/pdbx_ordinal"
@@ -2830,16 +4017,43 @@
                   "description": "A textual description of the structural assembly being modeled."
                },
                "struct_assembly_id": {
-                  "$ref": "#ihm_struct_assembly/assembly_id"
+                  "$ref": "#ihm_struct_assembly/id"
                }
             },
             "required": [
                "structure_id",
                "dataset_group_id",
-               "ordinal_id",
+               "id",
                "protocol_id",
                "step_id",
                "struct_assembly_id"
+            ],
+            "additionalProperties": false
+         },
+         "minItems": 1,
+         "uniqueItems": true
+      },
+      "ihm_multi_state_model_group_link": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
+               "model_group_id": {
+                  "$ref": "#ihm_model_group/id",
+                  "_primary_key": true
+               },
+               "state_id": {
+                  "$ref": "#ihm_multi_state_modeling/state_id"
+               }
+            },
+            "required": [
+               "structure_id",
+               "model_group_id",
+               "state_id"
             ],
             "additionalProperties": false
          },
@@ -2855,33 +4069,39 @@
                   "$ref": "#entry/id",
                   "_primary_key": true
                },
+               "details": {
+                  "type": "string",
+                  "examples": [
+                     "open state ensemble 1",
+                     "closed state ensemble 2",
+                     "bound to heme"
+                  ],
+                  "description": "Additional textual details of the multi-state modeling, if required."
+               },
                "experiment_type": {
                   "type": "string",
                   "enum": [
-                     "Single molecule",
-                     "Fraction of bulk"
+                     "Fraction of bulk",
+                     "Single molecule"
                   ],
                   "description": "The type of multi-state modeling experiment carried out."
-               },
-               "model_group_id": {
-                  "$ref": "#ihm_model_list/model_group_id"
-               },
-               "ordinal_id": {
-                  "type": "integer",
-                  "description": "A unique identifier for the multiple states being described.",
-                  "_primary_key": true
                },
                "population_fraction": {
                   "type": "number",
                   "description": "A fraction representing the population of the particular state."
                },
+               "population_fraction_sd": {
+                  "type": "number",
+                  "description": "The standard deviation of the population fraction."
+               },
                "state_group_id": {
                   "type": "integer",
-                  "description": "An identifier for a collections of states in the multi-state modeling.\n If the states do not need to be grouped into collections, then\n _ihm_multi_state_modeling.state_group_id is the same as\n _ihm_multi_state_modeling.state_id."
+                  "description": "An identifier for a collections of states in the multi-state modeling.\n This data item can be used when structural models belong to diffent\n multi-state modeling types."
                },
                "state_id": {
                   "type": "integer",
-                  "description": "An identifier for the particular state in the multi-state modeling."
+                  "description": "A unique identifier for a particular state in the multi-state modeling.",
+                  "_primary_key": true
                },
                "state_name": {
                   "type": "string",
@@ -2910,12 +4130,52 @@
             },
             "required": [
                "structure_id",
-               "model_group_id",
-               "ordinal_id",
-               "state_group_id",
                "state_id",
                "state_name",
                "state_type"
+            ],
+            "additionalProperties": false
+         },
+         "minItems": 1,
+         "uniqueItems": true
+      },
+      "ihm_non_poly_feature": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
+               "asym_id": {
+                  "$ref": "#struct_asym/id"
+               },
+               "atom_id": {
+                  "type": "string",
+                  "description": "The identifier of the non-polymeric atom, if applicable. \n This data item is a pointer to _chem_comp_atom.atom_id in the CHEM_COMP_ATOM category."
+               },
+               "comp_id": {
+                  "$ref": "#chem_comp/id"
+               },
+               "entity_id": {
+                  "$ref": "#entity/id"
+               },
+               "feature_id": {
+                  "$ref": "#ihm_feature_list/feature_id"
+               },
+               "ordinal_id": {
+                  "type": "integer",
+                  "description": "A unique identifier for the category.",
+                  "_primary_key": true
+               }
+            },
+            "required": [
+               "structure_id",
+               "comp_id",
+               "entity_id",
+               "feature_id",
+               "ordinal_id"
             ],
             "additionalProperties": false
          },
@@ -2931,16 +4191,20 @@
                   "$ref": "#entry/id",
                   "_primary_key": true
                },
+               "edge_description": {
+                  "type": "string",
+                  "description": "Description of the edge."
+               },
                "edge_id": {
                   "type": "integer",
                   "description": "An identifier that describes an edge in a directed graph, which\n represents an ordered ensemble. \n Forms the category key together with _ihm_ordered_ensemble.process_id.",
                   "_primary_key": true
                },
                "model_group_id_begin": {
-                  "$ref": "#ihm_model_list/model_group_id"
+                  "$ref": "#ihm_model_group/id"
                },
                "model_group_id_end": {
-                  "$ref": "#ihm_model_list/model_group_id"
+                  "$ref": "#ihm_model_group/id"
                },
                "ordered_by": {
                   "type": "string",
@@ -2951,6 +4215,10 @@
                      "steps in an interaction pathway"
                   ],
                   "description": "The parameter based on which the ordering is carried out."
+               },
+               "process_description": {
+                  "type": "string",
+                  "description": "Description of the ordered process."
                },
                "process_id": {
                   "type": "integer",
@@ -2980,6 +4248,68 @@
          "minItems": 1,
          "uniqueItems": true
       },
+      "ihm_poly_atom_feature": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
+               "asym_id": {
+                  "$ref": "#struct_asym/id"
+               },
+               "atom_id": {
+                  "type": "string",
+                  "description": "The identifier of the atom. \n This data item is a pointer to _chem_comp_atom.atom_id in the CHEM_COMP_ATOM category."
+               },
+               "comp_id": {
+                  "$ref": "#entity_poly_seq/mon_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label"
+                     }
+                  ]
+               },
+               "entity_id": {
+                  "$ref": "#entity_poly_seq/entity_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label"
+                     }
+                  ]
+               },
+               "feature_id": {
+                  "$ref": "#ihm_feature_list/feature_id"
+               },
+               "ordinal_id": {
+                  "type": "integer",
+                  "description": "A unique identifier for the category.",
+                  "_primary_key": true
+               },
+               "seq_id": {
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label"
+                     }
+                  ]
+               }
+            },
+            "required": [
+               "structure_id",
+               "comp_id",
+               "entity_id",
+               "feature_id",
+               "ordinal_id",
+               "seq_id"
+            ],
+            "additionalProperties": false
+         },
+         "minItems": 1,
+         "uniqueItems": true
+      },
       "ihm_poly_residue_feature": {
          "type": "array",
          "items": {
@@ -2993,16 +4323,46 @@
                   "$ref": "#struct_asym/id"
                },
                "comp_id_begin": {
-                  "$ref": "#entity_poly_seq/mon_id"
+                  "$ref": "#entity_poly_seq/mon_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_begin"
+                     }
+                  ]
                },
                "comp_id_end": {
-                  "$ref": "#entity_poly_seq/mon_id"
+                  "$ref": "#entity_poly_seq/mon_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_end"
+                     }
+                  ]
                },
                "entity_id": {
-                  "$ref": "#entity_poly_seq/entity_id"
+                  "$ref": "#entity_poly_seq/entity_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_begin"
+                     },
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_end"
+                     }
+                  ]
                },
                "feature_id": {
                   "$ref": "#ihm_feature_list/feature_id"
+               },
+               "interface_residue_flag": {
+                  "type": "string",
+                  "enum": [
+                     "NO",
+                     "YES"
+                  ],
+                  "description": "A flag to indicate if the feature is an interface residue, identified by experiments and\n therefore, used to build spatial restraints during modeling."
                },
                "ordinal_id": {
                   "type": "integer",
@@ -3012,29 +4372,40 @@
                "rep_atom": {
                   "type": "string",
                   "enum": [
-                     "CA",
-                     "CB"
+                     "CB",
+                     "CA"
                   ],
                   "description": "If _ihm_poly_residue_feature.granularity is by-residue, then indicate the atom used to represent \n the residue in three-dimension. Default is the C-alpha atom."
                },
                "residue_range_granularity": {
                   "type": "string",
                   "enum": [
-                     "by-feature",
-                     "by-residue"
+                     "by-residue",
+                     "by-feature"
                   ],
                   "description": "The coarse-graining information, if the feature is a residue range."
                },
                "seq_id_begin": {
-                  "$ref": "#entity_poly_seq/num"
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_begin"
+                     }
+                  ]
                },
                "seq_id_end": {
-                  "$ref": "#entity_poly_seq/num"
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_end"
+                     }
+                  ]
                }
             },
             "required": [
                "structure_id",
-               "asym_id",
                "entity_id",
                "feature_id",
                "ordinal_id",
@@ -3061,30 +4432,64 @@
                "asym_id_2": {
                   "$ref": "#struct_asym/id"
                },
-               "atom_id_1": {
-                  "$ref": "#chem_comp_atom/atom_id"
-               },
-               "atom_id_2": {
-                  "$ref": "#chem_comp_atom/atom_id"
-               },
                "comp_id_1": {
-                  "$ref": "#entity_poly_seq/mon_id"
+                  "$ref": "#entity_poly_seq/mon_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_1"
+                     }
+                  ]
                },
                "comp_id_2": {
-                  "$ref": "#entity_poly_seq/mon_id"
+                  "$ref": "#entity_poly_seq/mon_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_2"
+                     }
+                  ]
                },
                "dataset_list_id": {
                   "$ref": "#ihm_dataset_list/id"
+               },
+               "distance_lower_limit": {
+                  "type": "number",
+                  "description": "The lower limit to the distance threshold applied to this predicted contact restraint\n in the integrative modeling task."
                },
                "distance_upper_limit": {
                   "type": "number",
                   "description": "The upper limit to the distance threshold applied to this predicted contact restraint\n in the integrative modeling task."
                },
+               "entity_description_1": {
+                  "type": "string",
+                  "description": "A text description of molecular entity 1. \n"
+               },
+               "entity_description_2": {
+                  "type": "string",
+                  "description": "A text description of molecular entity 2. \n"
+               },
                "entity_id_1": {
-                  "$ref": "#entity_poly_seq/entity_id"
+                  "$ref": "#entity_poly_seq/entity_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_1"
+                     }
+                  ]
                },
                "entity_id_2": {
-                  "$ref": "#entity_poly_seq/entity_id"
+                  "$ref": "#entity_poly_seq/entity_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_2"
+                     }
+                  ]
+               },
+               "group_id": {
+                  "type": "integer",
+                  "description": "An identifier to group the predicted contacts."
                },
                "id": {
                   "type": "integer",
@@ -3094,9 +4499,8 @@
                "model_granularity": {
                   "type": "string",
                   "enum": [
-                     "by-feature",
-                     "by-atom",
-                     "by-residue"
+                     "by-residue",
+                     "by-feature"
                   ],
                   "description": "The granularity of the predicted contact as applied to the multi-scale model."
                },
@@ -3106,20 +4510,48 @@
                   "maximum": 1.0,
                   "description": "The real number that indicates the probability that the predicted distance restraint \n is correct. This number should fall between 0.0 and 1.0."
                },
+               "rep_atom_1": {
+                  "type": "string",
+                  "enum": [
+                     "CB",
+                     "CA"
+                  ],
+                  "description": "If _ihm_predicted_contact_restraint.model_granularity is by-residue, then indicate the atom \n used to represent the first monomer partner in three-dimension. Default is the C-alpha atom."
+               },
+               "rep_atom_2": {
+                  "type": "string",
+                  "enum": [
+                     "CB",
+                     "CA"
+                  ],
+                  "description": "If _ihm_predicted_contact_restraint.model_granularity is by-residue, then indicate the atom \n used to represent the second monomer partner in three-dimension. Default is the C-alpha atom."
+               },
                "restraint_type": {
                   "type": "string",
                   "enum": [
+                     "lower bound",
                      "upper bound",
-                     "lower and upper bound",
-                     "lower bound"
+                     "lower and upper bound"
                   ],
                   "description": "The type of distance restraint applied."
                },
                "seq_id_1": {
-                  "$ref": "#entity_poly_seq/num"
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_1"
+                     }
+                  ]
                },
                "seq_id_2": {
-                  "$ref": "#entity_poly_seq/num"
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_2"
+                     }
+                  ]
                },
                "software_id": {
                   "$ref": "#software/pdbx_ordinal"
@@ -3145,6 +4577,55 @@
          "minItems": 1,
          "uniqueItems": true
       },
+      "ihm_pseudo_site_feature": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
+               "Cartn_x": {
+                  "type": "number",
+                  "description": "The Cartesian X component corresponding to this pseudo site."
+               },
+               "Cartn_y": {
+                  "type": "number",
+                  "description": "The Cartesian Y component corresponding to this pseudo site."
+               },
+               "Cartn_z": {
+                  "type": "number",
+                  "description": "The Cartesian Z component corresponding to this pseudo site."
+               },
+               "description": {
+                  "type": "string",
+                  "examples": [
+                     "centroid of the feature"
+                  ],
+                  "description": "Textual description of the pseudo site representing the specific feature."
+               },
+               "feature_id": {
+                  "$ref": "#ihm_feature_list/feature_id",
+                  "_primary_key": true
+               },
+               "radius": {
+                  "type": "number",
+                  "description": "The radius associated with the feature at this position, if applicable."
+               }
+            },
+            "required": [
+               "structure_id",
+               "Cartn_x",
+               "Cartn_y",
+               "Cartn_z",
+               "feature_id"
+            ],
+            "additionalProperties": false
+         },
+         "minItems": 1,
+         "uniqueItems": true
+      },
       "ihm_related_datasets": {
          "type": "array",
          "items": {
@@ -3155,22 +4636,121 @@
                   "_primary_key": true
                },
                "dataset_list_id_derived": {
-                  "$ref": "#ihm_dataset_list/id"
+                  "$ref": "#ihm_dataset_list/id",
+                  "_primary_key": true
                },
                "dataset_list_id_primary": {
-                  "$ref": "#ihm_dataset_list/id"
-               },
-               "ordinal_id": {
-                  "type": "integer",
-                  "description": "A unique identifier for the entry.",
+                  "$ref": "#ihm_dataset_list/id",
                   "_primary_key": true
                }
             },
             "required": [
                "structure_id",
                "dataset_list_id_derived",
-               "dataset_list_id_primary",
-               "ordinal_id"
+               "dataset_list_id_primary"
+            ],
+            "additionalProperties": false
+         },
+         "minItems": 1,
+         "uniqueItems": true
+      },
+      "ihm_residues_not_modeled": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
+               "asym_id": {
+                  "$ref": "#struct_asym/id"
+               },
+               "comp_id_begin": {
+                  "$ref": "#entity_poly_seq/mon_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_begin"
+                     }
+                  ]
+               },
+               "comp_id_end": {
+                  "$ref": "#entity_poly_seq/mon_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_end"
+                     }
+                  ]
+               },
+               "details": {
+                  "type": "string",
+                  "description": "Additional details regarding the missing segments."
+               },
+               "entity_description": {
+                  "type": "string",
+                  "description": "A text description of the molecular entity, whose residues are not modeled. \n This data item is a pointer to _entity.pdbx_description in the ENTITY category."
+               },
+               "entity_id": {
+                  "$ref": "#entity_poly_seq/entity_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_begin"
+                     },
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_end"
+                     }
+                  ]
+               },
+               "id": {
+                  "type": "integer",
+                  "description": "A unique identifier for the category.",
+                  "_primary_key": true
+               },
+               "model_id": {
+                  "$ref": "#ihm_model_list/model_id"
+               },
+               "reason": {
+                  "type": "string",
+                  "enum": [
+                     "Highly variable models with poor precision",
+                     "Models do not adequately satisfy input data",
+                     "Other"
+                  ],
+                  "description": "The reason why the residues are missing in the structural model."
+               },
+               "seq_id_begin": {
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_begin"
+                     }
+                  ]
+               },
+               "seq_id_end": {
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_end"
+                     }
+                  ]
+               }
+            },
+            "required": [
+               "structure_id",
+               "asym_id",
+               "comp_id_begin",
+               "comp_id_end",
+               "entity_id",
+               "id",
+               "model_id",
+               "seq_id_begin",
+               "seq_id_end"
             ],
             "additionalProperties": false
          },
@@ -3192,6 +4772,10 @@
                },
                "dataset_list_id": {
                   "$ref": "#ihm_dataset_list/id"
+               },
+               "details": {
+                  "type": "string",
+                  "description": "Additional details regarding the SAS restraint used."
                },
                "fitting_atom_type": {
                   "type": "string",
@@ -3221,19 +4805,19 @@
                   ],
                   "description": "An indicator to single or multiple state fitting."
                },
-               "model_id": {
-                  "$ref": "#ihm_model_list/model_id"
-               },
-               "ordinal_id": {
+               "id": {
                   "type": "integer",
                   "description": "A unique identifier for the SAS restraint description.",
                   "_primary_key": true
                },
+               "model_id": {
+                  "$ref": "#ihm_model_list/model_id"
+               },
                "profile_segment_flag": {
                   "type": "string",
                   "enum": [
-                     "YES",
-                     "NO"
+                     "NO",
+                     "YES"
                   ],
                   "description": "A flag that indicates whether or not the SAS profile is segmented i.e.,\n whether the whole SAS profile is used or only a portion of it is used \n (by masking or by other means) as restraint in the modeling."
                },
@@ -3242,14 +4826,14 @@
                   "description": "Radius of gyration obtained from the SAS profile, if used as input restraint."
                },
                "struct_assembly_id": {
-                  "$ref": "#ihm_struct_assembly/assembly_id"
+                  "$ref": "#ihm_struct_assembly/id"
                }
             },
             "required": [
                "structure_id",
                "dataset_list_id",
+               "id",
                "model_id",
-               "ordinal_id",
                "struct_assembly_id"
             ],
             "additionalProperties": false
@@ -3284,6 +4868,11 @@
                "entity_id": {
                   "$ref": "#entity/id"
                },
+               "id": {
+                  "type": "integer",
+                  "description": "A unique identifier for this pseudo atom / sphere object.",
+                  "_primary_key": true
+               },
                "model_id": {
                   "$ref": "#ihm_model_list/model_id"
                },
@@ -3291,20 +4880,27 @@
                   "type": "number",
                   "description": "The radius associated with the primitive sphere object at this position."
                },
-               "ordinal_id": {
-                  "type": "integer",
-                  "description": "A unique identifier for this pseudo atom / sphere object.",
-                  "_primary_key": true
-               },
                "rmsf": {
                   "type": "number",
                   "description": "The Root Mean Square Fluctuation (RMSF) observed in the primitive \n sphere object at this position."
                },
                "seq_id_begin": {
-                  "$ref": "#entity_poly_seq/num"
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_begin"
+                     }
+                  ]
                },
                "seq_id_end": {
-                  "$ref": "#entity_poly_seq/num"
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label",
+                        "label": "mm_poly_res_label_end"
+                     }
+                  ]
                }
             },
             "required": [
@@ -3314,9 +4910,9 @@
                "Cartn_z",
                "asym_id",
                "entity_id",
+               "id",
                "model_id",
                "object_radius",
-               "ordinal_id",
                "seq_id_begin",
                "seq_id_end"
             ],
@@ -3337,7 +4933,7 @@
                "alignment_file_id": {
                   "$ref": "#ihm_external_files/id"
                },
-               "ordinal_id": {
+               "id": {
                   "type": "integer",
                   "description": "A unique identifier for the starting comparative model.",
                   "_primary_key": true
@@ -3379,18 +4975,18 @@
                "template_sequence_identity_denominator": {
                   "type": "integer",
                   "enum": [
-                     3,
-                     2,
-                     4,
+                     1,
                      5,
-                     1
+                     2,
+                     3,
+                     4
                   ],
                   "description": "The denominator used while calculating the sequence identity provided in \n _ihm_starting_comparative_models.template_sequence_identity."
                }
             },
             "required": [
                "structure_id",
-               "ordinal_id",
+               "id",
                "starting_model_auth_asym_id",
                "starting_model_id",
                "template_auth_asym_id",
@@ -3461,7 +5057,8 @@
                   "$ref": "#struct_asym/id"
                },
                "atom_id": {
-                  "$ref": "#chem_comp_atom/atom_id"
+                  "type": "string",
+                  "description": "The atom identifier/name corresponding to this coordinate position.\n This data item is a pointer to _chem_comp_atom.atom_id in the \n CHEM_COMP_ATOM category."
                },
                "comp_id": {
                   "$ref": "#chem_comp/id"
@@ -3469,11 +5066,15 @@
                "entity_id": {
                   "$ref": "#entity/id"
                },
+               "formal_charge": {
+                  "type": "integer",
+                  "description": "The formal charge corresponding to this coordinate position."
+               },
                "group_PDB": {
                   "type": "string",
                   "enum": [
-                     "ATOM",
-                     "HETATM"
+                     "HETATM",
+                     "ATOM"
                   ],
                   "description": "The group of atoms to which the atom site in the starting model belongs. This data\n item is provided for compatibility with the original Protein Data Bank format, \n and only for that purpose."
                },
@@ -3487,7 +5088,12 @@
                   "_primary_key": true
                },
                "seq_id": {
-                  "$ref": "#entity_poly_seq/num"
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label"
+                     }
+                  ]
                },
                "starting_model_id": {
                   "$ref": "#ihm_starting_model_details/starting_model_id"
@@ -3533,16 +5139,14 @@
                   "$ref": "#ihm_dataset_list/id"
                },
                "entity_description": {
-                  "$ref": "#entity/pdbx_description"
+                  "type": "string",
+                  "description": "A text description of the molecular entity\n"
                },
                "entity_id": {
                   "$ref": "#entity/id"
                },
-               "seq_id_begin": {
-                  "$ref": "#entity_poly_seq/num"
-               },
-               "seq_id_end": {
-                  "$ref": "#entity_poly_seq/num"
+               "entity_poly_segment_id": {
+                  "$ref": "#ihm_entity_poly_segment/id"
                },
                "starting_model_auth_asym_id": {
                   "type": "string",
@@ -3560,11 +5164,11 @@
                "starting_model_source": {
                   "type": "string",
                   "enum": [
+                     "comparative model",
                      "other",
                      "integrative model",
-                     "experimental model",
                      "ab initio model",
-                     "comparative model"
+                     "experimental model"
                   ],
                   "description": "The source of the starting model."
                }
@@ -3574,6 +5178,7 @@
                "asym_id",
                "dataset_list_id",
                "entity_id",
+               "entity_poly_segment_id",
                "starting_model_auth_asym_id",
                "starting_model_id",
                "starting_model_source"
@@ -3596,7 +5201,12 @@
                   "$ref": "#struct_asym/id"
                },
                "comp_id": {
-                  "$ref": "#entity_poly_seq/mon_id"
+                  "$ref": "#entity_poly_seq/mon_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label"
+                     }
+                  ]
                },
                "db_asym_id": {
                   "type": "string",
@@ -3605,6 +5215,10 @@
                "db_comp_id": {
                   "type": "string",
                   "description": "The correspinding component identifier for the residue in the database starting model."
+               },
+               "db_entity_id": {
+                  "type": "string",
+                  "description": "The molecular entity of the database starting model."
                },
                "db_seq_id": {
                   "type": "integer",
@@ -3619,15 +5233,25 @@
                   "description": "A description of special aspects of the point differences\n between the sequence of the entity or biological unit described\n in the data block and that in the starting model referenced \n from a database."
                },
                "entity_id": {
-                  "$ref": "#entity_poly_seq/entity_id"
+                  "$ref": "#entity_poly_seq/entity_id",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label"
+                     }
+                  ]
                },
-               "ordinal_id": {
+               "id": {
                   "type": "integer",
                   "description": "A unique identifier for the entry.",
                   "_primary_key": true
                },
                "seq_id": {
-                  "$ref": "#entity_poly_seq/num"
+                  "$ref": "#entity_poly_seq/num",
+                  "_attribute_groups": [
+                     {
+                        "id": "mm_poly_res_label"
+                     }
+                  ]
                },
                "starting_model_id": {
                   "$ref": "#ihm_starting_model_details/starting_model_id"
@@ -3641,7 +5265,7 @@
                "db_comp_id",
                "db_seq_id",
                "entity_id",
-               "ordinal_id",
+               "id",
                "seq_id",
                "starting_model_id"
             ],
@@ -3659,41 +5283,97 @@
                   "$ref": "#entry/id",
                   "_primary_key": true
                },
-               "assembly_id": {
+               "description": {
+                  "type": "string",
+                  "description": "Description of the structural assembly."
+               },
+               "id": {
                   "type": "integer",
-                  "description": "An identifier for the structural assembly. \n This data item will remain the same for all components \n of an assembly."
-               },
-               "asym_id": {
-                  "$ref": "#struct_asym/id"
-               },
-               "entity_description": {
-                  "$ref": "#entity/pdbx_description"
-               },
-               "entity_id": {
-                  "$ref": "#entity/id"
-               },
-               "ordinal_id": {
-                  "type": "integer",
-                  "description": "A unique identifier for the structural assembly description.",
+                  "description": "A unique identifier for the structural assembly.",
                   "_primary_key": true
                },
-               "parent_assembly_id": {
-                  "$ref": "#ihm_struct_assembly/assembly_id"
+               "name": {
+                  "type": "string",
+                  "description": "A name for the structural assembly."
+               }
+            },
+            "required": [
+               "structure_id",
+               "id"
+            ],
+            "additionalProperties": false
+         },
+         "minItems": 1,
+         "uniqueItems": true
+      },
+      "ihm_struct_assembly_class": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
                },
-               "seq_id_begin": {
-                  "$ref": "#entity_poly_seq/num"
+               "description": {
+                  "type": "string",
+                  "description": "Additional description regarding the class."
                },
-               "seq_id_end": {
-                  "$ref": "#entity_poly_seq/num"
+               "id": {
+                  "type": "integer",
+                  "description": "A unique identifier for the structural assembly class.",
+                  "_primary_key": true
+               },
+               "name": {
+                  "type": "string",
+                  "examples": [
+                     "TAD",
+                     "Chromatin"
+                  ],
+                  "description": "A user provided name for the class."
+               },
+               "type": {
+                  "type": "string",
+                  "enum": [
+                     "Structural Hierarchy",
+                     "Functional",
+                     "Other"
+                  ],
+                  "description": "The type of classifier."
+               }
+            },
+            "required": [
+               "structure_id",
+               "id",
+               "name"
+            ],
+            "additionalProperties": false
+         },
+         "minItems": 1,
+         "uniqueItems": true
+      },
+      "ihm_struct_assembly_class_link": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
+               "assembly_id": {
+                  "$ref": "#ihm_struct_assembly/id",
+                  "_primary_key": true
+               },
+               "class_id": {
+                  "$ref": "#ihm_struct_assembly_class/id",
+                  "_primary_key": true
                }
             },
             "required": [
                "structure_id",
                "assembly_id",
-               "asym_id",
-               "entity_id",
-               "ordinal_id",
-               "parent_assembly_id"
+               "class_id"
             ],
             "additionalProperties": false
          },
@@ -3709,22 +5389,39 @@
                   "$ref": "#entry/id",
                   "_primary_key": true
                },
-               "assembly_description": {
-                  "type": "string",
-                  "description": "Description of the structural assembly."
-               },
                "assembly_id": {
-                  "$ref": "#ihm_struct_assembly/assembly_id",
+                  "$ref": "#ihm_struct_assembly/id"
+               },
+               "asym_id": {
+                  "$ref": "#struct_asym/id"
+               },
+               "entity_description": {
+                  "type": "string",
+                  "description": "A text description of the molecular entity"
+               },
+               "entity_id": {
+                  "$ref": "#entity/id"
+               },
+               "entity_poly_segment_id": {
+                  "$ref": "#ihm_entity_poly_segment/id"
+               },
+               "id": {
+                  "type": "integer",
+                  "description": "A unique identifier for the structural assembly description.",
                   "_primary_key": true
                },
-               "assembly_name": {
-                  "type": "string",
-                  "description": "A name for the structural assembly."
+               "parent_assembly_id": {
+                  "$ref": "#ihm_struct_assembly/id"
                }
             },
             "required": [
                "structure_id",
-               "assembly_id"
+               "assembly_id",
+               "asym_id",
+               "entity_id",
+               "entity_poly_segment_id",
+               "id",
+               "parent_assembly_id"
             ],
             "additionalProperties": false
          },
@@ -3955,10 +5652,10 @@
                "hetero": {
                   "type": "string",
                   "enum": [
-                     "no",
                      "yes",
                      "n",
-                     "y"
+                     "y",
+                     "no"
                   ],
                   "description": "Pointer to _entity_poly_seq.hetero"
                },
@@ -4283,12 +5980,12 @@
                "type": {
                   "type": "string",
                   "enum": [
-                     "other",
                      "jiffy",
-                     "library",
-                     "program",
+                     "other",
+                     "filter",
                      "package",
-                     "filter"
+                     "library",
+                     "program"
                   ],
                   "description": "The classification of the software according to the most\n common types."
                },
@@ -4412,14 +6109,14 @@
                   "type": "string",
                   "enum": [
                      "HETAC",
-                     "HETAI",
+                     "HETAD",
                      "HETIC",
-                     "ATOMP",
-                     "ATOMS",
+                     "HETAI",
                      "HETAS",
-                     "HETAIN",
+                     "ATOMS",
                      "ATOMN",
-                     "HETAD"
+                     "ATOMP",
+                     "HETAIN"
                   ],
                   "description": "This data item describes the general type of the structural elements\n in the ATOM_SITE category."
                }
@@ -4450,7 +6147,7 @@
    ],
    "$id": "https://github.com/rcsb/py-rcsb.db/tree/master/rcsb.db/data/json-schema/json-schema-full-ihm_dev_full.json",
    "$schema": "http://json-schema.org/draft-04/schema#",
-   "title": "schema: ihm_dev_full collection: ihm_dev_full version: 1.1.0",
-   "description": "RCSB Exchange Database JSON schema derived from the ihm_dev_full content type schema. This schema supports collection ihm_dev_full version 1.1.0. This schema is hosted in repository https://github.com/rcsb/py-rcsb.db/tree/master/rcsb.db/data/json-schema/json-schema-full-ihm_dev_full.json and follows JSON schema specification version 4",
-   "$comment": "schema_version: 1.1.0"
+   "title": "schema: ihm_dev_full collection: ihm_dev_full version: 1.2.0",
+   "description": "RCSB Exchange Database JSON schema derived from the ihm_dev_full content type schema. This schema supports collection ihm_dev_full version 1.2.0. This schema is hosted in repository https://github.com/rcsb/py-rcsb.db/tree/master/rcsb.db/data/json-schema/json-schema-full-ihm_dev_full.json and follows JSON schema specification version 4",
+   "$comment": "schema_version: 1.2.0"
 }
