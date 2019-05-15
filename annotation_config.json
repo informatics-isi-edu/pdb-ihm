@@ -1,0 +1,270 @@
+{
+  "schema_annotations": [
+    {
+      "schema": "Vocab",
+      "uri": "tag:misd.isi.edu,2015:display",
+      "value": {
+        "name_style": {
+          "underline_space": true,
+          "title_case": false
+        }
+      }
+    }
+  ],
+  "known_attributes": {
+    "ignore_all_unmanaged": false,
+    "managed": [
+      "tag:isrd.isi.edu,2017:bulk-upload",
+      "tag:isrd.isi.edu,2016:export",
+      "tag:isrd.isi.edu,2016:column-display",
+      "tag:isrd.isi.edu,2016:display",
+      "tag:isrd.isi.edu,2016:foreign-key",
+      "tag:isrd.isi.edu,2016:generated",
+      "tag:isrd.isi.edu,2016:ignore",
+      "tag:isrd.isi.edu,2016:immutable",
+      "tag:isrd.isi.edu,2016:recordlink",
+      "tag:isrd.isi.edu,2016:table-alternatives",
+      "tag:isrd.isi.edu,2016:table-display",
+      "tag:isrd.isi.edu,2016:visible-columns",
+      "tag:isrd.isi.edu,2016:visible-foreign-keys",
+      "tag:isrd.isi.edu,2017:asset",
+      "tag:misd.isi.edu,2015:display",
+      "tag:misd.isi.edu,2015:url",
+      "tag:misd.isi.edu,2016:generated",
+      "comment",
+      "description",
+      "facetOrder"
+    ]
+  },
+  "table_annotations": [
+        {
+         "schema" : "Vocab",
+         "table_pattern" : ".*",
+         "uri" : "tag:isrd.isi.edu,2016:table-display",
+         "value" : {
+            "row_name" : {
+               "row_markdown_pattern" : "{{{ID}}}"
+            }
+         }
+      },
+      {
+         "schema" : "public",
+         "table" : "ERMrest_Client",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+           "ID",
+           "Full_Name",
+           "Email"
+         ]
+         }
+      },
+      {
+         "schema" : "public",
+         "table" : "ERMrest_Client",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Contributor"
+         }
+      },
+      {
+         "schema" : "public",
+         "table" : "ERMrest_Group",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+      "*": [
+        {
+          "source": "Display_Name"
+        },
+        {
+          "source": "ID"
+        },
+        {
+          "source": "URL"
+        },
+        {
+          "source": "Description"
+        }
+          ]
+         }
+      },
+      {
+         "schema" : "public",
+         "table" : "ERMrest_Client",
+         "uri" : "tag:isrd.isi.edu,2016:table-display",
+         "value" : {
+            "row_name" : {
+               "row_markdown_pattern" : "{{{Full_Name}}}"
+            }
+         }
+      },
+      {
+         "schema" : "public",
+         "table" : "ERMrest_Client",
+         "uri" : "tag:isrd.isi.edu,2016:generated",
+         "value" : null
+      },
+      {
+         "schema" : "public",
+         "table" : "ERMrest_Group",
+         "uri" : "tag:isrd.isi.edu,2016:generated",
+         "value" : null
+      }
+  ],
+  "column_annotations": [
+      {
+         "column" : "id",
+         "schema_pattern" : "Vocab",
+         "table_pattern" : ".*",
+         "uri" : "tag:isrd.isi.edu,2016:generated",
+         "value" : null
+      },
+      {
+         "column" : "uri",
+         "schema_pattern" : "Vocab",
+         "table_pattern" : ".*",
+         "uri" : "tag:isrd.isi.edu,2016:generated",
+         "value" : null
+      },
+      {
+         "column" : "description",
+         "schema" : "Vocab",
+         "table_pattern" : ".*",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Description"
+         }
+      },
+      {
+         "column" : "name",
+         "schema" : "Vocab",
+         "table_pattern" : ".*",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Name"
+         }
+      },
+      {
+         "column" : "synonyms",
+         "schema" : "Vocab",
+         "table_pattern" : ".*",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Synonyms"
+         }
+      },
+      {
+         "column" : "RMT",
+         "schema_pattern" : ".*",
+         "table_pattern" : ".*",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Last Modified Time"
+         }
+      },
+      {
+         "column" : "RCT",
+         "schema_pattern" : ".*",
+         "table_pattern" : ".*",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Creation Time"
+         }
+      },
+      {
+         "column" : "RMB",
+         "schema_pattern" : ".*",
+         "table_pattern" : ".*",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Modified By"
+         }
+      },
+      {
+         "column" : "Display_Name",
+         "schema_pattern" : ".*",
+         "table_pattern" : ".*",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Display Name"
+         }
+      },
+      {
+         "column" : "RCB",
+         "schema_pattern" : ".*",
+         "table_pattern" : ".*",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Created By"
+         }
+      },
+      {
+         "column" : "RCB",
+         "schema_pattern" : ".*",
+         "table_pattern" : ".*",
+         "uri" : "tag:isrd.isi.edu,2016:immutable",
+         "value" : null
+      },
+      {
+         "column" : "RCB",
+         "schema_pattern" : ".*",
+         "table_pattern" : ".*",
+         "uri" : "tag:isrd.isi.edu,2016:generated",
+         "value" : null
+      },
+      {
+         "column" : "RMB",
+         "schema_pattern" : ".*",
+         "table_pattern" : ".*",
+         "uri" : "tag:isrd.isi.edu,2016:immutable",
+         "value" : null
+      },
+      {
+         "column" : "RMB",
+         "schema_pattern" : ".*",
+         "table_pattern" : ".*",
+         "uri" : "tag:isrd.isi.edu,2016:generated",
+         "value" : null
+      },
+      {
+         "column" : "RCT",
+         "schema_pattern" : ".*",
+         "table_pattern" : ".*",
+         "uri" : "tag:isrd.isi.edu,2016:immutable",
+         "value" : null
+      },
+      {
+         "column" : "RCT",
+         "schema_pattern" : ".*",
+         "table_pattern" : ".*",
+         "uri" : "tag:isrd.isi.edu,2016:generated",
+         "value" : null
+      },
+      {
+         "column" : "RMT",
+         "schema_pattern" : ".*",
+         "table_pattern" : ".*",
+         "uri" : "tag:isrd.isi.edu,2016:immutable",
+         "value" : null
+      },
+      {
+         "column" : "RMT",
+         "schema_pattern" : ".*",
+         "table_pattern" : ".*",
+         "uri" : "tag:isrd.isi.edu,2016:generated",
+         "value" : null
+      }
+  ],
+     "foreign_key_annotations" : [
+      {
+		 "foreign_key_pattern" : "^(?!.*_structure_id_fkey).*_id_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+		 "table_pattern" : ".*",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+	     "domain_filter_pattern" : "structure_id={{structure_id}}"
+         }
+      }
+  ]
+}
