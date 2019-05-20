@@ -71,6 +71,26 @@ def refertype(v):
             return refertype(parent_col)
         return maptype(parent_col['type'])
 
+def referRootColumn(table_name,col_name,v,column_desc_dict):
+    if '$ref' not in v.keys():
+        return (table_name, col_name)
+    refer_column = v.get('$ref', '')
+    if refer_column[0] != '#' or '/' not in refer_column:
+        return None
+    else:
+        pair = refer_column[1:].split('/')
+        refer_tab = pair[0]
+        refer_col = pair[1]
+
+        if pdb['properties'][refer_tab]['type'] == 'object':
+            parent_col = pdb['properties'][refer_tab]['properties'][refer_col]
+        elif pdb['properties'][refer_tab]['type'] == 'array':
+            parent_col = pdb['properties'][refer_tab]['items']['properties'][refer_col]
+
+        return referRootColumn(refer_tab,refer_col,parent_col,column_desc_dict)
+
+
+
 
 def referTable(v):
     refer_column = v.get('$ref', '')
@@ -110,6 +130,25 @@ def getFkeyColumn(schema_name, column_name, fkey_name):
            })
     return res
 
+def getColumnDesc():
+    if not pdb:
+        return None
+    res = {}
+    for tname, t in pdb['properties'].items():
+        if tname in ['_entry_id', '_schema_version']:
+            continue
+        elif t['type'] == 'object':
+            columns = t['properties']
+        elif t['type'] == 'array':
+            columns = t['items']['properties']
+
+        for k, v in columns.items():
+            if 'description' in v.keys():
+                res[(tname,k)] = v['description']
+    return res
+
+
+
 
 class Table():
     def __init__(self, name, dict):
@@ -130,13 +169,23 @@ class Table():
             columns = dict['items']['properties']
 
         for k, v in columns.items():
+            if 'description' in v.keys():
+                comment_str = v['description']
+            else:
+                tab_col_key = referRootColumn(name,k,v,column_des_dict)
+                if tab_col_key:
+                    comment_str = column_des_dict.get(tab_col_key,'')
+                else:
+                    comment_str = ''
+            if not comment_str:
+                print('missing description {}:{}'.format(name,k))
+
             self.columns.append(
                 {
                     'name': k,
                     'type': maptype(v['type']) if 'type' in v.keys() else refertype(v),
                     'nullok': k not in nullOK(dict),
-                    # todo: get description from parent referencing table for fkeys
-                    'comment': v['description'] if 'description' in v.keys() else None,
+                    'comment': comment_str,
                 }
             )
             if 'enum' in v:
@@ -163,7 +212,9 @@ class Table():
             )
 
 
+column_des_dict = getColumnDesc()
 tables = {k: Table(k, v) for k, v in pdb['properties'].items() if table_schema(v)}
+
 
 if not skip_PickleVob:
     vocab_list = []
@@ -481,5 +532,7 @@ if flag_CreateFkeys:
 
                 model = catalog_ermrest.getCatalogModel()
                 table.create_fkey(catalog_ermrest, fk)
+
+
 
 
