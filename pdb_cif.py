@@ -191,8 +191,8 @@ class Table():
             if 'enum' in v:
                 self.vocab[(self.name, k)] = set(v['enum'])
                 vocab_table_name = '{}_{}_term'.format(self.name, k)
-                # limit of 63
-                vocab_table_name = vocab_table_name[:63]
+                # limit of 63,
+                vocab_table_name = vocab_table_name[-50:]
                 if v['type'] == 'integer':
                     # if enum is integer type, skip it for now
                     pass
@@ -315,7 +315,7 @@ if flag_AnnotateTable_VisibleColumn:
                 visible_columns_entry.append(getFkeyColumn(schema_name,k, "{}_{}_fkey".format(tname, k)))
             elif 'enum' in v.keys():
                 # handling length limit
-                fk_name = "{}_{}_term".format(tname, k)[:63]
+                fk_name = "{}_{}_term".format(tname, k)[-50:]
                 fk_name = "{}_fkey".format(fk_name)[-63:]
                 visible_columns_entry.append([schema_name, fk_name])
             else:
@@ -346,12 +346,14 @@ if flag_CreateVocab:
         elif t.vocab:
             for vocab_k, vocab_v in t.vocab.items():
                 vocab_table_name = '{}_{}_term'.format(vocab_k[0], vocab_k[1])
-                vocab_table_name = vocab_table_name[:63]
+                vocab_table_name = vocab_table_name[-50:]
                 if vocab_table_name not in pb.schemas[term_schema_name].tables:
                     model.schemas[term_schema_name].create_table(catalog_ermrest,
                                                                  em.Table.define_vocabulary(vocab_table_name,
                                                                                             'PDB:{RID}'))
                     print('{} created'.format(vocab_table_name))
+                    catalog_ermrest = ErmrestCatalog('https', hostname, catalog_number, credentials=credential)
+                    catalog = model_elements.DerivaCatalog(catalog_ermrest)
                     term_table = DerivaTableConfigure(catalog, term_schema_name, vocab_table_name)
                     term_table.configure_table_defaults()
                 else:
