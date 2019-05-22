@@ -35,7 +35,7 @@ model = catalog_ermrest.getCatalogModel()
 for vocab_dict in vocab_list:
     for k, v in vocab_dict.items():
         vocab_table_name = '{}_{}_term'.format(k[0], k[1])
-        vocab_table_name = vocab_table_name[:63]
+        vocab_table_name = vocab_table_name[-50:]
         vocab_table = pb.schemas[vocab_schema_name].tables[vocab_table_name]
         entities = vocab_table.path.entities()
         for entity in entities:
