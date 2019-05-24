@@ -43,7 +43,7 @@
          "uri" : "tag:isrd.isi.edu,2016:table-display",
          "value" : {
             "row_name" : {
-               "row_markdown_pattern" : "{{{ID}}}"
+               "row_markdown_pattern" : "{{{Name}}}"
             }
          }
       },
@@ -57,14 +57,6 @@
            "Full_Name",
            "Email"
          ]
-         }
-      },
-      {
-         "schema" : "public",
-         "table" : "ERMrest_Client",
-         "uri" : "tag:misd.isi.edu,2015:display",
-         "value" : {
-            "name" : "Contributor"
          }
       },
       {
