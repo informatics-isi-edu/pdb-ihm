@@ -60,6 +60,98 @@
          }
       },
       {
+         "schema" : "PDB",
+         "table" : "ihm_cross_link_list",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+		    "*" : [
+			{"source": "RID"},
+            {"source": [{"outbound": ["PDB", "ihm_cross_link_list_structure_id_fkey"]}, "RID"]},
+			["PDB", "ihm_cross_link_list_linker_type_term_fkey"],
+			["PDB", "ihm_cross_link_list_dataset_list_id_fkey"],
+			{"markdown_name" : "molecular entity 1","source": [{"outbound": ["PDB", "ihm_cross_link_list_mm_poly_res_label_1_fkey"]}, "RID"]},
+			{"markdown_name" : "entity id 1","source": [{"outbound": ["PDB", "ihm_cross_link_list_mm_poly_res_label_1_fkey"]}, "entity_id"]},
+			{"markdown_name" : "comp id 1","source": [{"outbound": ["PDB", "ihm_cross_link_list_mm_poly_res_label_1_fkey"]}, "mon_id"]},
+			{"markdown_name" : "seq id 1","source": [{"outbound": ["PDB", "ihm_cross_link_list_mm_poly_res_label_1_fkey"]}, "num"]},
+			{"source": "entity_description_1"},
+			{"markdown_name" : "molecular entity 2","source": [{"outbound": ["PDB", "ihm_cross_link_list_mm_poly_res_label_2_fkey"]}, "RID"]},
+			{"markdown_name" : "entity id 2","source": [{"outbound": ["PDB", "ihm_cross_link_list_mm_poly_res_label_2_fkey"]}, "entity_id"]},
+			{"markdown_name" : "comp id 2","source": [{"outbound": ["PDB", "ihm_cross_link_list_mm_poly_res_label_2_fkey"]}, "mon_id"]},
+			{"markdown_name" : "seq id 2","source": [{"outbound": ["PDB", "ihm_cross_link_list_mm_poly_res_label_2_fkey"]}, "num"]},
+			{"source": "entity_description_2"},
+			{"source": [{"outbound": ["PDB", "ihm_cross_link_list_RCB_fkey"]}, "RID"]},
+			{"source": [{"outbound": ["PDB", "ihm_cross_link_list_RMB_fkey"]}, "RID"]},
+			{"source": "RCT"},
+			{"source": "RMT"},
+			{"source": [{"outbound": ["PDB", "ihm_cross_link_list_Owner_fkey"]}, "RID"]}
+                ]
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_cross_link_restraint",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+		    "*" : [
+			{"source": "RID"},
+            {"source": [{"outbound": ["PDB", "ihm_cross_link_restraint_structure_id_fkey"]}, "RID"]},
+			{"markdown_name" : "asym id 1","source": [{"outbound": ["PDB", "ihm_cross_link_restraint_asym_id_1_fkey"]}, "RID"]},
+			{"markdown_name" : "asym id 2","source": [{"outbound": ["PDB", "ihm_cross_link_restraint_asym_id_2_fkey"]}, "RID"]},
+			{"markdown_name" : "comp id 1","source": [{"outbound": ["PDB", "ihm_cross_link_restraint_mm_poly_res_label_1_fkey"]}, "mon_id"]},
+			{"markdown_name" : "comp id 2","source": [{"outbound": ["PDB", "ihm_cross_link_restraint_mm_poly_res_label_2_fkey"]}, "mon_id"]},
+			{"markdown_name" : "entity id 1","source": [{"outbound": ["PDB", "ihm_cross_link_restraint_mm_poly_res_label_1_fkey"]}, "entity_id"]},
+			{"markdown_name" : "entity id 2","source": [{"outbound": ["PDB", "ihm_cross_link_restraint_mm_poly_res_label_2_fkey"]}, "entity_id"]},
+			{"markdown_name" : "seq id 1","source": [{"outbound": ["PDB", "ihm_cross_link_restraint_mm_poly_res_label_1_fkey"]}, "num"]},
+			{"markdown_name" : "seq id 2","source": [{"outbound": ["PDB", "ihm_cross_link_restraint_mm_poly_res_label_2_fkey"]}, "num"]},
+			{"source": "sigma_1"},
+			{"source": "sigma_2"},
+			{"source": "atom_id_1"},
+			{"source": "atom_id_2"},
+			{"source": "entity_description_1"},
+			{"source": "entity_description_2"},
+			["PDB", "oss_link_restraint_conditional_crosslink_flag_term_fkey"],
+			["PDB", "ihm_cross_link_list_dataset_list_id_fkey"],
+			{"markdown_name" : "molecular entity 1","source": [{"outbound": ["PDB", "ihm_cross_link_restraint_mm_poly_res_label_1_fkey"]}, "RID"]},
+			{"markdown_name" : "molecular entity 2","source": [{"outbound": ["PDB", "ihm_cross_link_restraint_mm_poly_res_label_2_fkey"]}, "RID"]},
+			{"source": "distance_threshold"},
+			{"source": "id"},
+			{"source": [{"outbound": ["PDB", "ihm_cross_link_restraint_model_granularity_term_fkey"]}, "RID"]},
+			{"source": "psi"},
+			{"source": [{"outbound": ["PDB", "ihm_cross_link_restraint_restraint_type_term_fkey"]}, "RID"]},
+			["PDB", "ihm_cross_link_restraint_group_id_fkey"],
+			{"source": [{"outbound": ["PDB", "ihm_cross_link_restraint_RCB_fkey"]}, "RID"]},
+			{"source": [{"outbound": ["PDB", "ihm_cross_link_restraint_RMB_fkey"]}, "RID"]},
+			{"source": "RCT"},
+			{"source": "RMT"},
+			{"source": [{"outbound": ["PDB", "ihm_cross_link_restraint_Owner_fkey"]}, "RID"]}
+                ]
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_entity_poly_segment",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+		    "*" : [
+			{"source": "RID"},
+            {"source": [{"outbound": ["PDB", "ihm_entity_poly_segment_structure_id_fkey"]}, "RID"]},
+			{"source": "id"},
+			{"markdown_name" : "entity id","source": [{"outbound": ["PDB", "ihm_entity_poly_segment_mm_poly_res_label_begin_fkey"]}, "entity_id"]},
+			{"markdown_name" : "comp id begin","source": [{"outbound": ["PDB", "ihm_entity_poly_segment_mm_poly_res_label_begin_fkey"]}, "mon_id"]},
+			{"markdown_name" : "comp id end","source": [{"outbound": ["PDB", "ihm_entity_poly_segment_mm_poly_res_label_end_fkey"]}, "mon_id"]},
+			{"markdown_name" : "seq id begin","source": [{"outbound": ["PDB", "ihm_entity_poly_segment_mm_poly_res_label_begin_fkey"]}, "num"]},
+			{"markdown_name" : "seq id end","source": [{"outbound": ["PDB", "ihm_entity_poly_segment_mm_poly_res_label_end_fkey"]}, "num"]},
+			{"markdown_name" : "molecular entity begin","source": [{"outbound": ["PDB", "ihm_entity_poly_segment_mm_poly_res_label_begin_fkey"]}, "RID"]},
+			{"markdown_name" : "molecular entity end","source": [{"outbound": ["PDB", "ihm_entity_poly_segment_mm_poly_res_label_end_fkey"]}, "RID"]},
+			{"source": [{"outbound": ["PDB", "ihm_entity_poly_segment_RCB_fkey"]}, "RID"]},
+			{"source": [{"outbound": ["PDB", "ihm_entity_poly_segment_RMB_fkey"]}, "RID"]},
+			{"source": "RCT"},
+			{"source": "RMT"},
+			{"source": [{"outbound": ["PDB", "ihm_entity_poly_segment_Owner_fkey"]}, "RID"]}
+                ]
+         }
+      },
+      {
          "schema" : "public",
          "table" : "ERMrest_Group",
          "uri" : "tag:isrd.isi.edu,2016:visible-columns",
@@ -249,7 +341,7 @@
   ],
      "foreign_key_annotations" : [
       {
-		 "foreign_key_pattern" : "^(?!.*_structure_id_fkey).*_id_fkey",
+		 "foreign_key_pattern" : "^(?!.*_structure_id_fkey).*_id_fkey|ihm_cross_link_list_mm_poly_res_label_1_fkey|ihm_cross_link_list_mm_poly_res_label_2_fkey",
          "foreign_key_schema" : "PDB",
          "schema" : "PDB",
 		 "table_pattern" : ".*",
