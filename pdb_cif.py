@@ -169,6 +169,12 @@ class Table():
             columns = dict['items']['properties']
 
         for k, v in columns.items():
+            column_type = maptype(v['type']) if 'type' in v.keys() else refertype(v)
+            if 'examples' in v.keys():
+                example_info = ','.join(v['examples'])
+            else:
+                example_info = ''
+
             if 'description' in v.keys():
                 comment_str = v['description']
             else:
@@ -179,11 +185,16 @@ class Table():
                     comment_str = ''
             if not comment_str:
                 print('missing description {}:{}'.format(name,k))
+            else:
+                comment_str = 'type:{}\n{}'.format(column_type,comment_str)
+
+            if example_info:
+                comment_str = '{}\nexamples:{}'.format(comment_str, example_info)
 
             self.columns.append(
                 {
                     'name': k,
-                    'type': maptype(v['type']) if 'type' in v.keys() else refertype(v),
+                    'type': column_type,
                     'nullok': k not in nullOK(dict),
                     'comment': comment_str,
                 }
