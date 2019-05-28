@@ -69,6 +69,8 @@
             {"source": [{"outbound": ["PDB", "ihm_cross_link_list_structure_id_fkey"]}, "RID"]},
 			["PDB", "ihm_cross_link_list_linker_type_term_fkey"],
 			["PDB", "ihm_cross_link_list_dataset_list_id_fkey"],
+			{"source": "id"},
+			{"source": "group_id"},
 			{"markdown_name" : "molecular entity 1","source": [{"outbound": ["PDB", "ihm_cross_link_list_mm_poly_res_label_1_fkey"]}, "RID"]},
 			{"markdown_name" : "entity id 1","source": [{"outbound": ["PDB", "ihm_cross_link_list_mm_poly_res_label_1_fkey"]}, "entity_id"]},
 			{"markdown_name" : "comp id 1","source": [{"outbound": ["PDB", "ihm_cross_link_list_mm_poly_res_label_1_fkey"]}, "mon_id"]},
