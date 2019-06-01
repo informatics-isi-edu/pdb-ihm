@@ -1,20 +1,34 @@
+#!/usr/bin/python3
+
 import json
 import python_jsonschema_objects as pjs
 import deriva.core.ermrest_model as em
 from collections import namedtuple
 from deriva.core import ErmrestCatalog, get_credential, DerivaServer
-from deriva.utils.catalog.manage.configure_catalog import DerivaCatalogConfigure, DerivaTableConfigure
+from deriva.utils.catalog.components.configure_catalog import DerivaCatalogConfigure, DerivaTableConfigure
 import deriva.utils.catalog.components.model_elements as model_elements
 from deriva.core.ermrest_config import tag as chaise_tags
 from requests import HTTPError
 import csv
 import pickle
+import argparse
+import sys
 
-filename = 'json-schema-full-ihm_dev_full.json'
-hostname = 'pdb.isrd.isi.edu'
-schema_name = 'PDB'
-term_schema_name = 'Vocab'
-catalog_number = 4
+parser = argparse.ArgumentParser()
+parser.add_argument('hostname')
+parser.add_argument('catalog_number')
+parser.add_argument('schema_name')
+parser.add_argument('term_schema_name')
+parser.add_argument('filename')
+parser.add_argument('actions')
+args = parser.parse_args()
+
+filename = args.filename
+hostname = args.hostname
+schema_name = args.schema_name
+term_schema_name = args.term_schema_name
+catalog_number = args.catalog_number
+
 
 # Read JSON data into the datastore variable
 with open(filename, 'r') as f:
@@ -23,10 +37,56 @@ with open(filename, 'r') as f:
 flag_CreateVocab = False
 flag_CreateTable = False
 flag_CreateFkeys = False
+flag_CreateCompositeFkeys = False
 flag_AnnotateTable_VisibleColumn = False
 flag_AnnotateTable_RowName = False
+flag_VocabTable_VisibleColumn = False
 skip_ExistTable = False
 skip_PickleVob = False
+
+actions = args.actions.split(',')
+
+if 'all' in actions:
+	flag_CreateVocab = True
+	flag_CreateTable = True
+	flag_CreateFkeys = True
+	flag_CreateCompositeFkeys = True
+	flag_AnnotateTable_VisibleColumn = True
+	flag_AnnotateTable_RowName = True
+	flag_VocabTable_VisibleColumn = True
+	skip_ExistTable = True
+	skip_PickleVob = True
+else:
+	if 'CreateVocab' in actions:
+		flag_CreateVocab = True
+	if 'CreateTable' in actions:
+		flag_CreateTable = True
+	if 'CreateFkeys' in actions:
+		flag_CreateFkeys = True
+	if 'CreateCompositeFkeys' in actions:
+		flag_CreateCompositeFkeys = True
+	if 'AnnotateTable_VisibleColumn' in actions:
+		flag_AnnotateTable_VisibleColumn = True
+	if 'VocabTable_VisibleColumn' in actions:
+		flag_VocabTable_VisibleColumn = True
+	if 'AnnotateTable_RowName' in actions:
+		flag_AnnotateTable_RowName = True
+	if 'ExistTable' in actions:
+		skip_ExistTable = True
+	if 'PickleVob' in actions:
+		skip_PickleVob = True
+
+"""
+print('flag_CreateVocab: %s' % flag_CreateVocab)
+print('flag_CreateTable: %s' % flag_CreateTable)
+print('flag_CreateFkeys: %s' % flag_CreateFkeys)
+print('flag_CreateCompositeFkeys: %s' % flag_CreateCompositeFkeys)
+print('flag_AnnotateTable_VisibleColumn: %s' % flag_AnnotateTable_VisibleColumn)
+print('flag_VocabTable_VisibleColumn: %s' % flag_VocabTable_VisibleColumn)
+print('flag_AnnotateTable_RowName: %s' % flag_AnnotateTable_RowName)
+print('skip_ExistTable: %s' % skip_ExistTable)
+print('skip_PickleVob: %s' % skip_PickleVob)
+"""
 
 
 def table_schema(v):
@@ -114,10 +174,18 @@ def createKey(catalog_ermrest, schema_name, tname, col_list, kname):
     table.create_key(catalog_ermrest, key)
 
 
-def getFkeyColumn(schema_name, column_name, fkey_name):
+def getFkeyColumn(catalog_ermrest, schema_name, table_name, column_name, fkey_name):
+    model_root = catalog_ermrest.getCatalogModel()
+    comment = ''
+    try:
+    	comment = model_root.column(schema_name, table_name, column_name).comment
+    except:
+    	pass
+
     res = dict()
     res.update(
     {"markdown_name": column_name.replace('_',' '),
+     "comment": comment,
      "source": [
         {
             "outbound": [
@@ -183,7 +251,7 @@ class Table():
                     comment_str = column_des_dict.get(tab_col_key,'')
                 else:
                     comment_str = ''
-            if not comment_str:
+            if not comment_str or comment_str == '':
                 print('missing description {}:{}'.format(name,k))
             else:
                 comment_str = 'type:{}\n{}'.format(column_type,comment_str)
@@ -191,6 +259,7 @@ class Table():
             if example_info:
                 comment_str = '{}\nexamples:{}'.format(comment_str, example_info)
 
+            #comment_str = comment_str.replace('\n', '</br>')
             self.columns.append(
                 {
                     'name': k,
@@ -226,13 +295,27 @@ class Table():
 column_des_dict = getColumnDesc()
 tables = {k: Table(k, v) for k, v in pdb['properties'].items() if table_schema(v)}
 
+def getVocabTables():
+    vocab_tables = 0
+
+    for tname, t in tables.items():
+        if tname in ['_entry_id', '_schema_version']:
+            continue
+        elif t.vocab:
+            for vocab_k, vocab_v in t.vocab.items():
+                vocab_tables = vocab_tables + 1
+    return vocab_tables
+
+print('Total number of tables: %d' % (len(tables)))
+print('Total number of vocabulary tables: %d' % (getVocabTables()))
+
 
 if not skip_PickleVob:
     vocab_list = []
     for tname, t in tables.items():
         if t.vocab:
             vocab_list.append(t.vocab)
-    with open('exported_vocab.pickle', 'ab') as f:
+    with open('exported_vocab.pickle', 'wb') as f:
         pickle.dump(vocab_list, f)
 
 credential = get_credential(hostname)
@@ -323,7 +406,7 @@ if flag_AnnotateTable_VisibleColumn:
         for k, v in columns.items():
             if k == 'structure_id' or '$ref' in v.keys():
                 # visible_columns_entry.append([schema_name, "{}_{}_fkey".format(tname, k)])
-                visible_columns_entry.append(getFkeyColumn(schema_name,k, "{}_{}_fkey".format(tname, k)))
+                visible_columns_entry.append(getFkeyColumn(catalog_ermrest,schema_name,tname,k, "{}_{}_fkey".format(tname, k)))
             elif 'enum' in v.keys():
                 # handling length limit
                 fk_name = "{}_{}_term".format(tname, k)[-50:]
@@ -547,5 +630,87 @@ if flag_CreateFkeys:
                 table.create_fkey(catalog_ermrest, fk)
 
 
+
+if flag_CreateCompositeFkeys:
+    # Create Composite FKs
+    for tname, t in pdb['properties'].items():
+        print(tname)
+        if tname in ['_entry_id', '_schema_version', 'pdbx_nonpoly_scheme', 'pdbx_unobs_or_zero_occ_atoms',
+                     'pdbx_unobs_or_zero_occ_residues']:
+            continue
+        elif t['type'] == 'object':
+            columns = t['properties']
+        elif t['type'] == 'array':
+            columns = t['items']['properties']
+
+        # the composite fkey case
+        composite_fkey_children = {}
+        composite_fkey_parent = {}
+        if tname in ['ihm_gaussian_obj_ensemble', 'ihm_gaussian_obj_site', 'ihm_sphere_obj_site',
+                     'ihm_starting_model_coord']:
+            continue
+        for k, v in columns.items():
+            if 'type' in v.keys():
+                continue
+            elif '$ref' in v.keys():
+                parent_table, parent_column = referTable(v)
+                # key_name = "{}_{}_key".format(parent_table, parent_column)
+                if parent_table not in ['entity_poly_seq']:  # the composite fkey case
+                    continue
+                elif '_attribute_groups' not in v.keys():
+                    composite_fkey_children['composite'] = composite_fkey_children.get(
+                        'composite', ['structure_id']) + [k]
+                    composite_fkey_parent['composite'] = composite_fkey_parent.get(
+                        'composite', ['structure_id']) + [parent_column]
+                elif '_attribute_groups' in v.keys():
+                    for attribute in v['_attribute_groups']:
+                        if 'label' in attribute.keys():
+                            composite_fkey_children[attribute['label']] = composite_fkey_children.get(
+                                attribute['label'], ['structure_id']) + [k]
+                            composite_fkey_parent[attribute['label']] = composite_fkey_parent.get(
+                                attribute['label'], ['structure_id']) + [parent_column]
+                        else:
+                            composite_fkey_children[attribute['id']] = composite_fkey_children.get(attribute['id'],
+                                                                                                   ['structure_id']) + [
+                                                                           k]
+                            composite_fkey_parent[attribute['id']] = composite_fkey_parent.get(attribute['id'],
+                                                                                               ['structure_id']) + [
+                                                                         parent_column]
+
+        if composite_fkey_children and composite_fkey_parent:
+            table = model.table(schema_name, tname)
+            for k1, v1 in composite_fkey_parent.items():
+                fk_name = "{}_{}_fkey".format(tname, k1)
+                if (schema_name, fk_name) in table.foreign_keys.elements.keys():
+                    continue
+                model = catalog_ermrest.getCatalogModel()
+                fk = em.ForeignKey.define(composite_fkey_children[k1]
+                                          , schema_name
+                                          , 'entity_poly_seq'
+                                          , composite_fkey_parent[k1]
+                                          , on_update='CASCADE',
+                                          on_delete='SET NULL',
+                                          constraint_names=[
+                                              [schema_name, fk_name]],
+                                          )
+
+                model = catalog_ermrest.getCatalogModel()
+                table.create_fkey(catalog_ermrest, fk)
+
+
+if flag_VocabTable_VisibleColumn:
+	model_root = catalog_ermrest.getCatalogModel()
+	for tname in model_root.schemas[term_schema_name].tables:
+		tab = model_root.schemas[term_schema_name].tables[tname]
+		visible_columns_other = ['RID','Name','Description','ID','URI']
+		visible_columns_other.append([term_schema_name, "{}_RCB_fkey".format(tname)])
+		visible_columns_other.append([term_schema_name, "{}_RMB_fkey".format(tname)])
+		visible_columns_other.append("RCT")
+		visible_columns_other.append("RMT")
+		visible_columns_other.append([term_schema_name, "{}_Owner_fkey".format(tname)])
+		tab.annotations.update({
+		   chaise_tags.visible_columns: {'*': visible_columns_other}
+		})       
+		tab.apply(catalog_ermrest)
 
 
