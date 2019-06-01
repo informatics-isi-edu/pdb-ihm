@@ -1,14 +1,26 @@
+#!/usr/bin/python3
+
 import json
 import python_jsonschema_objects as pjs
 import deriva.core.ermrest_model as em
 from collections import namedtuple
 from deriva.core import ErmrestCatalog, get_credential, DerivaServer
-from deriva.utils.catalog.manage.configure_catalog import DerivaCatalogConfigure, DerivaTableConfigure
+from deriva.utils.catalog.components.configure_catalog import DerivaCatalogConfigure, DerivaTableConfigure
 import deriva.utils.catalog.components.model_elements as model_elements
 from deriva.core.ermrest_config import tag as chaise_tags
 from requests import HTTPError
 import csv
 import pickle
+import argparse
+import sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument('hostname')
+parser.add_argument('catalog_number')
+parser.add_argument('schema_name')
+parser.add_argument('term_schema_name')
+args = parser.parse_args()
+
 
 filename_list = ['PDBDEV_00000001.json', 'PDBDEV_00000020.json']
 
@@ -17,10 +29,10 @@ term_data_map = {}
 with open('exported_vocab.pickle', 'rb') as pickle_file:
     vocab_list = pickle.load(pickle_file)
 
-hostname = 'pdb.isrd.isi.edu'
-vocab_schema_name = 'Vocab'
-schema_name = 'PDB'
-catalog_number = 4
+hostname = args.hostname
+vocab_schema_name = args.term_schema_name
+schema_name = args.schema_name
+catalog_number = args.catalog_number
 credential = get_credential(hostname)
 server = DerivaServer('https', hostname, credential)
 catalog = server.connect_ermrest(catalog_number)
