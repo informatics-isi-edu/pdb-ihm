@@ -46,35 +46,24 @@ skip_PickleVob = False
 
 actions = args.actions.split(',')
 
-if 'all' in actions:
+if 'CreateVocab' in actions:
 	flag_CreateVocab = True
+if 'CreateTable' in actions:
 	flag_CreateTable = True
+if 'CreateFkeys' in actions:
 	flag_CreateFkeys = True
+if 'CreateCompositeFkeys' in actions:
 	flag_CreateCompositeFkeys = True
+if 'AnnotateTable_VisibleColumn' in actions:
 	flag_AnnotateTable_VisibleColumn = True
-	flag_AnnotateTable_RowName = True
+if 'VocabTable_VisibleColumn' in actions:
 	flag_VocabTable_VisibleColumn = True
+if 'AnnotateTable_RowName' in actions:
+	flag_AnnotateTable_RowName = True
+if 'ExistTable' in actions:
 	skip_ExistTable = True
+if 'PickleVob' in actions:
 	skip_PickleVob = True
-else:
-	if 'CreateVocab' in actions:
-		flag_CreateVocab = True
-	if 'CreateTable' in actions:
-		flag_CreateTable = True
-	if 'CreateFkeys' in actions:
-		flag_CreateFkeys = True
-	if 'CreateCompositeFkeys' in actions:
-		flag_CreateCompositeFkeys = True
-	if 'AnnotateTable_VisibleColumn' in actions:
-		flag_AnnotateTable_VisibleColumn = True
-	if 'VocabTable_VisibleColumn' in actions:
-		flag_VocabTable_VisibleColumn = True
-	if 'AnnotateTable_RowName' in actions:
-		flag_AnnotateTable_RowName = True
-	if 'ExistTable' in actions:
-		skip_ExistTable = True
-	if 'PickleVob' in actions:
-		skip_PickleVob = True
 
 """
 print('flag_CreateVocab: %s' % flag_CreateVocab)
