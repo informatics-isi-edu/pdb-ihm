@@ -5123,6 +5123,7 @@
             "id": 1,
             "reference_id": 1,
             "file_path": "state1_fa.cst",
+            "content_type": "Input data or restraints",
             "details": "Rosetta style constraints for state 1 (0mV)",
             "structure_id": "PDBDEV_00000032"
          },
@@ -5130,6 +5131,7 @@
             "id": 2,
             "reference_id": 1,
             "file_path": "state2_fa.cst",
+            "content_type": "Input data or restraints",
             "details": "Rosetta style constraints for state 2 (-100mV)",
             "structure_id": "PDBDEV_00000032"
          }
@@ -5706,7 +5708,7 @@
          {
             "id": 1,
             "name": "HCN Voltage Gated Ion Channel",
-            "description": " Structure of the HCN voltage gated ion channel determined by Rosetta using restraints derived from \n  transition metal ion FRET data and computational models. ",
+            "description": " Structure of the HCN voltage gated ion channel determined by Rosetta using restraints derived from \n  transition metal ion FRET data and computational models.",
             "structure_id": "PDBDEV_00000032"
          }
       ],
