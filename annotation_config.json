@@ -59,6 +59,1358 @@
          ]
          }
       },
+    {
+        "schema": "PDB",
+        "table": "entity",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "entity_name_com_entity_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "entity_name_sys_entity_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "entity_src_gen_entity_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "entity_poly_entity_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "pdbx_entity_nonpoly_entity_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "struct_asym_entity_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_model_representation_details_entity_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_struct_assembly_details_entity_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_starting_model_details_entity_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_ligand_probe_entity_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_non_poly_feature_entity_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_interface_residue_feature_binding_partner_entity_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_localization_density_files_entity_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "pdbx_entity_poly_na_type_entity_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "chem_comp",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "chem_comp_atom_comp_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "pdbx_entity_nonpoly_comp_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "entity_poly_seq_mon_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_poly_probe_position_mut_res_chem_comp_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_non_poly_feature_comp_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "citation",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "citation_author_citation_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "software_citation_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_3dem_restraint_fitting_method_citation_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_epr_restraint_fitting_method_citation_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "entity_poly",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "entity_poly_seq_entity_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "entity_poly_seq",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_entity_poly_segment_mm_poly_res_label_begin_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_entity_poly_segment_mm_poly_res_label_end_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_starting_model_seq_dif_mm_poly_res_label_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_poly_probe_position_mm_poly_res_label_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_cross_link_list_mm_poly_res_label_1_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_cross_link_list_mm_poly_res_label_2_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_cross_link_restraint_mm_poly_res_label_1_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_cross_link_restraint_mm_poly_res_label_2_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_hydroxyl_radical_fp_restraint_mm_poly_res_label_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_predicted_contact_restraint_mm_poly_res_label_1_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_predicted_contact_restraint_mm_poly_res_label_2_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_poly_atom_feature_mm_poly_res_label_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_poly_residue_feature_mm_poly_res_label_begin_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_poly_residue_feature_mm_poly_res_label_end_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_residues_not_modeled_mm_poly_res_label_begin_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_residues_not_modeled_mm_poly_res_label_end_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "entry",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "entry_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "struct_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "struct_entry_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "audit_author_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "citation_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "citation_author_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "software_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "chem_comp_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "chem_comp_atom_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "entity_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "entity_name_com_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "entity_name_sys_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "entity_src_gen_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "entity_poly_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "pdbx_entity_nonpoly_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "entity_poly_seq_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "atom_type_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "struct_asym_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_entity_poly_segment_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_model_representation_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_model_representation_details_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_struct_assembly_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_struct_assembly_details_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_struct_assembly_class_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_struct_assembly_class_link_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_dataset_list_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_dataset_group_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_dataset_group_link_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_dataset_related_db_reference_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_external_reference_info_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_external_files_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_dataset_external_reference_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_related_datasets_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_starting_model_details_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_starting_comparative_models_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_starting_computational_models_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_starting_model_seq_dif_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_chemical_component_descriptor_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_probe_list_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_poly_probe_position_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_poly_probe_conjugate_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_ligand_probe_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_cross_link_list_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_cross_link_restraint_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_cross_link_result_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_cross_link_result_parameters_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_2dem_class_average_restraint_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_2dem_class_average_fitting_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_3dem_restraint_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_sas_restraint_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_epr_restraint_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_hydroxyl_radical_fp_restraint_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_predicted_contact_restraint_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_feature_list_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_poly_atom_feature_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_poly_residue_feature_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_non_poly_feature_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_interface_residue_feature_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_pseudo_site_feature_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_derived_distance_restraint_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_geometric_object_list_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_geometric_object_center_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_geometric_object_transformation_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_geometric_object_sphere_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_geometric_object_torus_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_geometric_object_half_torus_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_geometric_object_axis_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_geometric_object_plane_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_geometric_object_distance_restraint_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_modeling_protocol_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_modeling_protocol_details_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_modeling_post_process_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_model_list_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_model_group_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_model_group_link_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_model_representative_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_residues_not_modeled_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_multi_state_modeling_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_multi_state_model_group_link_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_ensemble_info_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_ordered_ensemble_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_localization_density_files_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "audit_conform_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "pdbx_entity_poly_na_type_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "pdbx_entry_details_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "pdbx_entry_details_entry_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "pdbx_inhibitor_info_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "pdbx_ion_info_structure_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "pdbx_protein_info_structure_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_2dem_class_average_restraint",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_2dem_class_average_fitting_restraint_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_chemical_component_descriptor",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_probe_list_probe_chem_comp_descriptor_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_probe_list_reactive_probe_chem_comp_descriptor_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_poly_probe_position_mod_res_chem_comp_descriptor_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_poly_probe_conjugate_chem_comp_descriptor_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_cross_link_list_linker_chem_comp_descriptor_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_cross_link_list",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_cross_link_restraint_group_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_cross_link_restraint",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_cross_link_result_restraint_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_cross_link_result_parameters_restraint_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_dataset_group",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_dataset_group_link_group_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_modeling_protocol_details_dataset_group_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_modeling_post_process_dataset_group_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_dataset_list",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_dataset_group_link_dataset_list_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_dataset_related_db_reference_dataset_list_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_dataset_external_reference_dataset_list_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_related_datasets_dataset_list_id_derived_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_related_datasets_dataset_list_id_primary_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_starting_model_details_dataset_list_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_starting_comparative_models_template_dataset_list_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_poly_probe_conjugate_dataset_list_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_ligand_probe_dataset_list_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_cross_link_list_dataset_list_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_2dem_class_average_restraint_dataset_list_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_3dem_restraint_dataset_list_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_sas_restraint_dataset_list_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_epr_restraint_dataset_list_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_hydroxyl_radical_fp_restraint_dataset_list_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_predicted_contact_restraint_dataset_list_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_interface_residue_feature_dataset_list_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_derived_distance_restraint_dataset_list_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_geometric_object_distance_restraint_dataset_list_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_ensemble_info",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_cross_link_result_ensemble_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_localization_density_files_ensemble_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_entity_poly_segment",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_model_representation_details_entity_poly_segment_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_struct_assembly_details_entity_poly_segment_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_starting_model_details_entity_poly_segment_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_localization_density_files_entity_poly_segment_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_external_files",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_dataset_external_reference_file_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_starting_comparative_models_alignment_file_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_starting_computational_models_script_file_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_modeling_protocol_details_script_file_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_modeling_post_process_script_file_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_ensemble_info_ensemble_file_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_localization_density_files_file_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_external_reference_info",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_external_files_reference_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_feature_list",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_poly_atom_feature_feature_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_poly_residue_feature_feature_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_non_poly_feature_feature_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_interface_residue_feature_feature_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_pseudo_site_feature_feature_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_derived_distance_restraint_feature_id_1_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_derived_distance_restraint_feature_id_2_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_geometric_object_distance_restraint_feature_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_geometric_object_center",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_geometric_object_sphere_center_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_geometric_object_torus_center_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_geometric_object_list",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_geometric_object_sphere_object_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_geometric_object_torus_object_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_geometric_object_axis_object_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_geometric_object_plane_object_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_geometric_object_distance_restraint_object_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_geometric_object_torus",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_geometric_object_half_torus_object_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_geometric_object_transformation",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_geometric_object_sphere_transformation_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_geometric_object_torus_transformation_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_geometric_object_axis_transformation_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_geometric_object_plane_transformation_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_model_group",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_model_group_link_group_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_model_representative_model_group_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_multi_state_model_group_link_model_group_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_ensemble_info_model_group_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_ordered_ensemble_model_group_id_begin_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_ordered_ensemble_model_group_id_end_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_model_list",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_cross_link_result_parameters_model_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_2dem_class_average_fitting_model_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_3dem_restraint_model_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_sas_restraint_model_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_epr_restraint_model_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_model_group_link_model_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_model_representative_model_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_residues_not_modeled_model_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_model_representation",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_model_representation_details_representation_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_model_list_representation_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_modeling_post_process",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_ensemble_info_post_process_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_modeling_protocol",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_modeling_protocol_details_protocol_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_modeling_post_process_protocol_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_model_list_protocol_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_multi_state_modeling",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_multi_state_model_group_link_state_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_poly_probe_position",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_poly_probe_conjugate_position_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_probe_list",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_poly_probe_conjugate_probe_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_ligand_probe_probe_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_starting_model_details",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_model_representation_details_starting_model_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_starting_comparative_models_starting_model_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_starting_computational_models_starting_model_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_starting_model_seq_dif_starting_model_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_struct_assembly",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_struct_assembly_details_assembly_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_struct_assembly_details_parent_assembly_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_struct_assembly_class_link_assembly_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_2dem_class_average_restraint_struct_assembly_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_3dem_restraint_struct_assembly_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_sas_restraint_struct_assembly_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_modeling_protocol_details_struct_assembly_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_modeling_post_process_struct_assembly_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_model_list_assembly_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "ihm_struct_assembly_class",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_struct_assembly_class_link_class_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "software",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_starting_computational_models_software_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_epr_restraint_fitting_software_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_hydroxyl_radical_fp_restraint_software_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_predicted_contact_restraint_software_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_modeling_protocol_details_software_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_modeling_post_process_software_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
+    {
+        "schema": "PDB",
+        "table": "struct_asym",
+        "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+        "value": {
+            "detailed": [
+                [
+                    "PDB",
+                    "ihm_model_representation_details_entity_asym_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_struct_assembly_details_asym_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_starting_model_details_asym_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_starting_model_seq_dif_asym_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_cross_link_restraint_asym_id_1_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_cross_link_restraint_asym_id_2_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_hydroxyl_radical_fp_restraint_asym_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_predicted_contact_restraint_asym_id_1_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_predicted_contact_restraint_asym_id_2_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_poly_atom_feature_asym_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_poly_residue_feature_asym_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_non_poly_feature_asym_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_interface_residue_feature_binding_partner_asym_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_residues_not_modeled_asym_id_fkey"
+                ],
+                [
+                    "PDB",
+                    "ihm_localization_density_files_asym_id_fkey"
+                ]
+            ],
+            "filter": "detailed"
+        }
+    },
       {
          "schema" : "PDB",
          "table" : "ihm_cross_link_list",
