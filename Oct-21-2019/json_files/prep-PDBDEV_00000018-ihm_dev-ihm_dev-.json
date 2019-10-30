@@ -32086,7 +32086,7 @@
             "entity_id": "6",
             "seq_id_begin": 8,
             "seq_id_end": 56,
-            "comp_id_begin": "GLU",
+            "comp_id_begin": "PRO",
             "comp_id_end": "ASP",
             "structure_id": "PDBDEV_00000018"
          },
@@ -32104,7 +32104,7 @@
             "entity_id": "7",
             "seq_id_begin": 9,
             "seq_id_end": 369,
-            "comp_id_begin": "LEU",
+            "comp_id_begin": "TRP",
             "comp_id_end": "PRO",
             "structure_id": "PDBDEV_00000018"
          },
