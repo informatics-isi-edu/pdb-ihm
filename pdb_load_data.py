@@ -13,26 +13,40 @@ import csv
 import pickle
 import argparse
 import sys
+import os
 
 parser = argparse.ArgumentParser()
 parser.add_argument('hostname')
 parser.add_argument('catalog_number')
 parser.add_argument('schema_name')
 parser.add_argument('term_schema_name')
+parser.add_argument('files_dir')
+parser.add_argument('pickle_file')
 args = parser.parse_args()
 
 
-filename_list = ['PDBDEV_00000001.json', 'PDBDEV_00000020.json']
-
 vocab_list = []
 term_data_map = {}
-with open('exported_vocab.pickle', 'rb') as pickle_file:
+hostname = args.hostname
+catalog_number = args.catalog_number
+schema_name = args.schema_name
+vocab_schema_name = args.term_schema_name
+files_dir = args.files_dir
+pickle_file = args.pickle_file
+
+print ('hostname: {}'.format(hostname))
+print ('catalog_number: {}'.format(catalog_number))
+print ('schema_name: {}'.format(schema_name))
+print ('term_schema_name: {}'.format(vocab_schema_name))
+print ('files_dir: {}'.format(files_dir))
+print ('pickle_file: {}'.format(pickle_file))
+
+with open(pickle_file, 'rb') as pickle_file:
     vocab_list = pickle.load(pickle_file)
 
-hostname = args.hostname
-vocab_schema_name = args.term_schema_name
-schema_name = args.schema_name
-catalog_number = args.catalog_number
+filename_list = os.listdir(files_dir)
+filename_list.sort()
+
 credential = get_credential(hostname)
 server = DerivaServer('https', hostname, credential)
 catalog = server.connect_ermrest(catalog_number)
@@ -61,22 +75,28 @@ for vocab_dict in vocab_list:
 #         print(fkey_def['referenced_columns'])
 
 # Read JSON data into the datastore variable
+inserted_rows = 0
+last_inserted_rows = 0
+
 for filename in filename_list:
-    with open(filename, 'r') as f:
+    with open('{}/{}'.format(files_dir, filename), 'r') as f:
         pdb = json.load(f)
         pdb = pdb[0]
+    #print('File: {}'.format(filename))
     for tname, records in pdb.items():
-        print(tname)
+        #print('\tTable: {}'.format(tname))
         if tname in ['_id', '_entry_id', '__entry_id', '_schema_version']:
             continue
         elif type(records) is dict:
             records = [records]
 
         table = pb.schemas[schema_name].tables[tname]
+        """
         entities = table.path.entities()
-        if len(entities) > 0 and '00000001' in filename:
+        if len(entities) > 0 and '00000032' in filename:
+            print ('********* 00000032 in {}'.format(filename))
             table.path.delete()
-
+        """
         entities = []
         for r in records:
             for k, v in r.items():
@@ -85,7 +105,13 @@ for filename in filename_list:
             entities.append(r)
         try:
             table.insert(entities)
+            inserted_rows = inserted_rows + len(entities)
         except HTTPError as e:
             print(e)
             print(e.response.text)
+            print ('Inserted Rows: {}'.format(inserted_rows))
             exit(1)
+    print ('File {}: inserted {} rows'.format(filename, (inserted_rows - last_inserted_rows)))
+    last_inserted_rows = inserted_rows
+
+print ('Successfully inserted Rows: {}'.format(inserted_rows))
