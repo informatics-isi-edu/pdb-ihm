@@ -13,6 +13,7 @@ import csv
 import pickle
 import argparse
 import sys
+import traceback
 
 parser = argparse.ArgumentParser()
 parser.add_argument('hostname')
@@ -20,6 +21,7 @@ parser.add_argument('catalog_number')
 parser.add_argument('schema_name')
 parser.add_argument('term_schema_name')
 parser.add_argument('filename')
+parser.add_argument('pickle_file')
 parser.add_argument('actions')
 args = parser.parse_args()
 
@@ -28,7 +30,15 @@ hostname = args.hostname
 schema_name = args.schema_name
 term_schema_name = args.term_schema_name
 catalog_number = args.catalog_number
+pickle_file = args.pickle_file
 
+print ('hostname: {}'.format(hostname))
+print ('catalog_number: {}'.format(catalog_number))
+print ('schema_name: {}'.format(schema_name))
+print ('term_schema_name: {}'.format(term_schema_name))
+print ('filename: {}'.format(filename))
+print ('pickle_file: {}'.format(pickle_file))
+print ('actions: {}'.format(args.actions))
 
 # Read JSON data into the datastore variable
 with open(filename, 'r') as f:
@@ -39,6 +49,7 @@ flag_CreateTable = False
 flag_CreateFkeys = False
 flag_CreateCompositeFkeys = False
 flag_AnnotateTable_VisibleColumn = False
+flag_Annotations_Config = False
 flag_AnnotateTable_RowName = False
 flag_VocabTable_VisibleColumn = False
 skip_ExistTable = False
@@ -55,7 +66,9 @@ if 'CreateFkeys' in actions:
 if 'CreateCompositeFkeys' in actions:
 	flag_CreateCompositeFkeys = True
 if 'AnnotateTable_VisibleColumn' in actions:
-	flag_AnnotateTable_VisibleColumn = True
+    flag_AnnotateTable_VisibleColumn = True
+if 'AnnotationsConfig' in actions:
+    flag_Annotations_Config = True
 if 'VocabTable_VisibleColumn' in actions:
 	flag_VocabTable_VisibleColumn = True
 if 'AnnotateTable_RowName' in actions:
@@ -71,12 +84,46 @@ print('flag_CreateTable: %s' % flag_CreateTable)
 print('flag_CreateFkeys: %s' % flag_CreateFkeys)
 print('flag_CreateCompositeFkeys: %s' % flag_CreateCompositeFkeys)
 print('flag_AnnotateTable_VisibleColumn: %s' % flag_AnnotateTable_VisibleColumn)
+print('flag_Annotations_Config: %s' % flag_Annotations_Config)
 print('flag_VocabTable_VisibleColumn: %s' % flag_VocabTable_VisibleColumn)
 print('flag_AnnotateTable_RowName: %s' % flag_AnnotateTable_RowName)
 print('skip_ExistTable: %s' % skip_ExistTable)
 print('skip_PickleVob: %s' % skip_PickleVob)
 """
 
+row_name_list = [
+    ('entry', 'id'),
+    ('ihm_model_list', 'model_id'),
+    ('struct_asym', 'id'),
+    ('chem_comp', 'id'),
+    ('entity', 'id'),
+    ('atom_type', 'symbol'),
+    ('citation', 'id'),
+    ('entity_poly', 'entity_id'),
+    ('ihm_2dem_class_average_restraint', 'id'),
+    ('ihm_dataset_list', 'id'),
+    ('ihm_struct_assembly', 'id'),
+    ('ihm_cross_link_list', 'id'),
+    ('ihm_ensemble_info', 'ensemble_id'),
+    ('ihm_cross_link_restraint', 'id'),
+    ('ihm_external_files', 'id'),
+    ('ihm_dataset_group', 'id'),
+    ('ihm_feature_list', 'feature_id'),
+    ('ihm_model_group', 'id'),
+    ('ihm_modeling_post_process', 'id'),
+    ('ihm_external_reference_info', 'reference_id'),
+    ('ihm_geometric_object_list', 'object_id'),
+    ('ihm_geometric_object_transformation', 'id'),
+    ('ihm_geometric_object_torus', 'object_id'),
+    ('ihm_geometric_object_center', 'id'),
+    ('software', 'pdbx_ordinal'),
+    ('ihm_entity_poly_segment', 'id'),
+    ('ihm_modeling_protocol', 'id'),
+    ('ihm_model_representation', 'id'),
+    ('ihm_starting_model_details', 'starting_model_id'),
+    ('ihm_multi_state_modeling', 'state_id'),
+    ('ihm_struct_assembly_class', 'id')
+]
 
 def table_schema(v):
     # A table will be represented as a array whose single item must be an object whose properties are the columns.
@@ -226,23 +273,36 @@ class Table():
             columns = dict['items']['properties']
 
         for k, v in columns.items():
-            column_type = maptype(v['type']) if 'type' in v.keys() else refertype(v)
+            try:
+                column_type = maptype(v['type']) if 'type' in v.keys() else refertype(v)
+            except:
+                print ('k={}, v={}'.format(k,v))
+                print ('v.keys(): {}'.format(v.keys()))
+                et, ev, tb = sys.exc_info()
+                print('got exception "%s"' % str(ev))
+                print('%s' % str(traceback.format_exception(et, ev, tb)))
+                sys.exit(1)
+                
             if 'examples' in v.keys():
                 example_info = ','.join(v['examples'])
             else:
                 example_info = ''
 
+            hasDescription = False
             if 'description' in v.keys():
                 comment_str = v['description']
+                hasDescription = True
             else:
                 tab_col_key = referRootColumn(name,k,v,column_des_dict)
                 if tab_col_key:
-                    comment_str = column_des_dict.get(tab_col_key,'')
+                    #comment_str = column_des_dict.get(tab_col_key,'')
+                    table_name, col_name = tab_col_key
+                    comment_str = 'A reference to table %s.%s.' % (table_name, col_name)
                 else:
                     comment_str = ''
             if not comment_str or comment_str == '':
                 print('missing description {}:{}'.format(name,k))
-            else:
+            elif hasDescription == True:
                 comment_str = 'type:{}\n{}'.format(column_type,comment_str)
 
             if example_info:
@@ -271,6 +331,7 @@ class Table():
                 self.pkey_columns.extend([k])
 
         if 'structure_id' not in columns.keys():
+            print('Table %s has not the column structure_id as a key.' % self.name)
             self.columns.append(
                 {
                     'name': 'structure_id',
@@ -283,6 +344,7 @@ class Table():
 
 column_des_dict = getColumnDesc()
 tables = {k: Table(k, v) for k, v in pdb['properties'].items() if table_schema(v)}
+print ('The Table class was created successfully')
 
 def getVocabTables():
     vocab_tables = 0
@@ -295,17 +357,41 @@ def getVocabTables():
                 vocab_tables = vocab_tables + 1
     return vocab_tables
 
-print('Total number of tables: %d' % (len(tables)))
-print('Total number of vocabulary tables: %d' % (getVocabTables()))
+def getColumns():
+    columns_number = 0
 
+    for tname, t in tables.items():
+        if tname in ['_entry_id', '_schema_version']:
+            continue
+        elif not t.vocab:
+            columns_number = columns_number + len(t.columns)
+    return columns_number
+
+def getVocabTerms():
+    vocab_terms = 0
+
+    for tname, t in tables.items():
+        if tname in ['_entry_id', '_schema_version']:
+            continue
+        elif t.vocab:
+            for vocab_k, vocab_v in t.vocab.items():
+                vocab_terms = vocab_terms + len(vocab_v)
+    return vocab_terms
+
+print('Total number of tables: %d' % (len(tables)))
+print('Total number of columns: %d' % (getColumns()))
+print('Total number of vocabulary tables: %d' % (getVocabTables()))
+print('Total number of vocabulary terms: %d' % (getVocabTerms()))
 
 if not skip_PickleVob:
     vocab_list = []
     for tname, t in tables.items():
         if t.vocab:
             vocab_list.append(t.vocab)
-    with open('exported_vocab.pickle', 'wb') as f:
+    with open(pickle_file, 'wb') as f:
         pickle.dump(vocab_list, f)
+else:
+    print ('Skipping generating the pickle')
 
 credential = get_credential(hostname)
 catalog_ermrest = ErmrestCatalog('https', hostname, catalog_number, credentials=credential)
@@ -321,39 +407,6 @@ else:
 model = catalog_ermrest.getCatalogModel()
 
 if flag_AnnotateTable_RowName:
-    row_name_list = [
-        ('entry', 'id'),
-        ('ihm_model_list', 'model_id'),
-        ('struct_asym', 'id'),
-        ('chem_comp', 'id'),
-        ('entity', 'id'),
-        ('atom_type', 'symbol'),
-        ('citation', 'id'),
-        ('entity_poly', 'entity_id'),
-        ('ihm_2dem_class_average_restraint', 'id'),
-        ('ihm_dataset_list', 'id'),
-        ('ihm_struct_assembly', 'id'),
-        ('ihm_cross_link_list', 'id'),
-        ('ihm_ensemble_info', 'ensemble_id'),
-        ('ihm_cross_link_restraint', 'id'),
-        ('ihm_external_files', 'id'),
-        ('ihm_dataset_group', 'id'),
-        ('ihm_feature_list', 'feature_id'),
-        ('ihm_model_group', 'id'),
-        ('ihm_modeling_post_process', 'id'),
-        ('ihm_external_reference_info', 'reference_id'),
-        ('ihm_geometric_object_list', 'object_id'),
-        ('ihm_geometric_object_transformation', 'id'),
-        ('ihm_geometric_object_torus', 'object_id'),
-        ('ihm_geometric_object_center', 'id'),
-        ('software', 'pdbx_ordinal'),
-        ('ihm_entity_poly_segment', 'id'),
-        ('ihm_modeling_protocol', 'id'),
-        ('ihm_model_representation', 'id'),
-        ('ihm_starting_model_details', 'starting_model_id'),
-        ('ihm_multi_state_modeling', 'state_id'),
-        ('ihm_struct_assembly_class', 'id')
-    ]
     # row_name_list = [('chem_comp', 'id')]
 
     model_root = catalog_ermrest.getCatalogModel()
@@ -421,6 +474,83 @@ if flag_AnnotateTable_VisibleColumn:
         })
 
         tab.apply(catalog_ermrest)
+
+if flag_Annotations_Config:
+    annotation_config = []
+    for tname, t in pdb['properties'].items():
+        # these table has wrong foreign key definitions, skip them for now
+        if tname in ['_entry_id', '_schema_version', 'pdbx_nonpoly_scheme', 'pdbx_unobs_or_zero_occ_atoms',
+                     'pdbx_unobs_or_zero_occ_residues']:
+            continue
+        elif tname in ['ihm_cross_link_list','ihm_cross_link_restraint','ihm_entity_poly_segment']:
+            continue
+        # elif tname not in ['entity_poly_seq']:
+        #     continue
+        # elif tname <'ihm_feature_list':
+        #     continue
+        elif t['type'] == 'object':
+            columns = t['properties']
+        elif t['type'] == 'array':
+            columns = t['items']['properties']
+
+        visible_columns_entry = []
+        visible_columns_other = []
+        print(tname)
+
+        # the single column fkey case
+        for k, v in columns.items():
+            if k == 'structure_id' or '$ref' in v.keys():
+                # visible_columns_entry.append([schema_name, "{}_{}_fkey".format(tname, k)])
+                visible_column = getFkeyColumn(catalog_ermrest,schema_name,tname,k, "{}_{}_fkey".format(tname, k))
+                del visible_column['comment']
+                visible_columns_entry.append(visible_column)
+            elif 'enum' in v.keys():
+                # handling length limit
+                fk_name = "{}_{}_term".format(tname, k)[-50:]
+                fk_name = "{}_fkey".format(fk_name)[-63:]
+                visible_columns_entry.append([schema_name, fk_name])
+            else:
+                visible_columns_entry.append({'source': k})
+
+        visible_columns_other = [c for c in visible_columns_entry]
+        visible_columns_other.insert(0, {'source': 'RID'})
+        #visible_columns_other.append([schema_name, "{}_RCB_fkey".format(tname)])
+        #visible_columns_other.append([schema_name, "{}_RMB_fkey".format(tname)])
+        #visible_columns_other.append({'source': 'RCT'})
+        #visible_columns_other.append({'source': 'RMT'})
+        visible_columns_other.append([schema_name, "{}_Owner_fkey".format(tname)])
+
+        annotation_config.append({'schema': '%s' % schema_name,
+                                    'table': '%s' % tname,
+                                    'uri' : 'tag:isrd.isi.edu,2016:visible-columns',
+                                    'value' : {'entry': visible_columns_entry, 
+                                               '*': visible_columns_other
+                                               }
+                                    })
+    model_root = catalog_ermrest.getCatalogModel()
+    for tname in model_root.schemas[term_schema_name].tables:
+        visible_columns_other = [{'source': 'RID'},{'source': 'Name'},{'source': 'Description'},{'source': 'ID'},{'source': 'URI'}]
+        #visible_columns_other.append([term_schema_name, "{}_RCB_fkey".format(tname)])
+        #visible_columns_other.append([term_schema_name, "{}_RMB_fkey".format(tname)])
+        #visible_columns_other.append({'source': 'RCT'})
+        #visible_columns_other.append({'source': 'RMT'})
+        visible_columns_other.append([term_schema_name, "{}_Owner_fkey".format(tname)])
+        annotation_config.append({'schema': '%s' % term_schema_name,
+                                    'table': '%s' % tname,
+                                    'uri' : 'tag:isrd.isi.edu,2016:visible-columns',
+                                    'value' : {'*': visible_columns_other
+                                               }
+                                    })
+    for p_table, p_column in row_name_list:
+        annotation_config.append({'schema': '%s' % schema_name,
+                                    'table': '%s' % p_table,
+                                    'uri' : 'tag:isrd.isi.edu,2016:table-display',
+                                    'value' : {'row_name': {"row_markdown_pattern": "{{{" + p_column + "}}}"}}
+                                    })
+        
+    fp = open('visible_columns.json', 'w')
+    json.dump(annotation_config, fp, indent=4)
+    fp.close()
 
 if flag_CreateVocab:
     for tname, t in tables.items():
