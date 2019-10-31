@@ -10,10 +10,9 @@
 #	rebuild.sh (this script)
 #	annotation_config.json
 #	json-schema-full-ihm_dev_full.json
-#	PDBDEV_00000001.json
-#	PDBDEV_00000020.json
+#	all the data files into the JSON_FILES directory
 #
-# Place in the BASE_DIR/.deriva directory the credential.json with the cookie to be used by ermrest
+# Place in the ${HOME}/.deriva directory the credential.json file with the cookie to be used by ermrest
 # It has a content like:
 #
 #{
@@ -41,7 +40,7 @@
 #
 #	4. Run the rebuild.sh script:
 #
-#		$BASE_DIR/rebuild.sh $BASE_DIR pdb.isrd.isi.edu $CATALOG_NUMBER PDB Vocab json-schema-full-ihm_dev_full.json
+#		$BASE_DIR/rebuild.sh $BASE_DIR pdb.isrd.isi.edu $CATALOG_NUMBER PDB Vocab $JSON_SCHEMA $JSON_FILES $PICKLE_FILE $LOG_DIR
 #
 #		The script will:
 #
@@ -49,12 +48,12 @@
 #			4.2 Create the PDB tables
 #			4.3 Load the data into the tables
 #			4.4 Create the Foreign Keys
-#			4.5 Create annotations for the PDB schema
-#			4.6 Create annotations for the Vocab schema
-#			4.7 Annotate visible columns for the PDB tables
-#			4.7 Annotate visible columns for the Vocab tables
-#			4.8 Annotate the row_name for the PDB tables
-#			4.9 Create composite Foreign Keys
+#			4.5 Create composite Foreign Keys
+#			4.6 Create annotations for the PDB schema
+#			4.7 Create annotations for the Vocab schema
+#			4.8 Annotate visible columns for the PDB tables
+#			4.9 Annotate visible columns for the Vocab tables
+#			4.10 Annotate the row_name for the PDB tables
 #
 #
 # If you want just to refresh the catalog, drop first all the tables by running:
@@ -68,19 +67,22 @@ HOSTNAME=$2
 CATALOG_NUMBER=$3
 SCHEMA_NAME=$4
 TERM_SCHEMA_NAME=$5
-FILENAME=$6
+JSON_SCHEMA=$6
+JSON_FILES=$7
+PICKLE_FILE=$8
+LOG_DIR=$9
 
 PDB_CIF="pdb_cif.py"
 LOAD_DATA="pdb_load_data.py"
 DERIVA_ANNOTATIONS="deriva-annotation-config"
-CREDENTIAL_FILE="$BASE_DIR/.deriva/credential.json"
+CREDENTIAL_FILE="$HOME/.deriva/credential.json"
 ANNOTATIONS_FILE="$BASE_DIR/annotation_config.json"
 
 echo "`date +"%Y-%m-%d %T"`: Creating the $TERM_SCHEMA_NAME tables..."
 
-#echo "$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $BASE_DIR/$FILENAME CreateVocab > $BASE_DIR/CreateVocab.log"
+#echo "$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $JSON_SCHEMA $PICKLE_FILE CreateVocab > $LOG_DIR/CreateVocab.log"
 
-$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $BASE_DIR/$FILENAME CreateVocab > $BASE_DIR/CreateVocab.log
+$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $JSON_SCHEMA $PICKLE_FILE CreateVocab > $LOG_DIR/CreateVocab.log
 
 if [ $? != 0 ]
   then
@@ -90,9 +92,9 @@ if [ $? != 0 ]
   
 echo "`date +"%Y-%m-%d %T"`: Creating the $SCHEMA_NAME tables..."
 
-#echo "$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $BASE_DIR/$FILENAME CreateTable > $BASE_DIR/CreateTable.log"
+#echo "$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $JSON_SCHEMA $PICKLE_FILE CreateTable,PickleVob > $LOG_DIR/CreateTable.log"
 
-$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $BASE_DIR/$FILENAME CreateTable > $BASE_DIR/CreateTable.log
+$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $JSON_SCHEMA $PICKLE_FILE CreateTable,PickleVob > $LOG_DIR/CreateTable.log
 
 if [ $? != 0 ]
   then
@@ -102,9 +104,9 @@ if [ $? != 0 ]
   
 echo "`date +"%Y-%m-%d %T"`: Loading the Data..."
 
-#echo "$BASE_DIR/$LOAD_DATA $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME > $BASE_DIR/load_data.log"
+#echo "$BASE_DIR/$LOAD_DATA $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $JSON_FILES $PICKLE_FILE > $LOG_DIR/load_data.log"
 
-$BASE_DIR/$LOAD_DATA $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME > $BASE_DIR/load_data.log
+$BASE_DIR/$LOAD_DATA $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $JSON_FILES $PICKLE_FILE > $LOG_DIR/load_data.log
 
 if [ $? != 0 ]
   then
@@ -114,9 +116,9 @@ if [ $? != 0 ]
   
 echo "`date +"%Y-%m-%d %T"`: Creating the FK..."
 
-#echo "$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $BASE_DIR/$FILENAME CreateFkeys > $BASE_DIR/CreateFkeys.log"
+#echo "$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $JSON_SCHEMA $PICKLE_FILE CreateFkeys,PickleVob > $LOG_DIR/CreateFkeys.log"
 
-$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $BASE_DIR/$FILENAME CreateFkeys > $BASE_DIR/CreateFkeys.log
+$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $JSON_SCHEMA $PICKLE_FILE CreateFkeys,PickleVob > $LOG_DIR/CreateFkeys.log
 
 if [ $? != 0 ]
   then
@@ -124,7 +126,31 @@ if [ $? != 0 ]
     exit 1
   fi
   
-echo "`date +"%Y-%m-%d %T"`: Configure the annotations for the $SCHEMA_NAME schema..."
+echo "`date +"%Y-%m-%d %T"`: Creating composite FK..."
+
+#echo "$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $JSON_SCHEMA $PICKLE_FILE CreateCompositeFkeys,PickleVob > $LOG_DIR/CreateCompositeFkeys.log"
+
+$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $JSON_SCHEMA $PICKLE_FILE CreateCompositeFkeys,PickleVob > $LOG_DIR/CreateCompositeFkeys.log
+
+if [ $? != 0 ]
+  then
+    echo "Can not create the composite FK."
+    exit 1
+  fi
+  
+echo "`date +"%Y-%m-%d %T"`: Configure the annotations for the public schema..."
+
+#echo "$DERIVA_ANNOTATIONS --host  $HOSTNAME --credential-file $CREDENTIAL_FILE --config-file $ANNOTATIONS_FILE -s public $CATALOG_NUMBER"
+
+$DERIVA_ANNOTATIONS --host  $HOSTNAME --credential-file $CREDENTIAL_FILE --config-file $ANNOTATIONS_FILE -s public $CATALOG_NUMBER
+
+if [ $? != 0 ]
+  then
+    echo "Can not configure the public schema."
+    exit 1
+  fi
+  
+echo "`date +"%Y-%m-%d %T"`: Configure the annotations for the $TERM_SCHEMA_NAME schema..."
 
 #echo "$DERIVA_ANNOTATIONS --host  $HOSTNAME --credential-file $CREDENTIAL_FILE --config-file $ANNOTATIONS_FILE -s $SCHEMA_NAME $CATALOG_NUMBER"
 
@@ -150,9 +176,9 @@ if [ $? != 0 ]
   
 echo "`date +"%Y-%m-%d %T"`: Annotating $SCHEMA_NAME tables visible columns..."
 
-#echo "$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $BASE_DIR/$FILENAME AnnotateTable_VisibleColumn > $BASE_DIR/AnnotateTable_VisibleColumn.log"
+#echo "$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $JSON_SCHEMA $PICKLE_FILE AnnotateTable_VisibleColumn,PickleVob > $LOG_DIR/AnnotateTable_VisibleColumn.log"
 
-$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $BASE_DIR/$FILENAME AnnotateTable_VisibleColumn > $BASE_DIR/AnnotateTable_VisibleColumn.log
+$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $JSON_SCHEMA $PICKLE_FILE AnnotateTable_VisibleColumn,PickleVob > $LOG_DIR/AnnotateTable_VisibleColumn.log
 
 if [ $? != 0 ]
   then
@@ -162,9 +188,9 @@ if [ $? != 0 ]
   
 echo "`date +"%Y-%m-%d %T"`: Annotating $TERM_SCHEMA_NAME visible columns..."
 
-#echo "$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $BASE_DIR/$FILENAME VocabTable_VisibleColumn > $BASE_DIR/VocabTable_VisibleColumn.log"
+#echo "$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $JSON_SCHEMA $PICKLE_FILE VocabTable_VisibleColumn,PickleVob > $LOG_DIR/VocabTable_VisibleColumn.log"
 
-$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $BASE_DIR/$FILENAME VocabTable_VisibleColumn > $BASE_DIR/VocabTable_VisibleColumn.log
+$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $JSON_SCHEMA $PICKLE_FILE VocabTable_VisibleColumn,PickleVob > $LOG_DIR/VocabTable_VisibleColumn.log
 
 if [ $? != 0 ]
   then
@@ -174,25 +200,13 @@ if [ $? != 0 ]
   
 echo "`date +"%Y-%m-%d %T"`: Annotating Row Name tables..."
 
-#echo "$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $BASE_DIR/$FILENAME AnnotateTable_RowName > $BASE_DIR/AnnotateTable_RowName.log"
+#echo "$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $JSON_SCHEMA $PICKLE_FILE AnnotateTable_RowName,PickleVob > $LOG_DIR/AnnotateTable_RowName.log"
 
-$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $BASE_DIR/$FILENAME AnnotateTable_RowName > $BASE_DIR/AnnotateTable_RowName.log
+$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $JSON_SCHEMA $PICKLE_FILE AnnotateTable_RowName,PickleVob > $LOG_DIR/AnnotateTable_RowName.log
 
 if [ $? != 0 ]
   then
     echo "Can not annotate the RowName tables."
-    exit 1
-  fi
-  
-echo "`date +"%Y-%m-%d %T"`: Creating composite FK..."
-
-#echo "$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $BASE_DIR/$FILENAME CreateCompositeFkeys > $BASE_DIR/CreateCompositeFkeys.log"
-
-$BASE_DIR/$PDB_CIF $HOSTNAME $CATALOG_NUMBER $SCHEMA_NAME $TERM_SCHEMA_NAME $BASE_DIR/$FILENAME CreateCompositeFkeys > $BASE_DIR/CreateCompositeFkeys.log
-
-if [ $? != 0 ]
-  then
-    echo "Can not create the composite FK."
     exit 1
   fi
   
