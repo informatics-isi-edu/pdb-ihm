@@ -9,6 +9,16 @@
           "title_case": false
         }
       }
+    },
+    {
+      "schema": "PDB",
+      "uri": "tag:misd.isi.edu,2015:display",
+      "value": {
+        "name_style": {
+          "underline_space": true,
+          "title_case": true
+        }
+      }
     }
   ],
   "known_attributes": {
