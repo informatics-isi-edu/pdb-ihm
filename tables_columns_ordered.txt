@@ -1,0 +1,882 @@
+entry
+    structure_id
+    id
+
+struct
+    structure_id
+    entry_id
+    title
+    pdbx_descriptor
+    pdbx_details
+    pdbx_CASP_flag
+    pdbx_model_details
+    pdbx_model_type_details
+
+audit_author
+    structure_id
+    name
+    pdbx_ordinal
+
+citation
+    structure_id
+    id
+    title
+    year
+    journal_abbrev
+    journal_issue
+    journal_volume
+    page_first
+    page_last
+    pdbx_database_id_DOI
+    pdbx_database_id_PubMed
+    journal_id_ASTM
+    journal_id_CSD
+    journal_id_ISSN
+    country
+
+citation_author
+    structure_id
+    ordinal
+    citation_id
+    name
+    
+software
+    structure_id
+    pdbx_ordinal
+    name
+    classification
+    type
+    version
+    location
+    citation_id
+    description
+    
+chem_comp
+    structure_id
+    id
+    name
+    type
+    formula
+    formula_weight
+    monomer_nstd_flag
+    pdbx_synonyms
+    
+chem_comp_atom
+    structure_id
+    comp_id
+    atom_id
+    type_symbol
+    pdbx_ordinal
+    alt_atom_id
+    charge
+    partial_charge
+    model_Cartn_x
+    model_Cartn_x_esd
+    model_Cartn_y
+    model_Cartn_y_esd
+    model_Cartn_z
+    model_Cartn_z_esd
+    pdbx_model_Cartn_x_ideal
+    pdbx_model_Cartn_y_ideal
+    pdbx_model_Cartn_z_ideal
+    pdbx_align
+    pdbx_alt_atom_id
+    pdbx_alt_comp_id
+    pdbx_aromatic_flag
+    pdbx_component_atom_id
+    pdbx_component_comp_id
+    pdbx_component_entity_id
+    pdbx_component_id
+    pdbx_leaving_atom_flag
+    pdbx_polymer_type
+    pdbx_ref_id
+    pdbx_residue_numbering
+    pdbx_stereo_config
+    pdbx_stnd_atom_id
+    substruct_code
+    
+entity
+    structure_id
+    id
+    type
+    src_method
+    pdbx_description
+    formula_weight
+    pdbx_number_of_molecules
+    details
+
+entity_name_com
+    structure_id
+    entity_id
+    name
+    
+entity_name_sys
+    structure_id
+    entity_id
+    name
+
+entity_src_gen
+    structure_id
+    entity_id
+    pdbx_src_id
+    pdbx_alt_source_flag
+    gene_src_common_name
+    gene_src_genus
+    pdbx_gene_src_scientific_name
+    
+entity_poly
+    structure_id
+    entity_id
+    type
+    nstd_monomer
+    nstd_linkage
+    nstd_chirality
+    pdbx_strand_id
+    pdbx_sequence_evidence_code
+    pdbx_seq_one_letter_code
+    pdbx_seq_one_letter_code_can
+ 
+pdbx_entity_nonpoly
+    structure_id
+    entity_id
+    comp_id
+    name
+   
+entity_poly_seq
+    structure_id
+    entity_id
+    mon_id
+    num
+    hetero
+
+atom_type
+    structure_id
+    symbol
+
+struct_asym
+    structure_id
+    id
+    entity_id
+    pdbx_PDB_id
+    pdbx_alt_id
+    pdbx_blank_PDB_chainid_flag
+    pdbx_modified
+    pdbx_order
+    pdbx_type
+    details
+
+ihm_entity_poly_segment
+    structure_id
+    id
+    entity_id
+    seq_id_begin
+    seq_id_end
+    comp_id_begin
+    comp_id_end
+
+ihm_model_representation
+    structure_id
+    id
+    name
+    details
+
+ihm_model_representation_details
+    structure_id
+    id
+    representation_id
+    entity_id
+    entity_description
+    entity_asym_id
+    entity_poly_segment_id
+    model_object_primitive
+    model_mode
+    model_granularity
+    model_object_count
+    description
+    starting_model_id
+
+ihm_struct_assembly
+    structure_id
+    id
+    name
+    description
+
+ihm_struct_assembly_details
+    structure_id
+    id
+    assembly_id
+    parent_assembly_id
+    entity_description
+    entity_id
+    asym_id
+    entity_poly_segment_id
+
+ihm_struct_assembly_class
+    structure_id
+    id
+    name
+    type
+    description
+
+ihm_struct_assembly_class_link
+    structure_id
+    class_id
+    assembly_id
+
+ihm_dataset_list
+    structure_id
+    id
+    data_type
+    database_hosted
+    details
+
+ihm_dataset_group
+    structure_id
+    id
+    name
+    application
+    details
+
+ihm_dataset_group_link
+    structure_id
+    dataset_list_id
+    group_id
+
+ihm_dataset_related_db_reference
+    structure_id
+    id
+    dataset_list_id
+    db_name
+    accession_code
+    version
+    details
+
+ihm_external_reference_info
+    structure_id
+    reference_id
+    reference_provider
+    reference_type
+    reference
+    refers_to
+    associated_url
+    details
+
+ihm_external_files
+    structure_id
+    id
+    reference_id
+    file_path
+    file_format
+    content_type
+    file_size_bytes
+    details
+
+ihm_dataset_external_reference
+    structure_id
+    id
+    dataset_list_id
+    file_id
+
+ihm_related_datasets
+    structure_id
+    dataset_list_id_derived
+    dataset_list_id_primary
+
+ihm_starting_model_details
+    structure_id
+    starting_model_id
+    entity_id
+    entity_description
+    asym_id
+    entity_poly_segment_id
+    starting_model_source
+    starting_model_auth_asym_id
+    starting_model_sequence_offset
+    description
+    dataset_list_id
+
+ihm_starting_comparative_models
+    structure_id
+    id
+    starting_model_id
+    starting_model_auth_asym_id
+    starting_model_seq_id_begin
+    starting_model_seq_id_end
+    template_auth_asym_id
+    template_seq_id_begin
+    template_seq_id_end
+    template_sequence_identity
+    template_sequence_identity_denominator
+    template_dataset_list_id
+    alignment_file_id
+    details
+
+ihm_starting_computational_models
+    structure_id
+    starting_model_id
+    script_file_id
+    software_id
+
+ihm_starting_model_seq_dif
+    structure_id
+    id
+    entity_id
+    asym_id
+    seq_id
+    comp_id
+    starting_model_id
+    db_entity_id
+    db_asym_id
+    db_seq_id
+    db_comp_id
+    details
+
+ihm_chemical_component_descriptor
+    structure_id
+    id
+    chemical_name
+    common_name
+    auth_name
+    smiles
+    smiles_canonical
+    inchi
+    inchi_key
+    details
+
+ihm_probe_list
+    structure_id
+    probe_id
+    probe_name
+    reactive_probe_flag
+    reactive_probe_name
+    probe_origin
+    probe_link_type
+    probe_chem_comp_descriptor_id
+    reactive_probe_chem_comp_descriptor_id
+
+ihm_poly_probe_position
+    structure_id
+    id
+    entity_id
+    entity_description
+    seq_id
+    comp_id
+    mutation_flag
+    mut_res_chem_comp_id
+    modification_flag
+    mod_res_chem_comp_descriptor_id
+    description
+
+ihm_poly_probe_conjugate
+    structure_id
+    id
+    probe_id
+    position_id
+    chem_comp_descriptor_id
+    ambiguous_stoichiometry_flag
+    probe_stoichiometry
+    details
+    dataset_list_id
+
+ihm_ligand_probe
+    structure_id
+    probe_id
+    entity_id
+    details
+    dataset_list_id
+
+ihm_cross_link_list
+    structure_id
+    id
+    group_id
+    entity_description_1
+    entity_description_2
+    entity_id_1
+    entity_id_2
+    comp_id_1
+    comp_id_2
+    seq_id_1
+    seq_id_2
+    linker_type
+    linker_chem_comp_descriptor_id
+    details
+    dataset_list_id
+
+ihm_cross_link_restraint
+    structure_id
+    id
+    group_id
+    entity_id_1
+    entity_id_2
+    asym_id_1
+    asym_id_2
+    comp_id_1
+    comp_id_2
+    seq_id_1
+    seq_id_2
+    atom_id_1
+    atom_id_2
+    restraint_type
+    conditional_crosslink_flag
+    model_granularity
+    distance_threshold
+    psi
+    sigma_1
+    sigma_2
+
+ihm_cross_link_result
+    structure_id
+    id
+    restraint_id
+    ensemble_id
+    num_models
+    distance_threshold
+    median_distance
+    details
+
+ihm_cross_link_result_parameters
+    structure_id
+    id
+    restraint_id
+    model_id
+    psi
+    sigma_1
+    sigma_2
+
+ihm_2dem_class_average_restraint
+    structure_id
+    id
+    number_raw_micrographs
+    pixel_size_width
+    pixel_size_height
+    image_resolution
+    image_segment_flag
+    number_of_projections
+    struct_assembly_id
+    details
+    dataset_list_id
+
+ihm_2dem_class_average_fitting
+    structure_id
+    id
+    restraint_id
+    model_id
+    cross_correlation_coefficient
+    rot_matrix[1][1]
+    rot_matrix[2][1]
+    rot_matrix[3][1]
+    rot_matrix[1][2]
+    rot_matrix[2][2]
+    rot_matrix[3][2]
+    rot_matrix[1][3]
+    rot_matrix[2][3]
+    rot_matrix[3][3]
+    tr_vector[1]
+    tr_vector[2]
+    tr_vector[3]
+
+ihm_3dem_restraint
+    structure_id
+    id
+    model_id
+    struct_assembly_id
+    fitting_method
+    number_of_gaussians
+    map_segment_flag
+    cross_correlation_coefficient
+    fitting_method_citation_id
+    details
+    dataset_list_id
+
+ihm_sas_restraint
+    structure_id
+    id
+    model_id
+    struct_assembly_id
+    profile_segment_flag
+    fitting_atom_type
+    fitting_method
+    fitting_state
+    radius_of_gyration
+    chi_value
+    details
+    dataset_list_id
+
+ihm_epr_restraint
+    structure_id
+    ordinal_id
+    dataset_list_id
+    model_id
+    fitting_particle_type
+    fitting_method
+    fitting_method_citation_id
+    fitting_state
+    fitting_software_id
+    chi_value
+    details
+
+ihm_hydroxyl_radical_fp_restraint
+    structure_id
+    id
+    group_id
+    entity_description
+    entity_id
+    asym_id
+    comp_id
+    seq_id
+    fp_rate
+    fp_rate_error
+    log_pf
+    log_pf_error
+    predicted_sasa
+    software_id
+    dataset_list_id
+
+ihm_predicted_contact_restraint
+    structure_id
+    id
+    group_id
+    entity_description_1
+    entity_description_2
+    entity_id_1
+    entity_id_2
+    asym_id_1
+    asym_id_2
+    comp_id_1
+    comp_id_2
+    seq_id_1
+    seq_id_2
+    rep_atom_1
+    rep_atom_2
+    distance_lower_limit
+    distance_upper_limit
+    probability
+    restraint_type
+    model_granularity
+    software_id
+    dataset_list_id
+
+ihm_feature_list
+    structure_id
+    feature_id
+    feature_type
+    entity_type
+    details
+
+ihm_poly_atom_feature
+    structure_id
+    ordinal_id
+    feature_id
+    entity_id
+    asym_id
+    comp_id
+    seq_id
+    atom_id
+
+ihm_poly_residue_feature
+    structure_id
+    ordinal_id
+    feature_id
+    entity_id
+    asym_id
+    comp_id_begin
+    comp_id_end
+    seq_id_begin
+    seq_id_end
+    residue_range_granularity
+    rep_atom
+    interface_residue_flag
+
+ihm_non_poly_feature
+    structure_id
+    ordinal_id
+    feature_id
+    entity_id
+    asym_id
+    comp_id
+    atom_id
+
+ihm_interface_residue_feature
+    structure_id
+    ordinal_id
+    feature_id
+    binding_partner_entity_id
+    binding_partner_asym_id
+    dataset_list_id
+    details
+
+ihm_pseudo_site_feature
+    structure_id
+    feature_id
+    Cartn_x
+    Cartn_y
+    Cartn_z
+    radius
+    description
+
+ihm_derived_distance_restraint
+    structure_id
+    id
+    group_id
+    feature_id_1
+    feature_id_2
+    group_conditionality
+    random_exclusion_fraction
+    distance_lower_limit
+    distance_upper_limit
+    distance_lower_limit_esd
+    distance_upper_limit_esd
+    probability
+    restraint_type
+    mic_value
+    dataset_list_id
+
+ihm_geometric_object_list
+    structure_id
+    object_id
+    object_type
+    object_name
+    object_description
+
+ihm_geometric_object_center
+    structure_id
+    id
+    xcoord
+    ycoord
+    zcoord
+
+ihm_geometric_object_transformation
+    structure_id
+    id
+    rot_matrix[1][1]
+    rot_matrix[2][1]
+    rot_matrix[3][1]
+    rot_matrix[1][2]
+    rot_matrix[2][2]
+    rot_matrix[3][2]
+    rot_matrix[1][3]
+    rot_matrix[2][3]
+    rot_matrix[3][3]
+    tr_vector[1]
+    tr_vector[2]
+    tr_vector[3]
+
+ihm_geometric_object_sphere
+    structure_id
+    object_id
+    center_id
+    transformation_id
+    radius_r
+
+ihm_geometric_object_torus
+    structure_id
+    object_id
+    center_id
+    transformation_id
+    major_radius_R
+    minor_radius_r
+
+ihm_geometric_object_half_torus
+    structure_id
+    object_id
+    thickness_th
+    section
+
+ihm_geometric_object_axis
+    structure_id
+    object_id
+    axis_type
+    transformation_id
+
+ihm_geometric_object_plane
+    structure_id
+    object_id
+    plane_type
+    transformation_id
+
+ihm_geometric_object_distance_restraint
+    structure_id
+    id
+    object_id
+    feature_id
+    object_characteristic
+    restraint_type
+    harmonic_force_constant
+    group_conditionality
+    distance_lower_limit
+    distance_upper_limit
+    distance_lower_limit_esd
+    distance_upper_limit_esd
+    distance_probability
+    details
+    dataset_list_id
+
+ihm_modeling_protocol
+    structure_id
+    id
+    num_steps
+    protocol_name
+    details
+
+ihm_modeling_protocol_details
+    structure_id
+    id
+    protocol_id
+    step_id
+    dataset_group_id
+    struct_assembly_id
+    struct_assembly_description
+    step_name
+    step_method
+    num_models_begin
+    num_models_end
+    multi_scale_flag
+    multi_state_flag
+    ordered_flag
+    ensemble_flag
+    script_file_id
+    software_id
+    description
+
+ihm_modeling_post_process
+    structure_id
+    id
+    protocol_id
+    analysis_id
+    step_id
+    struct_assembly_id
+    dataset_group_id
+    type
+    feature
+    feature_name
+    num_models_begin
+    num_models_end
+    script_file_id
+    software_id
+    details
+
+ihm_model_list
+    structure_id
+    model_id
+    model_name
+    assembly_id
+    protocol_id
+    representation_id
+
+ihm_model_group
+    structure_id
+    id
+    name
+    details
+
+ihm_model_group_link
+    structure_id
+    model_id
+    group_id
+
+ihm_model_representative
+    structure_id
+    id
+    model_group_id
+    model_id
+    selection_criteria
+
+ihm_residues_not_modeled
+    structure_id
+    id
+    model_id
+    entity_description
+    entity_id
+    asym_id
+    seq_id_begin
+    seq_id_end
+    comp_id_begin
+    comp_id_end
+    reason
+    details
+
+ihm_multi_state_modeling
+    structure_id
+    state_id
+    state_group_id
+    state_type
+    state_name
+    experiment_type
+    population_fraction
+    population_fraction_sd
+    details
+
+ihm_multi_state_model_group_link
+    structure_id
+    state_id
+    model_group_id
+
+ihm_ensemble_info
+    structure_id
+    ensemble_id
+    ensemble_name
+    model_group_id
+    post_process_id
+    ensemble_clustering_method
+    ensemble_clustering_feature
+    num_ensemble_models
+    num_ensemble_models_deposited
+    ensemble_precision_value
+    ensemble_file_id
+    details
+
+ihm_ordered_ensemble
+    structure_id
+    process_id
+    process_description
+    edge_id
+    edge_description
+    step_id
+    step_description
+    ordered_by
+    model_group_id_begin
+    model_group_id_end
+
+ihm_localization_density_files
+    structure_id
+    id
+    file_id
+    ensemble_id
+    entity_id
+    asym_id
+    entity_poly_segment_id
+
+audit_conform
+    structure_id
+    dict_name
+    dict_location
+    dict_version
+    
+pdbx_entity_poly_na_type
+    structure_id
+    entity_id
+    type
+
+pdbx_entry_details
+    structure_id
+    entry_id
+    sequence_details
+
+pdbx_inhibitor_info
+    structure_id
+    id
+    name
+    num_per_asym_unit
+    
+pdbx_ion_info
+    structure_id
+    id
+    name
+    numb_per_asym_unit
+
+pdbx_protein_info
+    structure_id
+    id
+    name
+    num_per_asym_unit
+
