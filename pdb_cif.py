@@ -416,7 +416,8 @@ if flag_AnnotateTable_RowName:
         tab.annotations.update({
             chaise_tags.table_display: {'row_name': {"row_markdown_pattern": "{{{" + p_column + "}}}"}}
         })
-        tab.apply(catalog_ermrest)
+        #tab.apply(catalog_ermrest)
+        model_root.apply(catalog_ermrest)
 
 
  #1. configure domain_filter_pattern
@@ -473,7 +474,8 @@ if flag_AnnotateTable_VisibleColumn:
             chaise_tags.visible_columns: {'entry': visible_columns_entry, '*': visible_columns_other}
         })
 
-        tab.apply(catalog_ermrest)
+        #tab.apply(catalog_ermrest)
+        model_root.apply(catalog_ermrest)
 
 if flag_Annotations_Config:
     annotation_config = []
@@ -830,6 +832,7 @@ if flag_VocabTable_VisibleColumn:
 		tab.annotations.update({
 		   chaise_tags.visible_columns: {'*': visible_columns_other}
 		})       
-		tab.apply(catalog_ermrest)
+        #tab.apply(catalog_ermrest)
+        model_root.apply(catalog_ermrest)
 
 
