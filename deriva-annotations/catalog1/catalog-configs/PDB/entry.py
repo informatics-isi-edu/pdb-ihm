@@ -292,7 +292,7 @@ def main(catalog, mode, replace=False, really=False):
 
 if __name__ == "__main__":
     host = 'pdb.isrd.isi.edu'
-    catalog_id = 9
+    catalog_id = 1
     mode, replace, host, catalog_id = parse_args(host, catalog_id, is_table=True)
     catalog = DerivaCatalog(host, catalog_id=catalog_id, validate=False)
     main(catalog, mode, replace)
