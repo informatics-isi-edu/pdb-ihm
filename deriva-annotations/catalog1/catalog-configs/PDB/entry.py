@@ -76,19 +76,30 @@ column_defs = [
 
 visible_columns = {
     '*': [
-        'RID', {}, 'id', ['PDB', 'entry_RCB_fkey'], ['PDB', 'entry_RMB_fkey'],
+        'RID', {
+            'source': [{
+                'outbound': ['PDB', 'entry_structure_id_fkey']
+            }, 'RID'],
+            'comment': 'A reference to table entry.id.',
+            'markdown_name': 'structure id'
+        }, 'id', ['PDB', 'entry_RCB_fkey'], ['PDB', 'entry_RMB_fkey'], 'RCT', 'RMT',
         ['PDB', 'entry_Owner_fkey']
     ],
-    'entry': [{}, 'id'],
-    'detailed': [
-        'RID', {}, 'id', ['PDB', 'entry_RCB_fkey'], ['PDB', 'entry_RMB_fkey'],
-        ['PDB', 'entry_Owner_fkey']
+    'entry': [
+        {
+            'source': [{
+                'outbound': ['PDB', 'entry_structure_id_fkey']
+            }, 'RID'],
+            'comment': 'A reference to table entry.id.',
+            'markdown_name': 'structure id'
+        }, 'id'
     ]
 }
 
 visible_foreign_keys = {
     'filter': 'detailed',
     'detailed': [
+        ['PDB', 'entry_structure_id_fkey'], ['PDB', 'struct_structure_id_fkey'],
         ['PDB', 'struct_entry_id_fkey'], ['PDB', 'audit_author_structure_id_fkey'],
         ['PDB', 'citation_structure_id_fkey'], ['PDB', 'citation_author_structure_id_fkey'],
         ['PDB', 'software_structure_id_fkey'], ['PDB', 'chem_comp_structure_id_fkey'],
@@ -281,7 +292,7 @@ def main(catalog, mode, replace=False, really=False):
 
 if __name__ == "__main__":
     host = 'pdb.isrd.isi.edu'
-    catalog_id = 1
+    catalog_id = 9
     mode, replace, host, catalog_id = parse_args(host, catalog_id, is_table=True)
     catalog = DerivaCatalog(host, catalog_id=catalog_id, validate=False)
     main(catalog, mode, replace)
