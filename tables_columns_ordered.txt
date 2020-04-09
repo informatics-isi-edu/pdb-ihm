@@ -505,7 +505,6 @@ ihm_sas_restraint
 ihm_epr_restraint
     structure_id
     ordinal_id
-    dataset_list_id
     model_id
     fitting_particle_type
     fitting_method
@@ -514,6 +513,7 @@ ihm_epr_restraint
     fitting_software_id
     chi_value
     details
+    dataset_list_id
 
 ihm_hydroxyl_radical_fp_restraint
     structure_id
@@ -537,16 +537,16 @@ ihm_predicted_contact_restraint
     id
     group_id
     entity_description_1
-    entity_description_2
     entity_id_1
-    entity_id_2
     asym_id_1
-    asym_id_2
     comp_id_1
-    comp_id_2
     seq_id_1
-    seq_id_2
     rep_atom_1
+    entity_description_2
+    entity_id_2
+    asym_id_2
+    comp_id_2
+    seq_id_2
     rep_atom_2
     distance_lower_limit
     distance_upper_limit
@@ -583,8 +583,8 @@ ihm_poly_residue_feature
     comp_id_end
     seq_id_begin
     seq_id_end
-    residue_range_granularity
     rep_atom
+    residue_range_granularity
     interface_residue_flag
 
 ihm_non_poly_feature
@@ -811,6 +811,18 @@ ihm_multi_state_model_group_link
     state_id
     model_group_id
 
+ihm_ordered_ensemble
+    structure_id
+    process_id
+    process_description
+    edge_id
+    edge_description
+    step_id
+    step_description
+    ordered_by
+    model_group_id_begin
+    model_group_id_end
+
 ihm_ensemble_info
     structure_id
     ensemble_id
@@ -824,18 +836,6 @@ ihm_ensemble_info
     ensemble_precision_value
     ensemble_file_id
     details
-
-ihm_ordered_ensemble
-    structure_id
-    process_id
-    process_description
-    edge_id
-    edge_description
-    step_id
-    step_description
-    ordered_by
-    model_group_id_begin
-    model_group_id_end
 
 ihm_localization_density_files
     structure_id
