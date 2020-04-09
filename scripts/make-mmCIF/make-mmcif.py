@@ -70,7 +70,7 @@ def get_chem_comps():
     return chem_comps
 
 if len(sys.argv) != 2:
-    print("Usage: %s input.pdb" % sys.argv[0], file=sys.stderr)
+    print("Usage: %s input.cif" % sys.argv[0], file=sys.stderr)
     sys.exit(1)
 fname = sys.argv[1]
 chem_comps = get_chem_comps()
