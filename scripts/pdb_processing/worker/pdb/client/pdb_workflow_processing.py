@@ -16,12 +16,7 @@
 # limitations under the License.
 #
 """
-Load configuration for the Pyramidal Tiles Generator.
-Check for images that need tiles.
-Generate the tiles directory.
-Generate the thumbnail and the HTML zoomify file.
-Generate the dzi directory.
-Generate the dzi file structure
+Load configuration for the PDB processing.
 Update the ermrest tables.
 """
 

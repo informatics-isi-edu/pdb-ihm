@@ -526,10 +526,10 @@ class PDBClient (object):
                 r = self.getUpdatedRecord(tname, r, entry_id)
                 entities.append(r)
             try:
-                #table.insert(entities)
+                table.insert(entities)
                 inserted_rows = len(entities)
                 self.logger.debug('File {}: inserted {} rows into table {}'.format(fpath, inserted_rows, tname))
-                self.logger.debug('Inserted into table {} the {} rows:\n'.format(tname, entities))
+                #self.logger.debug('Inserted into table {} the {} rows:\n'.format(tname, entities))
             except HTTPError as e:
                 self.logger.error(e)
                 self.logger.error(e.response.text)
