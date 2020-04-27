@@ -66,30 +66,29 @@ def Entry_Related_File_row_job(handler):
     pdb_row_job(handler, 'Entry_Related_File')
     
 def pdb_row_job(handler, action):
-    """
-    Run the script for generating pyramidal tiles.
-    """
-    
-    try:
-        row = handler.row
-        unit = handler.unit
-        
-        logger.info('Running job for generating pyramidal tiles for RID="%s" and Filename="%s".' % (row['RID'], row['Original_File_Name'])) 
-        args = ['env', 'action=%s' % action,  'RID=%s' % row['RID'], 'URL=https://%s/ermrest/catalog/2' % Worker.servername, '/usr/local/bin/pdb_workflow_processing.py', '--config', '%s' % Worker.config_file]
-        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdoutdata, stderrdata = p.communicate()
-        returncode = p.returncode
-    except:
-        et, ev, tb = sys.exc_info()
-        logger.error('got unexpected exception "%s"' % str(ev))
-        logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-        returncode = 1
-        
-    if returncode != 0:
-        logger.error('Could not execute the script for generating pyramidal tiles.\nstdoutdata: %s\nstderrdata: %s\n' % (stdoutdata, stderrdata)) 
-        raise WorkerRuntimeError('Could not execute the script for generating pyramidal tiles.\nstdoutdata: %s\nstderrdata: %s\n' % (stdoutdata, stderrdata))
-    else:
-        logger.info('Finished job for generating pyramidal tiles for RID="%s" and Filename="%s".' % (row['RID'], row['Original_File_Name'])) 
+	"""
+	Run the script for the PDB Workflow Processing.
+	"""
+	
+	try:
+		row = handler.row
+		unit = handler.unit
+		
+		logger.info('Running job for the PDB Workflow Processing for RID="%s" and id="%s".' % (row['RID'], row['id'])) 
+		args = ['env', 'action={}'.format(action),  'RID={}'.format(row['RID']), 'URL=https://{}/ermrest/catalog/{}'.format(Worker.servername, Worker.catalog_number), '/usr/local/bin/pdb_workflow_processing.py', '--config', '{}'.format(Worker.config_file)]
+		p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		stdoutdata, stderrdata = p.communicate()
+		returncode = p.returncode
+		if returncode != 0:
+			logger.error('Could not execute the script for the PDB Workflow Processing.\nstdoutdata: %s\nstderrdata: %s\n' % (stdoutdata, stderrdata)) 
+			raise WorkerRuntimeError('Could not execute the script for the PDB Workflow Processing.\nstdoutdata: %s\nstderrdata: %s\n' % (stdoutdata, stderrdata))
+	except:
+		et, ev, tb = sys.exc_info()
+		logger.error('got unexpected exception "%s"' % str(ev))
+		logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+		returncode = 1
+	    
+	logger.info('Finished job for the PDB Workflow Processing for RID="%s" and id="%s".' % (row['RID'], row['id'])) 
         
 
 _work_units.append(
@@ -126,6 +125,9 @@ class Worker (object):
     # server to talk to... defaults to our own FQDN
     servername = os.getenv('PDB_SERVER', 'pdb.isrd.isi.edu')
 
+    # catalog number
+    catalog_number = os.getenv('CATALOG', '99')
+
     # secret session cookie
     credfile = os.getenv('PDB_CREDENTIALS', '/home/secrets/serban/credentials.json')
     credentials = json.load(open(credfile))
@@ -138,7 +140,7 @@ class Worker (object):
     catalog = PollingErmrestCatalog(
         'https', 
         servername,
-        '1',
+        catalog_number,
         credentials
     )
     catalog.dcctx['cid'] = 'pipeline/pdb'

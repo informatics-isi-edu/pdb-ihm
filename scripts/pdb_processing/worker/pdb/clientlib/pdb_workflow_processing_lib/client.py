@@ -61,17 +61,17 @@ class PDBClient (object):
         self.pickle_file = kwargs.get("pickle_file")
         self.tables_groups = kwargs.get("tables_groups")
         self.entry = kwargs.get("entry")
-        self.cookie = kwargs.get("cookie")
+        self.credentials = kwargs.get("credentials")
         self.store = HatracStore(
             self.scheme, 
             self.host,
-            {'cookie': self.cookie}
+            self.credentials
         )
         self.catalog = PollingErmrestCatalog(
             self.scheme, 
             self.host,
             self.path.split('/')[-1],
-            {'cookie': self.cookie}
+            self.credentials
         )
         self.catalog.dcctx['cid'] = 'pipeline/pdb'
         self.mail_server = kwargs.get("mail_server")

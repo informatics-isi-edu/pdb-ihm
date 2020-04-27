@@ -74,11 +74,12 @@ def load(config_filename):
         
     logger.info('URL: %s' % url)
     
-    cookie = cfg.get('cookie', None)
-    if not cookie:
-        logger.error('PDB cookie must be provided.')
+    credentials_file = cfg.get('credentials', None)
+    if not credentials_file or not os.path.isfile(credentials_file):
+        logger.error('credentials file must be provided and exist.')
         return None
-
+    credentials = json.load(open(credentials_file))
+    
     make_mmCIF = cfg.get('make_mmCIF', None)
     if not make_mmCIF or not os.path.isdir(make_mmCIF):
         logger.error('make_mmCIF directory must be provided and exist.')
@@ -116,7 +117,7 @@ def load(config_filename):
     # Establish Ermrest client connection
     try:
         client = PDBClient(baseuri=url, \
-                               cookie=cookie, \
+                               credentials=credentials, \
                                make_mmCIF=make_mmCIF, \
                                py_rcsb_db=py_rcsb_db, \
                                python_bin=python_bin, \
