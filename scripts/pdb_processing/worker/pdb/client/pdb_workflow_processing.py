@@ -100,6 +100,11 @@ def load(config_filename):
         logger.error('pickle_file file must be provided and exist.')
         return None
 
+    vocab_data_map_file = cfg.get('vocab_data_map', None)
+    if not vocab_data_map_file or not os.path.isfile(vocab_data_map_file):
+        logger.error('vocab_data_map_file file must be provided and exist.')
+        return None
+
     tables_groups = cfg.get('tables_groups', None)
     if not tables_groups or not os.path.isfile(tables_groups):
         logger.error('tables_groups file must be provided and exist.')
@@ -122,6 +127,7 @@ def load(config_filename):
                                py_rcsb_db=py_rcsb_db, \
                                python_bin=python_bin, \
                                pickle_file=pickle_file, \
+                               vocab_data_map_file=vocab_data_map_file, \
                                tables_groups=tables_groups, \
                                entry=entry, \
                                mail_server=mail_server, \

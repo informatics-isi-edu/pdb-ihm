@@ -35,6 +35,7 @@ from socket import gaierror, EAI_AGAIN
 from requests import HTTPError
 import pickle
 import csv
+from ast import literal_eval
 
 from deriva.core import PollingErmrestCatalog, HatracStore, urlquote
 
@@ -59,6 +60,7 @@ class PDBClient (object):
         self.py_rcsb_db = kwargs.get("py_rcsb_db")
         self.python_bin = kwargs.get("python_bin")
         self.pickle_file = kwargs.get("pickle_file")
+        self.vocab_data_map_file = kwargs.get("vocab_data_map_file")
         self.tables_groups = kwargs.get("tables_groups")
         self.entry = kwargs.get("entry")
         self.credentials = kwargs.get("credentials")
@@ -143,6 +145,9 @@ class PDBClient (object):
             self.sendMail('FAILURE PDB: unexpected exception', '%s\nThe process might have been stopped\n' % ''.join(traceback.format_exception(et, ev, tb)))
             raise
         
+    """
+    Process the csv/tsv file of the Entry_Related_File table
+    """
     def process_Entry_Related_File(self, schema, table, rid, status='in progress'):
         """
         Query for detecting the record to be processed
@@ -156,6 +161,7 @@ class PDBClient (object):
         filename = row['File_Name']
         file_url = row['File_URL']
         md5 = row['File_MD5']
+        structure_id = row['structure_id']
             
         creation_time = row['RCT']
         
@@ -187,7 +193,7 @@ class PDBClient (object):
         
         # see where the csv/tsv file is
         # suppose it is fpath
-        returncode = self.loadTableFromCVS(f, delimiter, tname)
+        returncode = self.loadTableFromCVS(f, delimiter, tname, structure_id)
 
         if returncode != 0:
             """
@@ -214,8 +220,8 @@ class PDBClient (object):
         obj['RID'] = rid
         obj['Workflow_Status'] = ID
         obj['Process_Status'] = 'success'
-        obj['mmCIF_File_MD5'] = md5
-        columns = ['Workflow_Status', 'Process_Status', 'mmCIF_File_MD5']
+        obj['File_MD5'] = md5
+        columns = ['Workflow_Status', 'Process_Status', 'File_MD5']
         self.updateAttributes(schema,
                          table,
                          rid,
@@ -224,6 +230,9 @@ class PDBClient (object):
    
         self.logger.debug('Ended PDB Processing for the %s:%s table.' % (schema, table)) 
         
+    """
+    Process the mmCIF file of the entry table
+    """
     def process_mmCIF(self, schema, table, rid, status='in progress'):
         """
         Query for detecting the record to be processed
@@ -249,12 +258,15 @@ class PDBClient (object):
         if f == None:
             return
         
+        """
+        Get the md5 if necessary
+        """
         if md5 == None:
             md5 = self.md5hex(f)
             self.logger.debug("The MD5 was computed and it is: %s" % md5)
             
         """
-        Convert the file to JSON
+        Convert the file to JSON and load the data into the tables
         """
         returncode = self.convert2json(filename, id)
         
@@ -336,7 +348,7 @@ class PDBClient (object):
             os.remove('{}/{}'.format(self.make_mmCIF, filename))
             
             """
-            Apply testSchemaDataPrepValidate-ihm.py
+            Move the output.cif file to the rcsb/db/tests-validate/test-output/ihm-files directory and apply testSchemaDataPrepValidate-ihm.py
             """
             shutil.move('{}/output.cif'.format(self.make_mmCIF), '{}/rcsb/db/tests-validate/test-output/ihm-files/'.format(self.py_rcsb_db))
             self.logger.debug('File {} was moved to the {} directory'.format('{}/output.cif'.format(self.make_mmCIF), '{}/rcsb/db/tests-validate/test-output/ihm-files/'.format(self.py_rcsb_db))) 
@@ -359,7 +371,7 @@ class PDBClient (object):
             self.logger.debug('File {}/{} was removed'.format(self.py_rcsb_db, 'rcsb/db/tests-validate/test-output/ihm-files/output.cif')) 
             
             """
-            Load now the data from JSON into the tables
+            Load now the data from JSON files which are in the rcsb/db/tests-validate/test-output directory into the tables 
             """
             fpath = '{}/rcsb/db/tests-validate/test-output'.format(self.py_rcsb_db)
 
@@ -374,6 +386,10 @@ class PDBClient (object):
                         returncode = self.loadTablesFromJSON(entry.path, entry_id)
                         if returncode != 0:
                             break
+            
+            """
+            Remove the JSON files that were created
+            """
             for entry in os.scandir(fpath):
                     if entry.is_file() and entry.path.endswith('.json'):
                         os.remove(entry.path)
@@ -433,7 +449,7 @@ class PDBClient (object):
             return None
 
     """
-    Sort the tables to be loaded.
+    Sort the tables to be loaded based on the FK dependencies.
     """
     def sortTable(self, fpath):
         mmCIF_tables = [
@@ -456,8 +472,15 @@ class PDBClient (object):
             "ihm_model_group_link"
         ]
 
+        """
+        Get the tables groups
+        """
         with open(self.tables_groups, 'r') as f:
             table_groups = json.load(f)
+        
+        """
+        Sort the tables from the JSON file based on the groups
+        """
         tables = []
         with open(fpath, 'r') as f:
             pdb = json.load(f)
@@ -475,27 +498,16 @@ class PDBClient (object):
     Load data into the tables from the JSON file.
     """
     def loadTablesFromJSON(self, fpath, entry_id):
-        tables = self.sortTable(fpath)
+        """
         with open(self.pickle_file, 'rb') as pickle_file:
             vocab_list = pickle.load(pickle_file)
-        
-        schema_name = 'PDB'
-        pb = self.catalog.getPathBuilder()
-        
-        returncode = 0
-        map_term_value = {}
-        
-        
+            
         vocabulary_new_tables_name = {
                                       'ihm_geometric_object_distance_restraint_group_conditionality': 'geometric_object_distance_restraint_group_condition',
                                       'ihm_geometric_object_distance_restraint_object_characteristic': 'geometric_object_distance_restraint_object_character',
                                       'ihm_model_representation_details_model_object_primitive': 'model_representation_details_model_object_primitive',
                                       'ihm_starting_comparative_models_template_sequence_identity_denominator': 'starting_comparative_models_template_sequence_id_denom'
                                       }
-        
-        """
-        Map to ID of Vocabulary table
-        """
         vocab_schema_name = 'Vocab'
         term_data_map = {}
         for vocab_dict in vocab_list:
@@ -507,11 +519,32 @@ class PDBClient (object):
                 entities = vocab_table.path.entities()
                 for entity in entities:
                     term_data_map[(k[0], k[1], entity['Name'])] = entity['ID']
+        """
+        
+        """
+        Get the mapping Name-->ID of the vocabulary tables
+        """
+        fr = open(self.vocab_data_map_file, mode='r')
+        vocab_data_map = fr.read()
+        fr.close()
+        term_data_map = literal_eval(vocab_data_map)
                 
+        schema_name = 'PDB'
+        pb = self.catalog.getPathBuilder()
+        returncode = 0
+        
+        """
+        Read the JSON file data
+        """
         with open(fpath, 'r') as f:
             pdb = json.load(f)
             pdb = pdb[0]
 
+        """
+        Sort the tables based on the FK dependencies
+        """
+        tables = self.sortTable(fpath)
+        
         for tname in tables:
             records = pdb[tname]
             if type(records) is dict:
@@ -520,11 +553,22 @@ class PDBClient (object):
             table = pb.schemas[schema_name].tables[tname]
             entities = []
             for r in records:
+                """
+                Replace the vocabulary Name values with their ID mappings
+                """
                 for k, v in r.items():
                     if (tname, k, v) in term_data_map.keys():
                         r[k] = term_data_map[(tname, k, v)]
+
+                """
+                Replace the FK references to the entry table
+                """
                 r = self.getUpdatedRecord(tname, r, entry_id)
                 entities.append(r)
+            
+            """
+            Insert the data
+            """
             try:
                 table.insert(entities)
                 inserted_rows = len(entities)
@@ -549,7 +593,19 @@ class PDBClient (object):
     """
     Load data into the tables from a csv/tsv file.
     """
-    def loadTableFromCVS(self, fpath, delimiter, tname):
+    def loadTableFromCVS(self, fpath, delimiter, tname, entry_id):
+        """
+        Get the mapping Name-->ID of the vocabulary tables
+        """
+        fr = open(self.vocab_data_map_file, mode='r')
+        vocab_data_map = fr.read()
+        fr.close()
+        term_data_map = literal_eval(vocab_data_map)
+        
+        """
+        Read in chunks of 1000 rows
+        Make a temporization of 10 seconds between chunks readings
+        """
         returncode = 0
         chunk_size = 1000
         sleep_time = 10
@@ -558,6 +614,10 @@ class PDBClient (object):
         table = pb.schemas[schema_name].tables[tname]
         column_definitions = table.column_definitions
         counter = 0
+        
+        """
+        Read the rows of the csv/tsv file as dictionaries
+        """
         csvfile = open(fpath, 'r')
         reader = csv.DictReader(csvfile, delimiter=delimiter)
         j=0
@@ -576,7 +636,7 @@ class PDBClient (object):
                     except:
                         if column not in missing_columns:
                             missing_columns.append(column)
-                            print ('Table "%s" has not the column "%s".' % (tname, column))
+                            self.logger.debug('Table "%s" has not the column "%s".' % (tname, column))
                         entity[column] = ''
                         
                     if entity[column] == '':
@@ -588,9 +648,25 @@ class PDBClient (object):
                         entity[column] = json.loads(entity[column])
                     elif column_definitions[column].type['typename'].endswith('[]'):
                         entity[column] = entity[column][1:-1].split(',')
+                
+                """
+                Replace the vocabulary Name values with their ID mappings
+                """
+                for k, v in entity.items():
+                    if (tname, k, v) in term_data_map.keys():
+                        entity[k] = term_data_map[(tname, k, v)]
+                        
+                """
+                Replace the FK references to the entry table
+                """
+                entity = self.getUpdatedRecord(tname, entity, entry_id)
+                
                 entities.append(entity)
                 i = i+1
                 if i >= chunk_size:
+                    """
+                    Insert the chunk
+                    """
                     done = False
                     break
             if len(entities) > 0:
