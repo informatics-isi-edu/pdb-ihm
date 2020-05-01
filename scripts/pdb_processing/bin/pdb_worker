@@ -113,7 +113,7 @@ _work_units.append(
 
 _work_units.append(
     WorkUnit(
-        '/entity/A:=PDB:Entry_Related_File/Process_Status=New;Process_Status=Renew/Vocab:workflow_status/Name=DEPO/$A?limit=1',
+        '/entity/A:=PDB:Entry_Related_File/Process_Status=New;Process_Status=Renew/Vocab:workflow_status/Name=DEPO/$A/PDB:entry/Process_Status=success/$A?limit=1',
         '/attributegroup/PDB:Entry_Related_File/RID;Process_Status',
         '/attributegroup/PDB:Entry_Related_File/RID',
         Entry_Related_File_row_job

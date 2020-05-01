@@ -672,7 +672,6 @@ class PDBClient (object):
             if len(entities) > 0:
                 try:
                     table.insert(entities).fetch()
-                    total_inserts = total_inserts + 1
                     counter = counter + len(entities)
                     time.sleep(sleep_time)
                 except:
