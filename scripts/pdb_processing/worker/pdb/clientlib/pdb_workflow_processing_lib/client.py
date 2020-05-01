@@ -659,7 +659,7 @@ class PDBClient (object):
                 """
                 Replace the FK references to the entry table
                 """
-                entity = self.getUpdatedRecord(tname, entity, entry_id)
+                entity = self.getRecordUpdatedWithFK(tname, entity, entry_id)
                 
                 entities.append(entity)
                 i = i+1
@@ -685,6 +685,24 @@ class PDBClient (object):
         self.logger.debug('File {}: inserted {} rows into table {}'.format(fpath, counter, tname))
         return returncode
              
+    """
+    Get the record with the foreign key updated to the entry id.
+    If the FK is missing, add it.
+    """
+    def getRecordUpdatedWithFK(self, tname, row, entry_id):
+        with open('{}'.format(self.entry), 'r') as f:
+            pdb = json.load(f)
+        referenced_by = pdb['Catalog 1']['schemas']['PDB']['tables']['entry']['referenced_by']
+        columns = []
+        for k,v in referenced_by.items():
+            if v['table'] == tname:
+                col = v['columns'][1:-1]
+                columns.append(col)
+        for col in columns:
+            row[col] = entry_id
+                
+        return row
+
     """
     Get the record with the foreign key updated to the entry id.
     """

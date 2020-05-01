@@ -74,7 +74,7 @@ def pdb_row_job(handler, action):
 		row = handler.row
 		unit = handler.unit
 		
-		logger.info('Running job for the PDB Workflow Processing for RID="%s" and id="%s".' % (row['RID'], row['id'])) 
+		logger.info('Running job for the PDB Workflow Processing for RID="%s".' % (row['RID'])) 
 		args = ['env', 'action={}'.format(action),  'RID={}'.format(row['RID']), 'URL=https://{}/ermrest/catalog/{}'.format(Worker.servername, Worker.catalog_number), '/usr/local/bin/pdb_workflow_processing.py', '--config', '{}'.format(Worker.config_file)]
 		p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		stdoutdata, stderrdata = p.communicate()
@@ -88,7 +88,7 @@ def pdb_row_job(handler, action):
 		logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
 		returncode = 1
 	    
-	logger.info('Finished job for the PDB Workflow Processing for RID="%s" and id="%s".' % (row['RID'], row['id'])) 
+	logger.info('Finished job for the PDB Workflow Processing for RID="%s".' % (row['RID'])) 
         
 
 _work_units.append(
