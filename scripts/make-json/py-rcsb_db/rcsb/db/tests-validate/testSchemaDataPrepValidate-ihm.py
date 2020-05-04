@@ -60,13 +60,14 @@ class SchemaDataPrepValidateTests(unittest.TestCase):
         self.__fileLimit = None
         self.__mockTopPath = os.path.join(TOPDIR, "rcsb", "mock-data")
         self.__cachePath = os.path.join(TOPDIR, "CACHE")
-        self.__configPath = os.path.join(TOPDIR, "rcsb", "db", "config", "exdb-config-example-bv-2.yml")
+        self.__configPath = os.path.join(TOPDIR, "rcsb", "db", "config", "exdb-config-example-ihm.yml")
         configName = "site_info_configuration"
         self.__configName = configName
         self.__cfgOb = ConfigUtil(configPath=self.__configPath, defaultSectionName=configName, mockTopPath=self.__mockTopPath)
         self.__mU = MarshalUtil(workPath=self.__cachePath)
 
-        self.__schP = SchemaProvider(self.__cfgOb, self.__cachePath, useCache=False, rebuildFlag=True)
+        #self.__schP = SchemaProvider(self.__cfgOb, self.__cachePath, useCache=False, rebuildFlag=True)
+        self.__schP = SchemaProvider(self.__cfgOb, self.__cachePath, useCache=True)
         self.__rpP = RepositoryProvider(cfgOb=self.__cfgOb, numProc=self.__numProc, fileLimit=self.__fileLimit, cachePath=self.__cachePath)
         #
         self.__birdRepoPath = self.__cfgOb.getPath("BIRD_REPO_PATH", sectionName=configName)
