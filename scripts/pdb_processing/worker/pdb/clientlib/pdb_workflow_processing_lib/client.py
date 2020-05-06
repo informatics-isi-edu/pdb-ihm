@@ -168,9 +168,17 @@ class PDBClient (object):
         """
         Extract the file from hatrac
         """
-        f = self.getHatracFile(filename, file_url)
+        f,error_message = self.getHatracFile(filename, file_url)
         
         if f == None:
+            self.updateAttributes(schema,
+                                  table,
+                                  rid,
+                                  ["Process_Status", "Record_Status_Detail"],
+                                  {'RID': rid,
+                                  'Process_Status': 'error',
+                                  'Record_Status_Detail': error_message
+                                  })
             return
         
         if md5 == None:
@@ -193,7 +201,7 @@ class PDBClient (object):
         
         # see where the csv/tsv file is
         # suppose it is fpath
-        returncode = self.loadTableFromCVS(f, delimiter, tname, structure_id)
+        returncode,error_message = self.loadTableFromCVS(f, delimiter, tname, structure_id)
 
         if returncode != 0:
             """
@@ -202,9 +210,10 @@ class PDBClient (object):
             self.updateAttributes(schema,
                                   table,
                                   rid,
-                                  ["Process_Status"],
+                                  ["Process_Status", "Record_Status_Detail"],
                                   {'RID': rid,
-                                  'Process_Status': 'error'
+                                  'Process_Status': 'error',
+                                  'Record_Status_Detail': error_message
                                   })
             return
                         
@@ -221,7 +230,8 @@ class PDBClient (object):
         obj['Workflow_Status'] = ID
         obj['Process_Status'] = 'success'
         obj['File_MD5'] = md5
-        columns = ['Workflow_Status', 'Process_Status', 'File_MD5']
+        obj['Record_Status_Detail'] = None
+        columns = ['Workflow_Status', 'Process_Status', 'File_MD5', 'Record_Status_Detail']
         self.updateAttributes(schema,
                          table,
                          rid,
@@ -253,9 +263,17 @@ class PDBClient (object):
         """
         Extract the file from hatrac
         """
-        f = self.getHatracFile(filename, file_url)
+        f,error_message = self.getHatracFile(filename, file_url)
         
         if f == None:
+            self.updateAttributes(schema,
+                                  table,
+                                  rid,
+                                  ["Process_Status", "Record_Status_Detail"],
+                                  {'RID': rid,
+                                  'Process_Status': 'error',
+                                  'Record_Status_Detail': error_message
+                                  })
             return
         
         """
@@ -268,7 +286,7 @@ class PDBClient (object):
         """
         Convert the file to JSON and load the data into the tables
         """
-        returncode = self.convert2json(filename, id)
+        returncode,error_message = self.convert2json(filename, id)
         
         if returncode != 0:
             """
@@ -277,9 +295,10 @@ class PDBClient (object):
             self.updateAttributes(schema,
                                   table,
                                   rid,
-                                  ["Process_Status"],
+                                  ["Process_Status", "Record_Status_Detail"],
                                   {'RID': rid,
-                                  'Process_Status': 'error'
+                                  'Process_Status': 'error',
+                                  'Record_Status_Detail': error_message
                                   })
             return
                         
@@ -297,7 +316,8 @@ class PDBClient (object):
         obj['Workflow_Status'] = ID
         obj['Process_Status'] = 'success'
         obj['mmCIF_File_MD5'] = md5
-        columns = ['Workflow_Status', 'Process_Status', 'mmCIF_File_MD5']
+        obj['Record_Status_Detail'] = None
+        columns = ['Workflow_Status', 'Process_Status', 'mmCIF_File_MD5', 'Record_Status_Detail']
         self.updateAttributes(schema,
                          table,
                          rid,
@@ -310,17 +330,19 @@ class PDBClient (object):
     Extract the file from hatrac
     """
     def getHatracFile(self, filename, file_url):
+        error_message = None
         try:
             hatracFile = '{}/{}'.format(self.make_mmCIF, filename)
             self.store.get_obj(file_url, destfilename=hatracFile)
             self.logger.debug('File "%s", %d bytes.' % (hatracFile, os.stat(hatracFile).st_size)) 
-            return hatracFile
+            return (hatracFile,error_message)
         except:
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
             self.sendMail('FAILURE PDB: get file from hatrac ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
-            return None
+            error_message = ''.join(traceback.format_exception(et, ev, tb))
+            return (None,error_message)
             
     """
     Convert the input file to JSON
@@ -330,6 +352,7 @@ class PDBClient (object):
             """
             Apply make-mmcif.py
             """
+            error_message = None
             currentDirectory=os.getcwd()
             os.chdir('{}'.format(self.make_mmCIF))
             args = [self.python_bin, 'make-mmcif.py', filename]
@@ -343,7 +366,8 @@ class PDBClient (object):
                 self.logger.error('Can not make mmCIF for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (filename, stdoutdata, stderrdata)) 
                 self.sendMail('FAILURE PDB', 'Can not make mmCIF for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (filename, stdoutdata, stderrdata))
                 os.remove('{}/{}'.format(self.make_mmCIF, filename))
-                return returncode
+                error_message = '{}'.format(stderrdata)
+                return (returncode,error_message)
             
             os.remove('{}/{}'.format(self.make_mmCIF, filename))
             
@@ -365,7 +389,8 @@ class PDBClient (object):
                 self.logger.error('Can not validate testSchemaDataPrepValidate-ihm for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % ('output.cif', stdoutdata, stderrdata)) 
                 self.sendMail('FAILURE PDB', 'Can not make testSchemaDataPrepValidate-ihm for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % ('output.cif', stdoutdata, stderrdata))
                 os.remove('{}/rcsb/db/tests-validate/test-output/ihm-files/output.cif'.format(self.py_rcsb_db))
-                return returncode
+                error_message = '{}'.format(stderrdata)
+                return (returncode,error_message)
             
             os.remove('{}/rcsb/db/tests-validate/test-output/ihm-files/output.cif'.format(self.py_rcsb_db))
             self.logger.debug('File {}/{} was removed'.format(self.py_rcsb_db, 'rcsb/db/tests-validate/test-output/ihm-files/output.cif')) 
@@ -383,7 +408,7 @@ class PDBClient (object):
 
             for entry in os.scandir(fpath):
                     if entry.is_file() and entry.path.endswith('.json'):
-                        returncode = self.loadTablesFromJSON(entry.path, entry_id)
+                        returncode,error_message = self.loadTablesFromJSON(entry.path, entry_id)
                         if returncode != 0:
                             break
             
@@ -400,11 +425,10 @@ class PDBClient (object):
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
             self.sendMail('FAILURE PDB: convert to JSON ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
             os.chdir(currentDirectory)
-            self.logger.error('Can not convert to JSON for the file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (filename, stdoutdata, stderrdata)) 
-            self.sendMail('FAILURE PDB', 'Can not convert to JSON for the file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (filename, stdoutdata, stderrdata))
             returncode = 1
+            error_message = '{}'.format(''.join(traceback.format_exception(et, ev, tb)))
             
-        return returncode
+        return (returncode,error_message)
             
         
     """
@@ -532,6 +556,7 @@ class PDBClient (object):
         schema_name = 'PDB'
         pb = self.catalog.getPathBuilder()
         returncode = 0
+        error_message = None
         
         """
         Read the JSON file data
@@ -579,6 +604,7 @@ class PDBClient (object):
                 self.logger.error(e.response.text)
                 self.sendMail('FAILURE PDB: loadTablesFromJSON:\n{}\n{}'.format(e.response.text, e))
                 returncode = 1
+                error_message = '{}\n{}'.format(e.response.text, e)
                 break
             except:
                 et, ev, tb = sys.exc_info()
@@ -586,9 +612,10 @@ class PDBClient (object):
                 self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
                 self.sendMail('FAILURE PDB: loadTablesFromJSON ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
                 returncode = 1
+                error_message = ''.join(traceback.format_exception(et, ev, tb))
                 break
         
-        return returncode
+        return (returncode,error_message)
 
     """
     Load data into the tables from a csv/tsv file.
@@ -607,6 +634,7 @@ class PDBClient (object):
         Make a temporization of 10 seconds between chunks readings
         """
         returncode = 0
+        error_message = None
         chunk_size = 1000
         sleep_time = 10
         schema_name = 'PDB'
@@ -679,10 +707,11 @@ class PDBClient (object):
                     self.logger.error('got exception "%s"' % str(ev))
                     self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
                     self.sendMail('FAILURE PDB: loadTableFromCVS ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+                    error_message = ''.join(traceback.format_exception(et, ev, tb))
                     returncode = 1
                     break
         self.logger.debug('File {}: inserted {} rows into table {}'.format(fpath, counter, tname))
-        return returncode
+        return (returncode, error_message)
              
     """
     Get the record with the foreign key updated to the entry id.
