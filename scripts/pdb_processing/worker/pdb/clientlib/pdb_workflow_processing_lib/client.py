@@ -519,6 +519,38 @@ class PDBClient (object):
         return tables
         
     """
+    Rollback JSON inserted rows
+    """
+    def rollbackInsertedRows(self, records):
+        records.reverse()
+        for record in records:
+            tname = record['name']
+            rows = record['rows']
+            for row in rows:
+                rid = row['RID']
+                try:
+                    path = '%s:%s/%s=%s' % (urlquote('PDB'), urlquote(tname), urlquote('RID'), urlquote(rid))
+                    url = '/entity/%s' % (path)
+                    resp = self.catalog.delete(
+                        url
+                    )
+                    resp.raise_for_status()
+                    self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
+                except HTTPError as e:
+                    if e.response.status_code == HTTPStatus.NOT_FOUND:
+                        self.logger.debug('No rows found to delete from the URL "%s".' % (url))
+                    else:
+                        et, ev, tb = sys.exc_info()
+                        self.logger.error('got exception "%s"' % str(ev))
+                        self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+                        self.sendMail('FAILURE PDB: DELETE ERROR', 'URL: %s\n%s\n' % (url, ''.join(traceback.format_exception(et, ev, tb))))
+                except:
+                    et, ev, tb = sys.exc_info()
+                    self.logger.error('got exception "%s"' % str(ev))
+                    self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+                    self.sendMail('FAILURE PDB: DELETE ERROR', 'URL: %s\n%s\n' % (url, ''.join(traceback.format_exception(et, ev, tb))))
+                
+    """
     Load data into the tables from the JSON file.
     """
     def loadTablesFromJSON(self, fpath, entry_id):
@@ -570,6 +602,11 @@ class PDBClient (object):
         """
         tables = self.sortTable(fpath)
         
+        """
+        Keep track of the inserted rows in case of rollback
+        """
+        inserted_records = []
+        
         for tname in tables:
             records = pdb[tname]
             if type(records) is dict:
@@ -595,7 +632,8 @@ class PDBClient (object):
             Insert the data
             """
             try:
-                table.insert(entities)
+                res = table.insert(entities)
+                inserted_records.append({'name': tname, 'rows': res})
                 inserted_rows = len(entities)
                 self.logger.debug('File {}: inserted {} rows into table {}'.format(fpath, inserted_rows, tname))
                 #self.logger.debug('Inserted into table {} the {} rows:\n'.format(tname, entities))
@@ -605,6 +643,7 @@ class PDBClient (object):
                 self.sendMail('FAILURE PDB: loadTablesFromJSON:\n{}\n{}'.format(e.response.text, e))
                 returncode = 1
                 error_message = '{}\n{}'.format(e.response.text, e)
+                self.rollbackInsertedRows(inserted_records)
                 break
             except:
                 et, ev, tb = sys.exc_info()
@@ -613,6 +652,7 @@ class PDBClient (object):
                 self.sendMail('FAILURE PDB: loadTablesFromJSON ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
                 returncode = 1
                 error_message = ''.join(traceback.format_exception(et, ev, tb))
+                self.rollbackInsertedRows(inserted_records)
                 break
         
         return (returncode,error_message)
