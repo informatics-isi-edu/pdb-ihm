@@ -9,7 +9,8 @@ groups = {
     'pdb-writer': 'https://auth.globus.org/c94a1e5c-3c40-11e9-a5d1-0aacc65bfe9a',
     'pdb-admin': 'https://auth.globus.org/0b98092c-3c41-11e9-a8c8-0ee7d80087ee',
     'pdb-curator': 'https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6',
-    'isrd-staff': 'https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b'
+    'isrd-staff': 'https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b',
+    'pdb-submitter': 'https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1'
 }
 
 table_name = 'ihm_geometric_object_distance_restraint_restraint_type'
@@ -17,34 +18,6 @@ table_name = 'ihm_geometric_object_distance_restraint_restraint_type'
 schema_name = 'Vocab'
 
 column_annotations = {
-    'RCT': {
-        chaise_tags.display: {
-            'name': 'Creation Time'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'RMT': {
-        chaise_tags.display: {
-            'name': 'Last Modified Time'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'RCB': {
-        chaise_tags.display: {
-            'name': 'Created By'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'RMB': {
-        chaise_tags.display: {
-            'name': 'Modified By'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
     'ID': {},
     'URI': {},
     'Name': {},
@@ -133,20 +106,38 @@ table_acl_bindings = {
 
 key_defs = [
     em.Key.define(
-        ['ID'],
-        constraint_names=[['Vocab', 'tric_object_distance_restraint_restraint_type_term_IDkey1']],
+        ['RID'],
+        constraint_names=[['Vocab', 'tric_object_distance_restraint_restraint_type_term_RIDkey1']],
+    ),
+    em.Key.define(
+        ['Name'],
+        constraint_names=[
+            ['Vocab', 'ihm_geometric_object_distance_restraint_restraint_type_Namekey1']
+        ],
     ),
     em.Key.define(
         ['URI'],
         constraint_names=[['Vocab', 'tric_object_distance_restraint_restraint_type_term_URIkey1']],
     ),
     em.Key.define(
-        ['RID'],
-        constraint_names=[['Vocab', 'tric_object_distance_restraint_restraint_type_term_RIDkey1']],
+        ['ID'],
+        constraint_names=[['Vocab', 'tric_object_distance_restraint_restraint_type_term_IDkey1']],
     ),
 ]
 
 fkey_defs = [
+    em.ForeignKey.define(
+        ['RCB'],
+        'public',
+        'ERMrest_Client', ['ID'],
+        constraint_names=[['Vocab', 'tric_object_distance_restraint_restraint_type_term_RCB_fkey']],
+    ),
+    em.ForeignKey.define(
+        ['RMB'],
+        'public',
+        'ERMrest_Client', ['ID'],
+        constraint_names=[['Vocab', 'tric_object_distance_restraint_restraint_type_term_RMB_fkey']],
+    ),
     em.ForeignKey.define(
         ['Owner'],
         'public',
@@ -165,26 +156,6 @@ fkey_defs = [
                 'projection': ['ID'],
                 'projection_type': 'acl'
             }
-        },
-    ),
-    em.ForeignKey.define(
-        ['RCB'],
-        'public',
-        'ERMrest_Client', ['ID'],
-        constraint_names=[['Vocab', 'tric_object_distance_restraint_restraint_type_term_RCB_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
-    ),
-    em.ForeignKey.define(
-        ['RMB'],
-        'public',
-        'ERMrest_Client', ['ID'],
-        constraint_names=[['Vocab', 'tric_object_distance_restraint_restraint_type_term_RMB_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
         },
     ),
 ]

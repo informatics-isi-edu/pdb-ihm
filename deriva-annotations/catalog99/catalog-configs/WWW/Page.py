@@ -16,31 +16,7 @@ table_name = 'Page'
 
 schema_name = 'WWW'
 
-column_annotations = {
-    'RCT': {
-        chaise_tags.display: {
-            'name': 'Creation Time'
-        }
-    },
-    'RMT': {
-        chaise_tags.display: {
-            'name': 'Modified Time'
-        }
-    },
-    'RCB': {
-        chaise_tags.display: {
-            'name': 'Created By'
-        }
-    },
-    'RMB': {
-        chaise_tags.display: {
-            'name': 'Modified By'
-        }
-    },
-    'Title': {},
-    'Content': {},
-    'Owner': {}
-}
+column_annotations = {'Title': {}, 'Content': {}, 'Owner': {}}
 
 column_comment = {
     'Title': 'Unique title for the page',
@@ -145,13 +121,19 @@ table_acl_bindings = {
 }
 
 key_defs = [
-    em.Key.define(['RID'], constraint_names=[['WWW', 'Page_RIDkey1']],
-                  ),
     em.Key.define(['Title'], constraint_names=[['WWW', 'Page_Title_key']],
+                  ),
+    em.Key.define(['RID'], constraint_names=[['WWW', 'Page_RIDkey1']],
                   ),
 ]
 
 fkey_defs = [
+    em.ForeignKey.define(
+        ['RMB'], 'public', 'ERMrest_Client', ['ID'], constraint_names=[['WWW', 'Page_RMB_fkey']],
+    ),
+    em.ForeignKey.define(
+        ['RCB'], 'public', 'ERMrest_Client', ['ID'], constraint_names=[['WWW', 'Page_RCB_fkey']],
+    ),
     em.ForeignKey.define(
         ['Owner'],
         'public',
@@ -168,26 +150,6 @@ fkey_defs = [
                 'projection_type': 'acl',
                 'scope_acl': ['*']
             }
-        },
-    ),
-    em.ForeignKey.define(
-        ['RCB'],
-        'public',
-        'ERMrest_Client', ['ID'],
-        constraint_names=[['WWW', 'Page_RCB_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
-    ),
-    em.ForeignKey.define(
-        ['RMB'],
-        'public',
-        'ERMrest_Client', ['ID'],
-        constraint_names=[['WWW', 'Page_RMB_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
         },
     ),
 ]

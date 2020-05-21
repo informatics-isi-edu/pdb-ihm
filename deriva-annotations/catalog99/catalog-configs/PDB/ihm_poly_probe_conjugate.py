@@ -9,7 +9,8 @@ groups = {
     'pdb-writer': 'https://auth.globus.org/c94a1e5c-3c40-11e9-a5d1-0aacc65bfe9a',
     'pdb-admin': 'https://auth.globus.org/0b98092c-3c41-11e9-a8c8-0ee7d80087ee',
     'pdb-curator': 'https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6',
-    'isrd-staff': 'https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b'
+    'isrd-staff': 'https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b',
+    'pdb-submitter': 'https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1'
 }
 
 table_name = 'ihm_poly_probe_conjugate'
@@ -17,34 +18,6 @@ table_name = 'ihm_poly_probe_conjugate'
 schema_name = 'PDB'
 
 column_annotations = {
-    'RCT': {
-        chaise_tags.display: {
-            'name': 'Creation Time'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'RMT': {
-        chaise_tags.display: {
-            'name': 'Last Modified Time'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'RCB': {
-        chaise_tags.display: {
-            'name': 'Created By'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'RMB': {
-        chaise_tags.display: {
-            'name': 'Modified By'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
     'structure_id': {},
     'ambiguous_stoichiometry_flag': {},
     'chem_comp_descriptor_id': {},
@@ -244,9 +217,33 @@ table_annotations = {chaise_tags.visible_columns: visible_columns, }
 
 table_comment = 'Probes that are covalently attached to residues in polymeric entities'
 
-table_acls = {}
+table_acls = {
+    'owner': [groups['pdb-admin'], groups['isrd-staff']],
+    'write': [],
+    'delete': [groups['pdb-curator']],
+    'insert': [groups['pdb-curator'], groups['pdb-writer'], groups['pdb-submitter']],
+    'select': [groups['pdb-writer'], groups['pdb-reader']],
+    'update': [groups['pdb-curator']],
+    'enumerate': ['*']
+}
 
 table_acl_bindings = {
+    'released_reader': {
+        'types': ['select'],
+        'scope_acl': [groups['pdb-submitter']],
+        'projection': [
+            {
+                'outbound': ['PDB', 'ihm_poly_probe_conjugate_structure_id_fkey']
+            }, {
+                'outbound': ['PDB', 'entry_workflow_status_fkey']
+            }, {
+                'filter': 'Name',
+                'operand': 'REL',
+                'operator': '='
+            }, 'RID'
+        ],
+        'projection_type': 'nonnull'
+    },
     'self_service_group': {
         'types': ['update', 'delete'],
         'scope_acl': ['*'],
@@ -255,42 +252,64 @@ table_acl_bindings = {
     },
     'self_service_creator': {
         'types': ['update', 'delete'],
-        'scope_acl': ['*'],
-        'projection': ['RCB'],
+        'scope_acl': [groups['pdb-submitter']],
+        'projection': [
+            {
+                'outbound': ['PDB', 'ihm_poly_probe_conjugate_structure_id_fkey']
+            }, {
+                'outbound': ['PDB', 'entry_workflow_status_fkey']
+            }, {
+                'or': [
+                    {
+                        'filter': 'Name',
+                        'operand': 'DRAFT',
+                        'operator': '='
+                    }, {
+                        'filter': 'Name',
+                        'operand': 'DEPO',
+                        'operator': '='
+                    }
+                ]
+            }, 'RCB'
+        ],
         'projection_type': 'acl'
     }
 }
 
 key_defs = [
-    em.Key.define(
-        ['structure_id', 'id'],
-        constraint_names=[['PDB', 'ihm_poly_probe_conjugate_primary_key']],
-    ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_poly_probe_conjugate_RIDkey1']],
                   ),
+    em.Key.define(
+        ['id', 'structure_id'],
+        constraint_names=[['PDB', 'ihm_poly_probe_conjugate_primary_key']],
+    ),
 ]
 
 fkey_defs = [
+    em.ForeignKey.define(
+        ['RCB'],
+        'public',
+        'ERMrest_Client', ['ID'],
+        constraint_names=[['PDB', 'ihm_poly_probe_conjugate_RCB_fkey']],
+    ),
     em.ForeignKey.define(
         ['ambiguous_stoichiometry_flag'],
         'Vocab',
         'ihm_poly_probe_conjugate_ambiguous_stoichiometry_flag', ['ID'],
         constraint_names=[['PDB', 'ihm_poly_probe_conjugate_ambiguous_stoichiometry_flag_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
     ),
     em.ForeignKey.define(
         ['Entry_Related_File'],
         'PDB',
         'Entry_Related_File', ['RID'],
         constraint_names=[['PDB', 'ihm_poly_probe_conjugate_Entry_Related_File_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
         on_delete='CASCADE',
+    ),
+    em.ForeignKey.define(
+        ['RMB'],
+        'public',
+        'ERMrest_Client', ['ID'],
+        constraint_names=[['PDB', 'ihm_poly_probe_conjugate_RMB_fkey']],
     ),
     em.ForeignKey.define(
         ['structure_id', 'chem_comp_descriptor_id'],
@@ -322,9 +341,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['position_id', 'structure_id'],
+        ['structure_id', 'position_id'],
         'PDB',
-        'ihm_poly_probe_position', ['id', 'structure_id'],
+        'ihm_poly_probe_position', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_poly_probe_conjugate_position_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -354,16 +373,6 @@ fkey_defs = [
         },
         on_update='CASCADE',
         on_delete='SET NULL',
-    ),
-    em.ForeignKey.define(
-        ['RMB'],
-        'public',
-        'ERMrest_Client', ['ID'],
-        constraint_names=[['PDB', 'ihm_poly_probe_conjugate_RMB_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
     ),
     em.ForeignKey.define(
         ['dataset_list_id', 'structure_id'],
@@ -398,16 +407,6 @@ fkey_defs = [
                 'projection': ['ID'],
                 'projection_type': 'acl'
             }
-        },
-    ),
-    em.ForeignKey.define(
-        ['RCB'],
-        'public',
-        'ERMrest_Client', ['ID'],
-        constraint_names=[['PDB', 'ihm_poly_probe_conjugate_RCB_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
         },
     ),
 ]

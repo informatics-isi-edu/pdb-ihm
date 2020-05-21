@@ -16,41 +16,7 @@ table_name = 'ERMrest_Group'
 
 schema_name = 'public'
 
-column_annotations = {
-    'RCT': {
-        chaise_tags.display: {
-            'name': 'Creation Time'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'RMT': {
-        chaise_tags.display: {
-            'name': 'Last Modified Time'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'RCB': {
-        chaise_tags.display: {
-            'name': 'Created By'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'RMB': {
-        chaise_tags.display: {
-            'name': 'Modified By'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'Display_Name': {
-        chaise_tags.display: {
-            'name': 'Display Name'
-        }
-    }
-}
+column_annotations = {'Display_Name': {chaise_tags.display: {'name': 'Display Name'}}}
 
 column_comment = {}
 
@@ -105,7 +71,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['Description', 'Display_Name', 'ID', 'URL'],
+        ['Description', 'URL', 'Display_Name', 'ID'],
         constraint_names=[['public', 'ERMrest_Group_ID_URL_Display_Name_Description_key']],
         comment='Group ID is unique.',
     ),
