@@ -165,6 +165,11 @@ class PDBClient (object):
             
         creation_time = row['RCT']
         
+        url = '/attribute/Vocab:workflow_status/Name={}/ID'.format(urlquote('Error'))
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        Error_ID = resp.json()[0]['ID']
+
         """
         Extract the file from hatrac
         """
@@ -174,10 +179,11 @@ class PDBClient (object):
             self.updateAttributes(schema,
                                   table,
                                   rid,
-                                  ["Process_Status", "Record_Status_Detail"],
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
                                   'Process_Status': 'error',
-                                  'Record_Status_Detail': error_message
+                                  'Record_Status_Detail': error_message,
+                                  'Workflow_Status': Error_ID
                                   })
             return
         
@@ -201,7 +207,7 @@ class PDBClient (object):
         
         # see where the csv/tsv file is
         # suppose it is fpath
-        returncode,error_message = self.loadTableFromCVS(f, delimiter, tname, structure_id)
+        returncode,error_message = self.loadTableFromCVS(f, delimiter, tname, structure_id, rid)
 
         if returncode != 0:
             """
@@ -210,10 +216,11 @@ class PDBClient (object):
             self.updateAttributes(schema,
                                   table,
                                   rid,
-                                  ["Process_Status", "Record_Status_Detail"],
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
                                   'Process_Status': 'error',
-                                  'Record_Status_Detail': error_message
+                                  'Record_Status_Detail': error_message,
+                                  'Workflow_Status': Error_ID
                                   })
             return
                         
@@ -260,6 +267,11 @@ class PDBClient (object):
             
         creation_time = row['RCT']
         
+        url = '/attribute/Vocab:workflow_status/Name={}/ID'.format(urlquote('Error'))
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        Error_ID = resp.json()[0]['ID']
+
         """
         Extract the file from hatrac
         """
@@ -269,10 +281,11 @@ class PDBClient (object):
             self.updateAttributes(schema,
                                   table,
                                   rid,
-                                  ["Process_Status", "Record_Status_Detail"],
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
                                   'Process_Status': 'error',
-                                  'Record_Status_Detail': error_message
+                                  'Record_Status_Detail': error_message,
+                                  'Workflow_Status': Error_ID
                                   })
             return
         
@@ -295,10 +308,11 @@ class PDBClient (object):
             self.updateAttributes(schema,
                                   table,
                                   rid,
-                                  ["Process_Status", "Record_Status_Detail"],
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
                                   'Process_Status': 'error',
-                                  'Record_Status_Detail': error_message
+                                  'Record_Status_Detail': error_message,
+                                  'Workflow_Status': Error_ID
                                   })
             return
                         
@@ -660,7 +674,7 @@ class PDBClient (object):
     """
     Load data into the tables from a csv/tsv file.
     """
-    def loadTableFromCVS(self, fpath, delimiter, tname, entry_id):
+    def loadTableFromCVS(self, fpath, delimiter, tname, entry_id, rid):
         """
         Get the mapping Name-->ID of the vocabulary tables
         """
@@ -728,6 +742,7 @@ class PDBClient (object):
                 Replace the FK references to the entry table
                 """
                 entity = self.getRecordUpdatedWithFK(tname, entity, entry_id)
+                entity['Entry_Related_File'] = rid
                 
                 entities.append(entity)
                 i = i+1
