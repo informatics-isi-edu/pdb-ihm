@@ -162,7 +162,6 @@ class PDBClient (object):
         file_url = row['File_URL']
         md5 = row['File_MD5']
         structure_id = row['structure_id']
-            
         creation_time = row['RCT']
         
         url = '/attribute/Vocab:workflow_status/Name={}/ID'.format(urlquote('Error'))
@@ -263,9 +262,36 @@ class PDBClient (object):
         filename = row['mmCIF_File_Name']
         file_url = row['mmCIF_File_URL']
         md5 = row['mmCIF_File_MD5']
+        last_md5 = row['last_mmCIF_File_MD5']
         id = row['id']
-            
         creation_time = row['RCT']
+        
+        """
+        Check if we have a new mmCIF file
+        """
+        if md5 == last_md5:
+            self.logger.debug('RID="{}", Skipping loading the table as the mmCIF file is unchanged'.format(rid))
+            """
+            Update the image table with the success result.
+            """
+            url = '/attribute/Vocab:workflow_status/Name={}/ID'.format(urlquote('Record Ready'))
+            resp = self.catalog.get(url)
+            resp.raise_for_status()
+            ID = resp.json()[0]['ID']
+            
+            obj = {}
+            obj['RID'] = rid
+            obj['Workflow_Status'] = ID
+            obj['Process_Status'] = 'success'
+            columns = ['Workflow_Status', 'Process_Status']
+            self.updateAttributes(schema,
+                             table,
+                             rid,
+                             columns,
+                             obj)
+       
+            self.logger.debug('RID="{}", Ended PDB Processing for the {}:{} table.'.format(rid, schema, table)) 
+            return
         
         url = '/attribute/Vocab:workflow_status/Name={}/ID'.format(urlquote('Error'))
         resp = self.catalog.get(url)
