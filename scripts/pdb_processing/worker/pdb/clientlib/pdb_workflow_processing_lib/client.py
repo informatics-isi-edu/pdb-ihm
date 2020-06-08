@@ -174,9 +174,9 @@ class PDBClient (object):
                                   rid,
                                   ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': 'error',
+                                  'Process_Status': 'ERROR',
                                   'Record_Status_Detail': error_message,
-                                  'Workflow_Status': 'Error'
+                                  'Workflow_Status': 'ERROR'
                                   })
             return
         
@@ -211,15 +211,15 @@ class PDBClient (object):
                                   rid,
                                   ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': 'error',
+                                  'Process_Status': 'ERROR',
                                   'Record_Status_Detail': error_message,
-                                  'Workflow_Status': 'Error'
+                                  'Workflow_Status': 'ERROR'
                                   })
             return
                         
         obj = {}
         obj['RID'] = rid
-        obj['Workflow_Status'] = 'Record Ready'
+        obj['Workflow_Status'] = 'RECORD READY'
         obj['Process_Status'] = 'success'
         obj['File_MD5'] = md5
         obj['Record_Status_Detail'] = None
@@ -259,7 +259,7 @@ class PDBClient (object):
             self.logger.debug('RID="{}", Skipping loading the table as the mmCIF file is unchanged'.format(rid))
             obj = {}
             obj['RID'] = rid
-            obj['Workflow_Status'] = 'Record Ready'
+            obj['Workflow_Status'] = 'RECORD READY'
             obj['Process_Status'] = 'success'
             columns = ['Workflow_Status', 'Process_Status']
             self.updateAttributes(schema,
@@ -282,9 +282,9 @@ class PDBClient (object):
                                   rid,
                                   ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': 'error',
+                                  'Process_Status': 'ERROR',
                                   'Record_Status_Detail': error_message,
-                                  'Workflow_Status': 'Error'
+                                  'Workflow_Status': 'ERROR'
                                   })
             return
         
@@ -309,16 +309,16 @@ class PDBClient (object):
                                   rid,
                                   ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': 'error',
+                                  'Process_Status': 'ERROR',
                                   'Record_Status_Detail': error_message,
-                                  'Workflow_Status': 'Error'
+                                  'Workflow_Status': 'ERROR'
                                   })
             return
                         
                             
         obj = {}
         obj['RID'] = rid
-        obj['Workflow_Status'] = 'Record Ready'
+        obj['Workflow_Status'] = 'RECORD READY'
         obj['Process_Status'] = 'success'
         obj['mmCIF_File_MD5'] = md5
         obj['Record_Status_Detail'] = None
