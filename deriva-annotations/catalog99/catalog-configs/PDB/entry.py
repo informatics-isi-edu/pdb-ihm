@@ -145,6 +145,7 @@ visible_foreign_keys = {
         ['PDB', 'ihm_starting_computational_models_structure_id_fkey'],
         ['PDB', 'ihm_starting_model_seq_dif_structure_id_fkey'],
         ['PDB', 'ihm_chemical_component_descriptor_structure_id_fkey'],
+        ['PDB', 'Entry_Related_File_entry_id_fkey'],
         ['PDB', 'ihm_probe_list_structure_id_fkey'],
         ['PDB', 'ihm_poly_probe_position_structure_id_fkey'],
         ['PDB', 'ihm_poly_probe_conjugate_structure_id_fkey'],

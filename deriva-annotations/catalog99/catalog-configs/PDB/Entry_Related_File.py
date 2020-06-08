@@ -72,7 +72,7 @@ visible_columns = {
         'RID', ['PDB', 'Entry_Related_File_entry_id_fkey'], 
         ['PDB', 'Entry_Related_File_File_Type_fkey'],
         ['PDB', 'Entry_Related_File_File_Format_fkey'],
-        'File_Name', 'File_URL', 'File_Bytes', 'File_MD5',
+        'File_URL', 'File_Bytes', 'File_MD5',
         ['PDB', 'Entry_Related_File_workflow_status_fkey'],
         'Record_Status_Detail'
     ],
@@ -87,7 +87,7 @@ visible_columns = {
         'RID', ['PDB', 'Entry_Related_File_entry_id_fkey'],
         ['PDB', 'Entry_Related_File_File_Type_fkey'],
         ['PDB', 'Entry_Related_File_File_Format_fkey'],
-        'File_Name', 'File_URL', 'File_Bytes', 'File_MD5',
+        'File_URL', 'File_Bytes', 'File_MD5',
         ['PDB', 'Entry_Related_File_workflow_status_fkey'],
         'Record_Status_Detail',
         ['PDB', 'Entry_Related_File_RCB_fkey'], 
