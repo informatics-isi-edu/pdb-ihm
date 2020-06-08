@@ -60,7 +60,6 @@ class PDBClient (object):
         self.py_rcsb_db = kwargs.get("py_rcsb_db")
         self.python_bin = kwargs.get("python_bin")
         self.pickle_file = kwargs.get("pickle_file")
-        self.vocab_data_map_file = kwargs.get("vocab_data_map_file")
         self.tables_groups = kwargs.get("tables_groups")
         self.entry = kwargs.get("entry")
         self.credentials = kwargs.get("credentials")
@@ -162,7 +161,6 @@ class PDBClient (object):
         file_url = row['File_URL']
         md5 = row['File_MD5']
         structure_id = row['structure_id']
-            
         creation_time = row['RCT']
         
         """
@@ -174,10 +172,11 @@ class PDBClient (object):
             self.updateAttributes(schema,
                                   table,
                                   rid,
-                                  ["Process_Status", "Record_Status_Detail"],
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
                                   'Process_Status': 'error',
-                                  'Record_Status_Detail': error_message
+                                  'Record_Status_Detail': error_message,
+                                  'Workflow_Status': 'Error'
                                   })
             return
         
@@ -201,7 +200,7 @@ class PDBClient (object):
         
         # see where the csv/tsv file is
         # suppose it is fpath
-        returncode,error_message = self.loadTableFromCVS(f, delimiter, tname, structure_id)
+        returncode,error_message = self.loadTableFromCVS(f, delimiter, tname, structure_id, rid)
 
         if returncode != 0:
             """
@@ -210,24 +209,17 @@ class PDBClient (object):
             self.updateAttributes(schema,
                                   table,
                                   rid,
-                                  ["Process_Status", "Record_Status_Detail"],
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
                                   'Process_Status': 'error',
-                                  'Record_Status_Detail': error_message
+                                  'Record_Status_Detail': error_message,
+                                  'Workflow_Status': 'Error'
                                   })
             return
                         
-        """
-        Update the image table with the success result.
-        """
-        url = '/attribute/Vocab:workflow_status/Name={}/ID'.format(urlquote('Record Ready'))
-        resp = self.catalog.get(url)
-        resp.raise_for_status()
-        ID = resp.json()[0]['ID']
-        
         obj = {}
         obj['RID'] = rid
-        obj['Workflow_Status'] = ID
+        obj['Workflow_Status'] = 'Record Ready'
         obj['Process_Status'] = 'success'
         obj['File_MD5'] = md5
         obj['Record_Status_Detail'] = None
@@ -256,9 +248,28 @@ class PDBClient (object):
         filename = row['mmCIF_File_Name']
         file_url = row['mmCIF_File_URL']
         md5 = row['mmCIF_File_MD5']
+        last_md5 = row['last_mmCIF_File_MD5']
         id = row['id']
-            
         creation_time = row['RCT']
+        
+        """
+        Check if we have a new mmCIF file
+        """
+        if md5 == last_md5:
+            self.logger.debug('RID="{}", Skipping loading the table as the mmCIF file is unchanged'.format(rid))
+            obj = {}
+            obj['RID'] = rid
+            obj['Workflow_Status'] = 'Record Ready'
+            obj['Process_Status'] = 'success'
+            columns = ['Workflow_Status', 'Process_Status']
+            self.updateAttributes(schema,
+                             table,
+                             rid,
+                             columns,
+                             obj)
+       
+            self.logger.debug('RID="{}", Ended PDB Processing for the {}:{} table.'.format(rid, schema, table)) 
+            return
         
         """
         Extract the file from hatrac
@@ -269,10 +280,11 @@ class PDBClient (object):
             self.updateAttributes(schema,
                                   table,
                                   rid,
-                                  ["Process_Status", "Record_Status_Detail"],
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
                                   'Process_Status': 'error',
-                                  'Record_Status_Detail': error_message
+                                  'Record_Status_Detail': error_message,
+                                  'Workflow_Status': 'Error'
                                   })
             return
         
@@ -295,25 +307,18 @@ class PDBClient (object):
             self.updateAttributes(schema,
                                   table,
                                   rid,
-                                  ["Process_Status", "Record_Status_Detail"],
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
                                   'Process_Status': 'error',
-                                  'Record_Status_Detail': error_message
+                                  'Record_Status_Detail': error_message,
+                                  'Workflow_Status': 'Error'
                                   })
             return
                         
                             
-        """
-        Update the image table with the success result.
-        """
-        url = '/attribute/Vocab:workflow_status/Name={}/ID'.format(urlquote('Record Ready'))
-        resp = self.catalog.get(url)
-        resp.raise_for_status()
-        ID = resp.json()[0]['ID']
-        
         obj = {}
         obj['RID'] = rid
-        obj['Workflow_Status'] = ID
+        obj['Workflow_Status'] = 'Record Ready'
         obj['Process_Status'] = 'success'
         obj['mmCIF_File_MD5'] = md5
         obj['Record_Status_Detail'] = None
@@ -576,15 +581,7 @@ class PDBClient (object):
                 for entity in entities:
                     term_data_map[(k[0], k[1], entity['Name'])] = entity['ID']
         """
-        
-        """
-        Get the mapping Name-->ID of the vocabulary tables
-        """
-        fr = open(self.vocab_data_map_file, mode='r')
-        vocab_data_map = fr.read()
-        fr.close()
-        term_data_map = literal_eval(vocab_data_map)
-                
+                        
         schema_name = 'PDB'
         pb = self.catalog.getPathBuilder()
         returncode = 0
@@ -615,13 +612,6 @@ class PDBClient (object):
             table = pb.schemas[schema_name].tables[tname]
             entities = []
             for r in records:
-                """
-                Replace the vocabulary Name values with their ID mappings
-                """
-                for k, v in r.items():
-                    if (tname, k, v) in term_data_map.keys():
-                        r[k] = term_data_map[(tname, k, v)]
-
                 """
                 Replace the FK references to the entry table
                 """
@@ -660,7 +650,7 @@ class PDBClient (object):
     """
     Load data into the tables from a csv/tsv file.
     """
-    def loadTableFromCVS(self, fpath, delimiter, tname, entry_id):
+    def loadTableFromCVS(self, fpath, delimiter, tname, entry_id, rid):
         """
         Get the mapping Name-->ID of the vocabulary tables
         """
@@ -728,6 +718,7 @@ class PDBClient (object):
                 Replace the FK references to the entry table
                 """
                 entity = self.getRecordUpdatedWithFK(tname, entity, entry_id)
+                entity['Entry_Related_File'] = rid
                 
                 entities.append(entity)
                 i = i+1
