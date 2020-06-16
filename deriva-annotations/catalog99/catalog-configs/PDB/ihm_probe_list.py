@@ -9,7 +9,8 @@ groups = {
     'pdb-writer': 'https://auth.globus.org/c94a1e5c-3c40-11e9-a5d1-0aacc65bfe9a',
     'pdb-admin': 'https://auth.globus.org/0b98092c-3c41-11e9-a8c8-0ee7d80087ee',
     'pdb-curator': 'https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6',
-    'isrd-staff': 'https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b'
+    'isrd-staff': 'https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b',
+    'pdb-submitter': 'https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1'
 }
 
 table_name = 'ihm_probe_list'
@@ -17,34 +18,6 @@ table_name = 'ihm_probe_list'
 schema_name = 'PDB'
 
 column_annotations = {
-    'RCT': {
-        chaise_tags.display: {
-            'name': 'Creation Time'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'RMT': {
-        chaise_tags.display: {
-            'name': 'Last Modified Time'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'RCB': {
-        chaise_tags.display: {
-            'name': 'Created By'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'RMB': {
-        chaise_tags.display: {
-            'name': 'Modified By'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
     'structure_id': {},
     'probe_chem_comp_descriptor_id': {},
     'probe_id': {},
@@ -232,9 +205,33 @@ table_annotations = {
 
 table_comment = 'Probes used in the experiment'
 
-table_acls = {}
+table_acls = {
+    'owner': [groups['pdb-admin'], groups['isrd-staff']],
+    'write': [],
+    'delete': [groups['pdb-curator']],
+    'insert': [groups['pdb-curator'], groups['pdb-writer'], groups['pdb-submitter']],
+    'select': [groups['pdb-writer'], groups['pdb-reader']],
+    'update': [groups['pdb-curator']],
+    'enumerate': ['*']
+}
 
 table_acl_bindings = {
+    'released_reader': {
+        'types': ['select'],
+        'scope_acl': [groups['pdb-submitter']],
+        'projection': [
+            {
+                'outbound': ['PDB', 'ihm_probe_list_structure_id_fkey']
+            }, {
+                'outbound': ['PDB', 'entry_workflow_status_fkey']
+            }, {
+                'filter': 'Name',
+                'operand': 'REL',
+                'operator': '='
+            }, 'RID'
+        ],
+        'projection_type': 'nonnull'
+    },
     'self_service_group': {
         'types': ['update', 'delete'],
         'scope_acl': ['*'],
@@ -243,8 +240,26 @@ table_acl_bindings = {
     },
     'self_service_creator': {
         'types': ['update', 'delete'],
-        'scope_acl': ['*'],
-        'projection': ['RCB'],
+        'scope_acl': [groups['pdb-submitter']],
+        'projection': [
+            {
+                'outbound': ['PDB', 'ihm_probe_list_structure_id_fkey']
+            }, {
+                'outbound': ['PDB', 'entry_workflow_status_fkey']
+            }, {
+                'or': [
+                    {
+                        'filter': 'Name',
+                        'operand': 'DRAFT',
+                        'operator': '='
+                    }, {
+                        'filter': 'Name',
+                        'operand': 'DEPO',
+                        'operator': '='
+                    }
+                ]
+            }, 'RCB'
+        ],
         'projection_type': 'acl'
     }
 }
@@ -259,9 +274,39 @@ key_defs = [
 
 fkey_defs = [
     em.ForeignKey.define(
-        ['probe_chem_comp_descriptor_id', 'structure_id'],
+        ['RMB'],
+        'public',
+        'ERMrest_Client', ['ID'],
+        constraint_names=[['PDB', 'ihm_probe_list_RMB_fkey']],
+    ),
+    em.ForeignKey.define(
+        ['probe_origin'],
+        'Vocab',
+        'ihm_probe_list_probe_origin', ['ID'],
+        constraint_names=[['PDB', 'ihm_probe_list_probe_origin_fkey']],
+    ),
+    em.ForeignKey.define(
+        ['probe_link_type'],
+        'Vocab',
+        'ihm_probe_list_probe_link_type', ['ID'],
+        constraint_names=[['PDB', 'ihm_probe_list_probe_link_type_fkey']],
+    ),
+    em.ForeignKey.define(
+        ['reactive_probe_flag'],
+        'Vocab',
+        'ihm_probe_list_reactive_probe_flag', ['ID'],
+        constraint_names=[['PDB', 'ihm_probe_list_reactive_probe_flag_fkey']],
+    ),
+    em.ForeignKey.define(
+        ['RCB'],
+        'public',
+        'ERMrest_Client', ['ID'],
+        constraint_names=[['PDB', 'ihm_probe_list_RCB_fkey']],
+    ),
+    em.ForeignKey.define(
+        ['structure_id', 'probe_chem_comp_descriptor_id'],
         'PDB',
-        'ihm_chemical_component_descriptor', ['id', 'structure_id'],
+        'ihm_chemical_component_descriptor', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_probe_list_probe_chem_comp_descriptor_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -294,26 +339,6 @@ fkey_defs = [
         },
     ),
     em.ForeignKey.define(
-        ['RCB'],
-        'public',
-        'ERMrest_Client', ['ID'],
-        constraint_names=[['PDB', 'ihm_probe_list_RCB_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
-    ),
-    em.ForeignKey.define(
-        ['probe_origin'],
-        'Vocab',
-        'ihm_probe_list_probe_origin', ['ID'],
-        constraint_names=[['PDB', 'ihm_probe_list_probe_origin_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
-    ),
-    em.ForeignKey.define(
         ['reactive_probe_chem_comp_descriptor_id', 'structure_id'],
         'PDB',
         'ihm_chemical_component_descriptor', ['id', 'structure_id'],
@@ -341,36 +366,6 @@ fkey_defs = [
         },
         on_update='CASCADE',
         on_delete='SET NULL',
-    ),
-    em.ForeignKey.define(
-        ['reactive_probe_flag'],
-        'Vocab',
-        'ihm_probe_list_reactive_probe_flag', ['ID'],
-        constraint_names=[['PDB', 'ihm_probe_list_reactive_probe_flag_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
-    ),
-    em.ForeignKey.define(
-        ['RMB'],
-        'public',
-        'ERMrest_Client', ['ID'],
-        constraint_names=[['PDB', 'ihm_probe_list_RMB_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
-    ),
-    em.ForeignKey.define(
-        ['probe_link_type'],
-        'Vocab',
-        'ihm_probe_list_probe_link_type', ['ID'],
-        constraint_names=[['PDB', 'ihm_probe_list_probe_link_type_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
     ),
 ]
 

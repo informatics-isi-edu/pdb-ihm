@@ -9,7 +9,8 @@ groups = {
     'pdb-writer': 'https://auth.globus.org/c94a1e5c-3c40-11e9-a5d1-0aacc65bfe9a',
     'pdb-admin': 'https://auth.globus.org/0b98092c-3c41-11e9-a8c8-0ee7d80087ee',
     'pdb-curator': 'https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6',
-    'isrd-staff': 'https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b'
+    'isrd-staff': 'https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b',
+    'pdb-submitter': 'https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1'
 }
 
 table_name = 'entity_poly_seq'
@@ -17,34 +18,6 @@ table_name = 'entity_poly_seq'
 schema_name = 'PDB'
 
 column_annotations = {
-    'RCT': {
-        chaise_tags.display: {
-            'name': 'Creation Time'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'RMT': {
-        chaise_tags.display: {
-            'name': 'Last Modified Time'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'RCB': {
-        chaise_tags.display: {
-            'name': 'Created By'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'RMB': {
-        chaise_tags.display: {
-            'name': 'Modified By'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
     'structure_id': {},
     'entity_id': {},
     'hetero': {},
@@ -162,9 +135,33 @@ table_annotations = {
 
 table_comment = None
 
-table_acls = {}
+table_acls = {
+    'owner': [groups['pdb-admin'], groups['isrd-staff']],
+    'write': [],
+    'delete': [groups['pdb-curator']],
+    'insert': [groups['pdb-curator'], groups['pdb-writer'], groups['pdb-submitter']],
+    'select': [groups['pdb-writer'], groups['pdb-reader']],
+    'update': [groups['pdb-curator']],
+    'enumerate': ['*']
+}
 
 table_acl_bindings = {
+    'released_reader': {
+        'types': ['select'],
+        'scope_acl': [groups['pdb-submitter']],
+        'projection': [
+            {
+                'outbound': ['PDB', 'entity_poly_seq_structure_id_fkey']
+            }, {
+                'outbound': ['PDB', 'entry_workflow_status_fkey']
+            }, {
+                'filter': 'Name',
+                'operand': 'REL',
+                'operator': '='
+            }, 'RID'
+        ],
+        'projection_type': 'nonnull'
+    },
     'self_service_group': {
         'types': ['update', 'delete'],
         'scope_acl': ['*'],
@@ -173,19 +170,37 @@ table_acl_bindings = {
     },
     'self_service_creator': {
         'types': ['update', 'delete'],
-        'scope_acl': ['*'],
-        'projection': ['RCB'],
+        'scope_acl': [groups['pdb-submitter']],
+        'projection': [
+            {
+                'outbound': ['PDB', 'entity_poly_seq_structure_id_fkey']
+            }, {
+                'outbound': ['PDB', 'entry_workflow_status_fkey']
+            }, {
+                'or': [
+                    {
+                        'filter': 'Name',
+                        'operand': 'DRAFT',
+                        'operator': '='
+                    }, {
+                        'filter': 'Name',
+                        'operand': 'DEPO',
+                        'operator': '='
+                    }
+                ]
+            }, 'RCB'
+        ],
         'projection_type': 'acl'
     }
 }
 
 key_defs = [
-    em.Key.define(['RID'], constraint_names=[['PDB', 'entity_poly_seq_RIDkey1']],
-                  ),
     em.Key.define(
-        ['entity_id', 'structure_id', 'num', 'mon_id'],
+        ['num', 'structure_id', 'mon_id', 'entity_id'],
         constraint_names=[['PDB', 'entity_poly_seq_primary_key']],
     ),
+    em.Key.define(['RID'], constraint_names=[['PDB', 'entity_poly_seq_RIDkey1']],
+                  ),
 ]
 
 fkey_defs = [
@@ -194,10 +209,18 @@ fkey_defs = [
         'Vocab',
         'entity_poly_seq_hetero', ['ID'],
         constraint_names=[['PDB', 'entity_poly_seq_hetero_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
+    ),
+    em.ForeignKey.define(
+        ['RCB'],
+        'public',
+        'ERMrest_Client', ['ID'],
+        constraint_names=[['PDB', 'entity_poly_seq_RCB_fkey']],
+    ),
+    em.ForeignKey.define(
+        ['RMB'],
+        'public',
+        'ERMrest_Client', ['ID'],
+        constraint_names=[['PDB', 'entity_poly_seq_RMB_fkey']],
     ),
     em.ForeignKey.define(
         ['entity_id', 'structure_id'],
@@ -250,26 +273,6 @@ fkey_defs = [
         },
         on_update='CASCADE',
         on_delete='SET NULL',
-    ),
-    em.ForeignKey.define(
-        ['RMB'],
-        'public',
-        'ERMrest_Client', ['ID'],
-        constraint_names=[['PDB', 'entity_poly_seq_RMB_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
-    ),
-    em.ForeignKey.define(
-        ['RCB'],
-        'public',
-        'ERMrest_Client', ['ID'],
-        constraint_names=[['PDB', 'entity_poly_seq_RCB_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
     ),
     em.ForeignKey.define(
         ['structure_id'],

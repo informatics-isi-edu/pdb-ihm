@@ -16,41 +16,7 @@ table_name = 'Catalog_Group'
 
 schema_name = 'public'
 
-column_annotations = {
-    'RCT': {
-        chaise_tags.display: {
-            'name': 'Creation Time'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'RMT': {
-        chaise_tags.display: {
-            'name': 'Last Modified Time'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'RCB': {
-        chaise_tags.display: {
-            'name': 'Created By'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'RMB': {
-        chaise_tags.display: {
-            'name': 'Modified By'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'Display_Name': {
-        chaise_tags.display: {
-            'name': 'Display Name'
-        }
-    }
-}
+column_annotations = {'Display_Name': {chaise_tags.display: {'name': 'Display Name'}}}
 
 column_comment = {}
 
@@ -82,15 +48,15 @@ table_acls = {
 table_acl_bindings = {}
 
 key_defs = [
-    em.Key.define(['RID'], constraint_names=[['public', 'Catalog_Group_RIDkey1']],
-                  ),
     em.Key.define(['ID'], constraint_names=[['public', 'Catalog_Group_ID_key']],
                   ),
     em.Key.define(
-        ['Display_Name', 'Description', 'ID', 'URL'],
+        ['Description', 'URL', 'ID', 'Display_Name'],
         constraint_names=[['public', 'Catalog_Group_ID_URL_Display_Name_Description_key']],
         comment='Key to ensure that group only is entered once.',
     ),
+    em.Key.define(['RID'], constraint_names=[['public', 'Catalog_Group_RIDkey1']],
+                  ),
 ]
 
 fkey_defs = [
@@ -99,15 +65,17 @@ fkey_defs = [
         'public',
         'ERMrest_Client', ['ID'],
         constraint_names=[['public', 'Catalog_Group_RCB_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
     ),
     em.ForeignKey.define(
-        ['URL', 'Display_Name', 'ID', 'Description'],
+        ['RMB'],
         'public',
-        'ERMrest_Group', ['URL', 'Display_Name', 'ID', 'Description'],
+        'ERMrest_Client', ['ID'],
+        constraint_names=[['public', 'Catalog_Group_RMB_fkey']],
+    ),
+    em.ForeignKey.define(
+        ['Description', 'ID', 'Display_Name', 'URL'],
+        'public',
+        'ERMrest_Group', ['Description', 'ID', 'Display_Name', 'URL'],
         constraint_names=[['public', 'Catalog_Group_ID1']],
         acls={
             'insert': [groups['pdb-curator']],
@@ -122,16 +90,6 @@ fkey_defs = [
             }
         },
         on_update='CASCADE',
-    ),
-    em.ForeignKey.define(
-        ['RMB'],
-        'public',
-        'ERMrest_Client', ['ID'],
-        constraint_names=[['public', 'Catalog_Group_RMB_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
     ),
 ]
 

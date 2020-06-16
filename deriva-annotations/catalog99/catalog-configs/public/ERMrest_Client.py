@@ -16,41 +16,7 @@ table_name = 'ERMrest_Client'
 
 schema_name = 'public'
 
-column_annotations = {
-    'RCT': {
-        chaise_tags.display: {
-            'name': 'Creation Time'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'RMT': {
-        chaise_tags.display: {
-            'name': 'Last Modified Time'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'RCB': {
-        chaise_tags.display: {
-            'name': 'Created By'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'RMB': {
-        chaise_tags.display: {
-            'name': 'Modified By'
-        },
-        chaise_tags.generated: None,
-        chaise_tags.immutable: None
-    },
-    'Display_Name': {
-        chaise_tags.display: {
-            'name': 'Display Name'
-        }
-    }
-}
+column_annotations = {'Display_Name': {chaise_tags.display: {'name': 'Display Name'}}}
 
 column_comment = {}
 

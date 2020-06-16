@@ -60,7 +60,6 @@ class PDBClient (object):
         self.py_rcsb_db = kwargs.get("py_rcsb_db")
         self.python_bin = kwargs.get("python_bin")
         self.pickle_file = kwargs.get("pickle_file")
-        self.vocab_data_map_file = kwargs.get("vocab_data_map_file")
         self.tables_groups = kwargs.get("tables_groups")
         self.entry = kwargs.get("entry")
         self.credentials = kwargs.get("credentials")
@@ -162,15 +161,23 @@ class PDBClient (object):
         file_url = row['File_URL']
         md5 = row['File_MD5']
         structure_id = row['structure_id']
-            
         creation_time = row['RCT']
         
         """
         Extract the file from hatrac
         """
-        f = self.getHatracFile(filename, file_url)
+        f,error_message = self.getHatracFile(filename, file_url)
         
         if f == None:
+            self.updateAttributes(schema,
+                                  table,
+                                  rid,
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
+                                  {'RID': rid,
+                                  'Process_Status': 'ERROR',
+                                  'Record_Status_Detail': error_message,
+                                  'Workflow_Status': 'ERROR'
+                                  })
             return
         
         if md5 == None:
@@ -193,7 +200,7 @@ class PDBClient (object):
         
         # see where the csv/tsv file is
         # suppose it is fpath
-        returncode = self.loadTableFromCVS(f, delimiter, tname, structure_id)
+        returncode,error_message = self.loadTableFromCVS(f, delimiter, tname, structure_id, rid)
 
         if returncode != 0:
             """
@@ -202,26 +209,21 @@ class PDBClient (object):
             self.updateAttributes(schema,
                                   table,
                                   rid,
-                                  ["Process_Status"],
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': 'error'
+                                  'Process_Status': 'ERROR',
+                                  'Record_Status_Detail': error_message,
+                                  'Workflow_Status': 'ERROR'
                                   })
             return
                         
-        """
-        Update the image table with the success result.
-        """
-        url = '/attribute/Vocab:workflow_status/Name={}/ID'.format(urlquote('Record Ready'))
-        resp = self.catalog.get(url)
-        resp.raise_for_status()
-        ID = resp.json()[0]['ID']
-        
         obj = {}
         obj['RID'] = rid
-        obj['Workflow_Status'] = ID
+        obj['Workflow_Status'] = 'RECORD READY'
         obj['Process_Status'] = 'success'
         obj['File_MD5'] = md5
-        columns = ['Workflow_Status', 'Process_Status', 'File_MD5']
+        obj['Record_Status_Detail'] = None
+        columns = ['Workflow_Status', 'Process_Status', 'File_MD5', 'Record_Status_Detail']
         self.updateAttributes(schema,
                          table,
                          rid,
@@ -246,16 +248,44 @@ class PDBClient (object):
         filename = row['mmCIF_File_Name']
         file_url = row['mmCIF_File_URL']
         md5 = row['mmCIF_File_MD5']
+        last_md5 = row['last_mmCIF_File_MD5']
         id = row['id']
-            
         creation_time = row['RCT']
+        
+        """
+        Check if we have a new mmCIF file
+        """
+        if md5 == last_md5:
+            self.logger.debug('RID="{}", Skipping loading the table as the mmCIF file is unchanged'.format(rid))
+            obj = {}
+            obj['RID'] = rid
+            obj['Workflow_Status'] = 'RECORD READY'
+            obj['Process_Status'] = 'success'
+            columns = ['Workflow_Status', 'Process_Status']
+            self.updateAttributes(schema,
+                             table,
+                             rid,
+                             columns,
+                             obj)
+       
+            self.logger.debug('RID="{}", Ended PDB Processing for the {}:{} table.'.format(rid, schema, table)) 
+            return
         
         """
         Extract the file from hatrac
         """
-        f = self.getHatracFile(filename, file_url)
+        f,error_message = self.getHatracFile(filename, file_url)
         
         if f == None:
+            self.updateAttributes(schema,
+                                  table,
+                                  rid,
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
+                                  {'RID': rid,
+                                  'Process_Status': 'ERROR',
+                                  'Record_Status_Detail': error_message,
+                                  'Workflow_Status': 'ERROR'
+                                  })
             return
         
         """
@@ -268,7 +298,7 @@ class PDBClient (object):
         """
         Convert the file to JSON and load the data into the tables
         """
-        returncode = self.convert2json(filename, id)
+        returncode,error_message = self.convert2json(filename, id)
         
         if returncode != 0:
             """
@@ -277,27 +307,22 @@ class PDBClient (object):
             self.updateAttributes(schema,
                                   table,
                                   rid,
-                                  ["Process_Status"],
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': 'error'
+                                  'Process_Status': 'ERROR',
+                                  'Record_Status_Detail': error_message,
+                                  'Workflow_Status': 'ERROR'
                                   })
             return
                         
                             
-        """
-        Update the image table with the success result.
-        """
-        url = '/attribute/Vocab:workflow_status/Name={}/ID'.format(urlquote('Record Ready'))
-        resp = self.catalog.get(url)
-        resp.raise_for_status()
-        ID = resp.json()[0]['ID']
-        
         obj = {}
         obj['RID'] = rid
-        obj['Workflow_Status'] = ID
+        obj['Workflow_Status'] = 'RECORD READY'
         obj['Process_Status'] = 'success'
         obj['mmCIF_File_MD5'] = md5
-        columns = ['Workflow_Status', 'Process_Status', 'mmCIF_File_MD5']
+        obj['Record_Status_Detail'] = None
+        columns = ['Workflow_Status', 'Process_Status', 'mmCIF_File_MD5', 'Record_Status_Detail']
         self.updateAttributes(schema,
                          table,
                          rid,
@@ -310,17 +335,19 @@ class PDBClient (object):
     Extract the file from hatrac
     """
     def getHatracFile(self, filename, file_url):
+        error_message = None
         try:
             hatracFile = '{}/{}'.format(self.make_mmCIF, filename)
             self.store.get_obj(file_url, destfilename=hatracFile)
             self.logger.debug('File "%s", %d bytes.' % (hatracFile, os.stat(hatracFile).st_size)) 
-            return hatracFile
+            return (hatracFile,error_message)
         except:
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
             self.sendMail('FAILURE PDB: get file from hatrac ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
-            return None
+            error_message = ''.join(traceback.format_exception(et, ev, tb))
+            return (None,error_message)
             
     """
     Convert the input file to JSON
@@ -330,6 +357,7 @@ class PDBClient (object):
             """
             Apply make-mmcif.py
             """
+            error_message = None
             currentDirectory=os.getcwd()
             os.chdir('{}'.format(self.make_mmCIF))
             args = [self.python_bin, 'make-mmcif.py', filename]
@@ -343,7 +371,8 @@ class PDBClient (object):
                 self.logger.error('Can not make mmCIF for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (filename, stdoutdata, stderrdata)) 
                 self.sendMail('FAILURE PDB', 'Can not make mmCIF for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (filename, stdoutdata, stderrdata))
                 os.remove('{}/{}'.format(self.make_mmCIF, filename))
-                return returncode
+                error_message = '{}'.format(stderrdata)
+                return (returncode,error_message)
             
             os.remove('{}/{}'.format(self.make_mmCIF, filename))
             
@@ -365,7 +394,8 @@ class PDBClient (object):
                 self.logger.error('Can not validate testSchemaDataPrepValidate-ihm for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % ('output.cif', stdoutdata, stderrdata)) 
                 self.sendMail('FAILURE PDB', 'Can not make testSchemaDataPrepValidate-ihm for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % ('output.cif', stdoutdata, stderrdata))
                 os.remove('{}/rcsb/db/tests-validate/test-output/ihm-files/output.cif'.format(self.py_rcsb_db))
-                return returncode
+                error_message = '{}'.format(stderrdata)
+                return (returncode,error_message)
             
             os.remove('{}/rcsb/db/tests-validate/test-output/ihm-files/output.cif'.format(self.py_rcsb_db))
             self.logger.debug('File {}/{} was removed'.format(self.py_rcsb_db, 'rcsb/db/tests-validate/test-output/ihm-files/output.cif')) 
@@ -383,7 +413,7 @@ class PDBClient (object):
 
             for entry in os.scandir(fpath):
                     if entry.is_file() and entry.path.endswith('.json'):
-                        returncode = self.loadTablesFromJSON(entry.path, entry_id)
+                        returncode,error_message = self.loadTablesFromJSON(entry.path, entry_id)
                         if returncode != 0:
                             break
             
@@ -400,11 +430,10 @@ class PDBClient (object):
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
             self.sendMail('FAILURE PDB: convert to JSON ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
             os.chdir(currentDirectory)
-            self.logger.error('Can not convert to JSON for the file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (filename, stdoutdata, stderrdata)) 
-            self.sendMail('FAILURE PDB', 'Can not convert to JSON for the file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (filename, stdoutdata, stderrdata))
             returncode = 1
+            error_message = '{}'.format(''.join(traceback.format_exception(et, ev, tb)))
             
-        return returncode
+        return (returncode,error_message)
             
         
     """
@@ -495,6 +524,38 @@ class PDBClient (object):
         return tables
         
     """
+    Rollback JSON inserted rows
+    """
+    def rollbackInsertedRows(self, records):
+        records.reverse()
+        for record in records:
+            tname = record['name']
+            rows = record['rows']
+            for row in rows:
+                rid = row['RID']
+                try:
+                    path = '%s:%s/%s=%s' % (urlquote('PDB'), urlquote(tname), urlquote('RID'), urlquote(rid))
+                    url = '/entity/%s' % (path)
+                    resp = self.catalog.delete(
+                        url
+                    )
+                    resp.raise_for_status()
+                    self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
+                except HTTPError as e:
+                    if e.response.status_code == HTTPStatus.NOT_FOUND:
+                        self.logger.debug('No rows found to delete from the URL "%s".' % (url))
+                    else:
+                        et, ev, tb = sys.exc_info()
+                        self.logger.error('got exception "%s"' % str(ev))
+                        self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+                        self.sendMail('FAILURE PDB: DELETE ERROR', 'URL: %s\n%s\n' % (url, ''.join(traceback.format_exception(et, ev, tb))))
+                except:
+                    et, ev, tb = sys.exc_info()
+                    self.logger.error('got exception "%s"' % str(ev))
+                    self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+                    self.sendMail('FAILURE PDB: DELETE ERROR', 'URL: %s\n%s\n' % (url, ''.join(traceback.format_exception(et, ev, tb))))
+                
+    """
     Load data into the tables from the JSON file.
     """
     def loadTablesFromJSON(self, fpath, entry_id):
@@ -520,18 +581,11 @@ class PDBClient (object):
                 for entity in entities:
                     term_data_map[(k[0], k[1], entity['Name'])] = entity['ID']
         """
-        
-        """
-        Get the mapping Name-->ID of the vocabulary tables
-        """
-        fr = open(self.vocab_data_map_file, mode='r')
-        vocab_data_map = fr.read()
-        fr.close()
-        term_data_map = literal_eval(vocab_data_map)
-                
+                        
         schema_name = 'PDB'
         pb = self.catalog.getPathBuilder()
         returncode = 0
+        error_message = None
         
         """
         Read the JSON file data
@@ -545,6 +599,11 @@ class PDBClient (object):
         """
         tables = self.sortTable(fpath)
         
+        """
+        Keep track of the inserted rows in case of rollback
+        """
+        inserted_records = []
+        
         for tname in tables:
             records = pdb[tname]
             if type(records) is dict:
@@ -553,13 +612,6 @@ class PDBClient (object):
             table = pb.schemas[schema_name].tables[tname]
             entities = []
             for r in records:
-                """
-                Replace the vocabulary Name values with their ID mappings
-                """
-                for k, v in r.items():
-                    if (tname, k, v) in term_data_map.keys():
-                        r[k] = term_data_map[(tname, k, v)]
-
                 """
                 Replace the FK references to the entry table
                 """
@@ -570,7 +622,8 @@ class PDBClient (object):
             Insert the data
             """
             try:
-                table.insert(entities)
+                res = table.insert(entities)
+                inserted_records.append({'name': tname, 'rows': res})
                 inserted_rows = len(entities)
                 self.logger.debug('File {}: inserted {} rows into table {}'.format(fpath, inserted_rows, tname))
                 #self.logger.debug('Inserted into table {} the {} rows:\n'.format(tname, entities))
@@ -579,6 +632,8 @@ class PDBClient (object):
                 self.logger.error(e.response.text)
                 self.sendMail('FAILURE PDB: loadTablesFromJSON:\n{}\n{}'.format(e.response.text, e))
                 returncode = 1
+                error_message = '{}\n{}'.format(e.response.text, e)
+                self.rollbackInsertedRows(inserted_records)
                 break
             except:
                 et, ev, tb = sys.exc_info()
@@ -586,14 +641,16 @@ class PDBClient (object):
                 self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
                 self.sendMail('FAILURE PDB: loadTablesFromJSON ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
                 returncode = 1
+                error_message = ''.join(traceback.format_exception(et, ev, tb))
+                self.rollbackInsertedRows(inserted_records)
                 break
         
-        return returncode
+        return (returncode,error_message)
 
     """
     Load data into the tables from a csv/tsv file.
     """
-    def loadTableFromCVS(self, fpath, delimiter, tname, entry_id):
+    def loadTableFromCVS(self, fpath, delimiter, tname, entry_id, rid):
         """
         Get the mapping Name-->ID of the vocabulary tables
         """
@@ -607,6 +664,7 @@ class PDBClient (object):
         Make a temporization of 10 seconds between chunks readings
         """
         returncode = 0
+        error_message = None
         chunk_size = 1000
         sleep_time = 10
         schema_name = 'PDB'
@@ -660,6 +718,7 @@ class PDBClient (object):
                 Replace the FK references to the entry table
                 """
                 entity = self.getRecordUpdatedWithFK(tname, entity, entry_id)
+                entity['Entry_Related_File'] = rid
                 
                 entities.append(entity)
                 i = i+1
@@ -679,10 +738,11 @@ class PDBClient (object):
                     self.logger.error('got exception "%s"' % str(ev))
                     self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
                     self.sendMail('FAILURE PDB: loadTableFromCVS ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+                    error_message = ''.join(traceback.format_exception(et, ev, tb))
                     returncode = 1
                     break
         self.logger.debug('File {}: inserted {} rows into table {}'.format(fpath, counter, tname))
-        return returncode
+        return (returncode, error_message)
              
     """
     Get the record with the foreign key updated to the entry id.

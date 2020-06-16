@@ -19,7 +19,7 @@ FORMAT = '%(asctime)s: %(levelname)s <%(module)s>: %(message)s'
 logger = logging.getLogger(__name__)
 loglevel = os.getenv('LOGLEVEL', 'info')
 loglevel =__LOGLEVEL.get(loglevel)
-init_logging(level=loglevel, log_format=FORMAT, file_path='/home/serban/log/pdb.log')
+init_logging(level=loglevel, log_format=FORMAT, file_path='/home/pdbihm/pdb/log/pdb.log')
 
 class WorkerRuntimeError (RuntimeError):
     pass
@@ -126,14 +126,14 @@ class Worker (object):
     servername = os.getenv('PDB_SERVER', 'pdb.isrd.isi.edu')
 
     # catalog number
-    catalog_number = os.getenv('CATALOG', '99')
+    catalog_number = os.getenv('CATALOG', '1')
 
     # secret session cookie
-    credfile = os.getenv('PDB_CREDENTIALS', '/home/secrets/serban/credentials.json')
+    credfile = os.getenv('PDB_CREDENTIALS', '/home/secrets/pdbihm/credentials.json')
     credentials = json.load(open(credfile))
 
     poll_seconds = int(os.getenv('PDB_POLL_SECONDS', '300'))
-    config_file = os.getenv('PDB_CONFIG', '/home/serban/config/pdb.conf')
+    config_file = os.getenv('PDB_CONFIG', '/home/pdbihm/pdb/config/pdb.conf')
 
     # these are peristent/logical connections so we create once and reuse
     # they can retain state and manage an actual HTTP connection-pool

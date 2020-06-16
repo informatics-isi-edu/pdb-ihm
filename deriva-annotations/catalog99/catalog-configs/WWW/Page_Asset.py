@@ -80,36 +80,15 @@ table_acls = {}
 table_acl_bindings = {}
 
 key_defs = [
-    em.Key.define(['URL'], constraint_names=[['WWW', 'Page_Asset_URLkey1']],
-                  ),
     em.Key.define(['RID'], constraint_names=[['WWW', 'Page_Asset_RIDkey1']],
+                  ),
+    em.Key.define(['URL'], constraint_names=[['WWW', 'Page_Asset_URLkey1']],
                   ),
 ]
 
 fkey_defs = [
     em.ForeignKey.define(
-        ['Page'],
-        'WWW',
-        'Page', ['RID'],
-        constraint_names=[['WWW', 'Page_Asset_Page_fkey']],
-        acls={
-            'insert': [groups['pdb-curator']],
-            'update': [groups['pdb-curator']]
-        },
-        acl_bindings={
-            'self_linkage_owner': {
-                'types': ['insert', 'update'],
-                'projection': ['Owner'],
-                'projection_type': 'acl',
-                'scope_acl': ['*']
-            },
-            'self_linkage_creator': {
-                'types': ['insert', 'update'],
-                'projection': ['RCB'],
-                'projection_type': 'acl',
-                'scope_acl': ['*']
-            }
-        },
+        ['Page'], 'WWW', 'Page', ['RID'], constraint_names=[['WWW', 'Page_Asset_Page_fkey']],
     ),
 ]
 

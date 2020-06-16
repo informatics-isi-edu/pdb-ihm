@@ -62,14 +62,14 @@ catalog_config = {
 annotations = {chaise_tags.bulk_upload: bulk_upload, chaise_tags.catalog_config: catalog_config, }
 
 acls = {
-    'create': [],
-    'select': [groups['pdb-writer'], groups['pdb-reader']],
-    'insert': [groups['pdb-curator'], groups['pdb-writer']],
     'owner': [groups['pdb-admin'], groups['isrd-staff']],
-    'write': [],
     'delete': [groups['pdb-curator']],
+    'update': [groups['pdb-curator']],
+    'select': [groups['pdb-writer'], groups['pdb-reader']],
+    'create': [],
+    'write': [],
     'enumerate': ['*'],
-    'update': [groups['pdb-curator']]
+    'insert': [groups['pdb-curator'], groups['pdb-writer']]
 }
 
 
