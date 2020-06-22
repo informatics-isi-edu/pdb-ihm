@@ -559,29 +559,6 @@ class PDBClient (object):
     Load data into the tables from the JSON file.
     """
     def loadTablesFromJSON(self, fpath, entry_id):
-        """
-        with open(self.pickle_file, 'rb') as pickle_file:
-            vocab_list = pickle.load(pickle_file)
-            
-        vocabulary_new_tables_name = {
-                                      'ihm_geometric_object_distance_restraint_group_conditionality': 'geometric_object_distance_restraint_group_condition',
-                                      'ihm_geometric_object_distance_restraint_object_characteristic': 'geometric_object_distance_restraint_object_character',
-                                      'ihm_model_representation_details_model_object_primitive': 'model_representation_details_model_object_primitive',
-                                      'ihm_starting_comparative_models_template_sequence_identity_denominator': 'starting_comparative_models_template_sequence_id_denom'
-                                      }
-        vocab_schema_name = 'Vocab'
-        term_data_map = {}
-        for vocab_dict in vocab_list:
-            for k, v in vocab_dict.items():
-                vocab_table_name = '{}_{}'.format(k[0], k[1])
-                if vocab_table_name in vocabulary_new_tables_name.keys():
-                    vocab_table_name = vocabulary_new_tables_name[vocab_table_name]
-                vocab_table = pb.schemas[vocab_schema_name].tables[vocab_table_name]
-                entities = vocab_table.path.entities()
-                for entity in entities:
-                    term_data_map[(k[0], k[1], entity['Name'])] = entity['ID']
-        """
-                        
         schema_name = 'PDB'
         pb = self.catalog.getPathBuilder()
         returncode = 0
@@ -651,13 +628,6 @@ class PDBClient (object):
     Load data into the tables from a csv/tsv file.
     """
     def loadTableFromCVS(self, fpath, delimiter, tname, entry_id, rid):
-        """
-        Get the mapping Name-->ID of the vocabulary tables
-        """
-        fr = open(self.vocab_data_map_file, mode='r')
-        vocab_data_map = fr.read()
-        fr.close()
-        term_data_map = literal_eval(vocab_data_map)
         
         """
         Read in chunks of 1000 rows
@@ -707,13 +677,6 @@ class PDBClient (object):
                     elif column_definitions[column].type['typename'].endswith('[]'):
                         entity[column] = entity[column][1:-1].split(',')
                 
-                """
-                Replace the vocabulary Name values with their ID mappings
-                """
-                for k, v in entity.items():
-                    if (tname, k, v) in term_data_map.keys():
-                        entity[k] = term_data_map[(tname, k, v)]
-                        
                 """
                 Replace the FK references to the entry table
                 """
