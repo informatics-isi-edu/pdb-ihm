@@ -248,7 +248,7 @@ class PDBClient (object):
         filename = row['mmCIF_File_Name']
         file_url = row['mmCIF_File_URL']
         md5 = row['mmCIF_File_MD5']
-        last_md5 = row['last_mmCIF_File_MD5']
+        last_md5 = row['Last_mmCIF_File_MD5']
         id = row['id']
         creation_time = row['RCT']
         
@@ -322,7 +322,8 @@ class PDBClient (object):
         obj['Process_Status'] = 'success'
         obj['mmCIF_File_MD5'] = md5
         obj['Record_Status_Detail'] = None
-        columns = ['Workflow_Status', 'Process_Status', 'mmCIF_File_MD5', 'Record_Status_Detail']
+        columns = ['Workflow_Status', 'Process_Status', 'mmCIF_File_MD5', 'Record_Status_Detail', 'Last_mmCIF_File_MD5']
+        obj['Last_mmCIF_File_MD5'] = md5
         self.updateAttributes(schema,
                          table,
                          rid,
