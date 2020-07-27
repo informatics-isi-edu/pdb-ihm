@@ -53,6 +53,12 @@ def entry_row_job(handler):
     """
     pdb_row_job(handler, 'entry')
     
+def entry_export_job(handler):
+    """
+    Export mmCIF.
+    """
+    pdb_row_job(handler, 'export')
+    
 def ihm_starting_model_details_row_job(handler):
     """
     Process mmCIF the PDB:ihm_starting_model_details table.
@@ -97,6 +103,15 @@ _work_units.append(
         '/attributegroup/PDB:entry/RID;Process_Status',
         '/attributegroup/PDB:entry/RID',
         entry_row_job
+    )
+)
+
+_work_units.append(
+    WorkUnit(
+        '/entity/A:=PDB:entry/Process_Status=New;Process_Status=Renew/Vocab:workflow_status/Name=SUBMIT/$A?limit=1',
+        '/attributegroup/PDB:entry/RID;Process_Status',
+        '/attributegroup/PDB:entry/RID',
+        entry_export_job
     )
 )
 

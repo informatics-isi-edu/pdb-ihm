@@ -61,6 +61,10 @@ class PDBClient (object):
         self.python_bin = kwargs.get("python_bin")
         self.pickle_file = kwargs.get("pickle_file")
         self.tables_groups = kwargs.get("tables_groups")
+        self.export_tables = kwargs.get("export_tables")
+        self.scratch = kwargs.get("scratch")
+        self.cif_tables = kwargs.get("cif_tables")
+        self.export_order_by = kwargs.get("export_order_by")
         self.entry = kwargs.get("entry")
         self.credentials = kwargs.get("credentials")
         self.store = HatracStore(
@@ -135,6 +139,8 @@ class PDBClient (object):
                 self.process_mmCIF('PDB','entry', rid)
             elif action == 'Entry_Related_File':
                 self.process_Entry_Related_File('PDB', 'Entry_Related_File', rid)
+            elif action == 'export':
+                self.export_mmCIF('PDB', 'entry', rid)
             else:
                 self.logger.error('Unknown action: "%s".' % action)
         except:
@@ -232,6 +238,253 @@ class PDBClient (object):
    
         self.logger.debug('Ended PDB Processing for the %s:%s table.' % (schema, table)) 
         
+    """
+    Process the mmCIF file of the entry table
+    """
+    def export_mmCIF(self, schema_pdb, table_entry, rid, status='in progress'):
+        deriva_tables = ['entry']
+        mmCIF_tables = []
+        mmCIF_ignored = []
+        error_message = None
+
+        """
+        Query for detecting the record to be exported
+        """
+        pb = self.catalog.getPathBuilder()
+        schema = pb.PDB
+        entry = schema.entry
+        RID = entry.RID
+        Process_Status = entry.Process_Status
+        path = entry.path
+        path.filter((RID == rid) & (Process_Status == status))
+        self.logger.debug('Query Export URL: {}'.format(path.uri))
+
+        results = path.entities()
+        results.fetch()
+        mmCIF_File_URL = results[0]['mmCIF_File_URL']
+        entry_id = results[0]['id']
+        
+        hatracFile = '{}/_{}.cif'.format(self.scratch, entry_id)
+        tables = self.export_tables
+        output = '{}/{}.cif'.format(self.scratch, entry_id)
+        fw = open(output, 'w')
+        
+        mmCIF_export = self.cif_tables
+        pks_map = self.export_order_by
+
+        def writeLine(line, loopLine=None):
+            table_name = line[1:].split('.')[0]
+            if table_name not in mmCIF_tables:
+                mmCIF_tables.append(table_name)
+            if table_name not in deriva_tables and table_name not in mmCIF_export and table_name not in mmCIF_ignored:
+                mmCIF_ignored.append(table_name)
+            if table_name not in deriva_tables and table_name in mmCIF_export:
+                if loopLine != None:
+                    fw.write('{}\n'.format(loopLine))
+                fw.write('{}'.format(line))
+                return True
+            else:
+                return False
+        
+        def getColumnValue(table_name, column_name, column_type, column_value):
+            if column_value == None:
+                return '.'
+            if column_type in ['int4', 'float4']:
+                return '{}'.format(column_value)
+            if column_type == 'text':
+                if '\t' in column_value:
+                    self.logger.debug('tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
+                    error_message = 'tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value)
+                    return None
+                if '\n' in column_value:
+                    return '\n;{}\n;\n'.format(column_value)
+                if '"' not in column_value and "'" not in column_value and ' ' not in column_value and not column_value.startswith('_'):
+                    return column_value
+                if '"' not in column_value:
+                    return '"{}"'.format(column_value)
+                if "'" not in column_value:
+                    return "'{}'".format(column_value)
+                self.logger.debug('Both " and \' are in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
+                error_message = 'Both " and \' are in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value)
+                return None
+            else:
+                self.logger.debug('unknown type: {}, table: {}, column: {}'.format(column_type, table_name, column_name))
+                error_message = 'unknown type: {}, table: {}, column: {}'.format(column_type, table_name, column_name)
+                return None
+
+        def exportData():
+            try:
+                for table_name, table_body in tables.items():
+                    pk = table_body['pkey_columns']
+                    try:
+                        pk.remove('structure_id')
+                    except:
+                        pass
+                    
+                    """
+                    if len(pk) == 0:
+                        self.logger.debug('No PK Table {}, PK: {}'.format(table_name,pk))
+                    elif len(pk) == 2:
+                        self.logger.debug('2 PK Table {}, PK: {}'.format(table_name,pk))
+                    elif len(pk) == 3:
+                        self.logger.debug('3 PK Table {}, PK: {}'.format(table_name,pk))
+                    elif len(pk) != 1:
+                        self.logger.debug('More than 3 PK Table {}, PK: {}'.format(table_name,pk))
+                    """
+                            
+                    if table_name in ['entry', 'chem_comp_atom']:
+                        continue
+                    table = schema.tables[table_name]
+                    path = table.path
+                    structure_id = table.column_definitions['structure_id']
+                    path.filter(structure_id == entry_id)
+                    #self.logger.debug('Query Export Data URL: {}'.format(path.uri))
+                    results = path.entities()
+                    if len(pk) == 1:
+                        #self.logger.debug('Sorting results based on: {}'.format(table.column_definitions[pk[0]]))
+                        results.sort(table.column_definitions[pk[0]])
+                    else:
+                        pk = pks_map[table_name]
+                        #self.logger.debug('Sorting results based on: ({}, {})'.format(table.column_definitions[pk[0]], table.column_definitions[pk[1]]))
+                        results.sort(table.column_definitions[pk[0]], table.column_definitions[pk[1]])
+                    results.fetch()
+                    if len(results) == 0:
+                        continue
+                    deriva_tables.append(table_name)
+                    fw.write('loop_\n')
+                    for column in table_body['columns']:
+                        if column['name'] == 'structure_id':
+                            continue
+                        fw.write('_{}.{}\n'.format(table_name,column['name']))
+                    for row in results:
+                        line = []
+                        for column in table_body['columns']:
+                            column_name = column['name']
+                            column_type = column['type']
+                            column_value = row[column_name]
+                            if column_name == 'structure_id':
+                                continue
+                            value = getColumnValue(table_name, column_name, column_type, column_value)
+                            if value == None:
+                                self.logger.debug('Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
+                                self.sendMail('FAILURE PDB: Could not find column value', 'Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
+                                return 1
+                            line.append(value)
+                        fw.write('{}\n'.format('\t'.join(line)))
+                    fw.write('#\n')    
+                
+                return 0
+            except:
+                et, ev, tb = sys.exc_info()
+                self.logger.debug('exportData got exception "%s"' % str(ev))
+                self.logger.debug('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+                self.sendMail('FAILURE PDB: exportData got exception', '%s\nThe process might have been stopped\n' % ''.join(traceback.format_exception(et, ev, tb)))
+                return 1
+
+        def exportCIF():
+            self.store.get_obj(mmCIF_File_URL, destfilename=hatracFile)
+            
+            fr = open(hatracFile, 'r')
+            lines = fr.readlines()
+            status = 'skip'
+
+            for line in lines:
+                if status == 'skip':
+                    if line.strip() == 'loop_':
+                        status = 'loop'
+                    elif line.startswith('_'):
+                        if writeLine(line):
+                            status = 'columns'
+                        
+                elif status == 'loop':
+                    if line.startswith('_'):
+                        if writeLine(line, loopLine='loop_'):
+                            status = 'columns'
+                        else:
+                            status = 'skip'
+                    else:
+                        self.logger.debug('Unexpected line after loop_:\n{}'.format(line))
+                        fr.close()
+                        self.sendMail('FAILURE PDB: Unknown status', 'status = {}\nThe process might have been stopped\n'.format(status))
+                        return 1
+            
+                elif status == 'columns':
+                    if line.startswith('_'):
+                        if not writeLine(line):
+                            status = 'skip'
+                    elif line.strip() == 'loop_':
+                        status = 'loop'
+                    else:
+                        fw.write('{}'.format(line))
+                        status = 'rows'
+            
+                elif status == 'rows':
+                    if line.strip() == 'loop_':
+                        status = 'loop'
+                    elif line.startswith('_'):
+                        if writeLine(line):
+                            status = 'columns'
+                        else:
+                            status = 'skip'
+                    else:
+                        fw.write('{}'.format(line))
+                else:
+                    self.logger.debug('Unknown status: {}'.format(status))
+                    self.sendMail('FAILURE PDB: Unknown status', 'status = {}\nThe process might have been stopped\n'.format(status))
+                    return 1
+        
+            fr.close()
+            return 0
+            
+        fw.write('data_{}\n\n'.format(entry_id))
+        value = getColumnValue('entry', 'id', 'text', '{}'.format(entry_id))
+        fw.write('#\n_entry.id  {}\n#\n'.format(value))
+
+        if exportData() != 0:
+            self.logger.debug('Update error in exportData()')
+            fw.close()
+            self.updateAttributes(schema_pdb,
+                                  table_entry,
+                                  rid,
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
+                                  {'RID': rid,
+                                  'Process_Status': 'ERROR',
+                                  'Record_Status_Detail': 'Update error in exportData():\n{}'.format(error_message),
+                                  'Workflow_Status': 'ERROR'
+                                  })
+            return
+        if exportCIF() != 0:
+            self.logger.debug('Update error in exportCIF()')
+            fw.close()
+            self.updateAttributes(schema_pdb,
+                                  table_entry,
+                                  rid,
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
+                                  {'RID': rid,
+                                  'Process_Status': 'ERROR',
+                                  'Record_Status_Detail': 'Update error in exportCIF():\n{}'.format(error_message),
+                                  'Workflow_Status': 'ERROR'
+                                  })
+            return
+        fw.close()
+        os.remove(hatracFile)
+        
+        if len(mmCIF_ignored) > 0:
+            self.logger.debug('Tables from the mmCIF file that were not included in the export:')
+            for table_name in sorted(mmCIF_ignored):
+                self.logger.debug('\t{}'.format(table_name))
+                
+        self.logger.debug('Update success in export_mmCIF()')
+        self.updateAttributes(schema_pdb,
+                              table_entry,
+                              rid,
+                              ["Process_Status", "Workflow_Status"],
+                              {'RID': rid,
+                              'Process_Status': 'success',
+                              'Workflow_Status': 'mmCIF CREATED'
+                              })
+        return
+            
     """
     Process the mmCIF file of the entry table
     """

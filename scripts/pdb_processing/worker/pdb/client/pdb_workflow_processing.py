@@ -90,6 +90,11 @@ def load(config_filename):
         logger.error('py_rcsb_db directory must be provided and exist.')
         return None
     
+    scratch = cfg.get('scratch', None)
+    if not scratch or not os.path.isdir(scratch):
+        logger.error('scratch directory must be provided and exist.')
+        return None
+    
     python_bin = cfg.get('python3', None)
     if not python_bin or not os.path.isfile(python_bin):
         logger.error('python3 executable must be provided and exist.')
@@ -110,6 +115,24 @@ def load(config_filename):
         logger.error('entry file must be provided and exist.')
         return None
 
+    export_tables_file = cfg.get('export_tables', None)
+    if not export_tables_file or not os.path.isfile(export_tables_file):
+        logger.error('export_tables file must be provided and exist.')
+        return None
+    export_tables = json.load(open(export_tables_file))
+    
+    cif_tables_file = cfg.get('cif_tables', None)
+    if not cif_tables_file or not os.path.isfile(cif_tables_file):
+        logger.error('cif_tables file must be provided and exist.')
+        return None
+    cif_tables = json.load(open(cif_tables_file))
+    
+    export_order_by_file = cfg.get('export_order_by', None)
+    if not export_order_by_file or not os.path.isfile(export_order_by_file):
+        logger.error('export_order_by file must be provided and exist.')
+        return None
+    export_order_by = json.load(open(export_order_by_file))
+    
     mail_server = cfg.get('mail_server', None)
     mail_sender = cfg.get('mail_sender', None)
     mail_receiver = cfg.get('mail_receiver', None)
@@ -119,10 +142,14 @@ def load(config_filename):
         client = PDBClient(baseuri=url, \
                                credentials=credentials, \
                                make_mmCIF=make_mmCIF, \
+                               scratch=scratch, \
                                py_rcsb_db=py_rcsb_db, \
                                python_bin=python_bin, \
                                pickle_file=pickle_file, \
                                tables_groups=tables_groups, \
+                               export_tables=export_tables, \
+                               cif_tables=cif_tables, \
+                               export_order_by=export_order_by, \
                                entry=entry, \
                                mail_server=mail_server, \
                                mail_sender=mail_sender, \
