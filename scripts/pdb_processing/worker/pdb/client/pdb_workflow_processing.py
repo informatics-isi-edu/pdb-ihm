@@ -133,6 +133,8 @@ def load(config_filename):
         return None
     export_order_by = json.load(open(export_order_by_file))
     
+    mmCIF_Schema_Version = cfg.get('mmCIF_Schema_Version', '1.0')
+    
     mail_server = cfg.get('mail_server', None)
     mail_sender = cfg.get('mail_sender', None)
     mail_receiver = cfg.get('mail_receiver', None)
@@ -141,6 +143,7 @@ def load(config_filename):
     try:
         client = PDBClient(baseuri=url, \
                                credentials=credentials, \
+                               mmCIF_Schema_Version=mmCIF_Schema_Version, \
                                make_mmCIF=make_mmCIF, \
                                scratch=scratch, \
                                py_rcsb_db=py_rcsb_db, \
