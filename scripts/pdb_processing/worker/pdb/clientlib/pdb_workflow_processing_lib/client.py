@@ -453,11 +453,12 @@ class PDBClient (object):
             self.updateAttributes(schema_pdb,
                                   table_entry,
                                   rid,
-                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
                                   {'RID': rid,
                                   'Process_Status': 'ERROR',
                                   'Record_Status_Detail': 'Update error in exportData():\n{}'.format(error_message),
-                                  'Workflow_Status': 'ERROR'
+                                  'Workflow_Status': 'ERROR',
+                                  'Generated_mmCIF_Processing_Status': 'ERROR'
                                   })
             return
         if exportCIF() != 0:
@@ -466,11 +467,12 @@ class PDBClient (object):
             self.updateAttributes(schema_pdb,
                                   table_entry,
                                   rid,
-                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
                                   {'RID': rid,
                                   'Process_Status': 'ERROR',
                                   'Record_Status_Detail': 'Update error in exportCIF():\n{}'.format(error_message),
-                                  'Workflow_Status': 'ERROR'
+                                  'Workflow_Status': 'ERROR',
+                                  'Generated_mmCIF_Processing_Status': 'Generated_mmCIF_Processing_Status'
                                   })
             return
         fw.close()
@@ -573,11 +575,12 @@ class PDBClient (object):
                 self.updateAttributes(schema_pdb,
                                       table_entry,
                                       rid,
-                                      ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
+                                      ["Process_Status", "Record_Status_Detail", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
                                       {'RID': rid,
                                       'Process_Status': 'ERROR',
                                       'Record_Status_Detail': 'Update error in createEntity():\n{}'.format(error_message),
-                                      'Workflow_Status': 'ERROR'
+                                      'Workflow_Status': 'ERROR',
+                                      'Generated_mmCIF_Processing_Status': 'ERROR'
                                       })
                 return
                     
@@ -585,10 +588,11 @@ class PDBClient (object):
         self.updateAttributes(schema_pdb,
                               table_entry,
                               rid,
-                              ["Process_Status", "Workflow_Status"],
+                              ["Process_Status", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
                               {'RID': rid,
                               'Process_Status': 'success',
-                              'Workflow_Status': 'mmCIF CREATED'
+                              'Workflow_Status': 'mmCIF CREATED',
+                              'Generated_mmCIF_Processing_Status': 'success'
                               })
         return
             

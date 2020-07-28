@@ -35,7 +35,7 @@ class WorkUnit (object):
             put_update_baseurl,
             run_row_job,
             claim_input_data=lambda row: {'RID': row['RID'], 'Process_Status': "in progress"},
-            failure_input_data=lambda row, e: {'RID': row['RID'], 'Process_Status': "error"}
+            failure_input_data=lambda row, e: {'RID': row['RID'], 'Process_Status': "ERROR"}
     ):
         self.get_claimable_url = get_claimable_url
         self.put_claim_url = put_claim_url
