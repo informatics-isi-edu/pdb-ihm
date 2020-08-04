@@ -982,6 +982,8 @@ class PDBClient (object):
                 Replace the FK references to the entry table
                 """
                 r = self.getUpdatedRecord(tname, r, entry_id)
+                if tname == 'ihm_entity_poly_segment':
+                    r = self.getUpdatedEntityPolySegment(r)
                 entities.append(r)
             
             """
@@ -1129,5 +1131,30 @@ class PDBClient (object):
         for col in columns:
             if col in row.keys():
                 row[col] = entry_id
+        return row
+
+    """
+    Get the record for the ihm_entity_poly_segment table updated with values for the Entity_Poly_Seq_RID_Begin and Entity_Poly_Seq_RID_End columns.
+    """
+    def getUpdatedEntityPolySegment(self, row):
+        structure_id = row['structure_id']
+        entity_id = row['entity_id']
+        comp_id_begin = row ['comp_id_begin']
+        comp_id_end = row ['comp_id_end']
+        seq_id_begin = row['seq_id_begin']
+        seq_id_end = row['seq_id_end']
+        
+        url = '/attribute/PDB:entity_poly_seq/structure_id={}&entity_id={}&mon_id={}&num={}/RID'.format(urlquote(structure_id), urlquote(entity_id), urlquote(comp_id_begin), seq_id_begin)
+        self.logger.debug('Query URL: "%s"' % url) 
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        row['Entity_Poly_Seq_RID_Begin'] = resp.json()[0]['RID']
+
+        url = '/attribute/PDB:entity_poly_seq/structure_id={}&entity_id={}&mon_id={}&num={}/RID'.format(urlquote(structure_id), urlquote(entity_id), urlquote(comp_id_end), seq_id_end)
+        self.logger.debug('Query URL: "%s"' % url) 
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        row['Entity_Poly_Seq_RID_End'] = resp.json()[0]['RID']
+
         return row
 
