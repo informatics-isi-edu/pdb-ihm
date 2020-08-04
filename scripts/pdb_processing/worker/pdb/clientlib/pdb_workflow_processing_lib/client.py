@@ -537,7 +537,7 @@ class PDBClient (object):
         """
         Insert or update the Entry_mmCIF_File table
         """
-        url = '/entity/PDB:Entry_mmCIF_File/structure_id={}/mmCIF_Schema_Version={}'.format(urlquote(entry_id), urlquote(self.mmCIF_Schema_Version))
+        url = '/entity/PDB:Entry_mmCIF_File/Structure_Id={}/mmCIF_Schema_Version={}'.format(urlquote(entry_id), urlquote(self.mmCIF_Schema_Version))
         self.logger.debug('Query URL: "%s"' % url) 
         
         resp = self.catalog.get(url)
@@ -568,7 +568,7 @@ class PDBClient (object):
                    'File_Name': file_name,
                    'File_Bytes': file_size,
                    'File_MD5': hexa_md5,
-                   'structure_id': entry_id,
+                   'Structure_Id': entry_id,
                    'mmCIF_Schema_Version': self.mmCIF_Schema_Version
                    }
             if self.createEntity('PDB:Entry_mmCIF_File', row, rid) == None:
