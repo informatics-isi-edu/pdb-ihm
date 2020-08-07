@@ -1,0 +1,32 @@
+{
+   "known_attributes" : {
+      "ignore_all_unmanaged" : false,
+      "managed" : [
+         "tag:misd.isi.edu,2015:display",
+         "tag:misd.isi.edu,2015:url",
+         "tag:isrd.isi.edu,2016:column-display",
+         "tag:isrd.isi.edu,2016:display",
+         "tag:isrd.isi.edu,2016:foreign-key",
+         "tag:isrd.isi.edu,2016:export",
+         "tag:isrd.isi.edu,2016:generated",
+         "tag:misd.isi.edu,2016:generated",	 
+         "tag:isrd.isi.edu,2016:ignore",
+         "tag:isrd.isi.edu,2016:immutable",
+         "tag:isrd.isi.edu,2016:recordlink",
+         "tag:isrd.isi.edu,2016:table-alternatives",
+         "tag:isrd.isi.edu,2016:table-display",
+         "tag:isrd.isi.edu,2016:visible-columns",
+         "tag:isrd.isi.edu,2016:visible-foreign-keys",
+         "tag:isrd.isi.edu,2017:asset",
+         "tag:isrd.isi.edu,2017:bulk-upload",
+         "tag:isrd.isi.edu,2018:citation",
+         "tag:isrd.isi.edu,2018:required",
+         "tag:isrd.isi.edu,2019:export",
+         "tag:isrd.isi.edu,2019:source-definitions",	
+         "comment",
+         "description",
+         "facetOrder"
+      ]
+   }
+}
+

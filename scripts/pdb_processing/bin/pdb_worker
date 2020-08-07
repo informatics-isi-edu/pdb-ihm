@@ -35,7 +35,7 @@ class WorkUnit (object):
             put_update_baseurl,
             run_row_job,
             claim_input_data=lambda row: {'RID': row['RID'], 'Process_Status': "in progress"},
-            failure_input_data=lambda row, e: {'RID': row['RID'], 'Process_Status': "error"}
+            failure_input_data=lambda row, e: {'RID': row['RID'], 'Process_Status': "ERROR"}
     ):
         self.get_claimable_url = get_claimable_url
         self.put_claim_url = put_claim_url
@@ -52,6 +52,12 @@ def entry_row_job(handler):
     Process mmCIF the PDB:entry table.
     """
     pdb_row_job(handler, 'entry')
+    
+def entry_export_job(handler):
+    """
+    Export mmCIF.
+    """
+    pdb_row_job(handler, 'export')
     
 def ihm_starting_model_details_row_job(handler):
     """
@@ -97,6 +103,15 @@ _work_units.append(
         '/attributegroup/PDB:entry/RID;Process_Status',
         '/attributegroup/PDB:entry/RID',
         entry_row_job
+    )
+)
+
+_work_units.append(
+    WorkUnit(
+        '/entity/A:=PDB:entry/Process_Status=New;Process_Status=Renew/Vocab:workflow_status/Name=SUBMIT/$A?limit=1',
+        '/attributegroup/PDB:entry/RID;Process_Status',
+        '/attributegroup/PDB:entry/RID',
+        entry_export_job
     )
 )
 
