@@ -4,14 +4,7 @@ import deriva.core.ermrest_model as em
 from deriva.core.ermrest_config import tag as chaise_tags
 from deriva.utils.catalog.manage.update_catalog import CatalogUpdater, parse_args
 
-groups = {
-    'pdb-reader': 'https://auth.globus.org/8875a770-3c40-11e9-a8c8-0ee7d80087ee',
-    'pdb-writer': 'https://auth.globus.org/c94a1e5c-3c40-11e9-a5d1-0aacc65bfe9a',
-    'pdb-admin': 'https://auth.globus.org/0b98092c-3c41-11e9-a8c8-0ee7d80087ee',
-    'pdb-curator': 'https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6',
-    'isrd-staff': 'https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b',
-    'pdb-submitter': 'https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1'
-}
+groups = {}
 
 table_name = 'ihm_cross_link_restraint'
 
@@ -494,64 +487,9 @@ table_annotations = {
 
 table_comment = 'Chemical crosslinking restraints used in modeling'
 
-table_acls = {
-    'owner': [groups['pdb-admin'], groups['isrd-staff']],
-    'write': [],
-    'delete': [groups['pdb-curator']],
-    'insert': [groups['pdb-curator'], groups['pdb-writer'], groups['pdb-submitter']],
-    'select': [groups['pdb-writer'], groups['pdb-reader']],
-    'update': [groups['pdb-curator']],
-    'enumerate': ['*']
-}
+table_acls = {}
 
-table_acl_bindings = {
-    'released_reader': {
-        'types': ['select'],
-        'scope_acl': [groups['pdb-submitter']],
-        'projection': [
-            {
-                'outbound': ['PDB', 'ihm_cross_link_restraint_structure_id_fkey']
-            }, {
-                'outbound': ['PDB', 'entry_workflow_status_fkey']
-            }, {
-                'filter': 'Name',
-                'operand': 'REL',
-                'operator': '='
-            }, 'RID'
-        ],
-        'projection_type': 'nonnull'
-    },
-    'self_service_group': {
-        'types': ['update', 'delete'],
-        'scope_acl': ['*'],
-        'projection': ['Owner'],
-        'projection_type': 'acl'
-    },
-    'self_service_creator': {
-        'types': ['update', 'delete'],
-        'scope_acl': [groups['pdb-submitter']],
-        'projection': [
-            {
-                'outbound': ['PDB', 'ihm_cross_link_restraint_structure_id_fkey']
-            }, {
-                'outbound': ['PDB', 'entry_workflow_status_fkey']
-            }, {
-                'or': [
-                    {
-                        'filter': 'Name',
-                        'operand': 'DRAFT',
-                        'operator': '='
-                    }, {
-                        'filter': 'Name',
-                        'operand': 'DEPO',
-                        'operator': '='
-                    }
-                ]
-            }, 'RCB'
-        ],
-        'projection_type': 'acl'
-    }
-}
+table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
@@ -570,99 +508,54 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_cross_link_restraint_RMB_fkey']],
     ),
     em.ForeignKey.define(
-        ['restraint_type'],
-        'Vocab',
-        'ihm_cross_link_restraint_restraint_type', ['ID'],
-        constraint_names=[['PDB', 'ihm_cross_link_restraint_restraint_type_fkey']],
-    ),
-    em.ForeignKey.define(
-        ['Entry_Related_File'],
-        'PDB',
-        'Entry_Related_File', ['RID'],
-        constraint_names=[['PDB', 'ihm_cross_link_restraint_Entry_Related_File_fkey']],
-        on_delete='CASCADE',
-    ),
-    em.ForeignKey.define(
-        ['model_granularity'],
-        'Vocab',
-        'ihm_cross_link_restraint_model_granularity', ['ID'],
-        constraint_names=[['PDB', 'ihm_cross_link_restraint_model_granularity_fkey']],
-    ),
-    em.ForeignKey.define(
         ['RCB'],
         'public',
         'ERMrest_Client', ['ID'],
         constraint_names=[['PDB', 'ihm_cross_link_restraint_RCB_fkey']],
     ),
     em.ForeignKey.define(
+        ['restraint_type'],
+        'Vocab',
+        'ihm_cross_link_restraint_restraint_type', ['Name'],
+        constraint_names=[['PDB', 'ihm_cross_link_restraint_restraint_type_fkey']],
+    ),
+    em.ForeignKey.define(
+        ['model_granularity'],
+        'Vocab',
+        'ihm_cross_link_restraint_model_granularity', ['Name'],
+        constraint_names=[['PDB', 'ihm_cross_link_restraint_model_granularity_fkey']],
+    ),
+    em.ForeignKey.define(
         ['conditional_crosslink_flag'],
         'Vocab',
-        'ihm_cross_link_restraint_conditional_crosslink_flag', ['ID'],
+        'ihm_cross_link_restraint_conditional_crosslink_flag', ['Name'],
         constraint_names=[['PDB', 'ihm_cross_link_restraint_conditional_crosslink_flag_fkey']],
     ),
     em.ForeignKey.define(
-        ['asym_id_1', 'structure_id'],
+        ['structure_id', 'asym_id_1'],
         'PDB',
-        'struct_asym', ['id', 'structure_id'],
+        'struct_asym', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_cross_link_restraint_asym_id_1_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'group_id'],
+        ['group_id', 'structure_id'],
         'PDB',
-        'ihm_cross_link_list', ['structure_id', 'id'],
+        'ihm_cross_link_list', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_cross_link_restraint_group_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
                 'domain_filter_pattern': 'structure_id={{structure_id}}'
             }
         },
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['Owner'],
-        'public',
-        'Catalog_Group', ['ID'],
-        constraint_names=[['PDB', 'ihm_cross_link_restraint_Owner_fkey']],
-        acls={
-            'insert': [groups['pdb-curator']],
-            'update': [groups['pdb-curator']]
-        },
-        acl_bindings={
-            'set_owner': {
-                'types': ['update', 'insert'],
-                'scope_acl': ['*'],
-                'projection': ['ID'],
-                'projection_type': 'acl'
-            }
-        },
-    ),
-    em.ForeignKey.define(
-        ['structure_id'],
+        ['comp_id_2', 'entity_id_2', 'structure_id', 'seq_id_2'],
         'PDB',
-        'entry', ['id'],
-        constraint_names=[['PDB', 'ihm_cross_link_restraint_structure_id_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
-        on_update='CASCADE',
-        on_delete='SET NULL',
-    ),
-    em.ForeignKey.define(
-        ['entity_id_2', 'seq_id_2', 'comp_id_2', 'structure_id'],
-        'PDB',
-        'entity_poly_seq', ['entity_id', 'num', 'mon_id', 'structure_id'],
+        'entity_poly_seq', ['mon_id', 'entity_id', 'structure_id', 'num'],
         constraint_names=[['PDB', 'ihm_cross_link_restraint_mm_poly_res_label_2_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -671,17 +564,13 @@ fkey_defs = [
                 'domain_filter_pattern': '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}'
             }
         },
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id'],
+        ['entity_id_1', 'structure_id', 'seq_id_1', 'comp_id_1'],
         'PDB',
-        'entity_poly_seq', ['mon_id', 'entity_id', 'num', 'structure_id'],
+        'entity_poly_seq', ['entity_id', 'structure_id', 'num', 'mon_id'],
         constraint_names=[['PDB', 'ihm_cross_link_restraint_mm_poly_res_label_1_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -690,22 +579,14 @@ fkey_defs = [
                 'domain_filter_pattern': '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}'
             }
         },
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['asym_id_2', 'structure_id'],
+        ['structure_id', 'asym_id_2'],
         'PDB',
-        'struct_asym', ['id', 'structure_id'],
+        'struct_asym', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_cross_link_restraint_asym_id_2_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),

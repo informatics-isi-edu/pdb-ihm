@@ -4,14 +4,7 @@ import deriva.core.ermrest_model as em
 from deriva.core.ermrest_config import tag as chaise_tags
 from deriva.utils.catalog.manage.update_catalog import CatalogUpdater, parse_args
 
-groups = {
-    'pdb-reader': 'https://auth.globus.org/8875a770-3c40-11e9-a8c8-0ee7d80087ee',
-    'pdb-writer': 'https://auth.globus.org/c94a1e5c-3c40-11e9-a5d1-0aacc65bfe9a',
-    'pdb-admin': 'https://auth.globus.org/0b98092c-3c41-11e9-a8c8-0ee7d80087ee',
-    'pdb-curator': 'https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6',
-    'isrd-staff': 'https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b',
-    'pdb-submitter': 'https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1'
-}
+groups = {}
 
 table_name = 'ihm_poly_probe_conjugate'
 
@@ -91,6 +84,8 @@ column_defs = [
     em.Column.define('Owner', em.builtin_types['text'], comment=column_comment['Owner'],
                      ),
     em.Column.define('Entry_Related_File', em.builtin_types['text'],
+                     ),
+    em.Column.define('Chem_comp_descriptor_RID', em.builtin_types['text'],
                      ),
 ]
 
@@ -217,64 +212,9 @@ table_annotations = {chaise_tags.visible_columns: visible_columns, }
 
 table_comment = 'Probes that are covalently attached to residues in polymeric entities'
 
-table_acls = {
-    'owner': [groups['pdb-admin'], groups['isrd-staff']],
-    'write': [],
-    'delete': [groups['pdb-curator']],
-    'insert': [groups['pdb-curator'], groups['pdb-writer'], groups['pdb-submitter']],
-    'select': [groups['pdb-writer'], groups['pdb-reader']],
-    'update': [groups['pdb-curator']],
-    'enumerate': ['*']
-}
+table_acls = {}
 
-table_acl_bindings = {
-    'released_reader': {
-        'types': ['select'],
-        'scope_acl': [groups['pdb-submitter']],
-        'projection': [
-            {
-                'outbound': ['PDB', 'ihm_poly_probe_conjugate_structure_id_fkey']
-            }, {
-                'outbound': ['PDB', 'entry_workflow_status_fkey']
-            }, {
-                'filter': 'Name',
-                'operand': 'REL',
-                'operator': '='
-            }, 'RID'
-        ],
-        'projection_type': 'nonnull'
-    },
-    'self_service_group': {
-        'types': ['update', 'delete'],
-        'scope_acl': ['*'],
-        'projection': ['Owner'],
-        'projection_type': 'acl'
-    },
-    'self_service_creator': {
-        'types': ['update', 'delete'],
-        'scope_acl': [groups['pdb-submitter']],
-        'projection': [
-            {
-                'outbound': ['PDB', 'ihm_poly_probe_conjugate_structure_id_fkey']
-            }, {
-                'outbound': ['PDB', 'entry_workflow_status_fkey']
-            }, {
-                'or': [
-                    {
-                        'filter': 'Name',
-                        'operand': 'DRAFT',
-                        'operator': '='
-                    }, {
-                        'filter': 'Name',
-                        'operand': 'DEPO',
-                        'operator': '='
-                    }
-                ]
-            }, 'RCB'
-        ],
-        'projection_type': 'acl'
-    }
-}
+table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_poly_probe_conjugate_RIDkey1']],
@@ -293,52 +233,16 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_poly_probe_conjugate_RCB_fkey']],
     ),
     em.ForeignKey.define(
-        ['ambiguous_stoichiometry_flag'],
-        'Vocab',
-        'ihm_poly_probe_conjugate_ambiguous_stoichiometry_flag', ['ID'],
-        constraint_names=[['PDB', 'ihm_poly_probe_conjugate_ambiguous_stoichiometry_flag_fkey']],
-    ),
-    em.ForeignKey.define(
-        ['Entry_Related_File'],
-        'PDB',
-        'Entry_Related_File', ['RID'],
-        constraint_names=[['PDB', 'ihm_poly_probe_conjugate_Entry_Related_File_fkey']],
-        on_delete='CASCADE',
-    ),
-    em.ForeignKey.define(
         ['RMB'],
         'public',
         'ERMrest_Client', ['ID'],
         constraint_names=[['PDB', 'ihm_poly_probe_conjugate_RMB_fkey']],
     ),
     em.ForeignKey.define(
-        ['structure_id', 'chem_comp_descriptor_id'],
-        'PDB',
-        'ihm_chemical_component_descriptor', ['structure_id', 'id'],
-        constraint_names=[['PDB', 'ihm_poly_probe_conjugate_chem_comp_descriptor_id_fkey']],
-        annotations={
-            chaise_tags.foreign_key: {
-                'domain_filter_pattern': 'structure_id={{structure_id}}'
-            }
-        },
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
-        on_update='CASCADE',
-        on_delete='SET NULL',
-    ),
-    em.ForeignKey.define(
-        ['structure_id'],
-        'PDB',
-        'entry', ['id'],
-        constraint_names=[['PDB', 'ihm_poly_probe_conjugate_structure_id_fkey']],
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
-        on_update='CASCADE',
-        on_delete='SET NULL',
+        ['ambiguous_stoichiometry_flag'],
+        'Vocab',
+        'ihm_poly_probe_conjugate_ambiguous_stoichiometry_flag', ['Name'],
+        constraint_names=[['PDB', 'ihm_poly_probe_conjugate_ambiguous_stoichiometry_flag_fkey']],
     ),
     em.ForeignKey.define(
         ['structure_id', 'position_id'],
@@ -350,64 +254,60 @@ fkey_defs = [
                 'domain_filter_pattern': 'structure_id={{structure_id}}'
             }
         },
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'probe_id'],
+        ['probe_id', 'structure_id'],
         'PDB',
-        'ihm_probe_list', ['structure_id', 'probe_id'],
+        'ihm_probe_list', ['probe_id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_poly_probe_conjugate_probe_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
                 'domain_filter_pattern': 'structure_id={{structure_id}}'
             }
         },
-        acls={
-            'insert': ['*'],
-            'update': ['*']
-        },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['dataset_list_id', 'structure_id'],
+        ['structure_id', 'dataset_list_id'],
         'PDB',
-        'ihm_dataset_list', ['id', 'structure_id'],
+        'ihm_dataset_list', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_poly_probe_conjugate_dataset_list_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
                 'domain_filter_pattern': 'structure_id={{structure_id}}'
             }
         },
-        acls={
-            'insert': ['*'],
-            'update': ['*']
+        on_update='CASCADE',
+        on_delete='SET NULL',
+    ),
+    em.ForeignKey.define(
+        ['structure_id', 'chem_comp_descriptor_id'],
+        'PDB',
+        'ihm_chemical_component_descriptor', ['structure_id', 'id'],
+        constraint_names=[['PDB', 'ihm_poly_probe_conjugate_chem_comp_descriptor_id_fk']],
+        annotations={
+            chaise_tags.foreign_key: {
+                'domain_filter_pattern': 'structure_id={{structure_id}}'
+            }
         },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['Owner'],
-        'public',
-        'Catalog_Group', ['ID'],
-        constraint_names=[['PDB', 'ihm_poly_probe_conjugate_Owner_fkey']],
-        acls={
-            'insert': [groups['pdb-curator']],
-            'update': [groups['pdb-curator']]
-        },
-        acl_bindings={
-            'set_owner': {
-                'types': ['update', 'insert'],
-                'scope_acl': ['*'],
-                'projection': ['ID'],
-                'projection_type': 'acl'
+        ['Chem_comp_descriptor_RID', 'chem_comp_descriptor_id'],
+        'PDB',
+        'ihm_chemical_component_descriptor', ['RID', 'id'],
+        constraint_names=[['PDB', 'ihm_poly_probe_conjugate_chem_comp_descriptor_id_fkey']],
+        annotations={
+            chaise_tags.foreign_key: {
+                'domain_filter_pattern': 'structure_id={{structure_id}}'
             }
         },
+        on_update='CASCADE',
+        on_delete='SET NULL',
     ),
 ]
 

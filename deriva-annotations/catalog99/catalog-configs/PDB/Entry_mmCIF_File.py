@@ -6,7 +6,7 @@ from deriva.utils.catalog.manage.update_catalog import CatalogUpdater, parse_arg
 
 groups = {}
 
-table_name = 'Entry_Related_File'
+table_name = 'Entry_mmCIF_File'
 
 schema_name = 'PDB'
 
@@ -14,13 +14,18 @@ column_annotations = {
     'File_URL': {
         chaise_tags.asset: {
             'md5': 'File_MD5',
-            'url_pattern': '/hatrac/pdb/entry_files/{{$moment.year}}/{{{File_MD5}}}',
+            'url_pattern': '/hatrac/pdb/entry_mmCIF/{{$moment.year}}/{{{File_MD5}}}',
             'filename_column': 'File_Name',
             'byte_count_column': 'File_Bytes'
         },
         'tag:isrd.isi.edu,2018:required': {}
     },
-    'Owner': {}
+    'Owner': {},
+    'mmCIF_Schema_Version': {
+        chaise_tags.display: {
+            'name': 'mmCIF Schema Version'
+        }
+    }
 }
 
 column_comment = {'Owner': 'Group that can update the record.'}
@@ -30,10 +35,6 @@ column_acls = {}
 column_acl_bindings = {}
 
 column_defs = [
-    em.Column.define('File_Type', em.builtin_types['text'], nullok=False,
-                     ),
-    em.Column.define('File_Format', em.builtin_types['text'], nullok=False,
-                     ),
     em.Column.define(
         'File_URL', em.builtin_types['text'], annotations=column_annotations['File_URL'],
     ),
@@ -43,45 +44,39 @@ column_defs = [
                      ),
     em.Column.define('File_Bytes', em.builtin_types['int8'],
                      ),
-    em.Column.define(
-        'Workflow_Status', em.builtin_types['text'], nullok=False, default='PDB:1-MSVE',
-    ),
-    em.Column.define('Process_Status', em.builtin_types['text'], default='New',
-                     ),
-    em.Column.define('Record_Status_Detail', em.builtin_types['text'],
-                     ),
     em.Column.define('Owner', em.builtin_types['text'], comment=column_comment['Owner'],
                      ),
-    em.Column.define('structure_id', em.builtin_types['text'], nullok=False,
+    em.Column.define('Structure_Id', em.builtin_types['text'], nullok=False,
                      ),
-    em.Column.define('Description', em.builtin_types['text'],
-                     ),
+    em.Column.define(
+        'mmCIF_Schema_Version',
+        em.builtin_types['text'],
+        annotations=column_annotations['mmCIF_Schema_Version'],
+    ),
 ]
+
+generated = None
+
+display = {'name': 'Entry mmCIF File'}
 
 visible_columns = {
     '*': [
-        'RID', ['PDB',
-                'Entry_Related_File_entry_id_fkey'], ['PDB', 'Entry_Related_File_File_Type_fkey'],
-        ['PDB', 'Entry_Related_File_File_Format_fkey'], 'File_URL', 'File_Bytes', 'File_MD5',
-        'Description', ['PDB', 'Entry_Related_File_workflow_status_fkey'], 'Record_Status_Detail'
+        'RID', 'File_URL', 'mmCIF_Schema_Version', ['PDB', 'Entry_mmCIF_File_Structure_Id_fkey']
     ],
     'entry': [
-        ['PDB', 'Entry_Related_File_entry_id_fkey'], ['PDB', 'Entry_Related_File_File_Type_fkey'],
-        ['PDB', 'Entry_Related_File_File_Format_fkey'], 'File_Name', 'File_URL', 'File_Bytes',
-        'File_MD5', 'Description', ['PDB', 'Entry_Related_File_workflow_status_fkey']
+        'File_URL', 'mmCIF_Schema_Version', ['PDB', 'Entry_mmCIF_File_Structure_Id_fkey']
     ],
     'detailed': [
-        'RID', ['PDB',
-                'Entry_Related_File_entry_id_fkey'], ['PDB', 'Entry_Related_File_File_Type_fkey'],
-        ['PDB', 'Entry_Related_File_File_Format_fkey'], 'File_URL', 'File_Bytes', 'File_MD5',
-        'Description', ['PDB', 'Entry_Related_File_workflow_status_fkey'], 'Record_Status_Detail',
-        ['PDB', 'Entry_Related_File_RCB_fkey'], ['PDB',
-                                                 'Entry_Related_File_RMB_fkey'], 'RCT', 'RMT',
-        ['PDB', 'Entry_Related_File_Owner_fkey']
+        'RID', 'File_URL', 'mmCIF_Schema_Version', ['PDB', 'Entry_mmCIF_File_Structure_Id_fkey'],
+        'File_Bytes', 'File_MD5'
     ]
 }
 
-table_annotations = {chaise_tags.visible_columns: visible_columns, }
+table_annotations = {
+    chaise_tags.display: display,
+    chaise_tags.generated: generated,
+    chaise_tags.visible_columns: visible_columns,
+}
 
 table_comment = None
 

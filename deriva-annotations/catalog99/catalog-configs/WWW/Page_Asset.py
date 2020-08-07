@@ -4,13 +4,7 @@ import deriva.core.ermrest_model as em
 from deriva.core.ermrest_config import tag as chaise_tags
 from deriva.utils.catalog.manage.update_catalog import CatalogUpdater, parse_args
 
-groups = {
-    'pdb-reader': 'https://auth.globus.org/8875a770-3c40-11e9-a8c8-0ee7d80087ee',
-    'pdb-writer': 'https://auth.globus.org/c94a1e5c-3c40-11e9-a5d1-0aacc65bfe9a',
-    'pdb-admin': 'https://auth.globus.org/0b98092c-3c41-11e9-a8c8-0ee7d80087ee',
-    'pdb-curator': 'https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6',
-    'isrd-staff': 'https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b'
-}
+groups = {}
 
 table_name = 'Page_Asset'
 
@@ -79,18 +73,9 @@ table_acls = {}
 
 table_acl_bindings = {}
 
-key_defs = [
-    em.Key.define(['RID'], constraint_names=[['WWW', 'Page_Asset_RIDkey1']],
-                  ),
-    em.Key.define(['URL'], constraint_names=[['WWW', 'Page_Asset_URLkey1']],
-                  ),
-]
+key_defs = []
 
-fkey_defs = [
-    em.ForeignKey.define(
-        ['Page'], 'WWW', 'Page', ['RID'], constraint_names=[['WWW', 'Page_Asset_Page_fkey']],
-    ),
-]
+fkey_defs = []
 
 table_def = em.Table.define(
     table_name,

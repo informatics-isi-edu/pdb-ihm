@@ -4,13 +4,7 @@ import deriva.core.ermrest_model as em
 from deriva.core.ermrest_config import tag as chaise_tags
 from deriva.utils.catalog.manage.update_catalog import CatalogUpdater, parse_args
 
-groups = {
-    'pdb-reader': 'https://auth.globus.org/8875a770-3c40-11e9-a8c8-0ee7d80087ee',
-    'pdb-writer': 'https://auth.globus.org/c94a1e5c-3c40-11e9-a5d1-0aacc65bfe9a',
-    'pdb-admin': 'https://auth.globus.org/0b98092c-3c41-11e9-a8c8-0ee7d80087ee',
-    'pdb-curator': 'https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6',
-    'isrd-staff': 'https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b'
-}
+groups = {}
 
 schema_name = 'PDB'
 
@@ -41,7 +35,7 @@ table_names = [
     'ihm_struct_assembly_class_link', 'ihm_geometric_object_center', 'ihm_ensemble_info',
     'ihm_poly_probe_position', 'ihm_starting_comparative_models', 'ihm_modeling_protocol_details',
     'ihm_ligand_probe', 'ihm_geometric_object_transformation', 'ihm_dataset_group_link',
-    'ihm_starting_model_details',
+    'ihm_starting_model_details', 'Entry_mmCIF_File',
 ]
 
 annotations = {chaise_tags.display: {'name_style': {'title_case': True, 'underline_space': True}}}

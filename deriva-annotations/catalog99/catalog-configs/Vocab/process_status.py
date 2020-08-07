@@ -6,7 +6,7 @@ from deriva.utils.catalog.manage.update_catalog import CatalogUpdater, parse_arg
 
 groups = {}
 
-table_name = 'ihm_probe_list_reactive_probe_flag'
+table_name = 'process_status'
 
 schema_name = 'Vocab'
 
@@ -64,10 +64,8 @@ column_defs = [
 
 visible_columns = {
     '*': [
-        'RID', 'Name', 'Description', 'ID', 'URI',
-        ['Vocab', 'ihm_probe_list_reactive_probe_flag_term_RCB_fkey'],
-        ['Vocab', 'ihm_probe_list_reactive_probe_flag_term_RMB_fkey'], 'RCT', 'RMT',
-        ['Vocab', 'ihm_probe_list_reactive_probe_flag_term_Owner_fkey']
+        'RID', 'Name', 'Description', 'ID', 'URI', ['Vocab', 'process_status_RCB_fkey'],
+        ['Vocab', 'process_status_RMB_fkey'], 'RCT', 'RMT', ['Vocab', 'process_status_Owner_fkey']
     ]
 }
 
@@ -78,41 +76,15 @@ table_annotations = {
     chaise_tags.visible_columns: visible_columns,
 }
 
-table_comment = 'A set of controlled vocabular terms.'
+table_comment = None
 
 table_acls = {}
 
 table_acl_bindings = {}
 
-key_defs = [
-    em.Key.define(
-        ['URI'], constraint_names=[['Vocab', 'ihm_probe_list_reactive_probe_flag_term_URIkey1']],
-    ),
-    em.Key.define(
-        ['Name'], constraint_names=[['Vocab', 'ihm_probe_list_reactive_probe_flag_Namekey1']],
-    ),
-    em.Key.define(
-        ['RID'], constraint_names=[['Vocab', 'ihm_probe_list_reactive_probe_flag_term_RIDkey1']],
-    ),
-    em.Key.define(
-        ['ID'], constraint_names=[['Vocab', 'ihm_probe_list_reactive_probe_flag_term_IDkey1']],
-    ),
-]
+key_defs = []
 
-fkey_defs = [
-    em.ForeignKey.define(
-        ['RCB'],
-        'public',
-        'ERMrest_Client', ['ID'],
-        constraint_names=[['Vocab', 'ihm_probe_list_reactive_probe_flag_term_RCB_fkey']],
-    ),
-    em.ForeignKey.define(
-        ['RMB'],
-        'public',
-        'ERMrest_Client', ['ID'],
-        constraint_names=[['Vocab', 'ihm_probe_list_reactive_probe_flag_term_RMB_fkey']],
-    ),
-]
+fkey_defs = []
 
 table_def = em.Table.define(
     table_name,
