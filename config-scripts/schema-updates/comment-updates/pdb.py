@@ -33,9 +33,9 @@ def main(server_name, catalog_id, credentials):
 if __name__ == '__main__':
     args = BaseCLI("ad-hoc table creation tool", None, 1).parse_cli()
     credentials = get_credential(args.host, args.credential_file)
-    if args.catalog is None:
-        catalog_id = 99
+#    if args.catalog is None:
+#        catalog_id = 99
 
-    main(args.host, catalog_id, credentials)
+    main(args.host, 99, credentials)
     
     
