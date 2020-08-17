@@ -1,19 +1,19 @@
 from deriva.core import DerivaServer, get_credential, BaseCLI
 from deriva.core.ermrest_model import Table, Column, Key, ForeignKey, builtin_types
 
-def table_name(model):
-    table = model.table("Antibody", "Antibody_Tests")
+def software(model):
+    table = model.table("PDB", "software")
     
-    table.comment = "Antibody Tests are specifc comparisons of antibody performance on a tissue (e.g. human/mouse) with various fixation methods (e.g. frozen/paraffin). Not all antibodies work with all fixation methods. The results here may help researchers select suitable antibodies for their work."
+    table.comment = "List of software used in the modeling"
     
-    table.columns["Species_Tested_In"].comment = None
+    #table.columns["Species_Tested_In"].comment = None
 
 
 # ===================================================
 # -- this function will be called from the update_schemas.py file
 
 def set_comments(model):
-    table_name(model)
+    software(model)
 
 
 # ===================================================    
