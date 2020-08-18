@@ -4,7 +4,7 @@ from deriva.core.ermrest_model import Table, Column, Key, ForeignKey, builtin_ty
 def table_comments(model):
     #table = model.table("PDB", "software")
     #table.comment = "List of software used in the modeling"
-    #table.columns["Species_Tested_In"].comment = None
+    #table.column_definitions["Species_Tested_In"].comment = None
 
     model.table("PDB", "software").comment = "List of software used in the modeling"
     model.table("PDB", "citation_author").comment = "Authors associated with citations in the citation list"
@@ -46,29 +46,29 @@ def table_comments(model):
 
 def column_comments(model):
     
-    model.table("PDB", "software").columns["citation_id"].comment = "Citation corresponding to the software; a reference to the citation id in the citation table"
-    model.table("PDB", "Entry_Related_File").columns["File_Type"].comment = "Restraint table corresponding to the uploaded file"
-    model.table("PDB", "Entry_Related_File").columns["File_Format"].comment = "CSV or TSV file format"
-    #model.table("PDB", "Entry_Related_File").columns["File_Url"].comment = "URL of the uploaded file"
-    model.table("PDB", "Entry_Related_File").columns["Description"].comment = "Description of the file"
-    model.table("PDB", "Entry_Related_File").columns["Workflow_Status"].comment = "Workflow status corresponding to uploading restraint data files"
-    model.table("PDB", "Entry_Related_File").columns["Record_Status_Detail"].comment = "Captures error messages obtained while processing the uploaded restraint data files; remains empty if process is success"
-    model.table("PDB", "Entry_Related_File").columns["File_Bytes"].comment = "Size of the uploaded file in bytes"
-    #model.table("PDB", "Entry_Related_File").columns["File_Md5"].comment = "MD5 value of uploaded file"
-    #model.table("PDB", "Entry_Related_File").columns["Structure_Id"].comment = "A reference to the entry.id identifier in the entry table"
-    #model.table("PDB", "Entry").columns["Image_File_Url"].comment = "URL of the uploaded image file"
-    #model.table("PDB", "Entry").columns["Image_File_Size"].comment = "Size of the uploaded image file in bytes"
-    #model.table("PDB", "Entry").columns["mmCIF_File_Url"].comment = "URL of the uploaded mmCIF file"
-    #model.table("PDB", "Entry").columns["mmCIF_File_Size"].comment = "Size of the uploaded mmCIF file in bytes"
-    #model.table("PDB", "Entry").columns["Workflow_Status"].comment = "Workflow status corresponding to the entry"
-    #model.table("PDB", "Entry").columns["Accession_Code"].comment = "Accession code issued by the archive after processing the entry"
-    #model.table("PDB", "Entry").columns["Record_Status_Detail"].comment = "Captures error messages obtained while processing the uploaded mmCIF files; remain empty if process is success"
-    #model.table("PDB", "Entry").columns["Generated_mmCIF_Processing_Status"].comment = "Indicates whether the status of processing the uploaded mmCIF file is success or failure"
-    #model.table("PDB", "Entry_mmCIF_File").columns["File_Url"].comment = "URL of the system generated mmCIF file"
-    model.table("PDB", "Entry_mmCIF_File").columns["mmCIF_Schema_Version"].comment = "Schema version of mmCIF IHM extension dictionary"
-    model.table("PDB", "Entry_mmCIF_File").columns["Structure_Id"].comment = "A reference to the entry.id identifier in the entry table"
-    model.table("PDB", "Entry_mmCIF_File").columns["File_Bytes"].comment = "Size of the system generated mmCIF file in bytes"
-    #model.table("PDB", "Entry_mmCIF_File").columns["File_Md5"].comment = "MD5 value of the system generated mmCIF file"
+    model.table("PDB", "software").column_definitions["citation_id"].comment = "Citation corresponding to the software; a reference to the citation id in the citation table"
+    model.table("PDB", "Entry_Related_File").column_definitions["File_Type"].comment = "Restraint table corresponding to the uploaded file"
+    model.table("PDB", "Entry_Related_File").column_definitions["File_Format"].comment = "CSV or TSV file format"
+    #model.table("PDB", "Entry_Related_File").column_definitions["File_Url"].comment = "URL of the uploaded file"
+    model.table("PDB", "Entry_Related_File").column_definitions["Description"].comment = "Description of the file"
+    model.table("PDB", "Entry_Related_File").column_definitions["Workflow_Status"].comment = "Workflow status corresponding to uploading restraint data files"
+    model.table("PDB", "Entry_Related_File").column_definitions["Record_Status_Detail"].comment = "Captures error messages obtained while processing the uploaded restraint data files; remains empty if process is success"
+    model.table("PDB", "Entry_Related_File").column_definitions["File_Bytes"].comment = "Size of the uploaded file in bytes"
+    #model.table("PDB", "Entry_Related_File").column_definitions["File_Md5"].comment = "MD5 value of uploaded file"
+    #model.table("PDB", "Entry_Related_File").column_definitions["Structure_Id"].comment = "A reference to the entry.id identifier in the entry table"
+    #model.table("PDB", "Entry").column_definitions["Image_File_Url"].comment = "URL of the uploaded image file"
+    #model.table("PDB", "Entry").column_definitions["Image_File_Size"].comment = "Size of the uploaded image file in bytes"
+    #model.table("PDB", "Entry").column_definitions["mmCIF_File_Url"].comment = "URL of the uploaded mmCIF file"
+    #model.table("PDB", "Entry").column_definitions["mmCIF_File_Size"].comment = "Size of the uploaded mmCIF file in bytes"
+    #model.table("PDB", "Entry").column_definitions["Workflow_Status"].comment = "Workflow status corresponding to the entry"
+    #model.table("PDB", "Entry").column_definitions["Accession_Code"].comment = "Accession code issued by the archive after processing the entry"
+    #model.table("PDB", "Entry").column_definitions["Record_Status_Detail"].comment = "Captures error messages obtained while processing the uploaded mmCIF files; remain empty if process is success"
+    #model.table("PDB", "Entry").column_definitions["Generated_mmCIF_Processing_Status"].comment = "Indicates whether the status of processing the uploaded mmCIF file is success or failure"
+    #model.table("PDB", "Entry_mmCIF_File").column_definitions["File_Url"].comment = "URL of the system generated mmCIF file"
+    model.table("PDB", "Entry_mmCIF_File").column_definitions["mmCIF_Schema_Version"].comment = "Schema version of mmCIF IHM extension dictionary"
+    model.table("PDB", "Entry_mmCIF_File").column_definitions["Structure_Id"].comment = "A reference to the entry.id identifier in the entry table"
+    model.table("PDB", "Entry_mmCIF_File").column_definitions["File_Bytes"].comment = "Size of the system generated mmCIF file in bytes"
+    #model.table("PDB", "Entry_mmCIF_File").column_definitions["File_Md5"].comment = "MD5 value of the system generated mmCIF file"
 
 # ===================================================
 # -- this function will be called from the update_schemas.py file
