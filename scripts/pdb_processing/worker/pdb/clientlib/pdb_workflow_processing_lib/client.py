@@ -998,7 +998,7 @@ class PDBClient (object):
                 if self.is_catalog_dev == True:
                     if tname == 'ihm_entity_poly_segment':
                         r = self.getUpdatedEntityPolySegment(r)
-                self.getUpdatedOptional(optional_fks, tname, r)
+                self.getUpdatedOptional(optional_fks, tname, r, entry_id)
                 entities.append(r)
             
             """
@@ -1093,7 +1093,7 @@ class PDBClient (object):
                 Replace the FK references to the entry table
                 """
                 entity = self.getRecordUpdatedWithFK(tname, entity, entry_id)
-                entity = self.getUpdatedOptional(optional_fks, tname, entity)
+                entity = self.getUpdatedOptional(optional_fks, tname, entity, entry_id)
                 entity['Entry_Related_File'] = rid
                 
                 entities.append(entity)
@@ -1187,17 +1187,27 @@ class PDBClient (object):
     """
     Update the record for the optional composite FK
     """
-    def getUpdatedOptional(self, optional_fks, tname, row):
+    def getUpdatedOptional(self, optional_fks, tname, row, entry_id):
         if tname in optional_fks:
             for fk in optional_fks[tname]:
+                url_structure_pattern = fk['url_structure_pattern']
                 url_pattern = fk['url_pattern']
                 fk_RID_column_name = fk['fk_RID_column_name']
                 fk_other_column_name = fk['fk_other_column_name']
                 ref_table = fk['ref_table']
                 ref_other_column_name = fk['ref_other_column_name']
+                if ref_other_column_name not in row.keys():
+                    continue
                 fk_other_value = row[fk_other_column_name]
                 if type(fk_other_value).__name__ == 'str':
                     fk_other_value = urlquote(fk_other_value)
+                url = url_structure_pattern.format(urlquote(ref_table), urlquote(ref_other_column_name), fk_other_value, entry_id)
+                self.logger.debug('Query URL with structure_id for OPTIONAL FK: "%s"' % url) 
+                resp = self.catalog.get(url)
+                resp.raise_for_status()
+                if len(resp.json()) > 0:
+                    row[fk_RID_column_name] = resp.json()[0]['RID']
+                    continue
                 url = url_pattern.format(urlquote(ref_table), urlquote(ref_other_column_name), fk_other_value)
                 self.logger.debug('Query URL for OPTIONAL FK: "%s"' % url) 
                 resp = self.catalog.get(url)
