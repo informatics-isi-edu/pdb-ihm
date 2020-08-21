@@ -67,6 +67,7 @@ class PDBClient (object):
         self.pickle_file = kwargs.get("pickle_file")
         self.tables_groups = kwargs.get("tables_groups")
         self.export_tables = kwargs.get("export_tables")
+        self.optional_fk_file = kwargs.get("optional_fk_file")
         self.scratch = kwargs.get("scratch")
         self.cif_tables = kwargs.get("cif_tables")
         self.export_order_by = kwargs.get("export_order_by")
@@ -345,8 +346,12 @@ class PDBClient (object):
                         continue
                     table = schema.tables[table_name]
                     path = table.path
-                    structure_id = table.column_definitions['structure_id']
-                    path.filter(structure_id == entry_id)
+                    if table_name == 'struct':
+                        entry_id_column = table.column_definitions['entry_id']
+                        path.filter(entry_id_column == entry_id)
+                    else:
+                        structure_id = table.column_definitions['structure_id']
+                        path.filter(structure_id == entry_id)
                     #self.logger.debug('Query Export Data URL: {}'.format(path.uri))
                     results = path.entities()
                     if len(pk) == 1:
@@ -370,9 +375,9 @@ class PDBClient (object):
                         for column in table_body['columns']:
                             column_name = column['name']
                             column_type = column['type']
-                            column_value = row[column_name]
                             if column_name == 'structure_id':
                                 continue
+                            column_value = row[column_name]
                             value = getColumnValue(table_name, column_name, column_type, column_value)
                             if value == None:
                                 self.logger.debug('Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
@@ -963,6 +968,12 @@ class PDBClient (object):
             pdb = pdb[0]
 
         """
+        Read the JSON FK optional file
+        """
+        with open(self.optional_fk_file, 'r') as f:
+            optional_fks = json.load(f)
+
+        """
         Sort the tables based on the FK dependencies
         """
         tables = self.sortTable(fpath)
@@ -987,6 +998,7 @@ class PDBClient (object):
                 if self.is_catalog_dev == True:
                     if tname == 'ihm_entity_poly_segment':
                         r = self.getUpdatedEntityPolySegment(r)
+                self.getUpdatedOptional(optional_fks, tname, r)
                 entities.append(r)
             
             """
@@ -1038,6 +1050,12 @@ class PDBClient (object):
         counter = 0
         
         """
+        Read the JSON FK optional file
+        """
+        with open(self.optional_fk_file, 'r') as f:
+            optional_fks = json.load(f)
+
+        """
         Read the rows of the csv/tsv file as dictionaries
         """
         csvfile = open(fpath, 'r')
@@ -1075,6 +1093,7 @@ class PDBClient (object):
                 Replace the FK references to the entry table
                 """
                 entity = self.getRecordUpdatedWithFK(tname, entity, entry_id)
+                entity = self.getUpdatedOptional(optional_fks, tname, entity)
                 entity['Entry_Related_File'] = rid
                 
                 entities.append(entity)
@@ -1115,6 +1134,8 @@ class PDBClient (object):
                 col = v['columns'][1:-1]
                 columns.append(col)
         for col in columns:
+            if tname == 'struct' and col == 'structure_id':
+                continue
             row[col] = entry_id
                 
         return row
@@ -1132,6 +1153,8 @@ class PDBClient (object):
                 col = v['columns'][1:-1]
                 columns.append(col)
         for col in columns:
+            if tname == 'struct' and col == 'structure_id':
+                continue
             if col in row.keys():
                 row[col] = entry_id
         return row
@@ -1158,6 +1181,29 @@ class PDBClient (object):
         resp = self.catalog.get(url)
         resp.raise_for_status()
         row['Entity_Poly_Seq_RID_End'] = resp.json()[0]['RID']
+
+        return row
+
+    """
+    Update the record for the optional composite FK
+    """
+    def getUpdatedOptional(self, optional_fks, tname, row):
+        if tname in optional_fks:
+            for fk in optional_fks[tname]:
+                url_pattern = fk['url_pattern']
+                fk_RID_column_name = fk['fk_RID_column_name']
+                fk_other_column_name = fk['fk_other_column_name']
+                ref_table = fk['ref_table']
+                ref_other_column_name = fk['ref_other_column_name']
+                fk_other_value = row[fk_other_column_name]
+                if type(fk_other_value).__name__ == 'str':
+                    fk_other_value = urlquote(fk_other_value)
+                url = url_pattern.format(urlquote(ref_table), urlquote(ref_other_column_name), fk_other_value)
+                self.logger.debug('Query URL for OPTIONAL FK: "%s"' % url) 
+                resp = self.catalog.get(url)
+                resp.raise_for_status()
+                if len(resp.json()) > 0:
+                    row[fk_RID_column_name] = resp.json()[0]['RID']
 
         return row
 

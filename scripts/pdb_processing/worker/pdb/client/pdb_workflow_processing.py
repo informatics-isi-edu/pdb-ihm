@@ -110,6 +110,11 @@ def load(config_filename):
         logger.error('tables_groups file must be provided and exist.')
         return None
 
+    optional_fk_file = cfg.get('optional_fk_file', None)
+    if not optional_fk_file or not os.path.isfile(optional_fk_file):
+        logger.error('optional_fk_file file must be provided and exist.')
+        return None
+
     entry = cfg.get('entry', None)
     if not entry or not os.path.isfile(entry):
         logger.error('entry file must be provided and exist.')
@@ -150,6 +155,7 @@ def load(config_filename):
                                python_bin=python_bin, \
                                pickle_file=pickle_file, \
                                tables_groups=tables_groups, \
+                               optional_fk_file=optional_fk_file, \
                                export_tables=export_tables, \
                                cif_tables=cif_tables, \
                                export_order_by=export_order_by, \
