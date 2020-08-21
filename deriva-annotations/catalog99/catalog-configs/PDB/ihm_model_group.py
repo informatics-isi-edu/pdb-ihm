@@ -92,7 +92,7 @@ table_annotations = {
     chaise_tags.visible_foreign_keys: visible_foreign_keys,
 }
 
-table_comment = 'Collections or groups of models that can be used for defining multi-state or ordered ensembles'
+table_comment = 'Collections or groups of models that can be used for defining clusters, multi-state models or ordered ensembles'
 
 table_acls = {}
 

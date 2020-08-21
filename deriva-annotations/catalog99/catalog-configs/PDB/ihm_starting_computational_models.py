@@ -165,7 +165,7 @@ visible_columns = {
 
 table_annotations = {chaise_tags.visible_columns: visible_columns, }
 
-table_comment = 'Starting computational models'
+table_comment = 'Generic information regarding all computational models used as starting structural models'
 
 table_acls = {}
 
@@ -195,9 +195,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_starting_computational_models_RCB_fkey']],
     ),
     em.ForeignKey.define(
-        ['script_file_id', 'structure_id'],
+        ['structure_id', 'script_file_id'],
         'PDB',
-        'ihm_external_files', ['id', 'structure_id'],
+        'ihm_external_files', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_starting_computational_models_script_file_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -208,9 +208,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'starting_model_id'],
+        ['starting_model_id', 'structure_id'],
         'PDB',
-        'ihm_starting_model_details', ['structure_id', 'starting_model_id'],
+        'ihm_starting_model_details', ['starting_model_id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_starting_computational_models_starting_model_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

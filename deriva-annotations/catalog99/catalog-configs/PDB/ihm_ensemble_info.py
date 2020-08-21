@@ -257,9 +257,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_ensemble_info_ensemble_clustering_method_fkey']],
     ),
     em.ForeignKey.define(
-        ['structure_id', 'post_process_id'],
+        ['post_process_id', 'structure_id'],
         'PDB',
-        'ihm_modeling_post_process', ['structure_id', 'id'],
+        'ihm_modeling_post_process', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_ensemble_info_post_process_id_fk']],
         annotations={
             chaise_tags.foreign_key: {
@@ -296,9 +296,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['ensemble_file_id', 'Ensemble_file_RID'],
+        ['Ensemble_file_RID', 'ensemble_file_id'],
         'PDB',
-        'ihm_external_files', ['id', 'RID'],
+        'ihm_external_files', ['RID', 'id'],
         constraint_names=[['PDB', 'ihm_ensemble_info_ensemble_file_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -309,9 +309,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['model_group_id', 'structure_id'],
+        ['structure_id', 'model_group_id'],
         'PDB',
-        'ihm_model_group', ['id', 'structure_id'],
+        'ihm_model_group', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_ensemble_info_model_group_id_fk']],
         annotations={
             chaise_tags.foreign_key: {
@@ -322,9 +322,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['model_group_id', 'Model_group_RID'],
+        ['Model_group_RID', 'model_group_id'],
         'PDB',
-        'ihm_model_group', ['id', 'RID'],
+        'ihm_model_group', ['RID', 'id'],
         constraint_names=[['PDB', 'ihm_ensemble_info_model_group_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

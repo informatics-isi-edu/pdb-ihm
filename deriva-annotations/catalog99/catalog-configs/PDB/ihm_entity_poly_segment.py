@@ -295,7 +295,7 @@ table_annotations = {
     chaise_tags.visible_foreign_keys: visible_foreign_keys,
 }
 
-table_comment = None
+table_comment = 'Segments of polymeric entities; specifies sequence ranges for use in other tables'
 
 table_acls = {}
 
@@ -305,7 +305,7 @@ key_defs = [
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_entity_poly_segment_RIDkey1']],
                   ),
     em.Key.define(
-        ['id', 'structure_id'], constraint_names=[['PDB', 'ihm_entity_poly_segment_primary_key']],
+        ['structure_id', 'id'], constraint_names=[['PDB', 'ihm_entity_poly_segment_primary_key']],
     ),
     em.Key.define(
         ['RID', 'id'], constraint_names=[['PDB', 'ihm_entity_poly_segment_RID_id_key']],
@@ -326,9 +326,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_entity_poly_segment_RCB_fkey']],
     ),
     em.ForeignKey.define(
-        ['comp_id_begin', 'Entity_Poly_Seq_RID_Begin', 'structure_id', 'entity_id', 'seq_id_begin'],
+        ['comp_id_begin', 'seq_id_begin', 'structure_id', 'Entity_Poly_Seq_RID_Begin', 'entity_id'],
         'PDB',
-        'entity_poly_seq', ['mon_id', 'RID', 'structure_id', 'entity_id', 'num'],
+        'entity_poly_seq', ['mon_id', 'num', 'structure_id', 'RID', 'entity_id'],
         constraint_names=[['PDB', 'ihm_entity_poly_segment_mm_poly_res_label_begin_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -340,9 +340,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'Entity_Poly_Seq_RID_End', 'comp_id_end', 'entity_id', 'seq_id_end'],
+        ['comp_id_end', 'structure_id', 'seq_id_end', 'Entity_Poly_Seq_RID_End', 'entity_id'],
         'PDB',
-        'entity_poly_seq', ['structure_id', 'RID', 'mon_id', 'entity_id', 'num'],
+        'entity_poly_seq', ['mon_id', 'structure_id', 'num', 'RID', 'entity_id'],
         constraint_names=[['PDB', 'ihm_entity_poly_segment_mm_poly_res_label_end_fkey']],
         annotations={
             chaise_tags.foreign_key: {

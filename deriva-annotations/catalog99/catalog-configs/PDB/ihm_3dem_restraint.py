@@ -245,9 +245,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_3dem_restraint_map_segment_flag_fkey']],
     ),
     em.ForeignKey.define(
-        ['structure_id', 'struct_assembly_id'],
+        ['struct_assembly_id', 'structure_id'],
         'PDB',
-        'ihm_struct_assembly', ['structure_id', 'id'],
+        'ihm_struct_assembly', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_3dem_restraint_struct_assembly_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -271,9 +271,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'dataset_list_id'],
+        ['dataset_list_id', 'structure_id'],
         'PDB',
-        'ihm_dataset_list', ['structure_id', 'id'],
+        'ihm_dataset_list', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_3dem_restraint_dataset_list_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -297,9 +297,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['fitting_method_citation_id', 'Fitting_method_citation_RID'],
+        ['Fitting_method_citation_RID', 'fitting_method_citation_id'],
         'PDB',
-        'citation', ['id', 'RID'],
+        'citation', ['RID', 'id'],
         constraint_names=[['PDB', 'ihm_3dem_restraint_fitting_method_citation_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

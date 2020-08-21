@@ -374,9 +374,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_residues_not_modeled_reason_fkey']],
     ),
     em.ForeignKey.define(
-        ['entity_id', 'structure_id', 'seq_id_begin', 'comp_id_begin'],
+        ['seq_id_begin', 'structure_id', 'comp_id_begin', 'entity_id'],
         'PDB',
-        'entity_poly_seq', ['entity_id', 'structure_id', 'num', 'mon_id'],
+        'entity_poly_seq', ['num', 'structure_id', 'mon_id', 'entity_id'],
         constraint_names=[['PDB', 'ihm_residues_not_modeled_mm_poly_res_label_begin_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -389,9 +389,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['entity_id', 'structure_id', 'comp_id_end', 'seq_id_end'],
+        ['comp_id_end', 'structure_id', 'seq_id_end', 'entity_id'],
         'PDB',
-        'entity_poly_seq', ['entity_id', 'structure_id', 'mon_id', 'num'],
+        'entity_poly_seq', ['mon_id', 'structure_id', 'num', 'entity_id'],
         constraint_names=[['PDB', 'ihm_residues_not_modeled_mm_poly_res_label_end_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -410,7 +410,8 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_residues_not_modeled_asym_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
-                'domain_filter_pattern': 'structure_id={{structure_id}}'
+                'template_engine': 'handlebars',
+                'domain_filter_pattern': '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}'
             }
         },
         on_update='CASCADE',
@@ -423,7 +424,8 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_residues_not_modeled_model_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
-                'domain_filter_pattern': 'structure_id={{structure_id}}'
+                'template_engine': 'handlebars',
+                'domain_filter_pattern': '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}'
             }
         },
         on_update='CASCADE',

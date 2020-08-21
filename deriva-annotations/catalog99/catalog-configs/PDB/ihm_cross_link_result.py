@@ -157,7 +157,7 @@ visible_columns = {
 
 table_annotations = {chaise_tags.visible_columns: visible_columns, }
 
-table_comment = 'Results of the crosslinking restraints in integrative modeling'
+table_comment = 'Results of crosslinking restraints used in integrative modeling'
 
 table_acls = {}
 
@@ -185,9 +185,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_cross_link_result_RCB_fkey']],
     ),
     em.ForeignKey.define(
-        ['structure_id', 'ensemble_id'],
+        ['ensemble_id', 'structure_id'],
         'PDB',
-        'ihm_ensemble_info', ['structure_id', 'ensemble_id'],
+        'ihm_ensemble_info', ['ensemble_id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_cross_link_result_ensemble_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

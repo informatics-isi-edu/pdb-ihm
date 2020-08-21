@@ -98,7 +98,7 @@ table_annotations = {
     chaise_tags.visible_foreign_keys: visible_foreign_keys,
 }
 
-table_comment = None
+table_comment = 'List of structural assembly classes; allows for defining hierarchical structural assemblies'
 
 table_acls = {}
 
@@ -106,7 +106,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['id', 'structure_id'],
+        ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_struct_assembly_class_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_struct_assembly_class_RIDkey1']],

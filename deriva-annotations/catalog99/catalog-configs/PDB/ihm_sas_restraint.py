@@ -236,9 +236,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_sas_restraint_fitting_state_fkey']],
     ),
     em.ForeignKey.define(
-        ['dataset_list_id', 'structure_id'],
+        ['structure_id', 'dataset_list_id'],
         'PDB',
-        'ihm_dataset_list', ['id', 'structure_id'],
+        'ihm_dataset_list', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_sas_restraint_dataset_list_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -262,9 +262,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['struct_assembly_id', 'structure_id'],
+        ['structure_id', 'struct_assembly_id'],
         'PDB',
-        'ihm_struct_assembly', ['id', 'structure_id'],
+        'ihm_struct_assembly', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_sas_restraint_struct_assembly_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

@@ -334,17 +334,23 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_poly_probe_position_modification_flag_fkey']],
     ),
     em.ForeignKey.define(
-        ['structure_id', 'seq_id', 'comp_id', 'entity_id'],
+        ['structure_id', 'seq_id', 'entity_id', 'comp_id'],
         'PDB',
-        'entity_poly_seq', ['structure_id', 'num', 'mon_id', 'entity_id'],
+        'entity_poly_seq', ['structure_id', 'num', 'entity_id', 'mon_id'],
         constraint_names=[['PDB', 'ihm_poly_probe_position_mm_poly_res_label_fkey']],
+        annotations={
+            chaise_tags.foreign_key: {
+                'template_engine': 'handlebars',
+                'domain_filter_pattern': '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}'
+            }
+        },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'mut_res_chem_comp_id'],
+        ['mut_res_chem_comp_id', 'structure_id'],
         'PDB',
-        'chem_comp', ['structure_id', 'id'],
+        'chem_comp', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_poly_probe_position_mut_res_chem_comp_id_fk']],
         annotations={
             chaise_tags.foreign_key: {
@@ -355,9 +361,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['mut_res_chem_comp_id', 'Mut_res_chem_comp_RID'],
+        ['Mut_res_chem_comp_RID', 'mut_res_chem_comp_id'],
         'PDB',
-        'chem_comp', ['id', 'RID'],
+        'chem_comp', ['RID', 'id'],
         constraint_names=[['PDB', 'ihm_poly_probe_position_mut_res_chem_comp_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -368,9 +374,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['mod_res_chem_comp_descriptor_id', 'structure_id'],
+        ['structure_id', 'mod_res_chem_comp_descriptor_id'],
         'PDB',
-        'ihm_chemical_component_descriptor', ['id', 'structure_id'],
+        'ihm_chemical_component_descriptor', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_poly_probe_position_mod_res_chem_comp_descriptor_id_fk']],
         annotations={
             chaise_tags.foreign_key: {

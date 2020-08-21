@@ -109,7 +109,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['id', 'structure_id'], constraint_names=[['PDB', 'ihm_dataset_group_primary_key']],
+        ['structure_id', 'id'], constraint_names=[['PDB', 'ihm_dataset_group_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_dataset_group_RIDkey1']],
                   ),

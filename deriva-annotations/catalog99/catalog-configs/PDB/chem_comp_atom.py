@@ -277,7 +277,7 @@ visible_columns = {
 
 table_annotations = {chaise_tags.visible_columns: visible_columns, }
 
-table_comment = None
+table_comment = 'Details of atoms in chemical components'
 
 table_acls = {}
 
@@ -285,7 +285,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['comp_id', 'structure_id', 'atom_id'],
+        ['structure_id', 'atom_id', 'comp_id'],
         constraint_names=[['PDB', 'chem_comp_atom_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'chem_comp_atom_RIDkey1']],

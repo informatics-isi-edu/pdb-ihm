@@ -111,7 +111,7 @@ visible_columns = {
 
 table_annotations = {chaise_tags.visible_columns: visible_columns, }
 
-table_comment = None
+table_comment = 'Details of the source from which genetically manipulated entities are obtained'
 
 table_acls = {}
 
@@ -119,7 +119,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['structure_id', 'entity_id', 'pdbx_src_id'],
+        ['entity_id', 'pdbx_src_id', 'structure_id'],
         constraint_names=[['PDB', 'entity_src_gen_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'entity_src_gen_RIDkey1']],

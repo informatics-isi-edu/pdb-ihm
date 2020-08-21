@@ -11,7 +11,6 @@ table_name = 'struct'
 schema_name = 'PDB'
 
 column_annotations = {
-    'structure_id': {},
     'entry_id': {},
     'pdbx_CASP_flag': {},
     'pdbx_descriptor': {},
@@ -23,7 +22,6 @@ column_annotations = {
 }
 
 column_comment = {
-    'structure_id': 'A reference to table entry.id.',
     'entry_id': 'A reference to table entry.id.',
     'pdbx_CASP_flag': 'type:text\nThe item indicates whether the entry is a CASP target, a CASD-NMR target,\n or similar target participating in methods development experiments.\nexamples:Y',
     'pdbx_descriptor': "type:text\nAn automatically generated descriptor for an NDB structure or\n the unstructured content of the PDB COMPND record.\nexamples:5'-D(*CP*GP*CP*(HYD)AP*AP*AP*TP*TP*TP*GP*CP*G)-3'",
@@ -39,12 +37,6 @@ column_acls = {}
 column_acl_bindings = {}
 
 column_defs = [
-    em.Column.define(
-        'structure_id',
-        em.builtin_types['text'],
-        nullok=False,
-        comment=column_comment['structure_id'],
-    ),
     em.Column.define(
         'entry_id', em.builtin_types['text'], nullok=False, comment=column_comment['entry_id'],
     ),
@@ -116,12 +108,7 @@ table_acls = {}
 
 table_acl_bindings = {}
 
-key_defs = [
-    em.Key.define(['entry_id', 'structure_id'], constraint_names=[['PDB', 'struct_primary_key']],
-                  ),
-    em.Key.define(['RID'], constraint_names=[['PDB', 'struct_RIDkey1']],
-                  ),
-]
+key_defs = [em.Key.define(['RID'], constraint_names=[['PDB', 'struct_RIDkey1']], ), ]
 
 fkey_defs = [
     em.ForeignKey.define(

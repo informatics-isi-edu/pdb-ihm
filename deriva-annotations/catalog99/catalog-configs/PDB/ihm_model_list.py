@@ -206,9 +206,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_model_list_RMB_fkey']],
     ),
     em.ForeignKey.define(
-        ['structure_id', 'assembly_id'],
+        ['assembly_id', 'structure_id'],
         'PDB',
-        'ihm_struct_assembly', ['structure_id', 'id'],
+        'ihm_struct_assembly', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_model_list_assembly_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -219,9 +219,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['representation_id', 'structure_id'],
+        ['structure_id', 'representation_id'],
         'PDB',
-        'ihm_model_representation', ['id', 'structure_id'],
+        'ihm_model_representation', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_model_list_representation_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -232,9 +232,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['protocol_id', 'structure_id'],
+        ['structure_id', 'protocol_id'],
         'PDB',
-        'ihm_modeling_protocol', ['id', 'structure_id'],
+        'ihm_modeling_protocol', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_model_list_protocol_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

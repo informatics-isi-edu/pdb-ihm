@@ -208,7 +208,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['probe_id', 'structure_id'], constraint_names=[['PDB', 'ihm_probe_list_primary_key']],
+        ['structure_id', 'probe_id'], constraint_names=[['PDB', 'ihm_probe_list_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_probe_list_RIDkey1']],
                   ),
@@ -246,9 +246,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_probe_list_reactive_probe_flag_fkey']],
     ),
     em.ForeignKey.define(
-        ['structure_id', 'probe_chem_comp_descriptor_id'],
+        ['probe_chem_comp_descriptor_id', 'structure_id'],
         'PDB',
-        'ihm_chemical_component_descriptor', ['structure_id', 'id'],
+        'ihm_chemical_component_descriptor', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_probe_list_probe_chem_comp_descriptor_id_fk']],
         annotations={
             chaise_tags.foreign_key: {
@@ -259,9 +259,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'reactive_probe_chem_comp_descriptor_id'],
+        ['reactive_probe_chem_comp_descriptor_id', 'structure_id'],
         'PDB',
-        'ihm_chemical_component_descriptor', ['structure_id', 'id'],
+        'ihm_chemical_component_descriptor', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_probe_list_reactive_probe_chem_comp_descriptor_id_fk']],
         annotations={
             chaise_tags.foreign_key: {
@@ -285,9 +285,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['Probe_chem_comp_descriptor_RID', 'probe_chem_comp_descriptor_id'],
+        ['probe_chem_comp_descriptor_id', 'Probe_chem_comp_descriptor_RID'],
         'PDB',
-        'ihm_chemical_component_descriptor', ['RID', 'id'],
+        'ihm_chemical_component_descriptor', ['id', 'RID'],
         constraint_names=[['PDB', 'ihm_probe_list_probe_chem_comp_descriptor_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

@@ -116,18 +116,18 @@ table_annotations = {
     chaise_tags.visible_foreign_keys: visible_foreign_keys,
 }
 
-table_comment = None
+table_comment = 'Details of molecular entities in the structure'
 
 table_acls = {}
 
 table_acl_bindings = {}
 
 key_defs = [
-    em.Key.define(['id', 'structure_id'], constraint_names=[['PDB', 'entity_primary_key']],
+    em.Key.define(['structure_id', 'id'], constraint_names=[['PDB', 'entity_primary_key']],
                   ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'entity_RIDkey1']],
                   ),
-    em.Key.define(['RID', 'id'], constraint_names=[['PDB', 'entity_id_RID_key']],
+    em.Key.define(['id', 'RID'], constraint_names=[['PDB', 'entity_id_RID_key']],
                   ),
 ]
 

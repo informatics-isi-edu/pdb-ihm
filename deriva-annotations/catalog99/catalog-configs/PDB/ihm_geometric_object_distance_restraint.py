@@ -278,7 +278,7 @@ key_defs = [
         ['RID'], constraint_names=[['PDB', 'ihm_geometric_object_distance_restraint_RIDkey1']],
     ),
     em.Key.define(
-        ['structure_id', 'id'],
+        ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_geometric_object_distance_restraint_primary_key']],
     ),
 ]
@@ -328,9 +328,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'feature_id'],
+        ['feature_id', 'structure_id'],
         'PDB',
-        'ihm_feature_list', ['structure_id', 'feature_id'],
+        'ihm_feature_list', ['feature_id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_geometric_object_distance_restraint_feature_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -341,9 +341,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'object_id'],
+        ['object_id', 'structure_id'],
         'PDB',
-        'ihm_geometric_object_list', ['structure_id', 'object_id'],
+        'ihm_geometric_object_list', ['object_id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_geometric_object_distance_restraint_object_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

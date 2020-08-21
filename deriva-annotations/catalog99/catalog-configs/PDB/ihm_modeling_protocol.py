@@ -102,7 +102,7 @@ table_annotations = {
     chaise_tags.visible_foreign_keys: visible_foreign_keys,
 }
 
-table_comment = 'Modeling protocol used in the integrative modeling study'
+table_comment = 'List of modeling protocols used in the integrative modeling study'
 
 table_acls = {}
 
@@ -110,7 +110,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['id', 'structure_id'], constraint_names=[['PDB', 'ihm_modeling_protocol_primary_key']],
+        ['structure_id', 'id'], constraint_names=[['PDB', 'ihm_modeling_protocol_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_modeling_protocol_RIDkey1']],
                   ),

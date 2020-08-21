@@ -256,7 +256,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['structure_id', 'id'],
+        ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_derived_distance_restraint_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_derived_distance_restraint_RIDkey1']],
@@ -295,25 +295,38 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_derived_distance_restraint_dataset_list_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
-                'domain_filter_pattern': 'structure_id={{structure_id}}'
+                'template_engine': 'handlebars',
+                'domain_filter_pattern': '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}'
             }
         },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'feature_id_2'],
+        ['feature_id_2', 'structure_id'],
         'PDB',
-        'ihm_feature_list', ['structure_id', 'feature_id'],
+        'ihm_feature_list', ['feature_id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_derived_distance_restraint_feature_id_2_fkey']],
+        annotations={
+            chaise_tags.foreign_key: {
+                'template_engine': 'handlebars',
+                'domain_filter_pattern': '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}'
+            }
+        },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'feature_id_1'],
+        ['feature_id_1', 'structure_id'],
         'PDB',
-        'ihm_feature_list', ['structure_id', 'feature_id'],
+        'ihm_feature_list', ['feature_id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_derived_distance_restraint_feature_id_1_fkey']],
+        annotations={
+            chaise_tags.foreign_key: {
+                'template_engine': 'handlebars',
+                'domain_filter_pattern': '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}'
+            }
+        },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),

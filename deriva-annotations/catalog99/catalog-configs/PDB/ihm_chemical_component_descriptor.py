@@ -147,7 +147,7 @@ key_defs = [
         ['RID'], constraint_names=[['PDB', 'ihm_chemical_component_descriptor_RIDkey1']],
     ),
     em.Key.define(
-        ['id', 'RID'], constraint_names=[['PDB', 'ihm_chemical_component_descriptor_id_RID_key']],
+        ['RID', 'id'], constraint_names=[['PDB', 'ihm_chemical_component_descriptor_id_RID_key']],
     ),
 ]
 

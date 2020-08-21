@@ -140,7 +140,7 @@ key_defs = [
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_geometric_object_axis_RIDkey1']],
                   ),
     em.Key.define(
-        ['object_id', 'structure_id'],
+        ['structure_id', 'object_id'],
         constraint_names=[['PDB', 'ihm_geometric_object_axis_primary_key']],
     ),
 ]
@@ -165,9 +165,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_geometric_object_axis_axis_type_fkey']],
     ),
     em.ForeignKey.define(
-        ['object_id', 'structure_id'],
+        ['structure_id', 'object_id'],
         'PDB',
-        'ihm_geometric_object_list', ['object_id', 'structure_id'],
+        'ihm_geometric_object_list', ['structure_id', 'object_id'],
         constraint_names=[['PDB', 'ihm_geometric_object_axis_object_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

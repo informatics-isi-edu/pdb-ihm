@@ -142,7 +142,7 @@ table_annotations = {
     chaise_tags.visible_foreign_keys: visible_foreign_keys,
 }
 
-table_comment = None
+table_comment = 'Details of polymeric entities'
 
 table_acls = {}
 
@@ -200,9 +200,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'entity_poly_type_fkey']],
     ),
     em.ForeignKey.define(
-        ['entity_id', 'structure_id'],
+        ['structure_id', 'entity_id'],
         'PDB',
-        'entity', ['id', 'structure_id'],
+        'entity', ['structure_id', 'id'],
         constraint_names=[['PDB', 'entity_poly_entity_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

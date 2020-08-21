@@ -67,7 +67,7 @@ table_annotations = {
     chaise_tags.visible_columns: visible_columns,
 }
 
-table_comment = None
+table_comment = 'Types of atoms in the structure'
 
 table_acls = {}
 
@@ -75,7 +75,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['structure_id', 'symbol'], constraint_names=[['PDB', 'atom_type_primary_key']],
+        ['symbol', 'structure_id'], constraint_names=[['PDB', 'atom_type_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'atom_type_RIDkey1']],
                   ),

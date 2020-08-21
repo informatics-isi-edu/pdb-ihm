@@ -245,9 +245,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_poly_probe_conjugate_ambiguous_stoichiometry_flag_fkey']],
     ),
     em.ForeignKey.define(
-        ['structure_id', 'position_id'],
+        ['position_id', 'structure_id'],
         'PDB',
-        'ihm_poly_probe_position', ['structure_id', 'id'],
+        'ihm_poly_probe_position', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_poly_probe_conjugate_position_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -258,9 +258,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['probe_id', 'structure_id'],
+        ['structure_id', 'probe_id'],
         'PDB',
-        'ihm_probe_list', ['probe_id', 'structure_id'],
+        'ihm_probe_list', ['structure_id', 'probe_id'],
         constraint_names=[['PDB', 'ihm_poly_probe_conjugate_probe_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -271,9 +271,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'dataset_list_id'],
+        ['dataset_list_id', 'structure_id'],
         'PDB',
-        'ihm_dataset_list', ['structure_id', 'id'],
+        'ihm_dataset_list', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_poly_probe_conjugate_dataset_list_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -297,9 +297,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['Chem_comp_descriptor_RID', 'chem_comp_descriptor_id'],
+        ['chem_comp_descriptor_id', 'Chem_comp_descriptor_RID'],
         'PDB',
-        'ihm_chemical_component_descriptor', ['RID', 'id'],
+        'ihm_chemical_component_descriptor', ['id', 'RID'],
         constraint_names=[['PDB', 'ihm_poly_probe_conjugate_chem_comp_descriptor_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

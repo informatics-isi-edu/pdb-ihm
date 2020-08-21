@@ -131,7 +131,7 @@ visible_columns = {
 
 table_annotations = {chaise_tags.visible_columns: visible_columns, }
 
-table_comment = None
+table_comment = 'Table to link structural assemblies to the assembly classes'
 
 table_acls = {}
 
@@ -139,7 +139,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['assembly_id', 'class_id', 'structure_id'],
+        ['structure_id', 'assembly_id', 'class_id'],
         constraint_names=[['PDB', 'ihm_struct_assembly_class_link_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_struct_assembly_class_link_RIDkey1']],

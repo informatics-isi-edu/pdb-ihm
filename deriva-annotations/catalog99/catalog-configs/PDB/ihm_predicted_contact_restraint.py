@@ -505,7 +505,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['structure_id', 'id'],
+        ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_predicted_contact_restraint_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_predicted_contact_restraint_RIDkey1']],
@@ -550,10 +550,16 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_predicted_contact_restraint_rep_atom_1_fkey']],
     ),
     em.ForeignKey.define(
-        ['structure_id', 'asym_id_2'],
+        ['asym_id_2', 'structure_id'],
         'PDB',
-        'struct_asym', ['structure_id', 'id'],
+        'struct_asym', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_predicted_contact_restraint_asym_id_2_fkey']],
+        annotations={
+            chaise_tags.foreign_key: {
+                'template_engine': 'handlebars',
+                'domain_filter_pattern': '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}'
+            }
+        },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),
@@ -562,13 +568,19 @@ fkey_defs = [
         'PDB',
         'struct_asym', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_predicted_contact_restraint_asym_id_1_fkey']],
+        annotations={
+            chaise_tags.foreign_key: {
+                'template_engine': 'handlebars',
+                'domain_filter_pattern': '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}'
+            }
+        },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['entity_id_2', 'comp_id_2', 'seq_id_2', 'structure_id'],
+        ['entity_id_2', 'structure_id', 'seq_id_2', 'comp_id_2'],
         'PDB',
-        'entity_poly_seq', ['entity_id', 'mon_id', 'num', 'structure_id'],
+        'entity_poly_seq', ['entity_id', 'structure_id', 'num', 'mon_id'],
         constraint_names=[['PDB', 'ihm_predicted_contact_restraint_mm_poly_res_label_2_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -581,22 +593,23 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'dataset_list_id'],
+        ['dataset_list_id', 'structure_id'],
         'PDB',
-        'ihm_dataset_list', ['structure_id', 'id'],
+        'ihm_dataset_list', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_predicted_contact_restraint_dataset_list_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
-                'domain_filter_pattern': 'structure_id={{structure_id}}'
+                'template_engine': 'handlebars',
+                'domain_filter_pattern': '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}'
             }
         },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['comp_id_1', 'seq_id_1', 'structure_id', 'entity_id_1'],
+        ['structure_id', 'entity_id_1', 'comp_id_1', 'seq_id_1'],
         'PDB',
-        'entity_poly_seq', ['mon_id', 'num', 'structure_id', 'entity_id'],
+        'entity_poly_seq', ['structure_id', 'entity_id', 'mon_id', 'num'],
         constraint_names=[['PDB', 'ihm_predicted_contact_restraint_mm_poly_res_label_1_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -609,9 +622,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'software_id'],
+        ['software_id', 'structure_id'],
         'PDB',
-        'software', ['structure_id', 'pdbx_ordinal'],
+        'software', ['pdbx_ordinal', 'structure_id'],
         constraint_names=[['PDB', 'ihm_predicted_contact_restraint_software_id_fk']],
         annotations={
             chaise_tags.foreign_key: {

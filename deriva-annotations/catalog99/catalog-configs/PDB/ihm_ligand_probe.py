@@ -155,7 +155,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['probe_id', 'structure_id'], constraint_names=[['PDB', 'ihm_ligand_probe_primary_key']],
+        ['structure_id', 'probe_id'], constraint_names=[['PDB', 'ihm_ligand_probe_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_ligand_probe_RIDkey1']],
                   ),

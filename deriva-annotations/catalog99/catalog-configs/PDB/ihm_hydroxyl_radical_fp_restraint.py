@@ -349,10 +349,16 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_hydroxyl_radical_fp_restraint_RCB_fkey']],
     ),
     em.ForeignKey.define(
-        ['structure_id', 'comp_id', 'entity_id', 'seq_id'],
+        ['structure_id', 'seq_id', 'comp_id', 'entity_id'],
         'PDB',
-        'entity_poly_seq', ['structure_id', 'mon_id', 'entity_id', 'num'],
+        'entity_poly_seq', ['structure_id', 'num', 'mon_id', 'entity_id'],
         constraint_names=[['PDB', 'ihm_hydroxyl_radical_fp_restraint_mm_poly_res_label_fkey']],
+        annotations={
+            chaise_tags.foreign_key: {
+                'template_engine': 'handlebars',
+                'domain_filter_pattern': '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}'
+            }
+        },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),
@@ -370,9 +376,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'dataset_list_id'],
+        ['dataset_list_id', 'structure_id'],
         'PDB',
-        'ihm_dataset_list', ['structure_id', 'id'],
+        'ihm_dataset_list', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_hydroxyl_radical_fp_restraint_dataset_list_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -396,9 +402,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['software_id', 'Software_RID'],
+        ['Software_RID', 'software_id'],
         'PDB',
-        'software', ['pdbx_ordinal', 'RID'],
+        'software', ['RID', 'pdbx_ordinal'],
         constraint_names=[['PDB', 'ihm_hydroxyl_radical_fp_restraint_software_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

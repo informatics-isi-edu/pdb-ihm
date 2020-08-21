@@ -82,7 +82,7 @@ visible_columns = {
 
 table_annotations = {chaise_tags.visible_columns: visible_columns, }
 
-table_comment = None
+table_comment = 'Authors associated with citations in the citation list'
 
 table_acls = {}
 
@@ -90,7 +90,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['citation_id', 'name', 'structure_id', 'ordinal'],
+        ['citation_id', 'structure_id', 'ordinal', 'name'],
         constraint_names=[['PDB', 'citation_author_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'citation_author_RIDkey1']],

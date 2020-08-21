@@ -74,7 +74,7 @@ visible_columns = {
 
 table_annotations = {chaise_tags.visible_columns: visible_columns, }
 
-table_comment = None
+table_comment = 'Systematic names associated with the entities'
 
 table_acls = {}
 
@@ -84,7 +84,7 @@ key_defs = [
     em.Key.define(['RID'], constraint_names=[['PDB', 'entity_name_sys_RIDkey1']],
                   ),
     em.Key.define(
-        ['entity_id', 'structure_id'], constraint_names=[['PDB', 'entity_name_sys_primary_key']],
+        ['structure_id', 'entity_id'], constraint_names=[['PDB', 'entity_name_sys_primary_key']],
     ),
 ]
 

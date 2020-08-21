@@ -305,7 +305,7 @@ visible_columns = {
 
 table_annotations = {chaise_tags.visible_columns: visible_columns, }
 
-table_comment = 'Details of the modeling protocol used in the integrative modeling study'
+table_comment = 'Details of the modeling protocols used in the integrative modeling study'
 
 table_acls = {}
 
@@ -313,7 +313,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['structure_id', 'id'],
+        ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_modeling_protocol_details_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_modeling_protocol_details_RIDkey1']],
@@ -371,9 +371,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'software_id'],
+        ['software_id', 'structure_id'],
         'PDB',
-        'software', ['structure_id', 'pdbx_ordinal'],
+        'software', ['pdbx_ordinal', 'structure_id'],
         constraint_names=[['PDB', 'ihm_modeling_protocol_details_software_id_fk']],
         annotations={
             chaise_tags.foreign_key: {
@@ -410,9 +410,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['struct_assembly_id', 'Struct_assembly_RID'],
+        ['Struct_assembly_RID', 'struct_assembly_id'],
         'PDB',
-        'ihm_struct_assembly', ['id', 'RID'],
+        'ihm_struct_assembly', ['RID', 'id'],
         constraint_names=[['PDB', 'ihm_modeling_protocol_details_struct_assembly_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -423,9 +423,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'script_file_id'],
+        ['script_file_id', 'structure_id'],
         'PDB',
-        'ihm_external_files', ['structure_id', 'id'],
+        'ihm_external_files', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_modeling_protocol_details_script_file_id_fk']],
         annotations={
             chaise_tags.foreign_key: {
@@ -436,9 +436,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['script_file_id', 'Script_file_RID'],
+        ['Script_file_RID', 'script_file_id'],
         'PDB',
-        'ihm_external_files', ['id', 'RID'],
+        'ihm_external_files', ['RID', 'id'],
         constraint_names=[['PDB', 'ihm_modeling_protocol_details_script_file_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -449,9 +449,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['dataset_group_id', 'structure_id'],
+        ['structure_id', 'dataset_group_id'],
         'PDB',
-        'ihm_dataset_group', ['id', 'structure_id'],
+        'ihm_dataset_group', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_modeling_protocol_details_dataset_group_id_fk']],
         annotations={
             chaise_tags.foreign_key: {

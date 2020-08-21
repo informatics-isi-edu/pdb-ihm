@@ -288,7 +288,7 @@ visible_columns = {
 
 table_annotations = {chaise_tags.visible_columns: visible_columns, }
 
-table_comment = None
+table_comment = 'Details of model representations used; addresses representations of multi-scale models with atomic and coarse-grained representations'
 
 table_acls = {}
 
@@ -296,7 +296,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['structure_id', 'id'],
+        ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_model_representation_details_primary_key']],
     ),
     em.Key.define(
@@ -349,9 +349,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'entity_asym_id'],
+        ['entity_asym_id', 'structure_id'],
         'PDB',
-        'struct_asym', ['structure_id', 'id'],
+        'struct_asym', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_model_representation_details_entity_asym_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -414,9 +414,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['Entity_poly_segment_RID', 'entity_poly_segment_id'],
+        ['entity_poly_segment_id', 'Entity_poly_segment_RID'],
         'PDB',
-        'ihm_entity_poly_segment', ['RID', 'id'],
+        'ihm_entity_poly_segment', ['id', 'RID'],
         constraint_names=[['PDB', 'ihm_model_representation_details_entity_poly_segment_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

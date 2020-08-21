@@ -11,6 +11,8 @@ table_name = 'Entry_Related_File'
 schema_name = 'PDB'
 
 column_annotations = {
+    'File_Type': {},
+    'File_Format': {},
     'File_URL': {
         chaise_tags.asset: {
             'md5': 'File_MD5',
@@ -20,42 +22,80 @@ column_annotations = {
         },
         'tag:isrd.isi.edu,2018:required': {}
     },
-    'Owner': {}
+    'File_MD5': {},
+    'File_Bytes': {},
+    'Workflow_Status': {},
+    'Record_Status_Detail': {},
+    'Owner': {},
+    'structure_id': {},
+    'Description': {}
 }
 
-column_comment = {'Owner': 'Group that can update the record.'}
+column_comment = {
+    'File_Type': 'Restraint table corresponding to the uploaded file',
+    'File_Format': 'CSV or TSV file format',
+    'File_URL': 'URL of the uploaded file',
+    'File_MD5': 'MD5 value of the uploaded file',
+    'File_Bytes': 'Size of the uploaded file in bytes',
+    'Workflow_Status': 'Workflow status corresponding to uploading restraint data files',
+    'Record_Status_Detail': 'Captures error messages obtained while processing the uploaded restraint data files; remains empty if process is success',
+    'Owner': 'Group that can update the record.',
+    'structure_id': 'A reference to the entry.id identifier in the entry table',
+    'Description': 'Description of the file'
+}
 
 column_acls = {}
 
 column_acl_bindings = {}
 
 column_defs = [
-    em.Column.define('File_Type', em.builtin_types['text'], nullok=False,
-                     ),
-    em.Column.define('File_Format', em.builtin_types['text'], nullok=False,
-                     ),
     em.Column.define(
-        'File_URL', em.builtin_types['text'], annotations=column_annotations['File_URL'],
+        'File_Type', em.builtin_types['text'], nullok=False, comment=column_comment['File_Type'],
+    ),
+    em.Column.define(
+        'File_Format',
+        em.builtin_types['text'],
+        nullok=False,
+        comment=column_comment['File_Format'],
+    ),
+    em.Column.define(
+        'File_URL',
+        em.builtin_types['text'],
+        annotations=column_annotations['File_URL'],
+        comment=column_comment['File_URL'],
     ),
     em.Column.define('File_Name', em.builtin_types['text'],
                      ),
-    em.Column.define('File_MD5', em.builtin_types['text'],
-                     ),
-    em.Column.define('File_Bytes', em.builtin_types['int8'],
+    em.Column.define('File_MD5', em.builtin_types['text'], comment=column_comment['File_MD5'],
                      ),
     em.Column.define(
-        'Workflow_Status', em.builtin_types['text'], nullok=False, default='PDB:1-MSVE',
+        'File_Bytes', em.builtin_types['int8'], comment=column_comment['File_Bytes'],
+    ),
+    em.Column.define(
+        'Workflow_Status',
+        em.builtin_types['text'],
+        nullok=False,
+        default='PDB:1-MSVE',
+        comment=column_comment['Workflow_Status'],
     ),
     em.Column.define('Process_Status', em.builtin_types['text'], default='New',
                      ),
-    em.Column.define('Record_Status_Detail', em.builtin_types['text'],
-                     ),
+    em.Column.define(
+        'Record_Status_Detail',
+        em.builtin_types['text'],
+        comment=column_comment['Record_Status_Detail'],
+    ),
     em.Column.define('Owner', em.builtin_types['text'], comment=column_comment['Owner'],
                      ),
-    em.Column.define('structure_id', em.builtin_types['text'], nullok=False,
-                     ),
-    em.Column.define('Description', em.builtin_types['text'],
-                     ),
+    em.Column.define(
+        'structure_id',
+        em.builtin_types['text'],
+        nullok=False,
+        comment=column_comment['structure_id'],
+    ),
+    em.Column.define(
+        'Description', em.builtin_types['text'], comment=column_comment['Description'],
+    ),
 ]
 
 visible_columns = {
@@ -83,7 +123,7 @@ visible_columns = {
 
 table_annotations = {chaise_tags.visible_columns: visible_columns, }
 
-table_comment = None
+table_comment = 'Restraint data files (in csv/tsv format) related to the entry'
 
 table_acls = {}
 

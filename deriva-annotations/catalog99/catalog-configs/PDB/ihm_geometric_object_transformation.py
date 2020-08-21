@@ -170,7 +170,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['structure_id', 'id'],
+        ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_geometric_object_transformation_primary_key']],
     ),
     em.Key.define(

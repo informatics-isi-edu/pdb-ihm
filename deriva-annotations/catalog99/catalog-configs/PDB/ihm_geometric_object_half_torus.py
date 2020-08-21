@@ -126,7 +126,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['object_id', 'structure_id'],
+        ['structure_id', 'object_id'],
         constraint_names=[['PDB', 'ihm_geometric_object_half_torus_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_geometric_object_half_torus_RIDkey1']],

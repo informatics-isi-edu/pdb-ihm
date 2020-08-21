@@ -238,7 +238,7 @@ key_defs = [
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_interface_residue_feature_RIDkey1']],
                   ),
     em.Key.define(
-        ['structure_id', 'ordinal_id'],
+        ['ordinal_id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_interface_residue_feature_primary_key']],
     ),
 ]
@@ -270,9 +270,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'binding_partner_entity_id'],
+        ['binding_partner_entity_id', 'structure_id'],
         'PDB',
-        'entity', ['structure_id', 'id'],
+        'entity', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_interface_residue_feature_binding_partner_entity_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -283,9 +283,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['dataset_list_id', 'structure_id'],
+        ['structure_id', 'dataset_list_id'],
         'PDB',
-        'ihm_dataset_list', ['id', 'structure_id'],
+        'ihm_dataset_list', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_interface_residue_feature_dataset_list_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

@@ -118,7 +118,7 @@ key_defs = [
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_geometric_object_center_RIDkey1']],
                   ),
     em.Key.define(
-        ['structure_id', 'id'],
+        ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_geometric_object_center_primary_key']],
     ),
 ]

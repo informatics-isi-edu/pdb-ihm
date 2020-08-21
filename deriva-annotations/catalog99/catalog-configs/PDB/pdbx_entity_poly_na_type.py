@@ -102,7 +102,7 @@ key_defs = [
     em.Key.define(['RID'], constraint_names=[['PDB', 'pdbx_entity_poly_na_type_RIDkey1']],
                   ),
     em.Key.define(
-        ['entity_id', 'structure_id', 'type'],
+        ['structure_id', 'type', 'entity_id'],
         constraint_names=[['PDB', 'pdbx_entity_poly_na_type_primary_key']],
     ),
 ]
@@ -127,9 +127,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'pdbx_entity_poly_na_type_type_fkey']],
     ),
     em.ForeignKey.define(
-        ['entity_id', 'structure_id'],
+        ['structure_id', 'entity_id'],
         'PDB',
-        'entity', ['id', 'structure_id'],
+        'entity', ['structure_id', 'id'],
         constraint_names=[['PDB', 'pdbx_entity_poly_na_type_entity_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

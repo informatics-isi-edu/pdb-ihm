@@ -275,7 +275,7 @@ visible_columns = {
 
 table_annotations = {chaise_tags.visible_columns: visible_columns, }
 
-table_comment = 'Point mutations in the sequence of the starting model'
+table_comment = 'Information regarding point mutations in the sequences of the starting models compared to the starting model in the reference database'
 
 table_acls = {}
 
@@ -283,7 +283,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['id', 'structure_id'],
+        ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_starting_model_seq_dif_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_starting_model_seq_dif_RIDkey1']],
@@ -317,9 +317,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['asym_id', 'structure_id'],
+        ['structure_id', 'asym_id'],
         'PDB',
-        'struct_asym', ['id', 'structure_id'],
+        'struct_asym', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_starting_model_seq_dif_asym_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -330,9 +330,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'seq_id', 'comp_id', 'entity_id'],
+        ['entity_id', 'seq_id', 'structure_id', 'comp_id'],
         'PDB',
-        'entity_poly_seq', ['structure_id', 'num', 'mon_id', 'entity_id'],
+        'entity_poly_seq', ['entity_id', 'num', 'structure_id', 'mon_id'],
         constraint_names=[['PDB', 'ihm_starting_model_seq_dif_mm_poly_res_label_fkey']],
         annotations={
             chaise_tags.foreign_key: {

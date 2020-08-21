@@ -241,7 +241,7 @@ visible_columns = {
 
 table_annotations = {chaise_tags.visible_columns: visible_columns, }
 
-table_comment = 'Details of atomic features of polymeric entities'
+table_comment = 'Details of atomic features in polymeric entities'
 
 table_acls = {}
 
@@ -287,13 +287,19 @@ fkey_defs = [
         'PDB',
         'entity_poly_seq', ['structure_id', 'num', 'mon_id', 'entity_id'],
         constraint_names=[['PDB', 'ihm_poly_atom_feature_mm_poly_res_label_fkey']],
+        annotations={
+            chaise_tags.foreign_key: {
+                'template_engine': 'handlebars',
+                'domain_filter_pattern': '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}'
+            }
+        },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'asym_id'],
+        ['asym_id', 'structure_id'],
         'PDB',
-        'struct_asym', ['structure_id', 'id'],
+        'struct_asym', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_poly_atom_feature_asym_id_fk']],
         annotations={
             chaise_tags.foreign_key: {
@@ -304,9 +310,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['Asym_RID', 'asym_id'],
+        ['asym_id', 'Asym_RID'],
         'PDB',
-        'struct_asym', ['RID', 'id'],
+        'struct_asym', ['id', 'RID'],
         constraint_names=[['PDB', 'ihm_poly_atom_feature_asym_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

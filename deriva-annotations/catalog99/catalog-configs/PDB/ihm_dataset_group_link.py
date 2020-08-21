@@ -112,7 +112,7 @@ visible_columns = {
 
 table_annotations = {chaise_tags.visible_columns: visible_columns, }
 
-table_comment = 'List of datasets in a group'
+table_comment = 'Table to link input datasets with the dataset groups'
 
 table_acls = {}
 
@@ -120,7 +120,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['group_id', 'structure_id', 'dataset_list_id'],
+        ['structure_id', 'group_id', 'dataset_list_id'],
         constraint_names=[['PDB', 'ihm_dataset_group_link_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_dataset_group_link_RIDkey1']],
@@ -141,9 +141,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_dataset_group_link_RCB_fkey']],
     ),
     em.ForeignKey.define(
-        ['dataset_list_id', 'structure_id'],
+        ['structure_id', 'dataset_list_id'],
         'PDB',
-        'ihm_dataset_list', ['id', 'structure_id'],
+        'ihm_dataset_list', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_dataset_group_link_dataset_list_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

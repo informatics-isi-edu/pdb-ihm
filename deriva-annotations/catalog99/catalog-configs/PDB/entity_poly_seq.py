@@ -129,7 +129,7 @@ table_annotations = {
     chaise_tags.visible_foreign_keys: visible_foreign_keys,
 }
 
-table_comment = None
+table_comment = 'Sequence of monomers in polymeric entities'
 
 table_acls = {}
 
@@ -137,7 +137,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['entity_id', 'structure_id', 'mon_id', 'num'],
+        ['num', 'structure_id', 'mon_id', 'entity_id'],
         constraint_names=[['PDB', 'entity_poly_seq_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'entity_poly_seq_RIDkey1']],
@@ -147,11 +147,11 @@ key_defs = [
         constraint_names=[['PDB', 'entity_poly_seq_RID_structure_id_key']],
     ),
     em.Key.define(
-        ['structure_id', 'RID', 'mon_id', 'num', 'entity_id'],
+        ['structure_id', 'RID', 'entity_id', 'mon_id', 'num'],
         constraint_names=[['PDB', 'entity_poly_seq_combo1_key']],
     ),
     em.Key.define(
-        ['entity_id', 'RID', 'mon_id', 'num'],
+        ['num', 'entity_id', 'RID', 'mon_id'],
         constraint_names=[['PDB', 'entity_poly_seq_combo2_key']],
     ),
 ]
@@ -176,9 +176,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'entity_poly_seq_hetero_fkey']],
     ),
     em.ForeignKey.define(
-        ['structure_id', 'entity_id'],
+        ['entity_id', 'structure_id'],
         'PDB',
-        'entity_poly', ['structure_id', 'entity_id'],
+        'entity_poly', ['entity_id', 'structure_id'],
         constraint_names=[['PDB', 'entity_poly_seq_entity_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -189,9 +189,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['mon_id', 'structure_id'],
+        ['structure_id', 'mon_id'],
         'PDB',
-        'chem_comp', ['id', 'structure_id'],
+        'chem_comp', ['structure_id', 'id'],
         constraint_names=[['PDB', 'entity_poly_seq_mon_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

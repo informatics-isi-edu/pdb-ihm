@@ -270,7 +270,7 @@ table_annotations = {
     chaise_tags.visible_foreign_keys: visible_foreign_keys,
 }
 
-table_comment = 'Starting structural models used in integrative modeling'
+table_comment = 'Information regarding starting structural models used in the integrative modeling study'
 
 table_acls = {}
 
@@ -278,7 +278,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['structure_id', 'starting_model_id'],
+        ['starting_model_id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_starting_model_details_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_starting_model_details_RIDkey1']],
@@ -309,9 +309,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_starting_model_details_starting_model_source_fkey']],
     ),
     em.ForeignKey.define(
-        ['structure_id', 'asym_id'],
+        ['asym_id', 'structure_id'],
         'PDB',
-        'struct_asym', ['structure_id', 'id'],
+        'struct_asym', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_starting_model_details_asym_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -361,9 +361,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['entity_poly_segment_id', 'Entity_poly_segment_RID'],
+        ['Entity_poly_segment_RID', 'entity_poly_segment_id'],
         'PDB',
-        'ihm_entity_poly_segment', ['id', 'RID'],
+        'ihm_entity_poly_segment', ['RID', 'id'],
         constraint_names=[['PDB', 'ihm_starting_model_details_entity_poly_segment_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

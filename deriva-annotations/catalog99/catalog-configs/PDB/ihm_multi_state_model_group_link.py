@@ -131,7 +131,7 @@ visible_columns = {
 
 table_annotations = {chaise_tags.visible_columns: visible_columns, }
 
-table_comment = 'List of models groups belonging to a particular state'
+table_comment = 'List of model groups belonging to a particular state'
 
 table_acls = {}
 
@@ -161,9 +161,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_multi_state_model_group_link_RMB_fkey']],
     ),
     em.ForeignKey.define(
-        ['structure_id', 'model_group_id'],
+        ['model_group_id', 'structure_id'],
         'PDB',
-        'ihm_model_group', ['structure_id', 'id'],
+        'ihm_model_group', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_multi_state_model_group_link_model_group_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -174,9 +174,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'state_id'],
+        ['state_id', 'structure_id'],
         'PDB',
-        'ihm_multi_state_modeling', ['structure_id', 'state_id'],
+        'ihm_multi_state_modeling', ['state_id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_multi_state_model_group_link_state_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

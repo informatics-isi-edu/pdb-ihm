@@ -208,9 +208,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_non_poly_feature_RCB_fkey']],
     ),
     em.ForeignKey.define(
-        ['structure_id', 'feature_id'],
+        ['feature_id', 'structure_id'],
         'PDB',
-        'ihm_feature_list', ['structure_id', 'feature_id'],
+        'ihm_feature_list', ['feature_id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_non_poly_feature_feature_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -234,9 +234,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['comp_id', 'structure_id'],
+        ['structure_id', 'comp_id'],
         'PDB',
-        'chem_comp', ['id', 'structure_id'],
+        'chem_comp', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_non_poly_feature_comp_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -260,9 +260,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['asym_id', 'Asym_RID'],
+        ['Asym_RID', 'asym_id'],
         'PDB',
-        'struct_asym', ['id', 'RID'],
+        'struct_asym', ['RID', 'id'],
         constraint_names=[['PDB', 'ihm_non_poly_feature_asym_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

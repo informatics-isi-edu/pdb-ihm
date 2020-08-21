@@ -354,7 +354,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['structure_id', 'ordinal_id'],
+        ['ordinal_id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_poly_residue_feature_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_poly_residue_feature_RIDkey1']],
@@ -393,9 +393,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_poly_residue_feature_interface_residue_flag_fkey']],
     ),
     em.ForeignKey.define(
-        ['comp_id_end', 'seq_id_end', 'structure_id', 'entity_id'],
+        ['structure_id', 'comp_id_end', 'seq_id_end', 'entity_id'],
         'PDB',
-        'entity_poly_seq', ['mon_id', 'num', 'structure_id', 'entity_id'],
+        'entity_poly_seq', ['structure_id', 'mon_id', 'num', 'entity_id'],
         constraint_names=[['PDB', 'ihm_poly_residue_feature_mm_poly_res_label_end_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -408,22 +408,23 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'feature_id'],
+        ['feature_id', 'structure_id'],
         'PDB',
-        'ihm_feature_list', ['structure_id', 'feature_id'],
+        'ihm_feature_list', ['feature_id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_poly_residue_feature_feature_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
-                'domain_filter_pattern': 'structure_id={{structure_id}}'
+                'template_engine': 'handlebars',
+                'domain_filter_pattern': '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}'
             }
         },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['comp_id_begin', 'entity_id', 'seq_id_begin', 'structure_id'],
+        ['seq_id_begin', 'structure_id', 'entity_id', 'comp_id_begin'],
         'PDB',
-        'entity_poly_seq', ['mon_id', 'entity_id', 'num', 'structure_id'],
+        'entity_poly_seq', ['num', 'structure_id', 'entity_id', 'mon_id'],
         constraint_names=[['PDB', 'ihm_poly_residue_feature_mm_poly_res_label_begin_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -436,9 +437,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'asym_id'],
+        ['asym_id', 'structure_id'],
         'PDB',
-        'struct_asym', ['structure_id', 'id'],
+        'struct_asym', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_poly_residue_feature_asym_id_fk']],
         annotations={
             chaise_tags.foreign_key: {

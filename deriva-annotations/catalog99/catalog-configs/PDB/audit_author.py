@@ -86,7 +86,7 @@ key_defs = [
     em.Key.define(['RID'], constraint_names=[['PDB', 'audit_author_RIDkey1']],
                   ),
     em.Key.define(
-        ['structure_id', 'pdbx_ordinal'], constraint_names=[['PDB', 'audit_author_primary_key']],
+        ['pdbx_ordinal', 'structure_id'], constraint_names=[['PDB', 'audit_author_primary_key']],
     ),
 ]
 

@@ -245,9 +245,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_epr_restraint_fitting_state_fkey']],
     ),
     em.ForeignKey.define(
-        ['dataset_list_id', 'structure_id'],
+        ['structure_id', 'dataset_list_id'],
         'PDB',
-        'ihm_dataset_list', ['id', 'structure_id'],
+        'ihm_dataset_list', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_epr_restraint_dataset_list_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -297,9 +297,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['Fitting_method_citation_RID', 'fitting_method_citation_id'],
+        ['fitting_method_citation_id', 'Fitting_method_citation_RID'],
         'PDB',
-        'citation', ['RID', 'id'],
+        'citation', ['id', 'RID'],
         constraint_names=[['PDB', 'ihm_epr_restraint_fitting_method_citation_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

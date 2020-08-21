@@ -229,7 +229,7 @@ visible_columns = {
 
 table_annotations = {chaise_tags.visible_columns: visible_columns, }
 
-table_comment = None
+table_comment = 'Details of structural assemblies in the models submitted'
 
 table_acls = {}
 
@@ -258,9 +258,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_struct_assembly_details_RMB_fkey']],
     ),
     em.ForeignKey.define(
-        ['entity_id', 'structure_id'],
+        ['structure_id', 'entity_id'],
         'PDB',
-        'entity', ['id', 'structure_id'],
+        'entity', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_struct_assembly_details_entity_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -284,9 +284,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'parent_assembly_id'],
+        ['parent_assembly_id', 'structure_id'],
         'PDB',
-        'ihm_struct_assembly', ['structure_id', 'id'],
+        'ihm_struct_assembly', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_struct_assembly_details_parent_assembly_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -297,9 +297,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'assembly_id'],
+        ['assembly_id', 'structure_id'],
         'PDB',
-        'ihm_struct_assembly', ['structure_id', 'id'],
+        'ihm_struct_assembly', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_struct_assembly_details_assembly_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -310,9 +310,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['entity_poly_segment_id', 'structure_id'],
+        ['structure_id', 'entity_poly_segment_id'],
         'PDB',
-        'ihm_entity_poly_segment', ['id', 'structure_id'],
+        'ihm_entity_poly_segment', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_struct_assembly_details_entity_poly_segment_id_fk']],
         annotations={
             chaise_tags.foreign_key: {

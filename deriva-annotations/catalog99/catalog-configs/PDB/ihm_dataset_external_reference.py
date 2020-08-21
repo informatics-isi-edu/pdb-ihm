@@ -142,7 +142,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['structure_id', 'id'],
+        ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_dataset_external_reference_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_dataset_external_reference_RIDkey1']],
@@ -163,9 +163,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_dataset_external_reference_RCB_fkey']],
     ),
     em.ForeignKey.define(
-        ['dataset_list_id', 'structure_id'],
+        ['structure_id', 'dataset_list_id'],
         'PDB',
-        'ihm_dataset_list', ['id', 'structure_id'],
+        'ihm_dataset_list', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_dataset_external_reference_dataset_list_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -176,9 +176,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'file_id'],
+        ['file_id', 'structure_id'],
         'PDB',
-        'ihm_external_files', ['structure_id', 'id'],
+        'ihm_external_files', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_dataset_external_reference_file_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

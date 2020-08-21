@@ -74,7 +74,7 @@ visible_columns = {
 
 table_annotations = {chaise_tags.visible_columns: visible_columns, }
 
-table_comment = None
+table_comment = 'Common names associated with the entities'
 
 table_acls = {}
 
@@ -82,7 +82,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['entity_id', 'structure_id'], constraint_names=[['PDB', 'entity_name_com_primary_key']],
+        ['structure_id', 'entity_id'], constraint_names=[['PDB', 'entity_name_com_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'entity_name_com_RIDkey1']],
                   ),
@@ -102,9 +102,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'entity_name_com_RCB_fkey']],
     ),
     em.ForeignKey.define(
-        ['entity_id', 'structure_id'],
+        ['structure_id', 'entity_id'],
         'PDB',
-        'entity', ['id', 'structure_id'],
+        'entity', ['structure_id', 'id'],
         constraint_names=[['PDB', 'entity_name_com_entity_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

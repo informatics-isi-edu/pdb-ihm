@@ -109,7 +109,7 @@ visible_columns = {
 
 table_annotations = {chaise_tags.visible_columns: visible_columns, }
 
-table_comment = 'Details of models belonging to model groups'
+table_comment = 'List of models belonging to a model group'
 
 table_acls = {}
 
@@ -117,7 +117,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['structure_id', 'group_id', 'model_id'],
+        ['model_id', 'structure_id', 'group_id'],
         constraint_names=[['PDB', 'ihm_model_group_link_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_model_group_link_RIDkey1']],
@@ -138,9 +138,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_model_group_link_RCB_fkey']],
     ),
     em.ForeignKey.define(
-        ['structure_id', 'model_id'],
+        ['model_id', 'structure_id'],
         'PDB',
-        'ihm_model_list', ['structure_id', 'model_id'],
+        'ihm_model_list', ['model_id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_model_group_link_model_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -151,9 +151,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'group_id'],
+        ['group_id', 'structure_id'],
         'PDB',
-        'ihm_model_group', ['structure_id', 'id'],
+        'ihm_model_group', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_model_group_link_group_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

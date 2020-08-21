@@ -183,7 +183,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['edge_id', 'structure_id', 'process_id'],
+        ['structure_id', 'edge_id', 'process_id'],
         constraint_names=[['PDB', 'ihm_ordered_ensemble_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_ordered_ensemble_RIDkey1']],
@@ -204,18 +204,30 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_ordered_ensemble_RMB_fkey']],
     ),
     em.ForeignKey.define(
-        ['model_group_id_begin', 'structure_id'],
+        ['structure_id', 'model_group_id_begin'],
         'PDB',
-        'ihm_model_group', ['id', 'structure_id'],
+        'ihm_model_group', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_ordered_ensemble_model_group_id_begin_fkey']],
+        annotations={
+            chaise_tags.foreign_key: {
+                'template_engine': 'handlebars',
+                'domain_filter_pattern': '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}'
+            }
+        },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['model_group_id_end', 'structure_id'],
+        ['structure_id', 'model_group_id_end'],
         'PDB',
-        'ihm_model_group', ['id', 'structure_id'],
+        'ihm_model_group', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_ordered_ensemble_model_group_id_end_fkey']],
+        annotations={
+            chaise_tags.foreign_key: {
+                'template_engine': 'handlebars',
+                'domain_filter_pattern': '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}'
+            }
+        },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),

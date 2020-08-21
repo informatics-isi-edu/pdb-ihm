@@ -214,7 +214,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['id', 'structure_id'],
+        ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_2dem_class_average_restraint_primary_key']],
     ),
     em.Key.define(

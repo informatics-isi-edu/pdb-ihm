@@ -94,7 +94,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['dict_name', 'structure_id', 'dict_version'],
+        ['dict_name', 'dict_version', 'structure_id'],
         constraint_names=[['PDB', 'audit_conform_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'audit_conform_RIDkey1']],

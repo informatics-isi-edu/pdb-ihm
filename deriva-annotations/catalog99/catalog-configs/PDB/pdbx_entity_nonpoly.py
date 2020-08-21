@@ -91,7 +91,7 @@ visible_columns = {
 
 table_annotations = {chaise_tags.visible_columns: visible_columns, }
 
-table_comment = None
+table_comment = 'Details of non-polymeric entities'
 
 table_acls = {}
 
@@ -146,9 +146,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['Comp_RID', 'comp_id'],
+        ['comp_id', 'Comp_RID'],
         'PDB',
-        'chem_comp', ['RID', 'id'],
+        'chem_comp', ['id', 'RID'],
         constraint_names=[['PDB', 'pdbx_entity_nonpoly_comp_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

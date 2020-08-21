@@ -25,7 +25,7 @@ column_annotations = {
 
 column_comment = {
     'structure_id': 'A reference to table entry.id.',
-    'citation_id': 'A reference to table citation.id.',
+    'citation_id': 'Citation corresponding to the software; a reference to the citation id in the citation table',
     'classification': 'type:text\nThe classification of the program according to its\n major function.\nexamples:data collection,data reduction,phasing,model building,refinement,validation,other',
     'description': 'type:text\nDescription of the software.\nexamples:Uses method of restrained least squares',
     'location': 'type:text\nThe URL for an Internet address at which\n details of the software can be found.\nexamples:http://rosebud.sdsc.edu/projects/pb/IUCr/software.html,ftp://ftp.sdsc.edu/pub/sdsc/biology/',
@@ -135,7 +135,7 @@ table_annotations = {
     chaise_tags.visible_foreign_keys: visible_foreign_keys,
 }
 
-table_comment = None
+table_comment = 'List of software used in the modeling'
 
 table_acls = {}
 
@@ -148,7 +148,7 @@ key_defs = [
     em.Key.define(['RID'], constraint_names=[['PDB', 'software_RIDkey1']],
                   ),
     em.Key.define(
-        ['pdbx_ordinal', 'RID'], constraint_names=[['PDB', 'software_RID_pdbx_ordinal_key']],
+        ['RID', 'pdbx_ordinal'], constraint_names=[['PDB', 'software_RID_pdbx_ordinal_key']],
     ),
 ]
 
@@ -184,6 +184,12 @@ fkey_defs = [
         'PDB',
         'citation', ['RID', 'id'],
         constraint_names=[['PDB', 'software_citation_id_fkey']],
+        annotations={
+            chaise_tags.foreign_key: {
+                'template_engine': 'handlebars',
+                'domain_filter_pattern': '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}'
+            }
+        },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),

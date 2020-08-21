@@ -408,22 +408,23 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_cross_link_list_linker_type_fkey']],
     ),
     em.ForeignKey.define(
-        ['dataset_list_id', 'structure_id'],
+        ['structure_id', 'dataset_list_id'],
         'PDB',
-        'ihm_dataset_list', ['id', 'structure_id'],
+        'ihm_dataset_list', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_cross_link_list_dataset_list_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
-                'domain_filter_pattern': 'structure_id={{structure_id}}'
+                'template_engine': 'handlebars',
+                'domain_filter_pattern': '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}'
             }
         },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['entity_id_1', 'seq_id_1', 'structure_id', 'comp_id_1'],
+        ['comp_id_1', 'structure_id', 'seq_id_1', 'entity_id_1'],
         'PDB',
-        'entity_poly_seq', ['entity_id', 'num', 'structure_id', 'mon_id'],
+        'entity_poly_seq', ['mon_id', 'structure_id', 'num', 'entity_id'],
         constraint_names=[['PDB', 'ihm_cross_link_list_mm_poly_res_label_1_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -436,9 +437,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['seq_id_2', 'comp_id_2', 'entity_id_2', 'structure_id'],
+        ['entity_id_2', 'comp_id_2', 'seq_id_2', 'structure_id'],
         'PDB',
-        'entity_poly_seq', ['num', 'mon_id', 'entity_id', 'structure_id'],
+        'entity_poly_seq', ['entity_id', 'mon_id', 'num', 'structure_id'],
         constraint_names=[['PDB', 'ihm_cross_link_list_mm_poly_res_label_2_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -464,9 +465,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['linker_chem_comp_descriptor_id', 'Linker_chem_comp_descriptor_RID'],
+        ['Linker_chem_comp_descriptor_RID', 'linker_chem_comp_descriptor_id'],
         'PDB',
-        'ihm_chemical_component_descriptor', ['id', 'RID'],
+        'ihm_chemical_component_descriptor', ['RID', 'id'],
         constraint_names=[['PDB', 'ihm_cross_link_list_linker_chem_comp_descriptor_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

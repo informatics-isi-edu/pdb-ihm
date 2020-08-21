@@ -165,7 +165,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['structure_id', 'id'],
+        ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_cross_link_result_parameters_primary_key']],
     ),
     em.Key.define(
@@ -187,9 +187,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_cross_link_result_parameters_RMB_fkey']],
     ),
     em.ForeignKey.define(
-        ['structure_id', 'model_id'],
+        ['model_id', 'structure_id'],
         'PDB',
-        'ihm_model_list', ['structure_id', 'model_id'],
+        'ihm_model_list', ['model_id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_cross_link_result_parameters_model_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -200,9 +200,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['restraint_id', 'structure_id'],
+        ['structure_id', 'restraint_id'],
         'PDB',
-        'ihm_cross_link_restraint', ['id', 'structure_id'],
+        'ihm_cross_link_restraint', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_cross_link_result_parameters_restraint_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

@@ -187,9 +187,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['transformation_id', 'structure_id'],
+        ['structure_id', 'transformation_id'],
         'PDB',
-        'ihm_geometric_object_transformation', ['id', 'structure_id'],
+        'ihm_geometric_object_transformation', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_geometric_object_plane_transformation_id_fk']],
         annotations={
             chaise_tags.foreign_key: {

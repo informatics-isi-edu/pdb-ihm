@@ -143,7 +143,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['id', 'structure_id'],
+        ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_dataset_related_db_reference_primary_key']],
     ),
     em.Key.define(
@@ -171,9 +171,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_dataset_related_db_reference_db_name_fkey']],
     ),
     em.ForeignKey.define(
-        ['dataset_list_id', 'structure_id'],
+        ['structure_id', 'dataset_list_id'],
         'PDB',
-        'ihm_dataset_list', ['id', 'structure_id'],
+        'ihm_dataset_list', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_dataset_related_db_reference_dataset_list_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

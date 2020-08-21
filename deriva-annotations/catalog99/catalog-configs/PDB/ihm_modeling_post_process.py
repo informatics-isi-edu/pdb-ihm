@@ -276,7 +276,7 @@ table_annotations = {
     chaise_tags.visible_foreign_keys: visible_foreign_keys,
 }
 
-table_comment = 'Post processing of the resulting models from the modeling protocol'
+table_comment = 'Post processing of the resulting models from the modeling protocols'
 
 table_acls = {}
 
@@ -359,9 +359,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'dataset_group_id'],
+        ['dataset_group_id', 'structure_id'],
         'PDB',
-        'ihm_dataset_group', ['structure_id', 'id'],
+        'ihm_dataset_group', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_modeling_post_process_dataset_group_id_fk']],
         annotations={
             chaise_tags.foreign_key: {
@@ -385,9 +385,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['script_file_id', 'structure_id'],
+        ['structure_id', 'script_file_id'],
         'PDB',
-        'ihm_external_files', ['id', 'structure_id'],
+        'ihm_external_files', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_modeling_post_process_script_file_id_fk']],
         annotations={
             chaise_tags.foreign_key: {
@@ -411,9 +411,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['software_id', 'structure_id'],
+        ['structure_id', 'software_id'],
         'PDB',
-        'software', ['pdbx_ordinal', 'structure_id'],
+        'software', ['structure_id', 'pdbx_ordinal'],
         constraint_names=[['PDB', 'ihm_modeling_post_process_software_id_fk']],
         annotations={
             chaise_tags.foreign_key: {

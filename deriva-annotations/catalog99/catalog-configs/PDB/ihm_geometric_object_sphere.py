@@ -167,7 +167,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['object_id', 'structure_id'],
+        ['structure_id', 'object_id'],
         constraint_names=[['PDB', 'ihm_geometric_object_sphere_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_geometric_object_sphere_RIDkey1']],
@@ -188,9 +188,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_geometric_object_sphere_RCB_fkey']],
     ),
     em.ForeignKey.define(
-        ['object_id', 'structure_id'],
+        ['structure_id', 'object_id'],
         'PDB',
-        'ihm_geometric_object_list', ['object_id', 'structure_id'],
+        'ihm_geometric_object_list', ['structure_id', 'object_id'],
         constraint_names=[['PDB', 'ihm_geometric_object_sphere_object_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -201,9 +201,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['center_id', 'structure_id'],
+        ['structure_id', 'center_id'],
         'PDB',
-        'ihm_geometric_object_center', ['id', 'structure_id'],
+        'ihm_geometric_object_center', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_geometric_object_sphere_center_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -214,9 +214,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'transformation_id'],
+        ['transformation_id', 'structure_id'],
         'PDB',
-        'ihm_geometric_object_transformation', ['structure_id', 'id'],
+        'ihm_geometric_object_transformation', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_geometric_object_sphere_transformation_id_fk']],
         annotations={
             chaise_tags.foreign_key: {
@@ -227,9 +227,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['Transformation_RID', 'transformation_id'],
+        ['transformation_id', 'Transformation_RID'],
         'PDB',
-        'ihm_geometric_object_transformation', ['RID', 'id'],
+        'ihm_geometric_object_transformation', ['id', 'RID'],
         constraint_names=[['PDB', 'ihm_geometric_object_sphere_transformation_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

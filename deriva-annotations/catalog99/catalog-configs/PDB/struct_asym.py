@@ -146,7 +146,7 @@ table_annotations = {
     chaise_tags.visible_foreign_keys: visible_foreign_keys,
 }
 
-table_comment = None
+table_comment = 'Instances of entities, both polymeric and non-polymeric'
 
 table_acls = {}
 
@@ -157,7 +157,7 @@ key_defs = [
                   ),
     em.Key.define(['id', 'structure_id'], constraint_names=[['PDB', 'struct_asym_primary_key']],
                   ),
-    em.Key.define(['RID', 'id'], constraint_names=[['PDB', 'struct_asym_RID_id_key']],
+    em.Key.define(['id', 'RID'], constraint_names=[['PDB', 'struct_asym_RID_id_key']],
                   ),
 ]
 
@@ -187,9 +187,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'struct_asym_pdbx_blank_PDB_chainid_flag_fkey']],
     ),
     em.ForeignKey.define(
-        ['entity_id', 'structure_id'],
+        ['structure_id', 'entity_id'],
         'PDB',
-        'entity', ['id', 'structure_id'],
+        'entity', ['structure_id', 'id'],
         constraint_names=[['PDB', 'struct_asym_entity_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

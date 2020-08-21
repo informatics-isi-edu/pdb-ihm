@@ -134,7 +134,7 @@ key_defs = [
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_dataset_list_RIDkey1']],
                   ),
     em.Key.define(
-        ['structure_id', 'id'], constraint_names=[['PDB', 'ihm_dataset_list_primary_key']],
+        ['id', 'structure_id'], constraint_names=[['PDB', 'ihm_dataset_list_primary_key']],
     ),
 ]
 

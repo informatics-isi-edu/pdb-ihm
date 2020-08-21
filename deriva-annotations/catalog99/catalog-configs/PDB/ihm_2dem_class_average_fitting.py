@@ -222,7 +222,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['id', 'structure_id'],
+        ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_2dem_class_average_fitting_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_2dem_class_average_fitting_RIDkey1']],
@@ -243,9 +243,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_2dem_class_average_fitting_RMB_fkey']],
     ),
     em.ForeignKey.define(
-        ['model_id', 'structure_id'],
+        ['structure_id', 'model_id'],
         'PDB',
-        'ihm_model_list', ['model_id', 'structure_id'],
+        'ihm_model_list', ['structure_id', 'model_id'],
         constraint_names=[['PDB', 'ihm_2dem_class_average_fitting_model_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -256,9 +256,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'restraint_id'],
+        ['restraint_id', 'structure_id'],
         'PDB',
-        'ihm_2dem_class_average_restraint', ['structure_id', 'id'],
+        'ihm_2dem_class_average_restraint', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_2dem_class_average_fitting_restraint_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

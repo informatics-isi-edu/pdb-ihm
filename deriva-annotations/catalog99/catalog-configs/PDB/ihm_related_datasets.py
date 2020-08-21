@@ -142,7 +142,7 @@ key_defs = [
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_related_datasets_RIDkey1']],
                   ),
     em.Key.define(
-        ['dataset_list_id_derived', 'dataset_list_id_primary', 'structure_id'],
+        ['dataset_list_id_primary', 'dataset_list_id_derived', 'structure_id'],
         constraint_names=[['PDB', 'ihm_related_datasets_primary_key']],
     ),
 ]
@@ -161,18 +161,30 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_related_datasets_RMB_fkey']],
     ),
     em.ForeignKey.define(
-        ['structure_id', 'dataset_list_id_primary'],
+        ['dataset_list_id_primary', 'structure_id'],
         'PDB',
-        'ihm_dataset_list', ['structure_id', 'id'],
+        'ihm_dataset_list', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_related_datasets_dataset_list_id_primary_fkey']],
+        annotations={
+            chaise_tags.foreign_key: {
+                'template_engine': 'handlebars',
+                'domain_filter_pattern': '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}'
+            }
+        },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['structure_id', 'dataset_list_id_derived'],
+        ['dataset_list_id_derived', 'structure_id'],
         'PDB',
-        'ihm_dataset_list', ['structure_id', 'id'],
+        'ihm_dataset_list', ['id', 'structure_id'],
         constraint_names=[['PDB', 'ihm_related_datasets_dataset_list_id_derived_fkey']],
+        annotations={
+            chaise_tags.foreign_key: {
+                'template_engine': 'handlebars',
+                'domain_filter_pattern': '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}'
+            }
+        },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),

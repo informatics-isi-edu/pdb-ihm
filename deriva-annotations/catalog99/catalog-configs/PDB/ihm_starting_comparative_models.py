@@ -253,7 +253,7 @@ visible_columns = {
 
 table_annotations = {chaise_tags.visible_columns: visible_columns, }
 
-table_comment = 'Starting structural models that are comparative models'
+table_comment = 'Additional information regarding comparative models used as starting structural models'
 
 table_acls = {}
 
@@ -288,9 +288,9 @@ fkey_defs = [
         constraint_names=[['PDB', 'starting_comparative_models_template_sequence_id_denom_fkey']],
     ),
     em.ForeignKey.define(
-        ['starting_model_id', 'structure_id'],
+        ['structure_id', 'starting_model_id'],
         'PDB',
-        'ihm_starting_model_details', ['starting_model_id', 'structure_id'],
+        'ihm_starting_model_details', ['structure_id', 'starting_model_id'],
         constraint_names=[['PDB', 'ihm_starting_comparative_models_starting_model_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -301,9 +301,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['template_dataset_list_id', 'structure_id'],
+        ['structure_id', 'template_dataset_list_id'],
         'PDB',
-        'ihm_dataset_list', ['id', 'structure_id'],
+        'ihm_dataset_list', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_starting_comparative_models_template_dataset_list_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -327,9 +327,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['Alignment_file_RID', 'alignment_file_id'],
+        ['alignment_file_id', 'Alignment_file_RID'],
         'PDB',
-        'ihm_external_files', ['RID', 'id'],
+        'ihm_external_files', ['id', 'RID'],
         constraint_names=[['PDB', 'ihm_starting_comparative_models_alignment_file_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

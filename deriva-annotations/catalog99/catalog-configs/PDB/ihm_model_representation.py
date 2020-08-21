@@ -89,7 +89,7 @@ table_annotations = {
     chaise_tags.visible_foreign_keys: visible_foreign_keys,
 }
 
-table_comment = None
+table_comment = 'List of model representations used'
 
 table_acls = {}
 
@@ -97,7 +97,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['id', 'structure_id'],
+        ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_model_representation_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_model_representation_RIDkey1']],

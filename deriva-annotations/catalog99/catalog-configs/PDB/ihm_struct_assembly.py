@@ -97,7 +97,7 @@ table_annotations = {
     chaise_tags.visible_foreign_keys: visible_foreign_keys,
 }
 
-table_comment = None
+table_comment = 'List of structure assemblies in the models submitted'
 
 table_acls = {}
 
@@ -105,11 +105,11 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['structure_id', 'id'], constraint_names=[['PDB', 'ihm_struct_assembly_primary_key']],
+        ['id', 'structure_id'], constraint_names=[['PDB', 'ihm_struct_assembly_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_struct_assembly_RIDkey1']],
                   ),
-    em.Key.define(['id', 'RID'], constraint_names=[['PDB', 'ihm_struct_assembly_RID_id_key']],
+    em.Key.define(['RID', 'id'], constraint_names=[['PDB', 'ihm_struct_assembly_RID_id_key']],
                   ),
 ]
 

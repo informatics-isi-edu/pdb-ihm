@@ -235,7 +235,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['id', 'structure_id'],
+        ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_localization_density_files_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_localization_density_files_RIDkey1']],
@@ -269,9 +269,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['file_id', 'structure_id'],
+        ['structure_id', 'file_id'],
         'PDB',
-        'ihm_external_files', ['id', 'structure_id'],
+        'ihm_external_files', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_localization_density_files_file_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
@@ -282,9 +282,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['asym_id', 'structure_id'],
+        ['structure_id', 'asym_id'],
         'PDB',
-        'struct_asym', ['id', 'structure_id'],
+        'struct_asym', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_localization_density_files_asym_id_fk']],
         annotations={
             chaise_tags.foreign_key: {
@@ -321,9 +321,9 @@ fkey_defs = [
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['Entity_poly_segment_RID', 'entity_poly_segment_id'],
+        ['entity_poly_segment_id', 'Entity_poly_segment_RID'],
         'PDB',
-        'ihm_entity_poly_segment', ['RID', 'id'],
+        'ihm_entity_poly_segment', ['id', 'RID'],
         constraint_names=[['PDB', 'ihm_localization_density_files_entity_poly_segment_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {

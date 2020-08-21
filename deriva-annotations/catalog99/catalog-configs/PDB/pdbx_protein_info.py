@@ -94,7 +94,7 @@ table_acl_bindings = {}
 
 key_defs = [
     em.Key.define(
-        ['id', 'structure_id'], constraint_names=[['PDB', 'pdbx_protein_info_primary_key']],
+        ['structure_id', 'id'], constraint_names=[['PDB', 'pdbx_protein_info_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'pdbx_protein_info_RIDkey1']],
                   ),
