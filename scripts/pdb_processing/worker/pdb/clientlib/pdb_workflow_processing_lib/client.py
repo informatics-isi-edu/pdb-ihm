@@ -267,12 +267,14 @@ class PDBClient (object):
 
         results = path.entities()
         results.fetch()
-        mmCIF_File_URL = results[0]['mmCIF_File_URL']
+        file_url = results[0]['mmCIF_File_URL']
+        filename = results[0]['mmCIF_File_Name']
         entry_id = results[0]['id']
         creation_time = results[0]['RCT']
         year = parse(creation_time).strftime("%Y")
         
-        hatracFile = '{}/_{}.cif'.format(self.scratch, entry_id)
+        #hatracFile = '{}/_{}.cif'.format(self.scratch, entry_id)
+        hatracFile = self.getOutputCIF(file_url, filename)
         tables = self.export_tables
         output = '{}/{}.cif'.format(self.scratch, entry_id)
         fw = open(output, 'w')
@@ -396,7 +398,7 @@ class PDBClient (object):
                 return 1
 
         def exportCIF():
-            self.store.get_obj(mmCIF_File_URL, destfilename=hatracFile)
+            #self.store.get_obj(mmCIF_File_URL, destfilename=hatracFile)
             
             fr = open(hatracFile, 'r')
             lines = fr.readlines()
@@ -500,7 +502,7 @@ class PDBClient (object):
         new_uri = '/hatrac/pdb/entry_mmCIF/%s/%s' % (year, urlquote(hexa_md5))
         
         """
-        Store the images in hatrac if they are not already
+        Store the mmCIF in hatrac if they are not already
         """
         hatrac_URI = None
         try:
@@ -1005,7 +1007,7 @@ class PDBClient (object):
             Insert the data
             """
             try:
-                res = table.insert(entities)
+                res = table.insert(entities).fetch()
                 inserted_records.append({'name': tname, 'rows': res})
                 inserted_rows = len(entities)
                 self.logger.debug('File {}: inserted {} rows into table {}'.format(fpath, inserted_rows, tname))
@@ -1079,14 +1081,30 @@ class PDBClient (object):
                             self.logger.debug('Table "%s" has not the column "%s".' % (tname, column))
                         entity[column] = ''
                         
+                    """
+                    Columns types:
+                        ermrest_rid
+                        ermrest_rct
+                        ermrest_rmt
+                        ermrest_rcb
+                        ermrest_rmb
+                        ermrest_curie
+                        ermrest_uri
+                        text
+                        markdown
+                        text[]
+                        int4
+                        float4
+                        int8
+                    """
                     if entity[column] == '':
                         """
                         Any empty value will be treated as NULL
                         """
                         del entity[column]
-                    elif column_definitions[column].type['typename'] == 'jsonb':
+                    elif column_definitions[column]._wrapped_column.type.typename == 'jsonb':
                         entity[column] = json.loads(entity[column])
-                    elif column_definitions[column].type['typename'].endswith('[]'):
+                    elif column_definitions[column]._wrapped_column.type.typename.endswith('[]'):
                         entity[column] = entity[column][1:-1].split(',')
                 
                 """
@@ -1198,6 +1216,8 @@ class PDBClient (object):
                 ref_other_column_name = fk['ref_other_column_name']
                 if ref_other_column_name not in row.keys():
                     continue
+                if fk_other_column_name not in row.keys():
+                    continue
                 fk_other_value = row[fk_other_column_name]
                 if type(fk_other_value).__name__ == 'str':
                     fk_other_value = urlquote(fk_other_value)
@@ -1217,3 +1237,45 @@ class PDBClient (object):
 
         return row
 
+    """
+    Get the output.cif file
+    """
+    def getOutputCIF(self, file_url, filename):
+        try:
+            """
+            Apply make-mmcif.py
+            """
+            hatracFile = '{}/{}'.format(self.make_mmCIF, filename)
+            self.store.get_obj(file_url, destfilename=hatracFile)
+            currentDirectory=os.getcwd()
+            os.chdir('{}'.format(self.make_mmCIF))
+            args = [self.python_bin, 'make-mmcif.py', filename]
+            self.logger.debug('Running "{}" from the {} directory'.format(' '.join(args), self.make_mmCIF)) 
+            p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdoutdata, stderrdata = p.communicate()
+            returncode = p.returncode
+            os.chdir(currentDirectory)
+            
+            if returncode != 0:
+                self.logger.error('Can not make mmCIF for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (filename, stdoutdata, stderrdata)) 
+                self.sendMail('FAILURE PDB', 'Can not make mmCIF for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (filename, stdoutdata, stderrdata))
+                os.remove('{}/{}'.format(self.make_mmCIF, filename))
+                return None
+            
+            os.remove('{}/{}'.format(self.make_mmCIF, filename))
+            
+            """
+            Move the output.cif file to the scratch directory
+            """
+            shutil.move('{}/output.cif'.format(self.make_mmCIF), '{}/'.format(self.scratch))
+            self.logger.debug('File {} was moved to the {} directory'.format('{}/output.cif'.format(self.make_mmCIF), '{}/rcsb/db/tests-validate/test-output/ihm-files/'.format(self.py_rcsb_db))) 
+        except:
+            et, ev, tb = sys.exc_info()
+            self.logger.error('got unexpected exception "%s"' % str(ev))
+            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+            self.sendMail('FAILURE PDB: Export make-mmcif.py', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+            os.chdir(currentDirectory)
+            
+        return '{}/output.cif'.format(self.scratch)
+            
+        
