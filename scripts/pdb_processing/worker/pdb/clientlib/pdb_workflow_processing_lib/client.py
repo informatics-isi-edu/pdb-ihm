@@ -281,6 +281,7 @@ class PDBClient (object):
         
         mmCIF_export = self.cif_tables
         pks_map = self.export_order_by
+        matrix_tables = ['ihm_2dem_class_average_fitting', 'ihm_geometric_object_transformation']
 
         def writeLine(line, loopLine=None):
             table_name = line[1:].split('.')[0]
@@ -291,7 +292,21 @@ class PDBClient (object):
             if table_name not in deriva_tables and table_name in mmCIF_export:
                 if loopLine != None:
                     fw.write('{}\n'.format(loopLine))
-                fw.write('{}'.format(line))
+                if table_name in matrix_tables:
+                    try:
+                        columns = line.split()
+                        new_columns = []
+                        for column in columns:
+                            try:
+                                r = re.search('(.*)[_]matrix[_]([0-9]+)[_]([0-9]+)$', column)
+                                new_columns.append('{}_matrix[{}][{}]'.format(r.group(1),r.group(2),r.group(3)))
+                            except:
+                                new_columns.append(column)
+                        fw.write('{}\n'.format(' '.join(new_columns)))
+                    except:
+                        fw.write('{}'.format(line))
+                else:
+                    fw.write('{}'.format(line))
                 return True
             else:
                 return False
