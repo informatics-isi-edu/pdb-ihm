@@ -4,7 +4,13 @@ from deriva.utils.catalog.manage.update_catalog import CatalogUpdater, parse_arg
 from deriva.core.ermrest_config import tag as chaise_tags
 import deriva.core.ermrest_model as em
 
-groups = {}
+groups = {
+    'pdb-reader': 'https://auth.globus.org/8875a770-3c40-11e9-a8c8-0ee7d80087ee',
+    'pdb-writer': 'https://auth.globus.org/c94a1e5c-3c40-11e9-a5d1-0aacc65bfe9a',
+    'pdb-admin': 'https://auth.globus.org/0b98092c-3c41-11e9-a8c8-0ee7d80087ee',
+    'pdb-curator': 'https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6',
+    'isrd-staff': 'https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b'
+}
 
 bulk_upload = {
     'asset_mappings': [
@@ -831,10 +837,10 @@ chaise_config = {
 catalog_config = {
     'name': 'pdb',
     'groups': {
-        'admin': 'https://auth.globus.org/0b98092c-3c41-11e9-a8c8-0ee7d80087ee',
-        'reader': 'https://auth.globus.org/8875a770-3c40-11e9-a8c8-0ee7d80087ee',
-        'writer': 'https://auth.globus.org/c94a1e5c-3c40-11e9-a5d1-0aacc65bfe9a',
-        'curator': 'https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6'
+        'admin': groups['pdb-admin'],
+        'reader': groups['pdb-reader'],
+        'writer': groups['pdb-writer'],
+        'curator': groups['pdb-curator']
     }
 }
 
@@ -844,7 +850,16 @@ annotations = {
     chaise_tags.catalog_config: catalog_config,
 }
 
-acls = {}
+acls = {
+    'update': [groups['pdb-curator']],
+    'insert': [groups['pdb-curator'], groups['pdb-writer']],
+    'create': [],
+    'select': [groups['pdb-writer'], groups['pdb-reader']],
+    'delete': [groups['pdb-curator']],
+    'write': [],
+    'owner': [groups['pdb-admin'], groups['isrd-staff']],
+    'enumerate': ['*']
+}
 
 
 def main(catalog, mode, replace=False):

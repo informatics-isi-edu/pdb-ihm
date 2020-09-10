@@ -4,7 +4,14 @@ import deriva.core.ermrest_model as em
 from deriva.core.ermrest_config import tag as chaise_tags
 from deriva.utils.catalog.manage.update_catalog import CatalogUpdater, parse_args
 
-groups = {}
+groups = {
+    'pdb-reader': 'https://auth.globus.org/8875a770-3c40-11e9-a8c8-0ee7d80087ee',
+    'pdb-writer': 'https://auth.globus.org/c94a1e5c-3c40-11e9-a5d1-0aacc65bfe9a',
+    'pdb-admin': 'https://auth.globus.org/0b98092c-3c41-11e9-a8c8-0ee7d80087ee',
+    'pdb-curator': 'https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6',
+    'isrd-staff': 'https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b',
+    'pdb-submitter': 'https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1'
+}
 
 table_name = 'ihm_dataset_external_reference'
 
@@ -51,6 +58,8 @@ column_defs = [
     em.Column.define('Owner', em.builtin_types['text'], comment=column_comment['Owner'],
                      ),
 ]
+
+display = {'name': 'Links Between External Files and Input Datasets'}
 
 visible_columns = {
     '*': [
@@ -132,17 +141,72 @@ visible_columns = {
     ]
 }
 
-table_annotations = {chaise_tags.visible_columns: visible_columns, }
+table_annotations = {chaise_tags.display: display, chaise_tags.visible_columns: visible_columns, }
 
 table_comment = 'External files that correspond to input datasets'
 
-table_acls = {}
+table_acls = {
+    'owner': [groups['pdb-admin'], groups['isrd-staff']],
+    'write': [],
+    'delete': [groups['pdb-curator']],
+    'insert': [groups['pdb-curator'], groups['pdb-writer'], groups['pdb-submitter']],
+    'select': [groups['pdb-writer'], groups['pdb-reader']],
+    'update': [groups['pdb-curator']],
+    'enumerate': ['*']
+}
 
-table_acl_bindings = {}
+table_acl_bindings = {
+    'released_reader': {
+        'types': ['select'],
+        'scope_acl': [groups['pdb-submitter']],
+        'projection': [
+            {
+                'outbound': ['PDB', 'ihm_dataset_external_reference_structure_id_fkey']
+            }, 'RCB'
+        ],
+        'projection_type': 'acl'
+    },
+    'self_service_group': {
+        'types': ['update', 'delete'],
+        'scope_acl': ['*'],
+        'projection': ['Owner'],
+        'projection_type': 'acl'
+    },
+    'self_service_creator': {
+        'types': ['update', 'delete'],
+        'scope_acl': [groups['pdb-submitter']],
+        'projection': [
+            {
+                'outbound': ['PDB', 'ihm_dataset_external_reference_structure_id_fkey']
+            }, {
+                'or': [
+                    {
+                        'filter': 'Workflow_Status',
+                        'operand': 'DRAFT',
+                        'operator': '='
+                    }, {
+                        'filter': 'Workflow_Status',
+                        'operand': 'DEPO',
+                        'operator': '='
+                    }, {
+                        'filter': 'Workflow_Status',
+                        'operand': 'RECORD READY',
+                        'operator': '='
+                    }, {
+                        'filter': 'Workflow_Status',
+                        'operand': 'ERROR',
+                        'operator': '='
+                    }
+                ]
+            }, 'RCB'
+        ],
+        'projection_type': 'acl'
+    }
+}
 
 key_defs = [
     em.Key.define(
-        ['id', 'structure_id'],
+        ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_dataset_external_reference_primary_key']],
     ),
     em.Key.define(['RID'], constraint_names=[['PDB', 'ihm_dataset_external_reference_RIDkey1']],
@@ -163,6 +227,36 @@ fkey_defs = [
         constraint_names=[['PDB', 'ihm_dataset_external_reference_RCB_fkey']],
     ),
     em.ForeignKey.define(
+        ['structure_id'],
+        'PDB',
+        'entry', ['id'],
+        constraint_names=[['PDB', 'ihm_dataset_external_reference_structure_id_fkey']],
+        acls={
+            'insert': ['*'],
+            'update': ['*']
+        },
+        on_update='CASCADE',
+        on_delete='CASCADE',
+    ),
+    em.ForeignKey.define(
+        ['Owner'],
+        'public',
+        'Catalog_Group', ['ID'],
+        constraint_names=[['PDB', 'ihm_dataset_external_reference_Owner_fkey']],
+        acls={
+            'insert': [groups['pdb-curator']],
+            'update': [groups['pdb-curator']]
+        },
+        acl_bindings={
+            'set_owner': {
+                'types': ['update', 'insert'],
+                'scope_acl': ['*'],
+                'projection': ['ID'],
+                'projection_type': 'acl'
+            }
+        },
+    ),
+    em.ForeignKey.define(
         ['structure_id', 'dataset_list_id'],
         'PDB',
         'ihm_dataset_list', ['structure_id', 'id'],
@@ -172,18 +266,26 @@ fkey_defs = [
                 'domain_filter_pattern': 'structure_id={{structure_id}}'
             }
         },
+        acls={
+            'insert': ['*'],
+            'update': ['*']
+        },
         on_update='CASCADE',
         on_delete='SET NULL',
     ),
     em.ForeignKey.define(
-        ['file_id', 'structure_id'],
+        ['structure_id', 'file_id'],
         'PDB',
-        'ihm_external_files', ['id', 'structure_id'],
+        'ihm_external_files', ['structure_id', 'id'],
         constraint_names=[['PDB', 'ihm_dataset_external_reference_file_id_fkey']],
         annotations={
             chaise_tags.foreign_key: {
                 'domain_filter_pattern': 'structure_id={{structure_id}}'
             }
+        },
+        acls={
+            'insert': ['*'],
+            'update': ['*']
         },
         on_update='CASCADE',
         on_delete='SET NULL',

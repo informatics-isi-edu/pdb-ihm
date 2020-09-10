@@ -12,7 +12,7 @@ groups = {
     'isrd-staff': 'https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b'
 }
 
-table_name = 'ERMrest_Client'
+table_name = 'ERMrest_Group'
 
 schema_name = 'public'
 
@@ -27,39 +27,57 @@ column_acl_bindings = {}
 column_defs = [
     em.Column.define('ID', em.builtin_types['text'], nullok=False,
                      ),
+    em.Column.define('URL', em.builtin_types['text'],
+                     ),
     em.Column.define(
         'Display_Name', em.builtin_types['text'], annotations=column_annotations['Display_Name'],
     ),
-    em.Column.define('Full_Name', em.builtin_types['text'],
-                     ),
-    em.Column.define('Email', em.builtin_types['text'],
-                     ),
-    em.Column.define('Client_Object', em.builtin_types['jsonb'], nullok=False,
+    em.Column.define('Description', em.builtin_types['text'],
                      ),
 ]
 
 generated = None
 
-visible_columns = {'*': ['ID', 'Full_Name', 'Email']}
-
-table_display = {'row_name': {'row_markdown_pattern': '{{{Full_Name}}}'}}
+visible_columns = {
+    '*': [
+        {
+            'source': 'Display_Name'
+        }, {
+            'source': 'ID'
+        }, {
+            'source': 'URL'
+        }, {
+            'source': 'Description'
+        }
+    ]
+}
 
 table_annotations = {
     chaise_tags.generated: generated,
-    chaise_tags.table_display: table_display,
     chaise_tags.visible_columns: visible_columns,
 }
 
 table_comment = None
 
-table_acls = {'delete': [], 'insert': [], 'select': ['*'], 'update': [], 'enumerate': []}
+table_acls = {
+    'delete': [],
+    'insert': [],
+    'select': [groups['pdb-writer'], groups['pdb-curator'], groups['pdb-admin']],
+    'update': [],
+    'enumerate': []
+}
 
 table_acl_bindings = {}
 
 key_defs = [
-    em.Key.define(['ID'], constraint_names=[['public', 'ERMrest_Client_ID_key']],
+    em.Key.define(
+        ['URL', 'ID', 'Display_Name', 'Description'],
+        constraint_names=[['public', 'ERMrest_Group_ID_URL_Display_Name_Description_key']],
+        comment='Group ID is unique.',
+    ),
+    em.Key.define(['ID'], constraint_names=[['public', 'ERMrest_Group_ID_key']],
                   ),
-    em.Key.define(['RID'], constraint_names=[['public', 'ERMrest_Client_pkey']],
+    em.Key.define(['RID'], constraint_names=[['public', 'ERMrest_Group_pkey']],
                   ),
 ]
 
