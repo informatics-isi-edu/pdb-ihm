@@ -6,8 +6,9 @@ def table_annotations(model):
     #table.comment = "List of software used in the modeling"
     #table.column_definitions["Species_Tested_In"].comment = None
 
+    model.table("PDB", "entry").annotations.update({"tag:misd.isi.edu,2015:display": {"name": "Entry"}})
     model.table("PDB", "Entry_mmCIF_File").annotations.update({"tag:misd.isi.edu,2015:display": {"name": "System Generated mmCIF File"}})
-    model.table("PDB", "struct").annotations.update({"tag:misd.isi.edu,2015:display": {"name": "Structure"}})
+    model.table("PDB", "struct").annotations.update({"tag:misd.isi.edu,2015:display": {"name": "Details about the Structure"}})
     model.table("PDB", "audit_author").annotations.update({"tag:misd.isi.edu,2015:display": {"name": "Authors of the Structure"}})
     model.table("PDB", "citation_author").annotations.update({"tag:misd.isi.edu,2015:display": {"name": "Authors in Citations"}})
     model.table("PDB", "chem_comp").annotations.update({"tag:misd.isi.edu,2015:display": {"name": "Chemical Components"}})
