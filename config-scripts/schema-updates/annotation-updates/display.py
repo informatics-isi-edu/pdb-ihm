@@ -8,9 +8,11 @@ def table_annotations(model):
 
     model.table("PDB", "entry").annotations.update({"tag:misd.isi.edu,2015:display": {"name": "Entry"}})
     model.table("PDB", "Entry_mmCIF_File").annotations.update({"tag:misd.isi.edu,2015:display": {"name": "System Generated mmCIF File"}})
-    model.table("PDB", "struct").annotations.update({"tag:misd.isi.edu,2015:display": {"name": "Details about the Structure"}})
-    model.table("PDB", "audit_author").annotations.update({"tag:misd.isi.edu,2015:display": {"name": "Authors of the Structure"}})
+    model.table("PDB", "struct").annotations.update({"tag:misd.isi.edu,2015:display": {"name": "Details about the Structural Models Submitted"}})
+    model.table("PDB", "audit_author").annotations.update({"tag:misd.isi.edu,2015:display": {"name": "Authors"}})
+    model.table("PDB", "citation").annotations.update({"tag:misd.isi.edu,2015:display": {"name": "Citations"}})
     model.table("PDB", "citation_author").annotations.update({"tag:misd.isi.edu,2015:display": {"name": "Authors in Citations"}})
+    model.table("PDB", "software").annotations.update({"tag:misd.isi.edu,2015:display": {"name": "Software"}})
     model.table("PDB", "chem_comp").annotations.update({"tag:misd.isi.edu,2015:display": {"name": "Chemical Components"}})
     model.table("PDB", "entity").annotations.update({"tag:misd.isi.edu,2015:display": {"name": "Molecular Entities"}})
     model.table("PDB", "entity_name_com").annotations.update({"tag:misd.isi.edu,2015:display": {"name": "Common Names of Entities"}})
