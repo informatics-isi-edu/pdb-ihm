@@ -199,10 +199,10 @@ class PDBClient (object):
         """
         Load data from the csv/tsv files
         """
-        url = '/attribute/%s:%s/RID=%s/Vocab:File_Type/Name' % (urlquote(schema), urlquote(table), urlquote(rid))
+        url = '/attribute/%s:%s/RID=%s/Vocab:File_Type/Table_Name' % (urlquote(schema), urlquote(table), urlquote(rid))
         resp = self.catalog.get(url)
         resp.raise_for_status()
-        tname = resp.json()[0]['Name']
+        tname = resp.json()[0]['Table_Name']
 
         url = '/attribute/%s:%s/RID=%s/Vocab:File_Format/Name' % (urlquote(schema), urlquote(table), urlquote(rid))
         resp = self.catalog.get(url)
