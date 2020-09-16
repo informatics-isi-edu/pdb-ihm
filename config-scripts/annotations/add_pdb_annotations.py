@@ -43,6 +43,8 @@ for v in dump_annotations['column_annotations']:
 for v in dump_annotations['table_annotations']:
     if v['schema'] == 'PDB':
         target_annotations['table_annotations'].append(v)
+    elif v['schema'] == 'Vocab' and v['uri'] == 'tag:isrd.isi.edu,2016:visible-columns':
+        target_annotations['table_annotations'].append(v)
         
 fp = open(output, 'w')
 json.dump(target_annotations, fp, indent=4)

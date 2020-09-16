@@ -18424,6 +18424,1995 @@
                     "Description"
                 ]
             }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_geometric_object_plane_plane_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_geometric_object_plane_plane_type_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_geometric_object_plane_plane_type_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_geometric_object_plane_plane_type_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "chem_comp_atom_pdbx_leaving_atom_flag",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "entity_poly_nstd_monomer",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_derived_distance_restraint_group_conditionality",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "rived_distance_restraint_group_conditionality_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "rived_distance_restraint_group_conditionality_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "rived_distance_restraint_group_conditionality_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_sas_restraint_profile_segment_flag",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_sas_restraint_profile_segment_flag_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_sas_restraint_profile_segment_flag_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_sas_restraint_profile_segment_flag_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_probe_list_probe_link_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_probe_list_probe_link_type_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_probe_list_probe_link_type_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_probe_list_probe_link_type_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_dataset_related_db_reference_db_name",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_dataset_related_db_reference_db_name_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_dataset_related_db_reference_db_name_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_dataset_related_db_reference_db_name_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "chem_comp_mon_nstd_flag",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_feature_list_entity_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_feature_list_entity_type_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_feature_list_entity_type_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_feature_list_entity_type_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "entity_poly_nstd_linkage",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_cross_link_restraint_restraint_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_cross_link_restraint_restraint_type_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_cross_link_restraint_restraint_type_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_cross_link_restraint_restraint_type_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_sas_restraint_fitting_state",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_sas_restraint_fitting_state_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_sas_restraint_fitting_state_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_sas_restraint_fitting_state_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_predicted_contact_restraint_rep_atom_2",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_predicted_contact_restraint_rep_atom_2_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_predicted_contact_restraint_rep_atom_2_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_predicted_contact_restraint_rep_atom_2_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "entity_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_predicted_contact_restraint_model_granularity",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "predicted_contact_restraint_model_granularity_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "predicted_contact_restraint_model_granularity_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "predicted_contact_restraint_model_granularity_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "File_Format",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "File_Format_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "File_Format_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "File_Format_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_probe_list_probe_origin",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_probe_list_probe_origin_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_probe_list_probe_origin_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_probe_list_probe_origin_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_poly_residue_feature_rep_atom",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_poly_residue_feature_rep_atom_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_poly_residue_feature_rep_atom_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_poly_residue_feature_rep_atom_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "geometric_object_distance_restraint_object_character",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ject_distance_restraint_object_characteristic_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ject_distance_restraint_object_characteristic_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ject_distance_restraint_object_characteristic_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_ensemble_info_ensemble_clustering_feature",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_ensemble_info_ensemble_clustering_feature_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_ensemble_info_ensemble_clustering_feature_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_ensemble_info_ensemble_clustering_feature_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_cross_link_list_linker_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_cross_link_list_linker_type_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_cross_link_list_linker_type_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_cross_link_list_linker_type_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_modeling_protocol_details_multi_state_flag",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "hm_modeling_protocol_details_multi_state_flag_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "hm_modeling_protocol_details_multi_state_flag_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "hm_modeling_protocol_details_multi_state_flag_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_epr_restraint_fitting_state",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_epr_restraint_fitting_state_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_epr_restraint_fitting_state_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_epr_restraint_fitting_state_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_cross_link_restraint_model_granularity",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_cross_link_restraint_model_granularity_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_cross_link_restraint_model_granularity_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_cross_link_restraint_model_granularity_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_3dem_restraint_map_segment_flag",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_3dem_restraint_map_segment_flag_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_3dem_restraint_map_segment_flag_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_3dem_restraint_map_segment_flag_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "entity_poly_nstd_chirality",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "geometric_object_distance_restraint_group_condition",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "bject_distance_restraint_group_conditionality_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "bject_distance_restraint_group_conditionality_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "bject_distance_restraint_group_conditionality_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "chem_comp_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_external_files_content_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_external_files_content_type_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_external_files_content_type_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_external_files_content_type_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_modeling_post_process_feature",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_modeling_post_process_feature_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_modeling_post_process_feature_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_modeling_post_process_feature_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "chem_comp_atom_pdbx_polymer_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_modeling_protocol_details_ensemble_flag",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_modeling_protocol_details_ensemble_flag_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_modeling_protocol_details_ensemble_flag_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_modeling_protocol_details_ensemble_flag_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "entity_poly_pdbx_sequence_evidence_code",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "chem_comp_atom_substruct_code",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_poly_probe_conjugate_ambiguous_stoichiometry_flag",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "_probe_conjugate_ambiguous_stoichiometry_flag_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "_probe_conjugate_ambiguous_stoichiometry_flag_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "_probe_conjugate_ambiguous_stoichiometry_flag_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "struct_asym_pdbx_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_derived_distance_restraint_restraint_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_derived_distance_restraint_restraint_type_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_derived_distance_restraint_restraint_type_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_derived_distance_restraint_restraint_type_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_geometric_object_list_object_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_geometric_object_list_object_type_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_geometric_object_list_object_type_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_geometric_object_list_object_type_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_residues_not_modeled_reason",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_residues_not_modeled_reason_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_residues_not_modeled_reason_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_residues_not_modeled_reason_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_model_representation_details_model_granularity",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "odel_representation_details_model_granularity_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "odel_representation_details_model_granularity_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "odel_representation_details_model_granularity_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_modeling_protocol_details_multi_scale_flag",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "hm_modeling_protocol_details_multi_scale_flag_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "hm_modeling_protocol_details_multi_scale_flag_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "hm_modeling_protocol_details_multi_scale_flag_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_predicted_contact_restraint_restraint_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "hm_predicted_contact_restraint_restraint_type_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "hm_predicted_contact_restraint_restraint_type_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "hm_predicted_contact_restraint_restraint_type_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "File_Type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Table_Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "File_Type_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "File_Type_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "File_Type_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_model_representation_details_model_mode",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_model_representation_details_model_mode_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_model_representation_details_model_mode_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_model_representation_details_model_mode_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_poly_probe_position_mutation_flag",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_poly_probe_position_mutation_flag_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_poly_probe_position_mutation_flag_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_poly_probe_position_mutation_flag_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_modeling_post_process_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_modeling_post_process_type_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_modeling_post_process_type_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_modeling_post_process_type_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_starting_model_details_starting_model_source",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "_starting_model_details_starting_model_source_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "_starting_model_details_starting_model_source_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "_starting_model_details_starting_model_source_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_poly_residue_feature_residue_range_granularity",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "oly_residue_feature_residue_range_granularity_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "oly_residue_feature_residue_range_granularity_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "oly_residue_feature_residue_range_granularity_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_external_reference_info_reference_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_external_reference_info_reference_type_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_external_reference_info_reference_type_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_external_reference_info_reference_type_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "workflow_status",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "workflow_status_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "workflow_status_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "workflow_status_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_dataset_list_data_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_dataset_list_data_type_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_dataset_list_data_type_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_dataset_list_data_type_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_probe_list_reactive_probe_flag",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_probe_list_reactive_probe_flag_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_probe_list_reactive_probe_flag_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_probe_list_reactive_probe_flag_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_feature_list_feature_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_feature_list_feature_type_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_feature_list_feature_type_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_feature_list_feature_type_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_cross_link_restraint_conditional_crosslink_flag",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "oss_link_restraint_conditional_crosslink_flag_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "oss_link_restraint_conditional_crosslink_flag_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "oss_link_restraint_conditional_crosslink_flag_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_external_files_file_format",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_external_files_file_format_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_external_files_file_format_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_external_files_file_format_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_geometric_object_axis_axis_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_geometric_object_axis_axis_type_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_geometric_object_axis_axis_type_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_geometric_object_axis_axis_type_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_external_reference_info_refers_to",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_external_reference_info_refers_to_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_external_reference_info_refers_to_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_external_reference_info_refers_to_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "struct_asym_pdbx_blank_PDB_chainid_flag",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "chem_comp_atom_pdbx_aromatic_flag",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_modeling_protocol_details_ordered_flag",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_modeling_protocol_details_ordered_flag_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_modeling_protocol_details_ordered_flag_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_modeling_protocol_details_ordered_flag_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "entity_src_gen_pdbx_alt_source_flag",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_poly_residue_feature_interface_residue_flag",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "m_poly_residue_feature_interface_residue_flag_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "m_poly_residue_feature_interface_residue_flag_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "m_poly_residue_feature_interface_residue_flag_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_2dem_class_average_restraint_image_segment_flag",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "em_class_average_restraint_image_segment_flag_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "em_class_average_restraint_image_segment_flag_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "em_class_average_restraint_image_segment_flag_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_ensemble_info_ensemble_clustering_method",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_ensemble_info_ensemble_clustering_method_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_ensemble_info_ensemble_clustering_method_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_ensemble_info_ensemble_clustering_method_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "starting_comparative_models_template_sequence_id_denom",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "models_template_sequence_identity_denominator_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "models_template_sequence_identity_denominator_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "models_template_sequence_identity_denominator_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "struct_pdbx_CASP_flag",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "software_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_multi_state_modeling_experiment_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_multi_state_modeling_experiment_type_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_multi_state_modeling_experiment_type_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_multi_state_modeling_experiment_type_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_geometric_object_half_torus_section",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_geometric_object_half_torus_section_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_geometric_object_half_torus_section_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_geometric_object_half_torus_section_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "chem_comp_atom_pdbx_stereo_config",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_geometric_object_distance_restraint_restraint_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "tric_object_distance_restraint_restraint_type_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "tric_object_distance_restraint_restraint_type_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "tric_object_distance_restraint_restraint_type_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_poly_probe_position_modification_flag",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_poly_probe_position_modification_flag_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_poly_probe_position_modification_flag_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_poly_probe_position_modification_flag_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "entity_poly_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_model_representative_selection_criteria",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_model_representative_selection_criteria_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_model_representative_selection_criteria_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_model_representative_selection_criteria_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_struct_assembly_class_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_struct_assembly_class_type_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_struct_assembly_class_type_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_struct_assembly_class_type_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_dataset_list_database_hosted",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_dataset_list_database_hosted_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_dataset_list_database_hosted_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_dataset_list_database_hosted_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "model_representation_details_model_object_primitive",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "representation_details_model_object_primitive_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "representation_details_model_object_primitive_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "representation_details_model_object_primitive_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "pdbx_entity_poly_na_type_type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_predicted_contact_restraint_rep_atom_1",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_predicted_contact_restraint_rep_atom_1_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_predicted_contact_restraint_rep_atom_1_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_predicted_contact_restraint_rep_atom_1_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "entity_src_method",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_dataset_group_application",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "ihm_dataset_group_application_term_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "ihm_dataset_group_application_term_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_dataset_group_application_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "entity_poly_seq_hetero",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "process_status",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "process_status_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "process_status_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "process_status_Owner_fkey"
+                    ]
+                ]
+            }
         }
     ],
     "catalog_annotations": [
