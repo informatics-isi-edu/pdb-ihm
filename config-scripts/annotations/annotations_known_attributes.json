@@ -22,7 +22,9 @@
          "tag:isrd.isi.edu,2018:citation",
          "tag:isrd.isi.edu,2018:required",
          "tag:isrd.isi.edu,2019:export",
-         "tag:isrd.isi.edu,2019:source-definitions",	
+         "tag:isrd.isi.edu,2019:source-definitions",
+         "tag:isrd.isi.edu,2019:chaise-config",
+         "tag:isrd.isi.edu,2019:catalog-config",
          "comment",
          "description",
          "facetOrder"
