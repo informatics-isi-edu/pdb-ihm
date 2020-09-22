@@ -1,1 +1,1 @@
-ambiguous_stoichiometry_flag,chem_comp_descriptor_id,dataset_list_id,details,id,position_id,probe_id,probe_stoichiometry
+id,probe_id,position_id,chem_comp_descriptor_id,ambiguous_stoichiometry_flag,probe_stoichiometry,details,dataset_list_id

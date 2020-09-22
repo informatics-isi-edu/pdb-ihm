@@ -1,1 +1,1 @@
-comp_id_1,comp_id_2,dataset_list_id,details,entity_description_1,entity_description_2,entity_id_1,entity_id_2,group_id,id,linker_chem_comp_descriptor_id,linker_type,seq_id_1,seq_id_2
+id,group_id,entity_description_1,entity_id_1,entity_description_2,entity_id_2,seq_id_1,comp_id_1,seq_id_2,comp_id_2,linker_type,linker_chem_comp_descriptor_id,dataset_list_id,details

@@ -1,1 +1,1 @@
-details,distance_threshold,ensemble_id,id,median_distance,num_models,restraint_id
+id,restraint_id,ensemble_id,num_models,distance_threshold,median_distance,details

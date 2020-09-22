@@ -1,1 +1,1 @@
-comp_id,description,entity_description,entity_id,id,mod_res_chem_comp_descriptor_id,modification_flag,mut_res_chem_comp_id,mutation_flag,seq_id
+id,entity_description,entity_id,seq_id,comp_id,mutation_flag,mut_res_chem_comp_id,modification_flag,mod_res_chem_comp_descriptor_id,description
