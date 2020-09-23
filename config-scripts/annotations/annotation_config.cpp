@@ -1280,10 +1280,19 @@
                         ]
                     },
                     "details",
-                    [
-                        "PDB",
-                        "ihm_cross_link_list_dataset_list_id_fkey"
-                    ],
+                    {
+                        "comment": "A reference to table ihm_dataset_list.id.",
+                        "markdown_name": "dataset list id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_cross_link_list_dataset_list_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
                     {
                         "markdown_name": "polymeric residue 1",
                         "source": [
@@ -6064,7 +6073,7 @@
                                     "ihm_predicted_contact_restraint_mm_poly_res_label_2_fkey"
                                 ]
                             },
-                            "mon_id"
+                            "num"
                         ]
                     },
                     [
@@ -10892,7 +10901,7 @@
                     ],
                     {
                         "comment": "A reference to table chem_comp.id.",
-                        "markdown_name": "mut res chem comp id",
+                        "markdown_name": "Chemical component id of the mutated residue",
                         "source": [
                             {
                                 "outbound": [
@@ -10909,7 +10918,7 @@
                     ],
                     {
                         "comment": "A reference to table ihm_chemical_component_descriptor.id.",
-                        "markdown_name": "mod res chem comp descriptor id",
+                        "markdown_name": "Chemical descriptor id of the modified residue",
                         "source": [
                             {
                                 "outbound": [
