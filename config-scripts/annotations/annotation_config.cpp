@@ -317,6 +317,51 @@
             "table": "Entry_Related_File_Templates",
             "uri": "tag:isrd.isi.edu,2018:required",
             "value": {}
+        },
+        {
+            "column": "pdbx_descriptor",
+            "schema": "PDB",
+            "table": "struct",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Descriptor"
+            }
+        },
+        {   
+            "column": "pdbx_details",
+            "schema": "PDB",
+            "table": "struct",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Details"
+            }
+        },
+        {   
+            "column": "pdbx_model_details",
+            "schema": "PDB",
+            "table": "struct",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Model Details"
+            }
+        },
+        {   
+            "column": "pdbx_model_type_details",
+            "schema": "PDB",
+            "table": "struct",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Model Type Details"
+            }
+        },
+        {   
+            "column": "pdbx_CASP_flag",
+            "schema": "PDB",
+            "table": "struct",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "CASP Flag"
+            }
         }
     ],
     "table_annotations": [
@@ -335,7 +380,12 @@
             "table": "ihm_localization_density_files",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Localization Density Files Referenced Via DOI"
+                "name": "Localization Density Files Referenced Via DOI",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -609,7 +659,12 @@
             "table": "ihm_model_representative",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Representative Model in an Ensemble"
+                "name": "Representative Model in an Ensemble",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -778,7 +833,12 @@
             "table": "ihm_chemical_component_descriptor",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Chemical Descriptors of Molecular Probes Used in Experiments"
+                "name": "Chemical Descriptors of Molecular Probes Used in Experiments",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -911,7 +971,12 @@
             "table": "pdbx_inhibitor_info",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Details of Inhibitors in the Entry"
+                "name": "Details of Inhibitors in the Entry",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -996,7 +1061,12 @@
             "table": "ihm_dataset_external_reference",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Links Between External Files and Input Datasets"
+                "name": "Links Between External Files and Input Datasets",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -1153,7 +1223,12 @@
             "table": "ihm_cross_link_list",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Chemical Crosslinks from Experiments"
+                "name": "Chemical Crosslinks from Experiments",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -1659,7 +1734,12 @@
             "table": "ihm_probe_list",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Molecular Probes"
+                "name": "Molecular Probes",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -1876,7 +1956,12 @@
             "table": "ihm_epr_restraint",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "EPR Restraints"
+                "name": "EPR Restraints",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -2135,7 +2220,12 @@
             "table": "ihm_2dem_class_average_fitting",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "2DEM Class Average Fitting"
+                "name": "2DEM Class Average Fitting",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -2331,7 +2421,12 @@
             "table": "ihm_poly_probe_conjugate",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Probes Attached to Residues in Polymeric Entities"
+                "name": "Probes Attached to Residues in Polymeric Entities",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -2592,7 +2687,13 @@
             "table": "ihm_model_list",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Models Submitted"
+                //"name": "Models Submitted"
+                "markdown_name": "Models Submitted^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -2849,7 +2950,12 @@
             "table": "ihm_feature_list",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Molecular Features used in Generic Restraints"
+                "name": "Molecular Features used in Generic Restraints",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -3015,7 +3121,12 @@
             "table": "pdbx_entity_poly_na_type",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Types of Nucleic Acid Polymeric Entities"
+                "name": "Types of Nucleic Acid Polymeric Entities",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -3142,7 +3253,12 @@
             "table": "ihm_ordered_ensemble",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Ordered States"
+                "name": "Ordered States",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -3317,7 +3433,12 @@
             "table": "ihm_geometric_object_list",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Geometric Objects used as Restraints"
+                "name": "Geometric Objects used as Restraints",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -3454,7 +3575,12 @@
             "table": "pdbx_ion_info",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Details of Ions in the Entry"
+                "name": "Details of Ions in the Entry",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -3520,7 +3646,12 @@
             "table": "ihm_geometric_object_sphere",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Spherical Geometric Objects"
+                "name": "Spherical Geometric Objects",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -3716,7 +3847,12 @@
             "table": "ihm_poly_residue_feature",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Molecular Features Comprising of Polymeric Residues"
+                "name": "Molecular Features Comprising of Polymeric Residues",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -4184,7 +4320,12 @@
             "table": "audit_conform",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Dictionary Versions Compliant with the Data"
+                "name": "Dictionary Versions Compliant with the Data",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -4269,7 +4410,12 @@
             "table": "pdbx_entry_details",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Additional Details about the Entry"
+                "name": "Additional Details about the Entry",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -4387,7 +4533,12 @@
             "table": "ihm_related_datasets",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Datasets Derived from Another"
+                "name": "Datasets Derived from Another",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -4541,7 +4692,12 @@
             "table": "ihm_multi_state_modeling",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Multi-State Modeling"
+                "name": "Multi-State Modeling",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -4674,7 +4830,13 @@
             "table": "ihm_dataset_group",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Groups of Input Datasets"
+                //"name": "Groups of Input Datasets"
+                "markdown_name": "Groups of Input Datasets^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -4803,7 +4965,13 @@
             "table": "entry",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Entry"
+                //"name": "Entry"
+                "markdown_name": "Entry^*^"
+                //"comment_display": {
+                //    "*": {
+                //        "table_comment_display" : "inline"
+                //    }
+                //}
             }
         },
         {
@@ -5245,7 +5413,12 @@
             "table": "ihm_interface_residue_feature",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Molecular Features Comprising of Polymeric Residues at Interfaces"
+                "name": "Molecular Features Comprising of Polymeric Residues at Interfaces",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -5491,7 +5664,13 @@
             "table": "ihm_dataset_list",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Input Datasets"
+                //"name": "Input Datasets"
+                "markdown_name": "Input Datasets^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -5693,7 +5872,13 @@
             "table": "audit_author",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Authors"
+                //"name": "Authors"
+                "markdown_name": "Authors^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -5775,7 +5960,12 @@
             "table": "ihm_geometric_object_plane",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Plane Geometric Objects"
+                "name": "Plane Geometric Objects",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -5941,7 +6131,12 @@
             "table": "ihm_predicted_contact_restraint",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Predicted Contact Restraints"
+                "name": "Predicted Contact Restraints",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -6556,7 +6751,12 @@
             "table": "ihm_3dem_restraint",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "3DEM Restraints"
+                "name": "3DEM Restraints",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -6815,7 +7015,12 @@
             "table": "ihm_derived_distance_restraint",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Generic Distance Restraints Between Molecular Features"
+                "name": "Generic Distance Restraints Between Molecular Features",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -7067,7 +7272,13 @@
             "table": "citation",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Citations"
+                //"name": "Citations"
+                "markdown_name": "Citations^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -7177,7 +7388,12 @@
             "table": "ihm_sas_restraint",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "SAS Restraints"
+                "name": "SAS Restraints",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -7412,7 +7628,12 @@
             "table": "ihm_hydroxyl_radical_fp_restraint",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Hydroxyl Radical Footprinting Restraints"
+                "name": "Hydroxyl Radical Footprinting Restraints",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -7790,7 +8011,12 @@
             "table": "ihm_geometric_object_distance_restraint",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Distance Restraints between Geometric Objects and Molecular Features"
+                "name": "Distance Restraints between Geometric Objects and Molecular Features",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -8051,7 +8277,12 @@
             "table": "ihm_external_files",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "External Files Referenced Via DOI"
+                "name": "External Files Referenced Via DOI",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -8250,7 +8481,12 @@
             "table": "ihm_external_reference_info",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Datasets Referenced Via DOI"
+                "name": "Datasets Referenced Via DOI",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -8389,7 +8625,12 @@
             "table": "ihm_2dem_class_average_restraint",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "2DEM Class Average Restraints"
+                "name": "2DEM Class Average Restraints",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -8600,7 +8841,12 @@
             "table": "ihm_residues_not_modeled",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Residues Not Modeled"
+                "name": "Residues Not Modeled",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -9048,7 +9294,12 @@
             "table": "ihm_dataset_related_db_reference",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Datasets Archived in Other Repositories"
+                "name": "Datasets Archived in Other Repositories",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -9187,7 +9438,12 @@
             "table": "ihm_geometric_object_axis",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Axis Geomtric Objects"
+                "name": "Axis Geomtric Objects",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -9353,7 +9609,12 @@
             "table": "ihm_non_poly_feature",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Molecular Features Comprising of Non-polymeric Entities"
+                "name": "Molecular Features Comprising of Non-polymeric Entities",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -9599,7 +9860,12 @@
             "table": "ihm_geometric_object_half_torus",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Half-torus Geometric Objects"
+                "name": "Half-torus Geometric Objects",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -9729,7 +9995,12 @@
             "table": "pdbx_protein_info",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Details of Proteins in the Entry"
+                "name": "Details of Proteins in the Entry",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -9814,7 +10085,12 @@
             "table": "ihm_geometric_object_torus",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Torus Geometric Objects"
+                "name": "Torus Geometric Objects",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -10037,7 +10313,12 @@
             "table": "ihm_pseudo_site_feature",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Molecular Features Comprising of Pseudo Sites"
+                "name": "Molecular Features Comprising of Pseudo Sites",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -10175,7 +10456,12 @@
             "table": "ihm_cross_link_result_parameters",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Chemical Crosslink Restraint Result Parameters"
+                "name": "Chemical Crosslink Restraint Result Parameters",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -10349,7 +10635,13 @@
             "table": "struct",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Details about the Structural Models Submitted"
+                //"name": "Description of the Structure",
+                "markdown_name": "Description of the Structure^*^",
+                "comment_display": {
+                	"*": {
+                		"table_comment_display" : "inline"
+                	}
+                }
             }
         },
         {
@@ -10452,7 +10744,12 @@
             "table": "ihm_geometric_object_center",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Centers of Geometric Objects"
+                "name": "Centers of Geometric Objects",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -10568,7 +10865,12 @@
             "table": "ihm_ensemble_info",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Details of Ensembles"
+                "name": "Details of Ensembles",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -10831,7 +11133,12 @@
             "table": "ihm_poly_probe_position",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Residue Positions in Polymeric Entities where Probes are Attached"
+                "name": "Residue Positions in Polymeric Entities where Probes are Attached",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -11196,7 +11503,12 @@
             "table": "ihm_ligand_probe",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Non-polymeric Entities used as Probes"
+                "name": "Non-polymeric Entities used as Probes",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -11400,7 +11712,12 @@
             "table": "ihm_geometric_object_transformation",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Transformations Applied to Geometric Objects"
+                "name": "Transformations Applied to Geometric Objects",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -11551,7 +11868,13 @@
             "table": "software",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Software"
+                //"name": "Software"
+                "markdown_name": "Software^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -11687,7 +12010,12 @@
             "table": "chem_comp_atom",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Atoms in Chemical Components"
+                "name": "Atoms in Chemical Components",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -11849,7 +12177,13 @@
             "table": "entity_poly_seq",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Sequences of Polymeric Entities"
+                //"name": "Sequences of Polymeric Entities"
+                "markdown_name": "Sequences of Polymeric Entities^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -12037,7 +12371,13 @@
             "table": "chem_comp",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Chemical Components"
+                //"name": "Chemical Components"
+                "markdown_name": "Chemical Components^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -12155,7 +12495,13 @@
             "table": "citation_author",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Authors in Citations"
+                //"name": "Authors in Citations"
+                "markdown_name": "Authors in Citations^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -12231,7 +12577,13 @@
             "table": "ihm_struct_assembly_details",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Details of Structural Assemblies"
+                //"name": "Details of Structural Assemblies"
+                "markdown_name": "Details of Structural Assemblies^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -12508,7 +12860,12 @@
             "table": "entity_src_gen",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Source of Genetically Manipulated Entities"
+                "name": "Source of Genetically Manipulated Entities",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -12596,7 +12953,12 @@
             "table": "entity_name_com",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Common Names of Entities"
+                "name": "Common Names of Entities",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -12670,7 +13032,13 @@
             "table": "struct_asym",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Instances of Molecular Entities in the Structure"
+                //"name": "Instances of Molecular Entities in the Structure"
+                "markdown_name": "Instances of Molecular Entities in the Structure^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -12856,7 +13224,13 @@
             "table": "ihm_model_representation",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Model Representations"
+                //"name": "Model Representations"
+                "markdown_name": "Model Representations^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -12969,7 +13343,13 @@
             "table": "atom_type",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Types of Atoms in the Structure"
+                //"name": "Types of Atoms in the Structure"
+                "markdown_name": "Types of Atoms in the Structure^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -13033,7 +13413,13 @@
             "table": "entity",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Molecular Entities"
+                //"name": "Molecular Entities"
+                "markdown_name": "Molecular Entities^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -13181,7 +13567,13 @@
             "table": "ihm_model_representation_details",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Details of Model Representations"
+                //"name": "Details of Model Representations"
+                "markdown_name": "Details of Model Representations^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -13500,7 +13892,13 @@
             "table": "ihm_entity_poly_segment",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Segments of Polymeric Entities"
+                //"name": "Segments of Polymeric Entities"
+                "markdown_name": "Segments of Polymeric Entities^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -13896,7 +14294,13 @@
             "table": "entity_poly",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Polymeric Entities"
+                //"name": "Polymeric Entities"
+                "markdown_name": "Polymeric Entities^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -14044,7 +14448,12 @@
             "table": "entity_name_sys",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Systematic Names of Entities"
+                "name": "Systematic Names of Entities",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -14118,7 +14527,12 @@
             "table": "pdbx_entity_nonpoly",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Non-polymeric Entities"
+                "name": "Non-polymeric Entities",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -14218,7 +14632,12 @@
             "table": "Entry_mmCIF_File",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "System Generated mmCIF File"
+                "name": "System Generated mmCIF File",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -14267,7 +14686,12 @@
             "table": "ihm_multi_state_model_group_link",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Model Groups Belonging to Multiple States"
+                "name": "Model Groups Belonging to Multiple States",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -14421,7 +14845,13 @@
             "table": "ihm_model_group",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Groups of Models"
+                //"name": "Groups of Models"
+                "markdown_name": "Groups of Models^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -14550,7 +14980,12 @@
             "table": "ihm_cross_link_restraint",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Chemical Crosslinking Restraints Applied in the Modeling"
+                "name": "Chemical Crosslinking Restraints Applied in the Modeling",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -15216,7 +15651,13 @@
             "table": "ihm_model_group_link",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Models Belonging to Groups"
+                //"name": "Models Belonging to Groups"
+                "markdown_name": "Models Belonging to Groups^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -15370,7 +15811,12 @@
             "table": "ihm_poly_atom_feature",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Molecular Features Comprising of Polymeric Atoms"
+                "name": "Molecular Features Comprising of Polymeric Atoms",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -15691,7 +16137,12 @@
             "table": "ihm_starting_model_seq_dif",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Point Differences in the Sequences of Starting Models"
+                "name": "Point Differences in the Sequences of Starting Models",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -16019,7 +16470,12 @@
             "table": "ihm_modeling_post_process",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Post Modeling Analyses"
+                "name": "Post Modeling Analyses",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -16359,7 +16815,12 @@
             "table": "ihm_cross_link_result",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Chemical Crosslink Restraint Results"
+                "name": "Chemical Crosslink Restraint Results",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -16536,7 +16997,12 @@
             "table": "ihm_starting_computational_models",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Starting Computational Models"
+                "name": "Starting Computational Models",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -16729,7 +17195,13 @@
             "table": "ihm_modeling_protocol",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Modeling Protocols"
+                //"name": "Modeling Protocols"
+                "markdown_name": "Modeling Protocols^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -16849,7 +17321,12 @@
             "table": "ihm_starting_comparative_models",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Starting Comparative Models"
+                "name": "Starting Comparative Models",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -17081,7 +17558,13 @@
             "table": "ihm_modeling_protocol_details",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Details of Modeling Protocols"
+                //"name": "Details of Modeling Protocols"
+                "markdown_name": "Details of Modeling Protocols^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -17424,7 +17907,13 @@
             "table": "ihm_dataset_group_link",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Datasets Belonging to Groups"
+                //"name": "Datasets Belonging to Groups"
+                "markdown_name": "Datasets Belonging to Groups^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -17578,7 +18067,13 @@
             "table": "ihm_starting_model_details",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Starting Structural Models"
+                //"name": "Starting Structural Models"
+                "markdown_name": "Starting Structural Models^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -17880,7 +18375,12 @@
             "table": "Entry_Related_File",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Uploaded Restraint Files"
+                "name": "Uploaded Restraint Files",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -17980,7 +18480,13 @@
             "table": "ihm_struct_assembly",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Structural Assemblies"
+                //"name": "Structural Assemblies"
+                "markdown_name": "Structural Assemblies^*^",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -18121,7 +18627,12 @@
             "table": "ihm_struct_assembly_class",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Structural Assembly Classes in Hierarchical Assemblies"
+                "name": "Structural Assembly Classes in Hierarchical Assemblies",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
@@ -18242,7 +18753,12 @@
             "table": "ihm_struct_assembly_class_link",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Structural Assemblies Belonging to Classes"
+                "name": "Structural Assemblies Belonging to Classes",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
             }
         },
         {
