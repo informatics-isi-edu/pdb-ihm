@@ -1173,15 +1173,6 @@
          }
       },
       {
-         "column" : "mmCIF_File_URL",
-         "schema" : "PDB",
-         "table" : "entry",
-         "uri" : "tag:misd.isi.edu,2015:display",
-         "value" : {
-            "name" : "mmCIF File URL"
-         }
-      },
-      {
          "column" : "Generated_mmCIF_Processing_Status",
          "schema" : "PDB",
          "table" : "entry",
@@ -1344,6 +1335,924 @@
          "uri" : "tag:misd.isi.edu,2015:display",
          "value" : {
             "name" : "CASP Flag"
+         }
+      },
+      {
+         "column" : "mmCIF_File_URL",
+         "schema" : "PDB",
+         "table" : "entry",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "User Provided mmCIF File"
+         }
+      },
+      {
+         "column" : "Image_File_URL",
+         "schema" : "PDB",
+         "table" : "entry",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "User Provided Image File"
+         }
+      },
+      {
+         "column" : "File_URL",
+         "schema" : "PDB",
+         "table" : "Entry_mmCIF_File",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "System Generated mmCIF File"
+         }
+      },
+      {
+         "column" : "pdbx_ordinal",
+         "schema" : "PDB",
+         "table" : "audit_author",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Ordinal"
+         }
+      },
+      {
+         "column" : "journal_abbrev",
+         "schema" : "PDB",
+         "table" : "citation",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Abbreviated Journal Name (CASSI)"
+         }
+      },
+      {
+         "column" : "page_first",
+         "schema" : "PDB",
+         "table" : "citation",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "First_Page"
+         }
+      },
+      {
+         "column" : "page_last",
+         "schema" : "PDB",
+         "table" : "citation",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Last Page"
+         }
+      },
+      {
+         "column" : "pdbx_database_id_DOI",
+         "schema" : "PDB",
+         "table" : "citation",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "DOI"
+         }
+      },
+      {
+         "column" : "pdbx_database_id_PubMed",
+         "schema" : "PDB",
+         "table" : "citation",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Pubmed Id"
+         }
+      },
+      {
+         "column" : "journal_id_ASTM",
+         "schema" : "PDB",
+         "table" : "citation",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "ASTM Journal Id"
+         }
+      },
+      {
+         "column" : "journal_id_CSD",
+         "schema" : "PDB",
+         "table" : "citation",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "CSD Journal Id"
+         }
+      },
+      {
+         "column" : "journal_id_ISSN",
+         "schema" : "PDB",
+         "table" : "citation",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "ISSN Journal Id"
+         }
+      },
+      {
+         "column" : "citation_id",
+         "schema" : "PDB",
+         "table" : "citation_author",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Citation Id"
+         }
+      },
+      {
+         "column" : "pdbx_ordinal",
+         "schema" : "PDB",
+         "table" : "software",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Ordinal"
+         }
+      },
+      {
+         "column" : "citation_id",
+         "schema" : "PDB",
+         "table" : "software",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Citation Id"
+         }
+      },
+      {
+         "column" : "mon_nstd_flag",
+         "schema" : "PDB",
+         "table" : "chem_comp",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Monomer Non-standard Flag"
+         }
+      },
+      {
+         "column" : "pdbx_synonyms",
+         "schema" : "PDB",
+         "table" : "chem_comp",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Synonyms"
+         }
+      },
+      {
+         "column" : "src_method",
+         "schema" : "PDB",
+         "table" : "entity",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Method for Sample Production"
+         }
+      },
+      {
+         "column" : "pdbx_description",
+         "schema" : "PDB",
+         "table" : "entity",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Description"
+         }
+      },
+      {
+         "column" : "pdbx_number_of_molecules",
+         "schema" : "PDB",
+         "table" : "entity",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Number of Molecules"
+         }
+      },
+      {
+         "column" : "entity_id",
+         "schema" : "PDB",
+         "table" : "entity_name_com",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Entity Id"
+         }
+      },
+      {
+         "column" : "entity_id",
+         "schema" : "PDB",
+         "table" : "entity_name_sys",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Entity Id"
+         }
+      },
+      {
+         "column" : "entity_id",
+         "schema" : "PDB",
+         "table" : "entity_src_gen",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Entity Id"
+         }
+      },
+      {
+         "column" : "pdbx_src_id",
+         "schema" : "PDB",
+         "table" : "entity_src_gen",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Source Id"
+         }
+      },
+      {
+         "column" : "pdbx_alt_source_flag",
+         "schema" : "PDB",
+         "table" : "entity_src_gen",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Alternate Source Flag"
+         }
+      },
+      {
+         "column" : "gene_src_common_name",
+         "schema" : "PDB",
+         "table" : "entity_src_gen",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Gene Source Common Name"
+         }
+      },
+      {
+         "column" : "gene_src_genus",
+         "schema" : "PDB",
+         "table" : "entity_src_gen",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Gene Source Genus"
+         }
+      },
+      {
+         "column" : "pdbx_gene_src_scientific_name",
+         "schema" : "PDB",
+         "table" : "entity_src_gen",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Gene Source Scientific Name"
+         }
+      },
+      {
+         "column" : "entity_id",
+         "schema" : "PDB",
+         "table" : "entity_poly",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Entity Id"
+         }
+      },
+      {
+         "column" : "nstd_monomer",
+         "schema" : "PDB",
+         "table" : "entity_poly",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Non-standard Monomer"
+         }
+      },
+      {
+         "column" : "nstd_linkage",
+         "schema" : "PDB",
+         "table" : "entity_poly",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Non-standard Linkage"
+         }
+      },
+      {
+         "column" : "nstd_chirality",
+         "schema" : "PDB",
+         "table" : "entity_poly",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Non-standard Chirality"
+         }
+      },
+      {
+         "column" : "pdbx_strand_id",
+         "schema" : "PDB",
+         "table" : "entity_poly",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Chain Id"
+         }
+      },
+      {
+         "column" : "pdbx_sequence_evidence_code",
+         "schema" : "PDB",
+         "table" : "entity_poly",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Sequence Evidence Code"
+         }
+      },
+      {
+         "column" : "pdbx_seq_one_letter_code",
+         "schema" : "PDB",
+         "table" : "entity_poly",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Polymer Sequence One Letter Code"
+         }
+      },
+      {
+         "column" : "pdbx_seq_one_letter_code_can",
+         "schema" : "PDB",
+         "table" : "entity_poly",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Polymer Canonical Sequence One Letter Code"
+         }
+      },
+      {
+         "column" : "entity_id",
+         "schema" : "PDB",
+         "table" : "pdbx_entity_nonpoly",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Entity Id"
+         }
+      },
+      {
+         "column" : "comp_id",
+         "schema" : "PDB",
+         "table" : "pdbx_entity_nonpoly",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Chemical Component Id"
+         }
+      },
+      {
+         "column" : "entity_id",
+         "schema" : "PDB",
+         "table" : "entity_poly_seq",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Entity Id"
+         }
+      },
+      {
+         "column" : "mon_id",
+         "schema" : "PDB",
+         "table" : "entity_poly_seq",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Chemical Component Id"
+         }
+      },
+      {
+         "column" : "num",
+         "schema" : "PDB",
+         "table" : "entity_poly_seq",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Sequence Id of Monomer"
+         }
+      },
+      {
+         "column" : "hetero",
+         "schema" : "PDB",
+         "table" : "entity_poly_seq",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Heterogeneity Flag"
+         }
+      },
+      {
+         "column" : "entity_id",
+         "schema" : "PDB",
+         "table" : "struct_asym",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Entity Id"
+         }
+      },
+      {
+         "column" : "pdbx_PDB_id",
+         "schema" : "PDB",
+         "table" : "struct_asym",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "PDB Strand Id"
+         }
+      },
+      {
+         "column" : "pdbx_alt_id",
+         "schema" : "PDB",
+         "table" : "struct_asym",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Alternate PDB Strand Id"
+         }
+      },
+      {
+         "column" : "pdbx_blank_PDB_chainid_flag",
+         "schema" : "PDB",
+         "table" : "struct_asym",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Blank PDB Chainid Flag"
+         }
+      },
+      {
+         "column" : "pdbx_modified",
+         "schema" : "PDB",
+         "table" : "struct_asym",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Modified Structural Elements"
+         }
+      },
+      {
+         "column" : "pdbx_order",
+         "schema" : "PDB",
+         "table" : "struct_asym",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Order of Structural Elements"
+         }
+      },
+      {
+         "column" : "pdbx_type",
+         "schema" : "PDB",
+         "table" : "struct_asym",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Type of Structural Elements"
+         }
+      },
+      {
+         "column" : "dataset_list_id",
+         "schema" : "PDB",
+         "table" : "ihm_dataset_group_link",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Dataset List Id"
+         }
+      },
+      {
+         "column" : "dataset_group_id",
+         "schema" : "PDB",
+         "table" : "ihm_dataset_group_link",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Dataset Group Id"
+         }
+      },
+      {
+         "column" : "derived_dataset_list_id",
+         "schema" : "PDB",
+         "table" : "ihm_related_datasets",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Derived Dataset List Id"
+         }
+      },
+      {
+         "column" : "primary_dataset_list_id",
+         "schema" : "PDB",
+         "table" : "ihm_related_datasets",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Primary Dataset List Id"
+         }
+      },
+      {
+         "column" : "dataset_list_id",
+         "schema" : "PDB",
+         "table" : "ihm_dataset_related_db_reference",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Dataset List Id"
+         }
+      },
+      {
+         "column" : "db_name",
+         "schema" : "PDB",
+         "table" : "ihm_dataset_related_db_reference",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Database Name"
+         }
+      },
+      {
+         "column" : "reference_id",
+         "schema" : "PDB",
+         "table" : "ihm_external_reference_info",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Reference Id"
+         }
+      },
+      {
+         "column" : "reference_id",
+         "schema" : "PDB",
+         "table" : "ihm_external_files",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Reference Id"
+         }
+      },
+      {
+         "column" : "dataset_list_id",
+         "schema" : "PDB",
+         "table" : "ihm_dataset_external_reference",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Dataset List Id"
+         }
+      },
+      {
+         "column" : "file_id",
+         "schema" : "PDB",
+         "table" : "ihm_dataset_external_reference",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "File Id"
+         }
+      },
+      {
+         "column" : "starting_model_auth_asym_id",
+         "schema" : "PDB",
+         "table" : "ihm_starting_model_details",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Author Provided Chain Id for the Starting Model"
+         }
+      },
+      {
+         "column" : "mmCIF_File_URL",
+         "schema" : "PDB",
+         "table" : "ihm_starting_model_details",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "mmCIF File for the Starting Model"
+         }
+      },
+      {
+         "column" : "starting_model_auth_asym_id",
+         "schema" : "PDB",
+         "table" : "ihm_starting_comparative_models",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Author Provided Chain Id for the Starting Model"
+         }
+      },
+      {
+         "column" : "template_auth_asym_id",
+         "schema" : "PDB",
+         "table" : "ihm_starting_comparative_models",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Author Provided Chain Id for the Template"
+         }
+      },
+      {
+         "column" : "starting_model_seq_id_begin",
+         "schema" : "PDB",
+         "table" : "ihm_starting_comparative_models",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Beginning Sequence Id for the Starting Model"
+         }
+      },
+      {
+         "column" : "starting_model_seq_id_end",
+         "schema" : "PDB",
+         "table" : "ihm_starting_comparative_models",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Ending Sequence Id for the Starting Model"
+         }
+      },
+      {
+         "column" : "template_seq_id_begin",
+         "schema" : "PDB",
+         "table" : "ihm_starting_comparative_models",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Beginning Sequence Id for the Template"
+         }
+      },
+      {
+         "column" : "template_seq_id_end",
+         "schema" : "PDB",
+         "table" : "ihm_starting_comparative_models",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Ending Sequence Id for the Template"
+         }
+      },
+      {
+         "column" : "db_asym_id",
+         "schema" : "PDB",
+         "table" : "ihm_starting_model_seq_dif",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Database Asym Id"
+         }
+      },
+      {
+         "column" : "db_seq_id",
+         "schema" : "PDB",
+         "table" : "ihm_starting_model_seq_dif",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Database Sequence Id"
+         }
+      },
+      {
+         "column" : "db_comp_id",
+         "schema" : "PDB",
+         "table" : "ihm_starting_model_seq_dif",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Database Component Id"
+         }
+      },
+      {
+         "column" : "db_entity_id",
+         "schema" : "PDB",
+         "table" : "ihm_starting_model_seq_dif",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Database Entity Id"
+         }
+      },
+      {
+         "column" : "num_models_begin",
+         "schema" : "PDB",
+         "table" : "ihm_modeling_protocol_details",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Number of Models in the Beginning of the Step"
+         }
+      },
+      {
+         "column" : "num_models_end",
+         "schema" : "PDB",
+         "table" : "ihm_modeling_protocol_details",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Number of Models at the End of the Step"
+         }
+      },
+      {
+         "column" : "num_models_begin",
+         "schema" : "PDB",
+         "table" : "ihm_modeling_post_process",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Number of Models in the Beginning of the Analysis"
+         }
+      },
+      {
+         "column" : "num_models_end",
+         "schema" : "PDB",
+         "table" : "ihm_modeling_post_process",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Number of Models at the End of the Analysis"
+         }
+      },
+      {
+         "column" : "population_fraction_sd",
+         "schema" : "PDB",
+         "table" : "ihm_multi_state_modeling",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Population Fraction Standard Deviation"
+         }
+      },
+      {
+         "column" : "num_ensemble_models",
+         "schema" : "PDB",
+         "table" : "ihm_ensemble_info",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Number of Models in the Ensemble"
+         }
+      },
+      {
+         "column" : "num_ensemble_models_deposited",
+         "schema" : "PDB",
+         "table" : "ihm_ensemble_info",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Number of Models Deposited that Belong to the Ensemble"
+         }
+      },
+      {
+         "column" : "number_raw_micrographs",
+         "schema" : "PDB",
+         "table" : "ihm_2dem_class_average_restraint",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Number of Raw Micrographs"
+         }
+      },
+      {
+         "column" : "auth_name",
+         "schema" : "PDB",
+         "table" : "ihm_chem_comp_descriptor",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Author Provided Name"
+         }
+      },
+      {
+         "column" : "minor_radius_r",
+         "schema" : "PDB",
+         "table" : "ihm_geometric_object_torus",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Minor Radius r"
+         }
+      },
+      {
+         "column" : "thickness_th",
+         "schema" : "PDB",
+         "table" : "ihm_geometric_object_half_torus",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Thickness"
+         }
+      },
+      {
+         "column" : "File_URL",
+         "schema" : "PDB",
+         "table" : "Entry_Related_File",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Uploaded File"
+         }
+      },
+      {
+         "column" : "num_models",
+         "schema" : "PDB",
+         "table" : "ihm_cross_link_result",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Number of Models"
+         }
+      },
+      {
+         "column" : "rep_atom_1",
+         "schema" : "PDB",
+         "table" : "ihm_predicted_contact_restraint",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Representative Atom 1"
+         }
+      },
+      {
+         "column" : "rep_atom_2",
+         "schema" : "PDB",
+         "table" : "ihm_predicted_contact_restraint",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Representative Atom 2"
+         }
+      },
+      {
+         "column" : "fp_rate",
+         "schema" : "PDB",
+         "table" : "ihm_hydroxyl_radical_fp_restraint",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "FP Rate"
+         }
+      },
+      {
+         "column" : "fp_rate_error",
+         "schema" : "PDB",
+         "table" : "ihm_hydroxyl_radical_fp_restraint",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "FP Rate Error"
+         }
+      },
+      {
+         "column" : "log_pf",
+         "schema" : "PDB",
+         "table" : "ihm_hydroxyl_radical_fp_restraint",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Log PF"
+         }
+      },
+      {
+         "column" : "log_pf_error",
+         "schema" : "PDB",
+         "table" : "ihm_hydroxyl_radical_fp_restraint",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Log PF Error"
+         }
+      },
+      {
+         "column" : "predicted_sasa",
+         "schema" : "PDB",
+         "table" : "ihm_hydroxyl_radical_fp_restraint",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Predicted SASA"
+         }
+      },
+      {
+         "column" : "rep_atom",
+         "schema" : "PDB",
+         "table" : "ihm_poly_residue_feature",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Representative Atom"
+         }
+      },
+      {
+         "column" : "Cartn_X",
+         "schema" : "PDB",
+         "table" : "ihm_pseudo_site_feature",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Cartesian X"
+         }
+      },
+      {
+         "column" : "Cartn_Y",
+         "schema" : "PDB",
+         "table" : "ihm_pseudo_site_feature",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Cartesian Y"
+         }
+      },
+      {
+         "column" : "Cartn_Z",
+         "schema" : "PDB",
+         "table" : "ihm_pseudo_site_feature",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Cartesian Z"
+         }
+      },
+      {
+         "column" : "distance_lower_limit_esd",
+         "schema" : "PDB",
+         "table" : "ihm_derived_distance_restraint",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Distance Lower Limit Standard Deviation"
+         }
+      },
+      {
+         "column" : "distance_upper_limit_esd",
+         "schema" : "PDB",
+         "table" : "ihm_derived_distance_restraint",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Distance Upper Limit Standard Deviation"
+         }
+      },
+      {
+         "column" : "distance_lower_limit_esd",
+         "schema" : "PDB",
+         "table" : "ihm_geometric_object_distance_restraint",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Distance Lower Limit Standard Deviation"
+         }
+      },
+      {
+         "column" : "distance_upper_limit_esd",
+         "schema" : "PDB",
+         "table" : "ihm_geometric_object_distance_restraint",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Distance Upper Limit Standard Deviation"
+         }
+      },
+      {
+         "column" : "dict_name",
+         "schema" : "PDB",
+         "table" : "audit_conform",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Dictionary Name"
+         }
+      },
+      {
+         "column" : "dict_location",
+         "schema" : "PDB",
+         "table" : "audit_conform",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Dictionary Location"
+         }
+      },
+      {
+         "column" : "dict_version",
+         "schema" : "PDB",
+         "table" : "audit_conform",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Dictionary Version"
          }
       }
    ],
@@ -4455,7 +5364,7 @@
                ],
                {
                   "comment" : "A reference to table ihm_chemical_component_descriptor.id for the cross linker.",
-                  "markdown_name" : "linker chem comp descriptor id",
+                  "markdown_name" : "Linker Chemical Component Descriptor Id",
                   "source" : [
                      {
                         "outbound" : [
@@ -4606,7 +5515,7 @@
                ],
                {
                   "comment" : "A reference to table ihm_chemical_component_descriptor.id for the cross linker.",
-                  "markdown_name" : "linker chem comp descriptor id",
+                  "markdown_name" : "Linker Chemical Component Descriptor Id",
                   "source" : [
                      {
                         "outbound" : [
@@ -4784,7 +5693,7 @@
                ],
                {
                   "comment" : "A reference to table ihm_chemical_component_descriptor.id for the cross linker.",
-                  "markdown_name" : "linker chem comp descriptor id",
+                  "markdown_name" : "Linker Chemical Component Descriptor Id",
                   "source" : [
                      {
                         "outbound" : [
@@ -9377,13 +10286,13 @@
                   "PDB",
                   "ihm_predicted_contact_restraint_rep_atom_2_fkey"
                ],
-               "distance_lower_limit",
-               "distance_upper_limit",
-               "probability",
                [
                   "PDB",
                   "ihm_predicted_contact_restraint_restraint_type_fkey"
                ],
+               "distance_lower_limit",
+               "distance_upper_limit",
+               "probability",
                [
                   "PDB",
                   "ihm_predicted_contact_restraint_model_granularity_fkey"
@@ -9574,13 +10483,13 @@
                   "PDB",
                   "ihm_predicted_contact_restraint_rep_atom_2_fkey"
                ],
-               "distance_lower_limit",
-               "distance_upper_limit",
-               "probability",
                [
                   "PDB",
                   "ihm_predicted_contact_restraint_restraint_type_fkey"
                ],
+               "distance_lower_limit",
+               "distance_upper_limit",
+               "probability",
                [
                   "PDB",
                   "ihm_predicted_contact_restraint_model_granularity_fkey"
@@ -9784,13 +10693,13 @@
                   "PDB",
                   "ihm_predicted_contact_restraint_rep_atom_2_fkey"
                ],
-               "distance_lower_limit",
-               "distance_upper_limit",
-               "probability",
                [
                   "PDB",
                   "ihm_predicted_contact_restraint_restraint_type_fkey"
                ],
+               "distance_lower_limit",
+               "distance_upper_limit",
+               "probability",
                [
                   "PDB",
                   "ihm_predicted_contact_restraint_model_granularity_fkey"
@@ -10177,16 +11086,16 @@
                   "PDB",
                   "ihm_derived_distance_restraint_group_conditionality_fkey"
                ],
-               "random_exclusion_fraction",
+               [
+                  "PDB",
+                  "ihm_derived_distance_restraint_restraint_type_fkey"
+               ],
                "distance_lower_limit",
                "distance_upper_limit",
                "distance_lower_limit_esd",
                "distance_upper_limit_esd",
                "probability",
-               [
-                  "PDB",
-                  "ihm_derived_distance_restraint_restraint_type_fkey"
-               ],
+               "random_exclusion_fraction",
                "mic_value",
                {
                   "comment" : "A reference to table ihm_dataset_list.id.",
@@ -10253,16 +11162,16 @@
                   "PDB",
                   "ihm_derived_distance_restraint_group_conditionality_fkey"
                ],
-               "random_exclusion_fraction",
+               [
+                  "PDB",
+                  "ihm_derived_distance_restraint_restraint_type_fkey"
+               ],
                "distance_lower_limit",
                "distance_upper_limit",
                "distance_lower_limit_esd",
                "distance_upper_limit_esd",
                "probability",
-               [
-                  "PDB",
-                  "ihm_derived_distance_restraint_restraint_type_fkey"
-               ],
+               "random_exclusion_fraction",
                "mic_value",
                {
                   "comment" : "A reference to table ihm_dataset_list.id.",
@@ -10342,16 +11251,16 @@
                   "PDB",
                   "ihm_derived_distance_restraint_group_conditionality_fkey"
                ],
-               "random_exclusion_fraction",
+               [
+                  "PDB",
+                  "ihm_derived_distance_restraint_restraint_type_fkey"
+               ],
                "distance_lower_limit",
                "distance_upper_limit",
                "distance_lower_limit_esd",
                "distance_upper_limit_esd",
                "probability",
-               [
-                  "PDB",
-                  "ihm_derived_distance_restraint_restraint_type_fkey"
-               ],
+               "random_exclusion_fraction",
                "mic_value",
                {
                   "comment" : "A reference to table ihm_dataset_list.id.",
@@ -14308,7 +15217,7 @@
                ],
                {
                   "comment" : "A reference to table chem_comp.id.",
-                  "markdown_name" : "Chemical component id of the mutated residue",
+                  "markdown_name" : "Chemical Component Id of the Mutated Residue",
                   "source" : [
                      {
                         "outbound" : [
@@ -14325,7 +15234,7 @@
                ],
                {
                   "comment" : "A reference to table ihm_chemical_component_descriptor.id.",
-                  "markdown_name" : "Chemical descriptor id of the modified residue",
+                  "markdown_name" : "Chemical Descriptor Id of the Modified Residue",
                   "source" : [
                      {
                         "outbound" : [
@@ -14417,7 +15326,7 @@
                ],
                {
                   "comment" : "A reference to table chem_comp.id.",
-                  "markdown_name" : "mut res chem comp id",
+                  "markdown_name" : "Chemical Component Id of the Mutated Residue",
                   "source" : [
                      {
                         "outbound" : [
@@ -14434,7 +15343,7 @@
                ],
                {
                   "comment" : "A reference to table ihm_chemical_component_descriptor.id.",
-                  "markdown_name" : "mod res chem comp descriptor id",
+                  "markdown_name" : "Chemical Descriptor Id of the Modified Residue",
                   "source" : [
                      {
                         "outbound" : [
@@ -14539,7 +15448,7 @@
                ],
                {
                   "comment" : "A reference to table chem_comp.id.",
-                  "markdown_name" : "mut res chem comp id",
+                  "markdown_name" : "Chemical Component Id of the Mutated Residue",
                   "source" : [
                      {
                         "outbound" : [
@@ -14556,7 +15465,7 @@
                ],
                {
                   "comment" : "A reference to table ihm_chemical_component_descriptor.id.",
-                  "markdown_name" : "mod res chem comp descriptor id",
+                  "markdown_name" : "Chemical Descriptor Id of the Modified Residue",
                   "source" : [
                      {
                         "outbound" : [
