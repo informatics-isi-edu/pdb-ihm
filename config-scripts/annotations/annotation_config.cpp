@@ -1289,7 +1289,7 @@
             "table": "ihm_localization_density_files",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Localization Density Files Referenced Via DOI",
+                "name": "Localization Density Files",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -1742,7 +1742,7 @@
             "table": "ihm_chemical_component_descriptor",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Chemical Descriptors of Molecular Probes Used in Experiments",
+                "name": "Chemical Descriptors",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -1970,7 +1970,7 @@
             "table": "ihm_dataset_external_reference",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Links Between External Files and Input Datasets",
+                "name": "External Files Corresponding to Input Datasets",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -3354,7 +3354,7 @@
             "table": "ihm_poly_probe_conjugate",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Probes Attached to Residues in Polymeric Entities",
+                "name": "Probes Attached to Polymeric Residues",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -4090,7 +4090,7 @@
             "table": "pdbx_entity_poly_na_type",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Types of Nucleic Acid Polymeric Entities",
+                "name": "Types of Polymeric Nucleic Acid Entities",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -4816,7 +4816,7 @@
             "table": "ihm_poly_residue_feature",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Molecular Features Comprising of Polymeric Residues",
+                "name": "Molecular Features - Polymeric Residues",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -5824,7 +5824,7 @@
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
                 //"name": "Groups of Input Datasets"
-                "markdown_name": "Groups of Input Datasets^*^",
+                "markdown_name": "Input Dataset Groups^*^",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -6406,7 +6406,7 @@
             "table": "ihm_interface_residue_feature",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Molecular Features Comprising of Polymeric Residues at Interfaces",
+                "name": "Molecular Features - Interface Residues",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -8050,7 +8050,7 @@
             "table": "ihm_derived_distance_restraint",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Generic Distance Restraints Between Molecular Features",
+                "name": "Distance Restraints Between Molecular Features",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -10701,7 +10701,7 @@
             "table": "ihm_non_poly_feature",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Molecular Features Comprising of Non-polymeric Entities",
+                "name": "Molecular Features - Non-polymeric Entities",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -11423,7 +11423,7 @@
             "table": "ihm_pseudo_site_feature",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Molecular Features Comprising of Pseudo Sites",
+                "name": "Molecular Features - Pseudo Sites",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -11890,7 +11890,7 @@
             "table": "ihm_geometric_object_center",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Centers of Geometric Objects",
+                "name": "Geometric Object Centers",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -12011,7 +12011,7 @@
             "table": "ihm_ensemble_info",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Details of Ensembles",
+                "name": "Ensembles",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -12279,7 +12279,7 @@
             "table": "ihm_poly_probe_position",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Residue Positions in Polymeric Entities where Probes are Attached",
+                "name": "Polymeric Residue Positions",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -12667,7 +12667,7 @@
             "table": "ihm_ligand_probe",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Non-polymeric Entities used as Probes",
+                "name": "Non-polymeric Entity Probes",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -12894,7 +12894,7 @@
             "table": "ihm_geometric_object_transformation",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Transformations Applied to Geometric Objects",
+                "name": "Geometric Object Transformations",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -14215,7 +14215,7 @@
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
                 //"name": "Instances of Molecular Entities in the Structure"
-                "markdown_name": "Instances of Molecular Entities in the Structure^*^",
+                "markdown_name": "Instances of Molecular Entities^*^",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -14526,7 +14526,7 @@
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
                 //"name": "Types of Atoms in the Structure"
-                "markdown_name": "Types of Atoms in the Structure^*^",
+                "markdown_name": "Types of Atoms^*^",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -16034,7 +16034,7 @@
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
                 //"name": "Groups of Models"
-                "markdown_name": "Groups of Models^*^",
+                "markdown_name": "Model Groups^*^",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -16168,7 +16168,7 @@
             "table": "ihm_cross_link_restraint",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Chemical Crosslinking Restraints Applied in the Modeling",
+                "name": "Chemical Crosslinking Restraints",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -17023,7 +17023,7 @@
             "table": "ihm_poly_atom_feature",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Molecular Features Comprising of Polymeric Atoms",
+                "name": "Molecular Features - Polymeric Atoms",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -19878,7 +19878,7 @@
             "table": "ihm_struct_assembly_class",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Structural Assembly Classes in Hierarchical Assemblies",
+                "name": "Structural Assembly Classes",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"

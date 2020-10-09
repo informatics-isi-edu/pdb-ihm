@@ -4406,7 +4406,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "Localization Density Files Referenced Via DOI"
+            "name" : "Localization Density Files"
          }
       },
       {
@@ -4859,7 +4859,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "Chemical Descriptors of Molecular Probes Used in Experiments"
+            "name" : "Chemical Descriptors"
          }
       },
       {
@@ -5087,7 +5087,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "Links Between External Files and Input Datasets"
+            "name" : "External Files Corresponding to Input Datasets"
          }
       },
       {
@@ -6471,7 +6471,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "Probes Attached to Residues in Polymeric Entities"
+            "name" : "Probes Attached to Polymeric Residues"
          }
       },
       {
@@ -7206,7 +7206,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "Types of Nucleic Acid Polymeric Entities"
+            "name" : "Types of Polymeric Nucleic Acid Entities"
          }
       },
       {
@@ -7932,7 +7932,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "Molecular Features Comprising of Polymeric Residues"
+            "name" : "Molecular Features - Polymeric Residues"
          }
       },
       {
@@ -8939,7 +8939,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "markdown_name" : "Groups of Input Datasets^*^"
+            "markdown_name" : "Input Dataset Groups^*^"
          }
       },
       {
@@ -9515,7 +9515,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "Molecular Features Comprising of Polymeric Residues at Interfaces"
+            "name" : "Molecular Features - Interface Residues"
          }
       },
       {
@@ -11157,7 +11157,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "Generic Distance Restraints Between Molecular Features"
+            "name" : "Distance Restraints Between Molecular Features"
          }
       },
       {
@@ -13807,7 +13807,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "Molecular Features Comprising of Non-polymeric Entities"
+            "name" : "Molecular Features - Non-polymeric Entities"
          }
       },
       {
@@ -14529,7 +14529,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "Molecular Features Comprising of Pseudo Sites"
+            "name" : "Molecular Features - Pseudo Sites"
          }
       },
       {
@@ -14995,7 +14995,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "Centers of Geometric Objects"
+            "name" : "Geometric Object Centers"
          }
       },
       {
@@ -15116,7 +15116,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "Details of Ensembles"
+            "name" : "Ensembles"
          }
       },
       {
@@ -15384,7 +15384,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "Residue Positions in Polymeric Entities where Probes are Attached"
+            "name" : "Polymeric Residue Positions"
          }
       },
       {
@@ -15772,7 +15772,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "Non-polymeric Entities used as Probes"
+            "name" : "Non-polymeric Entity Probes"
          }
       },
       {
@@ -15999,7 +15999,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "Transformations Applied to Geometric Objects"
+            "name" : "Geometric Object Transformations"
          }
       },
       {
@@ -17314,7 +17314,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "markdown_name" : "Instances of Molecular Entities in the Structure^*^"
+            "markdown_name" : "Instances of Molecular Entities^*^"
          }
       },
       {
@@ -17623,7 +17623,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "markdown_name" : "Types of Atoms in the Structure^*^"
+            "markdown_name" : "Types of Atoms^*^"
          }
       },
       {
@@ -19126,7 +19126,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "markdown_name" : "Groups of Models^*^"
+            "markdown_name" : "Model Groups^*^"
          }
       },
       {
@@ -19260,7 +19260,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "Chemical Crosslinking Restraints Applied in the Modeling"
+            "name" : "Chemical Crosslinking Restraints"
          }
       },
       {
@@ -20114,7 +20114,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "Molecular Features Comprising of Polymeric Atoms"
+            "name" : "Molecular Features - Polymeric Atoms"
          }
       },
       {
@@ -22964,7 +22964,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "Structural Assembly Classes in Hierarchical Assemblies"
+            "name" : "Structural Assembly Classes"
          }
       },
       {
