@@ -3,6 +3,8 @@ import json
 from deriva.core import ErmrestCatalog, AttrDict, get_credential, DEFAULT_CREDENTIAL_FILE, tag, urlquote, DerivaServer, get_credential, BaseCLI
 from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key, ForeignKey, DomainType, ArrayType
 
+# ========================================================
+# utility
 
 # add table if not exist or update if exist
 def create_table_if_not_exist(model, schema_name, tdoc):
@@ -11,57 +13,44 @@ def create_table_if_not_exist(model, schema_name, tdoc):
     if tdoc["table_name"] not in schema.tables:
         schema.create_table(tdoc)
 
-
+# ---------------------------------------
 # add a column
-def add_column(tdoc, schema_name, table_name, column_name, column_type, default_value, nullok):
-    tdoc.table(schema_name, table_name).create_column(Column.define(column_name, column_type, default=default_value, nullok=nullok)) 
+# HT: recommend delete this function as it is doesn't add any value and harder to read
+def add_column(model, schema_name, table_name, column_name, column_type, default_value, nullok):
+    model.table(schema_name, table_name).create_column(Column.define(column_name, column_type, default=default_value, nullok=nullok)) 
 
 # create a foreign key
-def create_fkey(tdoc, schema_name, table_name, column_name, reference_schema, reference_table, reference_column, constraint_name, on_update, on_delete):
+# HT: recommend delete this function as it is doesn't add any value and harder to read. This is also incomplete as it doesn't support composite-fks    
+def add_fkey(model, schema_name, table_name, column_name, reference_schema, reference_table, reference_column, constraint_name, on_update, on_delete):
     fkey_def = ForeignKey.define([column_name], reference_schema, reference_table, [reference_column], 
                                  on_update=on_update,
                                  on_delete=on_delete,
                                  constraint_names=[ [schema_name, constraint_name] ])
-    tdoc.table(schema_name, table_name).create_fkey(fkey_def)
+    model.table(schema_name, table_name).create_fkey(fkey_def)
 
+# ---------------------------------------
 # remove a column
-def remove_column_if_exist(tdoc, schema_name, table_name, column_name):
-    if schema_name in tdoc.schemas.keys():
-        schema = tdoc.schemas[schema_name]
-        if table_name in schema.tables.keys():
-            table = schema.tables[table_name]
-            if column_name in table.column_definitions.elements.keys():
-                column = table.column_definitions[column_name]
-                column.drop()
+def remove_column_if_exist(model, schema_name, table_name, column_name):
+    if table_name in model.schemas[schema_name].tables:
+        table = model.schemas[schema_name].tables[table_name]
+        if column_name in table.columns.elements:
+            table[column_name].drop()
+            print("Dropped column %s.%s.%s" % (schema_name, table_name, column_name))
 
-
-# define a vocabulary table
-def define_vocab_table(table_name, comment):
+# ---------------------------------------
+# define a vocabulary table (with specific structure)
+def define_Vocab_table(table_name, table_comment):
     column_defs = [
         Column.define(
             "ID",
-            DomainType(
-                {
-                    "typename": "ermrest_curie",
-                    "base_type": {
-                      "typename": "text"
-                    }
-                }
-            ),
+            builtin_types."ermrest_curie",
             comment='The preferred Compact URI (CURIE) for this term.',                        
             nullok=False,
             default="PDB:{RID}"
         ),
         Column.define(
             "URI",
-            DomainType(
-                {
-                    "typename": "ermrest_uri",
-                    "base_type": {
-                      "typename": "text"
-                    }
-                }
-            ),
+            builtin_types.ermrest_uri,            
             nullok=False,
             default="/id/{RID}",
             comment="The preferred URI for this term."
@@ -73,26 +62,12 @@ def define_vocab_table(table_name, comment):
         ),
         Column.define(
             "Description",
-            DomainType(
-                {
-                    "typename": "markdown",
-                    "base_type": {
-                      "typename": "text"
-                    }
-                }
-            ),
+            builtin_types.markdown,
             nullok=False
         ),
         Column.define(
             "Synonyms",
-            ArrayType(
-                {
-                    "typename": "text[]",
-                    "base_type": {
-                      "typename": "text"
-                    }
-                }
-            ),
+            builtin_types["text[]"],
             nullok=True,
             comment="Alternate human-readable names for this term."
         ),
@@ -113,6 +88,9 @@ def define_vocab_table(table_name, comment):
         ),
         Key.define(["ID"],
                    constraint_names=[["Vocab", '{}_ID_key'.format(table_name)]]
+        ),
+        Key.define(["RID"],
+                   constraint_names=[["Vocab", '{}_RID_key'.format(table_name)]]
         )
     ]
 
@@ -145,12 +123,13 @@ def define_vocab_table(table_name, comment):
     
     return table_def
 
-# define ihm_pseudo_site table
+# ========================================================
+# -- create a table that is not a Vocab structure
+# -- define ihm_pseudo_site table --> Brida reviewed
 def define_tdoc_ihm_pseudo_site():
     table_name='ihm_pseudo_site'
     comment='...'
 
-    
     column_defs = [
         Column.define(
             "id",
@@ -186,12 +165,18 @@ def define_tdoc_ihm_pseudo_site():
     ]
     
     key_defs = [
-       Key.define(["id"],
-                   constraint_names=[["PDB", "ihm_pseudo_site_id_key"]]
-        )
+        Key.define(["id"], constraint_names=[["PDB", "ihm_pseudo_site_id_key"]] ),
+        Key.define(["RID"], constraint_names=[["PDB", "ihm_pseudo_site_RID_key"]] ),        
     ]
 
+    # @brinda: add fk pseudo-definition
     fkey_defs = [
+        ForeignKey.define(["structure_id"], "PDB", "Struct", ["id"],
+                          constraint_names=[["PDB", "ihm_pseudo_site_structure_id_fkey"]],
+                          on_update="CASCADE",
+                          on_delete="NO ACTION"   
+        )
+        
     ]
     
     table_def = Table.define(
@@ -205,95 +190,109 @@ def define_tdoc_ihm_pseudo_site():
     
     return table_def
 
-# add rows to Vocab.ihm_cross_link_list_linker_type table
-def add_rows_to_vocab_ihm_cross_link_list_linker_type(catalog):
+# ===================================================
+# update existing table
 
-    rows =[
-        {'Name': 'CYS', 'Description': '...'},
-        {'Name': 'BMSO', 'Description': '...'},
-        {'Name': 'DHSO', 'Description': '...'}
-        ]
-            
-    pb = catalog.getPathBuilder()
-    schema = pb.Vocab
-    ihm_cross_link_list_linker_type = schema.ihm_cross_link_list_linker_type
-    ihm_cross_link_list_linker_type.insert(rows)
-
-# add rows to Vocab.pseudo_site_flag table
-def add_rows_to_vocab_pseudo_site_flag(catalog):
-
-    rows =[
-        {'Name': 'Yes', 'Description': '...'},
-        {'Name': 'No', 'Description': '...'}
-        ]
-            
-    pb = catalog.getPathBuilder()
-    schema = pb.Vocab
-    pseudo_site_flag = schema.pseudo_site_flag
-    pseudo_site_flag.insert(rows)
-
-def main(server_name, catalog_id, credentials):
-    server = DerivaServer('https', server_name, credentials)
-    catalog = server.connect_ermrest(catalog_id)
-    catalog.dcctx['cid'] = "oneoff/model"
-    model = catalog.getCatalogModel()
+def update_PDB_ihm_pseudo_site_feature(model):
+    table = model('PDB', 'ihm_pseudo_site_feature')
     
-    """
-    Add rows to the Vocab.ihm_cross_link_list_linker_type table
-    """
-    add_rows_to_vocab_ihm_cross_link_list_linker_type(catalog)
-    
-    """
-    Create the PDBihm_pseudo_site table
-    """
-    create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_pseudo_site())
-    
-    """
-    Add the PDB.ihm_pseudo_site_feature.pseudo_site_id column
-    """
-    add_column(model, 'PDB', 'ihm_pseudo_site_feature', 'pseudo_site_id', builtin_types.int8, None, True)
-    
-    """
-    Create the foreign key PDB.ihm_pseudo_site_feature.pseudo_site_id references PDB.ihm_pseudo_site.id
-    """
-    create_fkey(model,
-                'PDB', 'ihm_pseudo_site_feature', 'pseudo_site_id', 
-                'PDB', 'ihm_pseudo_site', 'id', 
-                'ihm_pseudo_site_feature_pseudo_site_id_fkey', 'CASCADE', 'SET NULL')
-    
-    """
-    Remove columns from the PDB.ihm_pseudo_site_feature table
-    """
+    # -- Remove columns from the PDB.ihm_pseudo_site_feature table
     remove_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'Cartn_x')
     remove_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'Cartn_y')
     remove_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'Cartn_z')
     remove_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'radius')
     remove_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'description')
     
-    """
-    Create the vocabulary table pseudo_site_flag
-    """
-    create_table_if_not_exist(model, "Vocab",  define_vocab_table('pseudo_site_flag', '...'))
+    # -- add columns
+    table.create_column(
+        Column.define(
+            'pseudo_site_id',
+            builtin_types.int8,
+            nullok=True
+        )
+    )
     
-    """
-    Add rows to the Vocab.pseudo_site_flag table
-    """
-    add_rows_to_vocab_pseudo_site_flag(catalog)
+    # -- add fk
+    # Create the foreign key PDB.ihm_pseudo_site_feature.pseudo_site_id references PDB.ihm_pseudo_site.id
+    table.create_fkey(
+        ForeignKey.define(["pseudo_site_id"], "PDB", "ihm_pseudo_site", ["id"],
+                          constraint_names=[ ["PDB", "ihm_pseudo_site_feature_pseudo_site_id_fkey"] ])                          
+                          on_update="CASCADE",
+                          on_delete="NO ACTION",  # won't allow delete until there is no reference
+    )
     
-    """
-    Add the PDB.ihm_cross_link_restraint.pseudo_site_flag column
-    """
-    add_column(model, 'PDB', 'ihm_cross_link_restraint', 'pseudo_site_flag', builtin_types.text, None, True)
 
-    """
-    Create the foreign key PDB.ihm_cross_link_restraint.pseudo_site_flag references Vocab.pseudo_site_flag.Name
-    """
-    create_fkey(model,
-                'PDB', 'ihm_cross_link_restraint', 'pseudo_site_flag', 
-                'Vocab', 'pseudo_site_flag', 'Name', 
-                'ihm_cross_link_restraint_pseudo_site_flag__Name_fkey', 'CASCADE', 'SET NULL')
+# ---------------
+def update_PDB_ihm_cross_link_restraint(model):
+    table = model("PDB", "ihm_cross_link_restraint")
+    
+    # Add the PDB.ihm_cross_link_restraint.pseudo_site_flag column    
+    table.create_column(
+        Column.define(
+            "pseudo_site_flag",
+            builtin_types.text,
+            comment='...',  # @Brinda: Add comments
+            nullok=True
+        )
+    )
 
+    # Create the foreign key PDB.ihm_cross_link_restraint.pseudo_site_flag references Vocab.pseudo_site_flag.Name
+    table.create_fkey(
+        ForeignKey.define(["pseudo_site_flag"], "Vocab", "pseudo_site_flag", ["Name"],
+                          constraint_names=[ ["Vocab", "ihm_cross_link_restraint_pseudo_site_flag_fkey"] ])                          
+                          on_update="CASCADE",
+                          on_delete="NO ACTION",
+    )
 
+    
+# ========================================================
+# add rows to Vocab.ihm_cross_link_list_linker_type table
+def add_rows_to_Vocab_ihm_cross_link_list_linker_type(catalog):
+
+    rows =[
+        {'Name': 'CYS', 'Description': '...'},
+        {'Name': 'BMSO', 'Description': '...'},
+        {'Name': 'DHSO', 'Description': '...'}
+    ]
+    
+    pb = catalog.getPathBuilder()
+    schema = pb.Vocab
+    ihm_cross_link_list_linker_type = schema.ihm_cross_link_list_linker_type
+    ihm_cross_link_list_linker_type.insert(rows)
+
+# -----------------------------------
+# add rows to Vocab.pseudo_site_flag table
+def add_rows_to_Vocab_pseudo_site_flag(catalog):
+
+    rows =[
+        {'Name': 'Yes', 'Description': '...'},
+        {'Name': 'No', 'Description': '...'}
+    ]
+            
+    pb = catalog.getPathBuilder()
+    schema = pb.Vocab
+    pseudo_site_flag = schema.pseudo_site_flag
+    pseudo_site_flag.insert(rows)
+
+# ============================================================
+def main(server_name, catalog_id, credentials):
+    server = DerivaServer('https', server_name, credentials)
+    catalog = server.connect_ermrest(catalog_id)
+    catalog.dcctx['cid'] = "oneoff/model"
+    model = catalog.getCatalogModel()
+
+    # -- create tables from scratch
+    create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_pseudo_site())
+    create_table_if_not_exist(model, "Vocab",  define_vocab_table('pseudo_site_flag', 'comment goes here...'))
+    
+    # -- update existing tables
+    update_PDB_ihm_pseudo_site_feature(model)
+    update_PDB_ihm_cross_link_restraint(model)
+    
+    # -- data manipulation
+    add_rows_to_Vocab_ihm_cross_link_list_linker_type(catalog)
+    add_rows_to_Vocab_pseudo_site_flag(catalog)
+    
 # ===================================================    
 
 if __name__ == '__main__':
