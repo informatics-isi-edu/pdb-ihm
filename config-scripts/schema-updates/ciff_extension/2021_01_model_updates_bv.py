@@ -117,7 +117,7 @@ def define_Vocab_table(table_name, table_comment):
         column_defs,
         key_defs=key_defs,
         fkey_defs=fkey_defs,
-        comment=comment,
+        comment=table_comment,
         provide_system=True
     )
     
@@ -182,7 +182,7 @@ def define_tdoc_ihm_pseudo_site():
 
     # @brinda: add fk pseudo-definition
     fkey_defs = [
-        ForeignKey.define(["structure_id"], "PDB", "struct", ["id"],
+        ForeignKey.define(["structure_id"], "PDB", "entry", ["id"],
                           constraint_names=[["PDB", "ihm_pseudo_site_structure_id_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"   
@@ -295,7 +295,7 @@ def main(server_name, catalog_id, credentials):
 
     # -- create tables from scratch
     create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_pseudo_site())
-    create_table_if_not_exist(model, "Vocab",  define_vocab_table('pseudo_site_flag', 'Flag for crosslinks involving pseudo sites'))
+    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('pseudo_site_flag', 'Flag for crosslinks involving pseudo sites'))
     
     # -- update existing tables
     update_PDB_ihm_pseudo_site_feature(model)
