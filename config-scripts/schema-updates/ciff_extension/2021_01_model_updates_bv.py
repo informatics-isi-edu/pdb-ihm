@@ -34,7 +34,8 @@ def remove_column_if_exist(model, schema_name, table_name, column_name):
     if table_name in model.schemas[schema_name].tables:
         table = model.schemas[schema_name].tables[table_name]
         if column_name in table.columns.elements:
-            table[column_name].drop()
+            #table[column_name].drop()
+            table.column_definitions[column_name].drop()
             print("Dropped column %s.%s.%s" % (schema_name, table_name, column_name))
 
 # ---------------------------------------
@@ -205,7 +206,8 @@ def define_tdoc_ihm_pseudo_site():
 # update existing table
 
 def update_PDB_ihm_pseudo_site_feature(model):
-    table = model('PDB', 'ihm_pseudo_site_feature')
+    #table = model('PDB', 'ihm_pseudo_site_feature')
+    table = model.schemas['PDB'].tables['ihm_pseudo_site_feature']
     
     # -- Remove columns from the PDB.ihm_pseudo_site_feature table
     remove_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'Cartn_x')
@@ -215,28 +217,29 @@ def update_PDB_ihm_pseudo_site_feature(model):
     remove_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'description')
     
     # -- add columns
-    table.create_column(
-        Column.define(
-            'pseudo_site_id',
-            builtin_types.int8,
-            comment='Pseudo site identifier corresponding to this feature',
-            nullok=False
+    if table.columns['pseudo_site_id']==None:   #@serban to review
+        table.create_column(
+            Column.define(
+                'pseudo_site_id',
+                builtin_types.int8,
+                comment='Pseudo site identifier corresponding to this feature',
+                nullok=False
+            )
         )
-    )
-    
     # -- add fk
     # Create the foreign key PDB.ihm_pseudo_site_feature.pseudo_site_id references PDB.ihm_pseudo_site.id
-    table.create_fkey(
-        ForeignKey.define(["pseudo_site_id"], "PDB", "ihm_pseudo_site", ["id"],
-                          constraint_names=[ ["PDB", "ihm_pseudo_site_feature_pseudo_site_id_fkey"] ]),
-                          on_update="CASCADE",
-                          on_delete="NO ACTION",  # won't allow delete until there is no reference
-    )
-    
+    if table.foreign_keys[(model.schemas['PDB'],'ihm_pseudo_site_feature_pseudo_site_id_fkey')]==None: #@serban to review
+        table.create_fkey(
+            ForeignKey.define(["pseudo_site_id"], "PDB", "ihm_pseudo_site", ["id"],
+                            constraint_names=[ ["PDB", "ihm_pseudo_site_feature_pseudo_site_id_fkey"] ],
+                            on_update="CASCADE",
+                            on_delete="NO ACTION")  # won't allow delete until there is no reference
+        )
 
 # ---------------
 def update_PDB_ihm_cross_link_restraint(model):
-    table = model("PDB", "ihm_cross_link_restraint")
+    #table = model("PDB", "ihm_cross_link_restraint")
+    table = model.schemas['PDB'].tables['ihm_cross_link_restraint']
     
     # Add the PDB.ihm_cross_link_restraint.pseudo_site_flag column    
     table.create_column(
@@ -251,20 +254,19 @@ def update_PDB_ihm_cross_link_restraint(model):
     # Create the foreign key PDB.ihm_cross_link_restraint.pseudo_site_flag references Vocab.pseudo_site_flag.Name
     table.create_fkey(
         ForeignKey.define(["pseudo_site_flag"], "Vocab", "pseudo_site_flag", ["Name"],
-                          constraint_names=[ ["Vocab", "ihm_cross_link_restraint_pseudo_site_flag_fkey"] ]),
+                          constraint_names=[ ["Vocab", "ihm_cross_link_restraint_pseudo_site_flag_fkey"] ],
                           on_update="CASCADE",
-                          on_delete="NO ACTION",
+                          on_delete="NO ACTION")
     )
-
     
 # ========================================================
 # add rows to Vocab.ihm_cross_link_list_linker_type table
 def add_rows_to_Vocab_ihm_cross_link_list_linker_type(catalog):
 
     rows =[
-        {'Name': 'CYS', 'Description': '...'},
-        {'Name': 'BMSO', 'Description': '...'},
-        {'Name': 'DHSO', 'Description': '...'}
+        {'Name': 'CYS', 'Description': 'CYS'},
+        {'Name': 'BMSO', 'Description': 'BMSO'},
+        {'Name': 'DHSO', 'Description': 'DHSO'}
     ]
     
     pb = catalog.getPathBuilder()
@@ -274,7 +276,7 @@ def add_rows_to_Vocab_ihm_cross_link_list_linker_type(catalog):
 
 # -----------------------------------
 # add rows to Vocab.pseudo_site_flag table
-def add_rows_to_Vocab_pseudo_site_flag(catalog):
+def add_rows_to_Vocab_pseudo_site_flag(catalog):    #@serban to review
 
     rows =[
         {'Name': 'Yes', 'Description': 'Crosslink involves a pseudo site'},
