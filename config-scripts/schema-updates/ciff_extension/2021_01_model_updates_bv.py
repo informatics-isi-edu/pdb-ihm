@@ -272,7 +272,7 @@ def add_rows_to_Vocab_ihm_cross_link_list_linker_type(catalog):
     pb = catalog.getPathBuilder()
     schema = pb.Vocab
     ihm_cross_link_list_linker_type = schema.ihm_cross_link_list_linker_type
-    ihm_cross_link_list_linker_type.insert(rows)
+    ihm_cross_link_list_linker_type.insert(rows, defaults=['ID', 'URI'])
 
 # -----------------------------------
 # add rows to Vocab.pseudo_site_flag table
@@ -286,7 +286,7 @@ def add_rows_to_Vocab_pseudo_site_flag(catalog):    #@serban to review
     pb = catalog.getPathBuilder()
     schema = pb.Vocab
     pseudo_site_flag = schema.pseudo_site_flag
-    pseudo_site_flag.insert(rows)
+    pseudo_site_flag.insert(rows, defaults=['ID', 'URI'])
 
 # ============================================================
 def main(server_name, catalog_id, credentials):
