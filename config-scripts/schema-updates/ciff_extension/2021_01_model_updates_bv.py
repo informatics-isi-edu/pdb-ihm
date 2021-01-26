@@ -6,6 +6,13 @@ from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key,
 # ========================================================
 # utility
 
+# create a vocabulary table if it does not exixt
+def create_vocabulary_table_if_not_exist(model, schema_name, table_name, comment):
+
+    schema = model.schemas[schema_name]
+    if table_name not in schema.tables:
+        schema.create_table(Table.define_vocabulary(table_name, 'PDB:{RID}', comment=comment))
+
 # add table if not exist or update if exist
 def create_table_if_not_exist(model, schema_name, tdoc):
 
@@ -217,7 +224,8 @@ def update_PDB_ihm_pseudo_site_feature(model):
     remove_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'description')
     
     # -- add columns
-    if table.columns['pseudo_site_id']==None:   #@serban to review
+    #if table.columns['pseudo_site_id']==None:   #@serban to review
+    if 'pseudo_site_id' not in table.columns.elements:
         table.create_column(
             Column.define(
                 'pseudo_site_id',
@@ -228,7 +236,8 @@ def update_PDB_ihm_pseudo_site_feature(model):
         )
     # -- add fk
     # Create the foreign key PDB.ihm_pseudo_site_feature.pseudo_site_id references PDB.ihm_pseudo_site.id
-    if table.foreign_keys[(model.schemas['PDB'],'ihm_pseudo_site_feature_pseudo_site_id_fkey')]==None: #@serban to review
+    #if table.foreign_keys[(model.schemas['PDB'],'ihm_pseudo_site_feature_pseudo_site_id_fkey')]==None: #@serban to review
+    if (model.schemas['PDB'],'ihm_pseudo_site_feature_pseudo_site_id_fkey') not in table.foreign_keys.elements:
         table.create_fkey(
             ForeignKey.define(["pseudo_site_id"], "PDB", "ihm_pseudo_site", ["id"],
                             constraint_names=[ ["PDB", "ihm_pseudo_site_feature_pseudo_site_id_fkey"] ],
