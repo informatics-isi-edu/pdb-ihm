@@ -184,7 +184,7 @@ def define_tdoc_ihm_pseudo_site():
     ]
     
     key_defs = [
-        Key.define(["id"], constraint_names=[["PDB", "ihm_pseudo_site_id_key"]] ),
+        Key.define(["structure", "id"], constraint_names=[["PDB", "ihm_pseudo_site_primary_key"]] ),
         Key.define(["RID"], constraint_names=[["PDB", "ihm_pseudo_site_RID_key"]] ),        
     ]
 
@@ -254,7 +254,7 @@ def define_tdoc_ihm_cross_link_pseudo_site():
     ]
 
     key_defs = [
-        Key.define(["id"], constraint_names=[["PDB", "ihm_cross_link_pseudo_site_id_key"]] ),
+        Key.define(["structure_id", "id"], constraint_names=[["PDB", "ihm_cross_link_pseudo_site_primary_key"]] ),
         Key.define(["RID"], constraint_names=[["PDB", "ihm_cross_link_pseudo_site_RID_key"]] ),
     ]
 
@@ -265,12 +265,12 @@ def define_tdoc_ihm_cross_link_pseudo_site():
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
-        ForeignKey.define(["restraint_id"], "PDB", "ihm_cross_link_restraint", ["id"],
+        ForeignKey.define(["structure_id", "restraint_id"], "PDB", "ihm_cross_link_restraint", ["structure_id", "id"],
                           constraint_names=[["PDB", "ihm_cross_link_pseudo_site_restraint_id_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
-        ForeignKey.define(["model_id"], "PDB", "ihm_model_list", ["model_id"],
+        ForeignKey.define(["structure_id", "model_id"], "PDB", "ihm_model_list", ["structure_id", "model_id"],
                           constraint_names=[["PDB", "ihm_cross_link_pseudo_site_model_id_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
@@ -350,7 +350,7 @@ def define_tdoc_ihm_ensemble_sub_sample():
     ]
 
     key_defs = [
-        Key.define(["id"], constraint_names=[["PDB", "ihm_ensemble_sub_sample_id_key"]] ),
+        Key.define(["structure_id", "id"], constraint_names=[["PDB", "ihm_ensemble_sub_sample_primary_key"]] ),
         Key.define(["RID"], constraint_names=[["PDB", "ihm_ensemble_sub_sample_RID_key"]] ),
     ]
 
@@ -361,17 +361,17 @@ def define_tdoc_ihm_ensemble_sub_sample():
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
-        ForeignKey.define(["ensemble_id"], "PDB", "ihm_ensemble_info", ["ensemble_id"],
+        ForeignKey.define(["structure_id", "ensemble_id"], "PDB", "ihm_ensemble_info", ["structure_id", "ensemble_id"],
                           constraint_names=[["PDB", "ihm_ensemble_sub_sample_ensemble_id_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
-        ForeignKey.define(["model_group_id"], "PDB", "ihm_model_group", ["id"],
+        ForeignKey.define(["structure_id", "model_group_id"], "PDB", "ihm_model_group", ["structure_id, id"],
                           constraint_names=[["PDB", "ihm_ensemble_sub_sample_model_group_id_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
-        ForeignKey.define(["file_id"], "PDB", "ihm_external_files", ["id"],
+        ForeignKey.define(["structure_id", "file_id"], "PDB", "ihm_external_files", ["structure_id", "id"],
                           constraint_names=[["PDB", "ihm_ensemble_sub_sample_file_id_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
@@ -420,7 +420,7 @@ def update_PDB_ihm_pseudo_site_feature(model):
     #if table.foreign_keys[(model.schemas['PDB'],'ihm_pseudo_site_feature_pseudo_site_id_fkey')]==None: #@serban to review
     if (model.schemas['PDB'],'ihm_pseudo_site_feature_pseudo_site_id_fkey') not in table.foreign_keys.elements:
         table.create_fkey(
-            ForeignKey.define(["pseudo_site_id"], "PDB", "ihm_pseudo_site", ["id"],
+            ForeignKey.define(["structure_id", "pseudo_site_id"], "PDB", "ihm_pseudo_site", ["structure_id","id"],
                             constraint_names=[ ["PDB", "ihm_pseudo_site_feature_pseudo_site_id_fkey"] ],
                             on_update="CASCADE",
                             on_delete="NO ACTION")  # won't allow delete until there is no reference
@@ -561,7 +561,7 @@ def main(server_name, catalog_id, credentials):
     model = catalog.getCatalogModel()
 
     # -- create tables from scratch
-    #create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_pseudo_site())
+    create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_pseudo_site())
     #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('pseudo_site_flag', 'Flag for crosslinks involving pseudo sites'))
     create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_ensemble_sub_sample())
     create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sample_flag', 'Flag for ensembles consisting of sub samples'))
@@ -570,8 +570,8 @@ def main(server_name, catalog_id, credentials):
     create_table_if_not_exist(model, "Vocab",  define_Vocab_table('cross_link_partner', 'Identity of the crosslink partner'))
 
     # -- update existing tables
-    #update_PDB_ihm_pseudo_site_feature(model)
-    #update_PDB_ihm_cross_link_restraint(model)
+    update_PDB_ihm_pseudo_site_feature(model)
+    update_PDB_ihm_cross_link_restraint(model)
     update_PDB_ihm_ensemble_info(model)
     
     # -- data manipulation
