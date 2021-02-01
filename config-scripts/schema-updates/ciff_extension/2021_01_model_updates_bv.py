@@ -229,7 +229,7 @@ def define_tdoc_ihm_cross_link_pseudo_site():
         ),
         Column.define(
             "cross_link_partner",
-            builtin_types.int8,
+            builtin_types.text,
             comment='The identity of the crosslink partner corresponding to the pseudo site',
             nullok=False
         ),
@@ -460,7 +460,9 @@ def update_PDB_ihm_ensemble_info(model):
             builtin_types.text,
             comment='A flag that indicates whether the ensemble consists of sub samples',
             nullok=True
-        ),
+        )
+    )
+    table.create_column(
         Column.define(
             "sub_sampling_type",
             builtin_types.text,
@@ -474,7 +476,9 @@ def update_PDB_ihm_ensemble_info(model):
         ForeignKey.define(["sub_sample_flag"], "Vocab", "sub_sample_flag", ["Name"],
                           constraint_names=[ ["Vocab", "ihm_ensemble_info_sub_sample_flag_fkey"] ],
                           on_update="CASCADE",
-                          on_delete="NO ACTION"),
+                          on_delete="NO ACTION")
+        )
+    table.create_fkey(
         ForeignKey.define(["sub_sampling_type"], "Vocab", "sub_sampling_type", ["Name"],
                           constraint_names=[ ["Vocab", "ihm_ensemble_info_sub_sampling_type_fkey"] ],
                           on_update="CASCADE",
@@ -571,7 +575,7 @@ def main(server_name, catalog_id, credentials):
 
     # -- update existing tables
     update_PDB_ihm_pseudo_site_feature(model)
-    update_PDB_ihm_cross_link_restraint(model)
+    #update_PDB_ihm_cross_link_restraint(model)
     update_PDB_ihm_ensemble_info(model)
     
     # -- data manipulation
