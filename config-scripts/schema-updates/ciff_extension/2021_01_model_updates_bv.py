@@ -366,7 +366,7 @@ def define_tdoc_ihm_ensemble_sub_sample():
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
-        ForeignKey.define(["structure_id", "model_group_id"], "PDB", "ihm_model_group", ["structure_id, id"],
+        ForeignKey.define(["structure_id", "model_group_id"], "PDB", "ihm_model_group", ["structure_id", "id"],
                           constraint_names=[["PDB", "ihm_ensemble_sub_sample_model_group_id_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
@@ -561,13 +561,13 @@ def main(server_name, catalog_id, credentials):
     model = catalog.getCatalogModel()
 
     # -- create tables from scratch
+    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('cross_link_partner', 'Identity of the crosslink partner'))
+    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sample_flag', 'Flag for ensembles consisting of sub samples'))
+    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sampling_type', 'Types of sub samples in ensembles'))
     create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_pseudo_site())
     #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('pseudo_site_flag', 'Flag for crosslinks involving pseudo sites'))
     create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_ensemble_sub_sample())
-    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sample_flag', 'Flag for ensembles consisting of sub samples'))
-    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sampling_type', 'Types of sub samples in ensembles'))
     create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_cross_link_pseudo_site())
-    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('cross_link_partner', 'Identity of the crosslink partner'))
 
     # -- update existing tables
     update_PDB_ihm_pseudo_site_feature(model)
