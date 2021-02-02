@@ -2166,33 +2166,6 @@
          }
       },
       {
-         "column" : "Cartn_X",
-         "schema" : "PDB",
-         "table" : "ihm_pseudo_site_feature",
-         "uri" : "tag:misd.isi.edu,2015:display",
-         "value" : {
-            "name" : "Cartesian X"
-         }
-      },
-      {
-         "column" : "Cartn_Y",
-         "schema" : "PDB",
-         "table" : "ihm_pseudo_site_feature",
-         "uri" : "tag:misd.isi.edu,2015:display",
-         "value" : {
-            "name" : "Cartesian Y"
-         }
-      },
-      {
-         "column" : "Cartn_Z",
-         "schema" : "PDB",
-         "table" : "ihm_pseudo_site_feature",
-         "uri" : "tag:misd.isi.edu,2015:display",
-         "value" : {
-            "name" : "Cartesian Z"
-         }
-      },
-      {
          "column" : "distance_lower_limit_esd",
          "schema" : "PDB",
          "table" : "ihm_derived_distance_restraint",
@@ -7002,6 +6975,10 @@
                [
                   "PDB",
                   "ihm_epr_restraint_model_id_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_cross_link_pseudo_site_model_id_fkey"
                ]
             ],
             "filter" : "detailed"
@@ -12663,6 +12640,10 @@
                ],
                [
                   "PDB",
+                  "ihm_ensemble_sub_sample_file_id_fkey"
+               ],
+               [
+                  "PDB",
                   "ihm_localization_density_files_file_id_fkey"
                ]
             ],
@@ -14565,11 +14546,19 @@
                      "RID"
                   ]
                },
-               "Cartn_x",
-               "Cartn_y",
-               "Cartn_z",
-               "radius",
-               "description",
+               {
+                  "comment" : "A reference to table ihm_pseudo_site.id.",
+                  "markdown_name" : "Pseudo Site Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_pseudo_site_feature_pseudo_site_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
                {
                   "comment" : "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
                   "markdown_name" : "Uploaded Restraint File",
@@ -14612,11 +14601,19 @@
                      "RID"
                   ]
                },
-               "Cartn_x",
-               "Cartn_y",
-               "Cartn_z",
-               "radius",
-               "description",
+               {
+                  "comment" : "A reference to table ihm_pseudo_site.id.",
+                  "markdown_name" : "Pseudo Site Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_pseudo_site_feature_pseudo_site_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
                {
                   "comment" : "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
                   "markdown_name" : "Uploaded Restraint File",
@@ -14672,11 +14669,19 @@
                      "RID"
                   ]
                },
-               "Cartn_x",
-               "Cartn_y",
-               "Cartn_z",
-               "radius",
-               "description"
+               {
+                  "comment" : "A reference to table ihm_pseudo_site.id.",
+                  "markdown_name" : "Pseudo Site Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_pseudo_site_feature_pseudo_site_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               }
             ]
          }
       },
@@ -15185,6 +15190,14 @@
                   "PDB",
                   "ihm_ensemble_info_ensemble_clustering_feature_fkey"
                ],
+               [
+                  "PDB",
+                  "ihm_ensemble_info_ensemble_sub_sample_flag_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_ensemble_info_ensemble_sub_sampling_type_fkey"
+               ],
                "num_ensemble_models",
                "num_ensemble_models_deposited",
                "ensemble_precision_value",
@@ -15253,6 +15266,14 @@
                [
                   "PDB",
                   "ihm_ensemble_info_ensemble_clustering_feature_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_ensemble_info_ensemble_sub_sample_flag_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_ensemble_info_ensemble_sub_sampling_type_fkey"
                ],
                "num_ensemble_models",
                "num_ensemble_models_deposited",
@@ -15336,6 +15357,14 @@
                   "PDB",
                   "ihm_ensemble_info_ensemble_clustering_feature_fkey"
                ],
+               [
+                  "PDB",
+                  "ihm_ensemble_info_ensemble_sub_sample_flag_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_ensemble_info_ensemble_sub_sampling_type_fkey"
+               ],
                "num_ensemble_models",
                "num_ensemble_models_deposited",
                "ensemble_precision_value",
@@ -15362,6 +15391,10 @@
          "uri" : "tag:isrd.isi.edu,2016:visible-foreign-keys",
          "value" : {
             "detailed" : [
+               [
+                  "PDB",
+                  "ihm_ensemble_sub_sample_ensemble_id_fkey"
+               ],
                [
                   "PDB",
                   "ihm_cross_link_result_ensemble_id_fkey"
@@ -19245,6 +19278,10 @@
                [
                   "PDB",
                   "ihm_ensemble_info_model_group_id_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_ensemble_sub_sample_model_group_id_fkey"
                ]
             ],
             "filter" : "detailed"
@@ -19422,6 +19459,10 @@
                [
                   "PDB",
                   "ihm_cross_link_restraint_conditional_crosslink_flag_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_cross_link_restraint_pseudo_site_flag_fkey"
                ],
                {
                   "source" : [
@@ -19630,6 +19671,10 @@
                [
                   "PDB",
                   "ihm_cross_link_restraint_conditional_crosslink_flag_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_cross_link_restraint_pseudo_site_flag_fkey"
                ],
                {
                   "source" : [
@@ -19875,6 +19920,10 @@
                   "PDB",
                   "ihm_cross_link_restraint_conditional_crosslink_flag_fkey"
                ],
+               [
+                  "PDB",
+                  "ihm_cross_link_restraint_pseudo_site_flag_fkey"
+               ],
                {
                   "source" : [
                      {
@@ -19933,6 +19982,10 @@
          "uri" : "tag:isrd.isi.edu,2016:visible-foreign-keys",
          "value" : {
             "detailed" : [
+               [
+                  "PDB",
+                  "ihm_cross_link_pseudo_site_restraint_id_fkey"
+               ],
                [
                   "PDB",
                   "ihm_cross_link_result_restraint_id_fkey"

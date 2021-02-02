@@ -1183,6 +1183,33 @@
             }
         },
         {
+            "column": "Cartn_X",
+            "schema": "PDB",
+            "table": "ihm_pseudo_site_feature",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Cartesian X"
+            }
+        },
+        {
+            "column": "Cartn_Y",
+            "schema": "PDB",
+            "table": "ihm_pseudo_site_feature",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Cartesian Y"
+            }
+        },
+        {
+            "column": "Cartn_Z",
+            "schema": "PDB",
+            "table": "ihm_pseudo_site_feature",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Cartesian Z"
+            }
+        },
+        {
             "column": "distance_lower_limit_esd",
             "schema": "PDB",
             "table": "ihm_derived_distance_restraint",
@@ -1262,7 +1289,7 @@
             "table": "ihm_localization_density_files",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Localization Density Files",
+                "name": "Localization Density Files Referenced Via DOI",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -1279,7 +1306,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -1293,7 +1320,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "File Id",
+                        "markdown_name": "file id",
                         "source": [
                             {
                                 "outbound": [
@@ -1306,7 +1333,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_ensemble_info.ensemble_id.",
-                        "markdown_name": "Ensemble Id",
+                        "markdown_name": "ensemble id",
                         "source": [
                             {
                                 "outbound": [
@@ -1319,7 +1346,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -1332,7 +1359,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -1345,7 +1372,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "entity poly segment id",
                         "source": [
                             {
                                 "outbound": [
@@ -1361,7 +1388,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -1375,7 +1402,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "File Id",
+                        "markdown_name": "file id",
                         "source": [
                             {
                                 "outbound": [
@@ -1388,7 +1415,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_ensemble_info.ensemble_id.",
-                        "markdown_name": "Ensemble Id",
+                        "markdown_name": "ensemble id",
                         "source": [
                             {
                                 "outbound": [
@@ -1401,7 +1428,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -1414,7 +1441,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -1427,7 +1454,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "entity poly segment id",
                         "source": [
                             {
                                 "outbound": [
@@ -1456,7 +1483,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -1470,7 +1497,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "File Id",
+                        "markdown_name": "file id",
                         "source": [
                             {
                                 "outbound": [
@@ -1483,7 +1510,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_ensemble_info.ensemble_id.",
-                        "markdown_name": "Ensemble Id",
+                        "markdown_name": "ensemble id",
                         "source": [
                             {
                                 "outbound": [
@@ -1496,7 +1523,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -1509,7 +1536,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -1522,7 +1549,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "entity poly segment id",
                         "source": [
                             {
                                 "outbound": [
@@ -1558,7 +1585,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -1572,7 +1599,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_model_group.id.",
-                        "markdown_name": "Model Group Id",
+                        "markdown_name": "model group id",
                         "source": [
                             {
                                 "outbound": [
@@ -1585,7 +1612,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -1605,7 +1632,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -1619,7 +1646,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_model_group.id.",
-                        "markdown_name": "Model Group Id",
+                        "markdown_name": "model group id",
                         "source": [
                             {
                                 "outbound": [
@@ -1632,7 +1659,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -1665,7 +1692,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -1679,7 +1706,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_model_group.id.",
-                        "markdown_name": "Model Group Id",
+                        "markdown_name": "model group id",
                         "source": [
                             {
                                 "outbound": [
@@ -1692,7 +1719,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -1715,7 +1742,7 @@
             "table": "ihm_chemical_component_descriptor",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Chemical Descriptors",
+                "name": "Chemical Descriptors of Molecular Probes Used in Experiments",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -1732,7 +1759,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -1757,7 +1784,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -1795,7 +1822,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -1870,7 +1897,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -1889,7 +1916,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -1921,7 +1948,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -1943,7 +1970,7 @@
             "table": "ihm_dataset_external_reference",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "External Files Corresponding to Input Datasets",
+                "name": "Links Between External Files and Input Datasets",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -1960,7 +1987,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -1974,7 +2001,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -1987,7 +2014,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "File Id",
+                        "markdown_name": "file id",
                         "source": [
                             {
                                 "outbound": [
@@ -2003,7 +2030,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -2017,7 +2044,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -2030,7 +2057,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "File Id",
+                        "markdown_name": "file id",
                         "source": [
                             {
                                 "outbound": [
@@ -2059,7 +2086,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -2073,7 +2100,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -2086,7 +2113,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "File Id",
+                        "markdown_name": "file id",
                         "source": [
                             {
                                 "outbound": [
@@ -2148,7 +2175,7 @@
                     "entity_description_1",
                     "entity_description_2",
                     {
-                        "markdown_name": "Entity Id 1",
+                        "markdown_name": "entity id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -2160,7 +2187,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Entity Id 2",
+                        "markdown_name": "entity id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -2172,7 +2199,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Component Id 1",
+                        "markdown_name": "comp id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -2184,7 +2211,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Component Id 2",
+                        "markdown_name": "comp id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -2196,7 +2223,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Sequence Id 1",
+                        "markdown_name": "seq id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -2208,7 +2235,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Sequence Id 2",
+                        "markdown_name": "seq id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -2239,7 +2266,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -2251,8 +2278,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue 1",
+                        "markdown_name": "polymeric residue 1",
                         "source": [
                             {
                                 "outbound": [
@@ -2264,8 +2290,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue 2",
+                        "markdown_name": "polymeric residue 2",
                         "source": [
                             {
                                 "outbound": [
@@ -2276,19 +2301,10 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_list_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
+                    [
+                        "PDB",
+                        "ihm_cross_link_list_Entry_Related_File_fkey"
+                    ]
                 ],
                 "detailed": [
                     {
@@ -2310,7 +2326,7 @@
                     "entity_description_1",
                     "entity_description_2",
                     {
-                        "markdown_name": "Entity Id 1",
+                        "markdown_name": "entity id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -2322,7 +2338,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Entity Id 2",
+                        "markdown_name": "entity id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -2334,7 +2350,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Component Id 1",
+                        "markdown_name": "comp id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -2346,7 +2362,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Component Id 2",
+                        "markdown_name": "comp id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -2358,7 +2374,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Sequence Id 1",
+                        "markdown_name": "seq id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -2370,7 +2386,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Sequence Id 2",
+                        "markdown_name": "seq id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -2404,8 +2420,7 @@
                         "ihm_cross_link_list_dataset_list_id_fkey"
                     ],
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue 1",
+                        "markdown_name": "polymeric residue 1",
                         "source": [
                             {
                                 "outbound": [
@@ -2417,8 +2432,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue 2",
+                        "markdown_name": "polymeric residue 2",
                         "source": [
                             {
                                 "outbound": [
@@ -2429,19 +2443,10 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_list_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
+                    [
+                        "PDB",
+                        "ihm_cross_link_list_Entry_Related_File_fkey"
+                    ],
                     {
                         "source": "RCT"
                     },
@@ -2499,7 +2504,7 @@
                     "entity_description_1",
                     "entity_description_2",
                     {
-                        "markdown_name": "Entity Id 1",
+                        "markdown_name": "entity id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -2511,7 +2516,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Entity Id 2",
+                        "markdown_name": "entity id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -2523,7 +2528,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Component Id 1",
+                        "markdown_name": "comp id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -2535,7 +2540,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Component Id 2",
+                        "markdown_name": "comp id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -2547,7 +2552,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Sequence Id 1",
+                        "markdown_name": "seq id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -2559,7 +2564,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Sequence Id 2",
+                        "markdown_name": "seq id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -2593,8 +2598,7 @@
                         "ihm_cross_link_list_dataset_list_id_fkey"
                     ],
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue 1",
+                        "markdown_name": "polymeric residue 1",
                         "source": [
                             {
                                 "outbound": [
@@ -2606,8 +2610,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue 2",
+                        "markdown_name": "polymeric residue 2",
                         "source": [
                             {
                                 "outbound": [
@@ -2657,7 +2660,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -2685,7 +2688,7 @@
                     ],
                     {
                         "comment": "A reference to table ihm_chemical_component_descriptor.id.",
-                        "markdown_name": "Probe Chemical Component Descriptor Id",
+                        "markdown_name": "probe chem comp descriptor id",
                         "source": [
                             {
                                 "outbound": [
@@ -2698,7 +2701,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_chemical_component_descriptor.id.",
-                        "markdown_name": "Reactive Probe Chemical Component Descriptor Id",
+                        "markdown_name": "reactive probe chem comp descriptor id",
                         "source": [
                             {
                                 "outbound": [
@@ -2714,7 +2717,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -2742,7 +2745,7 @@
                     ],
                     {
                         "comment": "A reference to table ihm_chemical_component_descriptor.id.",
-                        "markdown_name": "Probe Chemical Component Descriptor Id",
+                        "markdown_name": "probe chem comp descriptor id",
                         "source": [
                             {
                                 "outbound": [
@@ -2755,7 +2758,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_chemical_component_descriptor.id.",
-                        "markdown_name": "Reactive Probe Chemical Component Descriptor Id",
+                        "markdown_name": "reactive probe chem comp descriptor id",
                         "source": [
                             {
                                 "outbound": [
@@ -2784,7 +2787,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -2812,7 +2815,7 @@
                     ],
                     {
                         "comment": "A reference to table ihm_chemical_component_descriptor.id.",
-                        "markdown_name": "Probe Chemical Component Descriptor Id",
+                        "markdown_name": "probe chem comp descriptor id",
                         "source": [
                             {
                                 "outbound": [
@@ -2825,7 +2828,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_chemical_component_descriptor.id.",
-                        "markdown_name": "Reactive Probe Chemical Component Descriptor Id",
+                        "markdown_name": "reactive probe chem comp descriptor id",
                         "source": [
                             {
                                 "outbound": [
@@ -2879,7 +2882,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -2893,7 +2896,7 @@
                     "ordinal_id",
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -2908,7 +2911,7 @@
                     "fitting_method",
                     {
                         "comment": "A reference to table citation.id.",
-                        "markdown_name": "Fitting Method Citation Id",
+                        "markdown_name": "fitting method citation id",
                         "source": [
                             {
                                 "outbound": [
@@ -2925,7 +2928,7 @@
                     ],
                     {
                         "comment": "A reference to table software.pdbx_ordinal.",
-                        "markdown_name": "Fitting Software Id",
+                        "markdown_name": "fitting software id",
                         "source": [
                             {
                                 "outbound": [
@@ -2940,7 +2943,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -2956,7 +2959,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -2970,7 +2973,7 @@
                     "ordinal_id",
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -2985,7 +2988,7 @@
                     "fitting_method",
                     {
                         "comment": "A reference to table citation.id.",
-                        "markdown_name": "Fitting Method Citation Id",
+                        "markdown_name": "fitting method citation id",
                         "source": [
                             {
                                 "outbound": [
@@ -3002,7 +3005,7 @@
                     ],
                     {
                         "comment": "A reference to table software.pdbx_ordinal.",
-                        "markdown_name": "Fitting Software Id",
+                        "markdown_name": "fitting software id",
                         "source": [
                             {
                                 "outbound": [
@@ -3017,7 +3020,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -3046,7 +3049,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -3060,7 +3063,7 @@
                     "ordinal_id",
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -3075,7 +3078,7 @@
                     "fitting_method",
                     {
                         "comment": "A reference to table citation.id.",
-                        "markdown_name": "Fitting Method Citation Id",
+                        "markdown_name": "fitting method citation id",
                         "source": [
                             {
                                 "outbound": [
@@ -3092,7 +3095,7 @@
                     ],
                     {
                         "comment": "A reference to table software.pdbx_ordinal.",
-                        "markdown_name": "Fitting Software Id",
+                        "markdown_name": "fitting software id",
                         "source": [
                             {
                                 "outbound": [
@@ -3107,7 +3110,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -3143,7 +3146,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -3157,7 +3160,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_2dem_class_average_restraint.id.",
-                        "markdown_name": "Restraint Id",
+                        "markdown_name": "restraint id",
                         "source": [
                             {
                                 "outbound": [
@@ -3170,7 +3173,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -3199,7 +3202,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -3213,7 +3216,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_2dem_class_average_restraint.id.",
-                        "markdown_name": "Restraint Id",
+                        "markdown_name": "restraint id",
                         "source": [
                             {
                                 "outbound": [
@@ -3226,7 +3229,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -3268,7 +3271,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -3282,7 +3285,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_2dem_class_average_restraint.id.",
-                        "markdown_name": "Restraint Id",
+                        "markdown_name": "restraint id",
                         "source": [
                             {
                                 "outbound": [
@@ -3295,7 +3298,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -3327,7 +3330,7 @@
             "table": "ihm_poly_probe_conjugate",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Probes Attached to Polymeric Residues",
+                "name": "Probes Attached to Residues in Polymeric Entities",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -3344,7 +3347,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -3358,7 +3361,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_probe_list.probe_id.",
-                        "markdown_name": "Probe Id",
+                        "markdown_name": "probe id",
                         "source": [
                             {
                                 "outbound": [
@@ -3371,7 +3374,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_poly_probe_position.id.",
-                        "markdown_name": "Position Id",
+                        "markdown_name": "position id",
                         "source": [
                             {
                                 "outbound": [
@@ -3384,7 +3387,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_chemical_component_descriptor.id.",
-                        "markdown_name": "Chemical Component Descriptor Id",
+                        "markdown_name": "chem comp descriptor id",
                         "source": [
                             {
                                 "outbound": [
@@ -3403,7 +3406,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -3414,25 +3417,16 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_poly_probe_conjugate_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
+                    [
+                        "PDB",
+                        "ihm_poly_probe_conjugate_Entry_Related_File_fkey"
+                    ]
                 ],
                 "detailed": [
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -3446,7 +3440,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_probe_list.probe_id.",
-                        "markdown_name": "Probe Id",
+                        "markdown_name": "probe id",
                         "source": [
                             {
                                 "outbound": [
@@ -3459,7 +3453,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_poly_probe_position.id.",
-                        "markdown_name": "Position Id",
+                        "markdown_name": "position id",
                         "source": [
                             {
                                 "outbound": [
@@ -3472,7 +3466,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_chemical_component_descriptor.id.",
-                        "markdown_name": "Chemical Component Descriptor Id",
+                        "markdown_name": "chem comp descriptor id",
                         "source": [
                             {
                                 "outbound": [
@@ -3491,7 +3485,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -3502,19 +3496,10 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_poly_probe_conjugate_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
+                    [
+                        "PDB",
+                        "ihm_poly_probe_conjugate_Entry_Related_File_fkey"
+                    ],
                     [
                         "PDB",
                         "ihm_poly_probe_conjugate_RCB_fkey"
@@ -3533,7 +3518,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -3547,7 +3532,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_probe_list.probe_id.",
-                        "markdown_name": "Probe Id",
+                        "markdown_name": "probe id",
                         "source": [
                             {
                                 "outbound": [
@@ -3560,7 +3545,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_poly_probe_position.id.",
-                        "markdown_name": "Position Id",
+                        "markdown_name": "position id",
                         "source": [
                             {
                                 "outbound": [
@@ -3573,7 +3558,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_chemical_component_descriptor.id.",
-                        "markdown_name": "Chemical Component Descriptor Id",
+                        "markdown_name": "chem comp descriptor id",
                         "source": [
                             {
                                 "outbound": [
@@ -3592,7 +3577,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -3645,7 +3630,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -3660,7 +3645,7 @@
                     "model_name",
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Assembly Id",
+                        "markdown_name": "assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -3673,7 +3658,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_modeling_protocol.id.",
-                        "markdown_name": "Protocol Id",
+                        "markdown_name": "protocol id",
                         "source": [
                             {
                                 "outbound": [
@@ -3686,7 +3671,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_representation.id.",
-                        "markdown_name": "Representation Id",
+                        "markdown_name": "representation id",
                         "source": [
                             {
                                 "outbound": [
@@ -3702,7 +3687,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -3717,7 +3702,7 @@
                     "model_name",
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Assembly Id",
+                        "markdown_name": "assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -3730,7 +3715,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_modeling_protocol.id.",
-                        "markdown_name": "Protocol Id",
+                        "markdown_name": "protocol id",
                         "source": [
                             {
                                 "outbound": [
@@ -3743,7 +3728,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_representation.id.",
-                        "markdown_name": "Representation Id",
+                        "markdown_name": "representation id",
                         "source": [
                             {
                                 "outbound": [
@@ -3772,7 +3757,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -3787,7 +3772,7 @@
                     "model_name",
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Assembly Id",
+                        "markdown_name": "assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -3800,7 +3785,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_modeling_protocol.id.",
-                        "markdown_name": "Protocol Id",
+                        "markdown_name": "protocol id",
                         "source": [
                             {
                                 "outbound": [
@@ -3813,7 +3798,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_representation.id.",
-                        "markdown_name": "Representation Id",
+                        "markdown_name": "representation id",
                         "source": [
                             {
                                 "outbound": [
@@ -3864,10 +3849,6 @@
                     [
                         "PDB",
                         "ihm_epr_restraint_model_id_fkey"
-                    ],
-                    [
-                        "PDB",
-                        "ihm_cross_link_pseudo_site_model_id_fkey"
                     ]
                 ],
                 "filter": "detailed"
@@ -3905,7 +3886,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -3926,25 +3907,16 @@
                         "ihm_feature_list_entity_type_fkey"
                     ],
                     "details",
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_feature_list_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
+                    [
+                        "PDB",
+                        "ihm_feature_list_Entry_Related_File_fkey"
+                    ]
                 ],
                 "detailed": [
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -3969,19 +3941,10 @@
                         "PDB",
                         "ihm_feature_list_feature_type_fkey"
                     ],
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_feature_list_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
+                    [
+                        "PDB",
+                        "ihm_feature_list_Entry_Related_File_fkey"
+                    ],
                     [
                         "PDB",
                         "ihm_feature_list_RCB_fkey"
@@ -4000,7 +3963,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -4067,7 +4030,7 @@
             "table": "pdbx_entity_poly_na_type",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Types of Polymeric Nucleic Acid Entities",
+                "name": "Types of Nucleic Acid Polymeric Entities",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -4084,7 +4047,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -4097,7 +4060,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -4117,7 +4080,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -4130,7 +4093,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -4163,7 +4126,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -4176,7 +4139,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -4216,7 +4179,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -4236,7 +4199,7 @@
                     "ordered_by",
                     {
                         "comment": "A reference to table ihm_model_group.id.",
-                        "markdown_name": "Model Group Id Begin",
+                        "markdown_name": "model group id begin",
                         "source": [
                             {
                                 "outbound": [
@@ -4249,7 +4212,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_group.id.",
-                        "markdown_name": "Model Group Id End",
+                        "markdown_name": "model group id end",
                         "source": [
                             {
                                 "outbound": [
@@ -4265,7 +4228,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -4285,7 +4248,7 @@
                     "ordered_by",
                     {
                         "comment": "A reference to table ihm_model_group.id.",
-                        "markdown_name": "Model Group Id Begin",
+                        "markdown_name": "model group id begin",
                         "source": [
                             {
                                 "outbound": [
@@ -4298,7 +4261,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_group.id.",
-                        "markdown_name": "Model Group Id End",
+                        "markdown_name": "model group id end",
                         "source": [
                             {
                                 "outbound": [
@@ -4327,7 +4290,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -4347,7 +4310,7 @@
                     "ordered_by",
                     {
                         "comment": "A reference to table ihm_model_group.id.",
-                        "markdown_name": "Model Group Id Begin",
+                        "markdown_name": "model group id begin",
                         "source": [
                             {
                                 "outbound": [
@@ -4360,7 +4323,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_group.id.",
-                        "markdown_name": "Model Group Id End",
+                        "markdown_name": "model group id end",
                         "source": [
                             {
                                 "outbound": [
@@ -4406,7 +4369,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -4429,7 +4392,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -4465,7 +4428,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -4538,7 +4501,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -4570,7 +4533,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -4609,7 +4572,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -4622,7 +4585,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_list.object_id.",
-                        "markdown_name": "Object Id",
+                        "markdown_name": "object id",
                         "source": [
                             {
                                 "outbound": [
@@ -4635,7 +4598,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_center.id.",
-                        "markdown_name": "Center Id",
+                        "markdown_name": "center id",
                         "source": [
                             {
                                 "outbound": [
@@ -4648,7 +4611,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_transformation.id.",
-                        "markdown_name": "Transformation Id",
+                        "markdown_name": "transformation id",
                         "source": [
                             {
                                 "outbound": [
@@ -4665,7 +4628,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -4678,7 +4641,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_list.object_id.",
-                        "markdown_name": "Object Id",
+                        "markdown_name": "object id",
                         "source": [
                             {
                                 "outbound": [
@@ -4691,7 +4654,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_center.id.",
-                        "markdown_name": "Center Id",
+                        "markdown_name": "center id",
                         "source": [
                             {
                                 "outbound": [
@@ -4704,7 +4667,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_transformation.id.",
-                        "markdown_name": "Transformation Id",
+                        "markdown_name": "transformation id",
                         "source": [
                             {
                                 "outbound": [
@@ -4734,7 +4697,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -4747,7 +4710,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_list.object_id.",
-                        "markdown_name": "Object Id",
+                        "markdown_name": "object id",
                         "source": [
                             {
                                 "outbound": [
@@ -4760,7 +4723,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_center.id.",
-                        "markdown_name": "Center Id",
+                        "markdown_name": "center id",
                         "source": [
                             {
                                 "outbound": [
@@ -4773,7 +4736,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_transformation.id.",
-                        "markdown_name": "Transformation Id",
+                        "markdown_name": "transformation id",
                         "source": [
                             {
                                 "outbound": [
@@ -4793,7 +4756,7 @@
             "table": "ihm_poly_residue_feature",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Molecular Features - Polymeric Residues",
+                "name": "Molecular Features Comprising of Polymeric Residues",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -4810,7 +4773,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -4824,7 +4787,7 @@
                     "ordinal_id",
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id",
+                        "markdown_name": "feature id",
                         "source": [
                             {
                                 "outbound": [
@@ -4837,7 +4800,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.entity_id",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -4850,7 +4813,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -4863,7 +4826,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id",
-                        "markdown_name": "Component Id Begin",
+                        "markdown_name": "comp id begin",
                         "source": [
                             {
                                 "outbound": [
@@ -4876,7 +4839,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id",
-                        "markdown_name": "Component Id End",
+                        "markdown_name": "comp id end",
                         "source": [
                             {
                                 "outbound": [
@@ -4889,7 +4852,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num",
-                        "markdown_name": "Sequence Id Begin",
+                        "markdown_name": "seq id begin",
                         "source": [
                             {
                                 "outbound": [
@@ -4902,7 +4865,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num",
-                        "markdown_name": "Sequence Id End",
+                        "markdown_name": "seq id end",
                         "source": [
                             {
                                 "outbound": [
@@ -4926,8 +4889,7 @@
                         "ihm_poly_residue_feature_interface_residue_flag_fkey"
                     ],
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue Begin",
+                        "markdown_name": "polymeric residue begin",
                         "source": [
                             {
                                 "outbound": [
@@ -4939,8 +4901,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue End",
+                        "markdown_name": "polymeric residue end",
                         "source": [
                             {
                                 "outbound": [
@@ -4951,25 +4912,16 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_poly_residue_feature_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
+                    [
+                        "PDB",
+                        "ihm_poly_residue_feature_Entry_Related_File_fkey"
+                    ]
                 ],
                 "detailed": [
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -4983,7 +4935,7 @@
                     "ordinal_id",
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id",
+                        "markdown_name": "feature id",
                         "source": [
                             {
                                 "outbound": [
@@ -4996,7 +4948,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.entity_id",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -5009,7 +4961,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -5022,7 +4974,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id",
-                        "markdown_name": "Component Id Begin",
+                        "markdown_name": "comp id begin",
                         "source": [
                             {
                                 "outbound": [
@@ -5035,7 +4987,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id",
-                        "markdown_name": "Component Id End",
+                        "markdown_name": "comp id end",
                         "source": [
                             {
                                 "outbound": [
@@ -5048,7 +5000,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num",
-                        "markdown_name": "Sequence Id Begin",
+                        "markdown_name": "seq id begin",
                         "source": [
                             {
                                 "outbound": [
@@ -5061,7 +5013,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num",
-                        "markdown_name": "Sequence Id End",
+                        "markdown_name": "seq id end",
                         "source": [
                             {
                                 "outbound": [
@@ -5085,8 +5037,7 @@
                         "ihm_poly_residue_feature_interface_residue_flag_fkey"
                     ],
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue Begin",
+                        "markdown_name": "polymeric residue begin",
                         "source": [
                             {
                                 "outbound": [
@@ -5098,8 +5049,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue End",
+                        "markdown_name": "polymeric residue end",
                         "source": [
                             {
                                 "outbound": [
@@ -5110,19 +5060,10 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_poly_residue_feature_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
+                    [
+                        "PDB",
+                        "ihm_poly_residue_feature_Entry_Related_File_fkey"
+                    ],
                     [
                         "PDB",
                         "ihm_poly_residue_feature_RCB_fkey"
@@ -5141,7 +5082,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -5155,7 +5096,7 @@
                     "ordinal_id",
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id",
+                        "markdown_name": "feature id",
                         "source": [
                             {
                                 "outbound": [
@@ -5168,7 +5109,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.entity_id",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -5181,7 +5122,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -5194,7 +5135,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id",
-                        "markdown_name": "Component Id Begin",
+                        "markdown_name": "comp id begin",
                         "source": [
                             {
                                 "outbound": [
@@ -5207,7 +5148,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id",
-                        "markdown_name": "Component Id End",
+                        "markdown_name": "comp id end",
                         "source": [
                             {
                                 "outbound": [
@@ -5220,7 +5161,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num",
-                        "markdown_name": "Sequence Id Begin",
+                        "markdown_name": "seq id begin",
                         "source": [
                             {
                                 "outbound": [
@@ -5233,7 +5174,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num",
-                        "markdown_name": "Sequence Id End",
+                        "markdown_name": "seq id end",
                         "source": [
                             {
                                 "outbound": [
@@ -5257,8 +5198,7 @@
                         "ihm_poly_residue_feature_interface_residue_flag_fkey"
                     ],
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue Begin",
+                        "markdown_name": "polymeric residue begin",
                         "source": [
                             {
                                 "outbound": [
@@ -5270,8 +5210,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue End",
+                        "markdown_name": "polymeric residue end",
                         "source": [
                             {
                                 "outbound": [
@@ -5307,7 +5246,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -5326,7 +5265,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -5358,7 +5297,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -5397,7 +5336,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -5410,7 +5349,7 @@
                     },
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Entry Id",
+                        "markdown_name": "entry id",
                         "source": [
                             {
                                 "outbound": [
@@ -5427,7 +5366,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -5440,7 +5379,7 @@
                     },
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Entry Id",
+                        "markdown_name": "entry id",
                         "source": [
                             {
                                 "outbound": [
@@ -5470,7 +5409,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -5483,7 +5422,7 @@
                     },
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Entry Id",
+                        "markdown_name": "entry id",
                         "source": [
                             {
                                 "outbound": [
@@ -5520,7 +5459,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -5533,7 +5472,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Derived Dataset List Id",
+                        "markdown_name": "derived dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -5546,7 +5485,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Primary Dataset List Id",
+                        "markdown_name": "primary dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -5562,7 +5501,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -5575,7 +5514,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Derived Dataset List Id",
+                        "markdown_name": "derived dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -5588,7 +5527,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Primary Dataset List Id",
+                        "markdown_name": "primary dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -5617,7 +5556,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -5630,7 +5569,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Derived Dataset List Id",
+                        "markdown_name": "derived dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -5643,7 +5582,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Primary Dataset List Id",
+                        "markdown_name": "primary dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -5689,7 +5628,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -5716,7 +5655,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -5756,7 +5695,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -5801,7 +5740,7 @@
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
                 //"name": "Groups of Input Datasets"
-                "markdown_name": "Input Dataset Groups^*^",
+                "markdown_name": "Groups of Input Datasets^*^",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -5828,7 +5767,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -5851,7 +5790,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -5887,7 +5826,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -6226,12 +6165,6 @@
                         "PDB",
                         "ihm_ensemble_info_structure_id_fkey"
                     ],
-#if defined(dev) 
-                    [
-                        "PDB",
-                        "ihm_ensemble_sub_sample_structure_id_fkey"
-                    ],
-#endif
                     [
                         "PDB",
                         "ihm_localization_density_files_structure_id_fkey"
@@ -6312,12 +6245,6 @@
                         "PDB",
                         "Entry_Related_File_entry_id_fkey"
                     ],
-#if defined(dev) 
-                    [
-                        "PDB",
-                        "ihm_pseudo_site_structure_id_fkey"
-                    ],
-#endif
                     [
                         "PDB",
                         "ihm_cross_link_list_structure_id_fkey"
@@ -6326,12 +6253,6 @@
                         "PDB",
                         "ihm_cross_link_restraint_structure_id_fkey"
                     ],
-#if defined(dev) 
-                    [
-                        "PDB",
-                        "ihm_cross_link_pseudo_site_structure_id_fkey"
-                    ],
-#endif
                     [
                         "PDB",
                         "ihm_cross_link_result_structure_id_fkey"
@@ -6401,7 +6322,7 @@
             "table": "ihm_interface_residue_feature",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Molecular Features - Interface Residues",
+                "name": "Molecular Features Comprising of Polymeric Residues at Interfaces",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -6418,7 +6339,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -6432,7 +6353,7 @@
                     "ordinal_id",
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id",
+                        "markdown_name": "feature id",
                         "source": [
                             {
                                 "outbound": [
@@ -6445,7 +6366,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Binding Partner Entity Id",
+                        "markdown_name": "binding partner entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -6458,7 +6379,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Binding Partner Asym Id",
+                        "markdown_name": "binding partner asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -6471,7 +6392,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -6483,25 +6404,16 @@
                         ]
                     },
                     "details",
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_interface_residue_feature_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
+                    [
+                        "PDB",
+                        "ihm_interface_residue_feature_Entry_Related_File_fkey"
+                    ]
                 ],
                 "detailed": [
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -6515,7 +6427,7 @@
                     "ordinal_id",
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id",
+                        "markdown_name": "feature id",
                         "source": [
                             {
                                 "outbound": [
@@ -6528,7 +6440,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Binding Partner Entity Id",
+                        "markdown_name": "binding partner entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -6541,7 +6453,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Binding Partner Asym Id",
+                        "markdown_name": "binding partner asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -6554,7 +6466,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -6566,19 +6478,10 @@
                         ]
                     },
                     "details",
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_interface_residue_feature_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
+                    [
+                        "PDB",
+                        "ihm_interface_residue_feature_Entry_Related_File_fkey"
+                    ],
                     [
                         "PDB",
                         "ihm_interface_residue_feature_RCB_fkey"
@@ -6597,7 +6500,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -6611,7 +6514,7 @@
                     "ordinal_id",
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id",
+                        "markdown_name": "feature id",
                         "source": [
                             {
                                 "outbound": [
@@ -6624,7 +6527,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Binding Partner Entity Id",
+                        "markdown_name": "binding partner entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -6637,7 +6540,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Binding Partner Asym Id",
+                        "markdown_name": "binding partner asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -6650,7 +6553,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -6698,7 +6601,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -6724,7 +6627,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -6763,7 +6666,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -6896,7 +6799,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -6914,7 +6817,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -6945,7 +6848,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -6983,7 +6886,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -6996,7 +6899,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_list.object_id.",
-                        "markdown_name": "Object Id",
+                        "markdown_name": "object id",
                         "source": [
                             {
                                 "outbound": [
@@ -7013,7 +6916,7 @@
                     ],
                     {
                         "comment": "A reference to table ihm_geometric_object_transformation.id.",
-                        "markdown_name": "Transformation Id",
+                        "markdown_name": "transformation id",
                         "source": [
                             {
                                 "outbound": [
@@ -7029,7 +6932,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -7042,7 +6945,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_list.object_id.",
-                        "markdown_name": "Object Id",
+                        "markdown_name": "object id",
                         "source": [
                             {
                                 "outbound": [
@@ -7059,7 +6962,7 @@
                     ],
                     {
                         "comment": "A reference to table ihm_geometric_object_transformation.id.",
-                        "markdown_name": "Transformation Id",
+                        "markdown_name": "transformation id",
                         "source": [
                             {
                                 "outbound": [
@@ -7088,7 +6991,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -7101,7 +7004,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_list.object_id.",
-                        "markdown_name": "Object Id",
+                        "markdown_name": "object id",
                         "source": [
                             {
                                 "outbound": [
@@ -7118,7 +7021,7 @@
                     ],
                     {
                         "comment": "A reference to table ihm_geometric_object_transformation.id.",
-                        "markdown_name": "Transformation Id",
+                        "markdown_name": "transformation id",
                         "source": [
                             {
                                 "outbound": [
@@ -7154,7 +7057,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -7170,7 +7073,7 @@
                     "entity_description_1",
                     {
                         "comment": "A reference to table entity_poly_seq.entity_id.",
-                        "markdown_name": "Entity Id 1",
+                        "markdown_name": "entity id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -7183,7 +7086,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id 1",
+                        "markdown_name": "asym id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -7196,7 +7099,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id",
-                        "markdown_name": "Component Id 1",
+                        "markdown_name": "comp id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -7209,7 +7112,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num",
-                        "markdown_name": "Sequence Id 1",
+                        "markdown_name": "seq id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -7227,7 +7130,7 @@
                     "entity_description_2",
                     {
                         "comment": "A reference to table entity_poly_seq.entity_id",
-                        "markdown_name": "Entity Id 2",
+                        "markdown_name": "entity id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -7240,7 +7143,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id 2",
+                        "markdown_name": "asym id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -7253,7 +7156,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id",
-                        "markdown_name": "Component Id 2",
+                        "markdown_name": "comp id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -7266,7 +7169,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num",
-                        "markdown_name": "Sequence Id 2",
+                        "markdown_name": "seq id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -7294,7 +7197,7 @@
                     ],
                     {
                         "comment": "A reference to table software.pdbx_ordinal.",
-                        "markdown_name": "Software Id",
+                        "markdown_name": "software id",
                         "source": [
                             {
                                 "outbound": [
@@ -7307,7 +7210,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -7319,8 +7222,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue 1",
+                        "markdown_name": "polymeric residue 1",
                         "source": [
                             {
                                 "outbound": [
@@ -7332,8 +7234,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue 2",
+                        "markdown_name": "polymeric residue 2",
                         "source": [
                             {
                                 "outbound": [
@@ -7344,25 +7245,16 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_predicted_contact_restraint_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
+                    [
+                        "PDB",
+                        "ihm_predicted_contact_restraint_Entry_Related_File_fkey"
+                    ]
                 ],
                 "detailed": [
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -7378,7 +7270,7 @@
                     "entity_description_1",
                     {
                         "comment": "A reference to table entity_poly_seq.entity_id.",
-                        "markdown_name": "Entity Id 1",
+                        "markdown_name": "entity id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -7391,7 +7283,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id 1",
+                        "markdown_name": "asym id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -7404,7 +7296,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id",
-                        "markdown_name": "Component Id 1",
+                        "markdown_name": "comp id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -7417,7 +7309,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num",
-                        "markdown_name": "Sequence Id 1",
+                        "markdown_name": "seq id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -7435,7 +7327,7 @@
                     "entity_description_2",
                     {
                         "comment": "A reference to table entity_poly_seq.entity_id",
-                        "markdown_name": "Entity Id 2",
+                        "markdown_name": "entity id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -7448,7 +7340,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id 2",
+                        "markdown_name": "asym id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -7461,7 +7353,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id",
-                        "markdown_name": "Component Id 2",
+                        "markdown_name": "comp id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -7474,7 +7366,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num",
-                        "markdown_name": "Sequence Id 2",
+                        "markdown_name": "seq id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -7502,7 +7394,7 @@
                     ],
                     {
                         "comment": "A reference to table software.pdbx_ordinal.",
-                        "markdown_name": "Software Id",
+                        "markdown_name": "software id",
                         "source": [
                             {
                                 "outbound": [
@@ -7515,7 +7407,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -7527,8 +7419,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue 1",
+                        "markdown_name": "polymeric residue 1",
                         "source": [
                             {
                                 "outbound": [
@@ -7540,8 +7431,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue 2",
+                        "markdown_name": "polymeric residue 2",
                         "source": [
                             {
                                 "outbound": [
@@ -7552,19 +7442,10 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_predicted_contact_restraint_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
+                    [
+                        "PDB",
+                        "ihm_predicted_contact_restraint_Entry_Related_File_fkey"
+                    ],
                     [
                         "PDB",
                         "ihm_predicted_contact_restraint_RCB_fkey"
@@ -7583,7 +7464,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -7599,7 +7480,7 @@
                     "entity_description_1",
                     {
                         "comment": "A reference to table entity_poly_seq.entity_id.",
-                        "markdown_name": "Entity Id 1",
+                        "markdown_name": "entity id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -7612,7 +7493,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id 1",
+                        "markdown_name": "asym id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -7625,7 +7506,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id",
-                        "markdown_name": "Component Id 1",
+                        "markdown_name": "comp id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -7638,7 +7519,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num",
-                        "markdown_name": "Sequence Id 1",
+                        "markdown_name": "seq id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -7656,7 +7537,7 @@
                     "entity_description_2",
                     {
                         "comment": "A reference to table entity_poly_seq.entity_id",
-                        "markdown_name": "Entity Id 2",
+                        "markdown_name": "entity id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -7669,7 +7550,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id 2",
+                        "markdown_name": "asym id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -7682,7 +7563,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id",
-                        "markdown_name": "Component Id 2",
+                        "markdown_name": "comp id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -7695,7 +7576,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num",
-                        "markdown_name": "Sequence Id 2",
+                        "markdown_name": "seq id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -7723,7 +7604,7 @@
                     ],
                     {
                         "comment": "A reference to table software.pdbx_ordinal.",
-                        "markdown_name": "Software Id",
+                        "markdown_name": "software id",
                         "source": [
                             {
                                 "outbound": [
@@ -7736,7 +7617,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -7748,8 +7629,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue 1",
+                        "markdown_name": "polymeric residue 1",
                         "source": [
                             {
                                 "outbound": [
@@ -7761,8 +7641,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue 2",
+                        "markdown_name": "polymeric residue 2",
                         "source": [
                             {
                                 "outbound": [
@@ -7798,7 +7677,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -7812,7 +7691,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -7825,7 +7704,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Struct Assembly Id",
+                        "markdown_name": "struct assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -7845,7 +7724,7 @@
                     "cross_correlation_coefficient",
                     {
                         "comment": "A reference to table citation.id.",
-                        "markdown_name": "Fitting Method Citation Id",
+                        "markdown_name": "fitting method citation id",
                         "source": [
                             {
                                 "outbound": [
@@ -7859,7 +7738,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -7875,7 +7754,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -7889,7 +7768,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -7902,7 +7781,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Struct Assembly Id",
+                        "markdown_name": "struct assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -7922,7 +7801,7 @@
                     "cross_correlation_coefficient",
                     {
                         "comment": "A reference to table citation.id.",
-                        "markdown_name": "Fitting Method Citation Id",
+                        "markdown_name": "fitting method citation id",
                         "source": [
                             {
                                 "outbound": [
@@ -7936,7 +7815,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -7965,7 +7844,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -7979,7 +7858,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -7992,7 +7871,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Struct Assembly Id",
+                        "markdown_name": "struct assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -8012,7 +7891,7 @@
                     "cross_correlation_coefficient",
                     {
                         "comment": "A reference to table citation.id.",
-                        "markdown_name": "Fitting Method Citation Id",
+                        "markdown_name": "fitting method citation id",
                         "source": [
                             {
                                 "outbound": [
@@ -8026,7 +7905,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -8045,7 +7924,7 @@
             "table": "ihm_derived_distance_restraint",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Distance Restraints Between Molecular Features",
+                "name": "Generic Distance Restraints Between Molecular Features",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -8062,7 +7941,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -8077,7 +7956,7 @@
                     "group_id",
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id 1",
+                        "markdown_name": "feature id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -8090,7 +7969,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id 2",
+                        "markdown_name": "feature id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -8118,7 +7997,7 @@
                     "mic_value",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -8129,25 +8008,16 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_derived_distance_restraint_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
+                    [
+                        "PDB",
+                        "ihm_derived_distance_restraint_Entry_Related_File_fkey"
+                    ]
                 ],
                 "detailed": [
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -8162,7 +8032,7 @@
                     "group_id",
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id 1",
+                        "markdown_name": "feature id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -8175,7 +8045,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id 2",
+                        "markdown_name": "feature id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -8203,7 +8073,7 @@
                     "mic_value",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -8214,19 +8084,10 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_derived_distance_restraint_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
+                    [
+                        "PDB",
+                        "ihm_derived_distance_restraint_Entry_Related_File_fkey"
+                    ],
                     [
                         "PDB",
                         "ihm_derived_distance_restraint_RCB_fkey"
@@ -8245,7 +8106,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -8260,7 +8121,7 @@
                     "group_id",
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id 1",
+                        "markdown_name": "feature id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -8273,7 +8134,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id 2",
+                        "markdown_name": "feature id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -8301,7 +8162,7 @@
                     "mic_value",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -8348,7 +8209,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -8377,7 +8238,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -8453,7 +8314,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -8467,7 +8328,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -8480,7 +8341,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Struct Assembly Id",
+                        "markdown_name": "struct assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -8506,7 +8367,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -8522,7 +8383,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -8536,7 +8397,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -8549,7 +8410,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Struct Assembly Id",
+                        "markdown_name": "struct assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -8575,7 +8436,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -8604,7 +8465,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -8618,7 +8479,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -8631,7 +8492,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Struct Assembly Id",
+                        "markdown_name": "struct assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -8657,7 +8518,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -8693,7 +8554,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -8709,7 +8570,7 @@
                     "entity_description",
                     {
                         "comment": "A reference to table entity_poly_seq.entity_id",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -8722,7 +8583,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -8735,7 +8596,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id",
-                        "markdown_name": "Component Id",
+                        "markdown_name": "comp id",
                         "source": [
                             {
                                 "outbound": [
@@ -8748,7 +8609,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num.",
-                        "markdown_name": "Sequence Id",
+                        "markdown_name": "seq id",
                         "source": [
                             {
                                 "outbound": [
@@ -8766,7 +8627,7 @@
                     "predicted_sasa",
                     {
                         "comment": "A reference to table software.pdbx_ordinal.",
-                        "markdown_name": "Software Id",
+                        "markdown_name": "software id",
                         "source": [
                             {
                                 "outbound": [
@@ -8779,7 +8640,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -8791,8 +8652,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue",
+                        "markdown_name": "polymeric residue",
                         "source": [
                             {
                                 "outbound": [
@@ -8803,25 +8663,16 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_hydroxyl_radical_fp_restraint_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
+                    [
+                        "PDB",
+                        "ihm_hydroxyl_radical_fp_restraint_Entry_Related_File_fkey"
+                    ]
                 ],
                 "detailed": [
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -8837,7 +8688,7 @@
                     "entity_description",
                     {
                         "comment": "A reference to table entity_poly_seq.entity_id",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -8850,7 +8701,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -8863,7 +8714,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id",
-                        "markdown_name": "Component Id",
+                        "markdown_name": "comp id",
                         "source": [
                             {
                                 "outbound": [
@@ -8876,7 +8727,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num.",
-                        "markdown_name": "Sequence Id",
+                        "markdown_name": "seq id",
                         "source": [
                             {
                                 "outbound": [
@@ -8894,7 +8745,7 @@
                     "predicted_sasa",
                     {
                         "comment": "A reference to table software.pdbx_ordinal.",
-                        "markdown_name": "Software Id",
+                        "markdown_name": "software id",
                         "source": [
                             {
                                 "outbound": [
@@ -8907,7 +8758,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -8919,8 +8770,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue",
+                        "markdown_name": "polymeric residue",
                         "source": [
                             {
                                 "outbound": [
@@ -8931,19 +8781,10 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_hydroxyl_radical_fp_restraint_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
+                    [
+                        "PDB",
+                        "ihm_hydroxyl_radical_fp_restraint_Entry_Related_File_fkey"
+                    ],
                     [
                         "PDB",
                         "ihm_hydroxyl_radical_fp_restraint_RCB_fkey"
@@ -8962,7 +8803,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -8978,7 +8819,7 @@
                     "entity_description",
                     {
                         "comment": "A reference to table entity_poly_seq.entity_id",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -8991,7 +8832,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -9004,7 +8845,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id",
-                        "markdown_name": "Component Id",
+                        "markdown_name": "comp id",
                         "source": [
                             {
                                 "outbound": [
@@ -9017,7 +8858,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num.",
-                        "markdown_name": "Sequence Id",
+                        "markdown_name": "seq id",
                         "source": [
                             {
                                 "outbound": [
@@ -9035,7 +8876,7 @@
                     "predicted_sasa",
                     {
                         "comment": "A reference to table software.pdbx_ordinal.",
-                        "markdown_name": "Software Id",
+                        "markdown_name": "software id",
                         "source": [
                             {
                                 "outbound": [
@@ -9048,7 +8889,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -9060,8 +8901,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue",
+                        "markdown_name": "polymeric residue",
                         "source": [
                             {
                                 "outbound": [
@@ -9097,7 +8937,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -9111,7 +8951,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_geometric_object_list.object_id.",
-                        "markdown_name": "Object Id",
+                        "markdown_name": "object id",
                         "source": [
                             {
                                 "outbound": [
@@ -9124,7 +8964,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id",
+                        "markdown_name": "feature id",
                         "source": [
                             {
                                 "outbound": [
@@ -9156,7 +8996,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -9167,25 +9007,16 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "geometric_object_distance_restraint_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
+                    [
+                        "PDB",
+                        "geometric_object_distance_restraint_Entry_Related_File_fkey"
+                    ]
                 ],
                 "detailed": [
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -9199,7 +9030,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_geometric_object_list.object_id.",
-                        "markdown_name": "Object Id",
+                        "markdown_name": "object id",
                         "source": [
                             {
                                 "outbound": [
@@ -9212,7 +9043,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id",
+                        "markdown_name": "feature id",
                         "source": [
                             {
                                 "outbound": [
@@ -9244,7 +9075,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -9255,19 +9086,10 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "geometric_object_distance_restraint_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
+                    [
+                        "PDB",
+                        "geometric_object_distance_restraint_Entry_Related_File_fkey"
+                    ],
                     [
                         "PDB",
                         "ihm_geometric_object_distance_restraint_RCB_fkey"
@@ -9286,7 +9108,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -9300,7 +9122,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_geometric_object_list.object_id.",
-                        "markdown_name": "Object Id",
+                        "markdown_name": "object id",
                         "source": [
                             {
                                 "outbound": [
@@ -9313,7 +9135,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id",
+                        "markdown_name": "feature id",
                         "source": [
                             {
                                 "outbound": [
@@ -9345,7 +9167,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -9391,7 +9213,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -9405,7 +9227,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_external_reference_info.reference_id.",
-                        "markdown_name": "Reference Id",
+                        "markdown_name": "reference id",
                         "source": [
                             {
                                 "outbound": [
@@ -9432,7 +9254,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -9446,7 +9268,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_external_reference_info.reference_id.",
-                        "markdown_name": "Reference Id",
+                        "markdown_name": "reference id",
                         "source": [
                             {
                                 "outbound": [
@@ -9486,7 +9308,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -9500,7 +9322,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_external_reference_info.reference_id.",
-                        "markdown_name": "Reference Id",
+                        "markdown_name": "reference id",
                         "source": [
                             {
                                 "outbound": [
@@ -9557,10 +9379,6 @@
                     ],
                     [
                         "PDB",
-                        "ihm_ensemble_sub_sample_file_id_fkey"
-                    ],
-                    [
-                        "PDB",
                         "ihm_localization_density_files_file_id_fkey"
                     ]
                 ],
@@ -9599,7 +9417,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -9628,7 +9446,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -9670,7 +9488,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -9743,7 +9561,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -9766,7 +9584,7 @@
                     "number_of_projections",
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Struct Assembly Id",
+                        "markdown_name": "struct assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -9780,7 +9598,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -9796,7 +9614,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -9819,7 +9637,7 @@
                     "number_of_projections",
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Struct Assembly Id",
+                        "markdown_name": "struct assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -9833,7 +9651,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -9862,7 +9680,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -9885,7 +9703,7 @@
                     "number_of_projections",
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Struct Assembly Id",
+                        "markdown_name": "struct assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -9899,7 +9717,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -9949,7 +9767,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -9963,7 +9781,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -9977,7 +9795,7 @@
                     "entity_description",
                     {
                         "comment": "A reference to table entity_poly_seq.entity_id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -9990,7 +9808,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -10003,7 +9821,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num.",
-                        "markdown_name": "Sequence Id Begin",
+                        "markdown_name": "seq id begin",
                         "source": [
                             {
                                 "outbound": [
@@ -10016,7 +9834,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num.",
-                        "markdown_name": "Sequence Id End",
+                        "markdown_name": "seq id end",
                         "source": [
                             {
                                 "outbound": [
@@ -10029,7 +9847,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id.",
-                        "markdown_name": "Component Id Begin",
+                        "markdown_name": "comp id begin",
                         "source": [
                             {
                                 "outbound": [
@@ -10042,7 +9860,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id.",
-                        "markdown_name": "Component Id End",
+                        "markdown_name": "comp id end",
                         "source": [
                             {
                                 "outbound": [
@@ -10059,8 +9877,8 @@
                     ],
                     "details",
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue Begin",
+                        "comment": "Composite key to identify a polymeric residue",
+                        "markdown_name": "polymeric residue begin",
                         "source": [
                             {
                                 "outbound": [
@@ -10072,8 +9890,8 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue End",
+                        "comment": "Composite key to identify a polymeric residue",
+                        "markdown_name": "polymeric residue end",
                         "source": [
                             {
                                 "outbound": [
@@ -10089,7 +9907,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -10103,7 +9921,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -10117,7 +9935,7 @@
                     "entity_description",
                     {
                         "comment": "A reference to table entity_poly_seq.entity_id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -10130,7 +9948,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -10143,7 +9961,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num.",
-                        "markdown_name": "Sequence Id Begin",
+                        "markdown_name": "seq id begin",
                         "source": [
                             {
                                 "outbound": [
@@ -10156,7 +9974,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num.",
-                        "markdown_name": "Sequence Id End",
+                        "markdown_name": "seq id end",
                         "source": [
                             {
                                 "outbound": [
@@ -10169,7 +9987,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id.",
-                        "markdown_name": "Component Id Begin",
+                        "markdown_name": "comp id begin",
                         "source": [
                             {
                                 "outbound": [
@@ -10182,7 +10000,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id.",
-                        "markdown_name": "Component Id End",
+                        "markdown_name": "comp id end",
                         "source": [
                             {
                                 "outbound": [
@@ -10199,8 +10017,8 @@
                     ],
                     "details",
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue Begin",
+                        "comment": "Composite key to identify a polymeric residue",
+                        "markdown_name": "polymeric residue begin",
                         "source": [
                             {
                                 "outbound": [
@@ -10212,8 +10030,8 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue End",
+                        "comment": "Composite key to identify a polymeric residue",
+                        "markdown_name": "polymeric residue end",
                         "source": [
                             {
                                 "outbound": [
@@ -10242,7 +10060,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -10256,7 +10074,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -10270,7 +10088,7 @@
                     "entity_description",
                     {
                         "comment": "A reference to table entity_poly_seq.entity_id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -10283,7 +10101,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -10296,7 +10114,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num.",
-                        "markdown_name": "Sequence Id Begin",
+                        "markdown_name": "seq id begin",
                         "source": [
                             {
                                 "outbound": [
@@ -10309,7 +10127,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num.",
-                        "markdown_name": "Sequence Id End",
+                        "markdown_name": "seq id end",
                         "source": [
                             {
                                 "outbound": [
@@ -10322,7 +10140,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id.",
-                        "markdown_name": "Component Id Begin",
+                        "markdown_name": "comp id begin",
                         "source": [
                             {
                                 "outbound": [
@@ -10335,7 +10153,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id.",
-                        "markdown_name": "Component Id End",
+                        "markdown_name": "comp id end",
                         "source": [
                             {
                                 "outbound": [
@@ -10352,8 +10170,8 @@
                     ],
                     "details",
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue Begin",
+                        "comment": "Composite key to identify a polymeric residue",
+                        "markdown_name": "polymeric residue begin",
                         "source": [
                             {
                                 "outbound": [
@@ -10365,8 +10183,8 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue End",
+                        "comment": "Composite key to identify a polymeric residue",
+                        "markdown_name": "polymeric residue end",
                         "source": [
                             {
                                 "outbound": [
@@ -10402,7 +10220,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -10416,7 +10234,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -10439,7 +10257,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -10453,7 +10271,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -10489,7 +10307,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -10503,7 +10321,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -10546,7 +10364,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -10559,7 +10377,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_list.object_id.",
-                        "markdown_name": "Object Id",
+                        "markdown_name": "object id",
                         "source": [
                             {
                                 "outbound": [
@@ -10576,7 +10394,7 @@
                     ],
                     {
                         "comment": "A reference to table ihm_geometric_object_transformation.id.",
-                        "markdown_name": "Transformation Id",
+                        "markdown_name": "transformation id",
                         "source": [
                             {
                                 "outbound": [
@@ -10592,7 +10410,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -10605,7 +10423,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_list.object_id.",
-                        "markdown_name": "Object Id",
+                        "markdown_name": "object id",
                         "source": [
                             {
                                 "outbound": [
@@ -10622,7 +10440,7 @@
                     ],
                     {
                         "comment": "A reference to table ihm_geometric_object_transformation.id.",
-                        "markdown_name": "Transformation Id",
+                        "markdown_name": "transformation id",
                         "source": [
                             {
                                 "outbound": [
@@ -10651,7 +10469,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -10664,7 +10482,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_list.object_id.",
-                        "markdown_name": "Object Id",
+                        "markdown_name": "object id",
                         "source": [
                             {
                                 "outbound": [
@@ -10681,7 +10499,7 @@
                     ],
                     {
                         "comment": "A reference to table ihm_geometric_object_transformation.id.",
-                        "markdown_name": "Transformation Id",
+                        "markdown_name": "transformation id",
                         "source": [
                             {
                                 "outbound": [
@@ -10700,7 +10518,7 @@
             "table": "ihm_non_poly_feature",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Molecular Features - Non-polymeric Entities",
+                "name": "Molecular Features Comprising of Non-polymeric Entities",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -10717,7 +10535,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -10731,7 +10549,7 @@
                     "ordinal_id",
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id",
+                        "markdown_name": "feature id",
                         "source": [
                             {
                                 "outbound": [
@@ -10744,7 +10562,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -10757,7 +10575,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -10770,7 +10588,7 @@
                     },
                     {
                         "comment": "A reference to table chem_comp.id.",
-                        "markdown_name": "Component Id",
+                        "markdown_name": "comp id",
                         "source": [
                             {
                                 "outbound": [
@@ -10782,25 +10600,16 @@
                         ]
                     },
                     "atom_id",
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_non_poly_feature_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
+                    [
+                        "PDB",
+                        "ihm_non_poly_feature_Entry_Related_File_fkey"
+                    ]
                 ],
                 "detailed": [
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -10814,7 +10623,7 @@
                     "ordinal_id",
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id",
+                        "markdown_name": "feature id",
                         "source": [
                             {
                                 "outbound": [
@@ -10827,7 +10636,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -10840,7 +10649,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -10853,7 +10662,7 @@
                     },
                     {
                         "comment": "A reference to table chem_comp.id.",
-                        "markdown_name": "Component Id",
+                        "markdown_name": "comp id",
                         "source": [
                             {
                                 "outbound": [
@@ -10865,19 +10674,10 @@
                         ]
                     },
                     "atom_id",
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_non_poly_feature_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
+                    [
+                        "PDB",
+                        "ihm_non_poly_feature_Entry_Related_File_fkey"
+                    ],
                     [
                         "PDB",
                         "ihm_non_poly_feature_RCB_fkey"
@@ -10896,7 +10696,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -10910,7 +10710,7 @@
                     "ordinal_id",
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id",
+                        "markdown_name": "feature id",
                         "source": [
                             {
                                 "outbound": [
@@ -10923,7 +10723,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -10936,7 +10736,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -10949,7 +10749,7 @@
                     },
                     {
                         "comment": "A reference to table chem_comp.id.",
-                        "markdown_name": "Component Id",
+                        "markdown_name": "comp id",
                         "source": [
                             {
                                 "outbound": [
@@ -10986,7 +10786,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -10999,7 +10799,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_list.object_id.",
-                        "markdown_name": "Object Id",
+                        "markdown_name": "object id",
                         "source": [
                             {
                                 "outbound": [
@@ -11020,7 +10820,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -11033,7 +10833,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_list.object_id.",
-                        "markdown_name": "Object Id",
+                        "markdown_name": "object id",
                         "source": [
                             {
                                 "outbound": [
@@ -11067,7 +10867,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -11080,7 +10880,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_list.object_id.",
-                        "markdown_name": "Object Id",
+                        "markdown_name": "object id",
                         "source": [
                             {
                                 "outbound": [
@@ -11121,7 +10921,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -11140,7 +10940,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -11172,7 +10972,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -11221,7 +11021,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -11234,7 +11034,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_list.object_id.",
-                        "markdown_name": "Object Id",
+                        "markdown_name": "object id",
                         "source": [
                             {
                                 "outbound": [
@@ -11247,7 +11047,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_center.id.",
-                        "markdown_name": "Center Id",
+                        "markdown_name": "center id",
                         "source": [
                             {
                                 "outbound": [
@@ -11260,7 +11060,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_transformation.id.",
-                        "markdown_name": "Transformation Id",
+                        "markdown_name": "transformation id",
                         "source": [
                             {
                                 "outbound": [
@@ -11278,7 +11078,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -11291,7 +11091,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_list.object_id.",
-                        "markdown_name": "Object Id",
+                        "markdown_name": "object id",
                         "source": [
                             {
                                 "outbound": [
@@ -11304,7 +11104,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_center.id.",
-                        "markdown_name": "Center Id",
+                        "markdown_name": "center id",
                         "source": [
                             {
                                 "outbound": [
@@ -11317,7 +11117,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_transformation.id.",
-                        "markdown_name": "Transformation Id",
+                        "markdown_name": "transformation id",
                         "source": [
                             {
                                 "outbound": [
@@ -11348,7 +11148,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -11361,7 +11161,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_list.object_id.",
-                        "markdown_name": "Object Id",
+                        "markdown_name": "object id",
                         "source": [
                             {
                                 "outbound": [
@@ -11374,7 +11174,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_center.id.",
-                        "markdown_name": "Center Id",
+                        "markdown_name": "center id",
                         "source": [
                             {
                                 "outbound": [
@@ -11387,7 +11187,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_geometric_object_transformation.id.",
-                        "markdown_name": "Transformation Id",
+                        "markdown_name": "transformation id",
                         "source": [
                             {
                                 "outbound": [
@@ -11422,7 +11222,7 @@
             "table": "ihm_pseudo_site_feature",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Molecular Features - Pseudo Sites",
+                "name": "Molecular Features Comprising of Pseudo Sites",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -11439,7 +11239,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -11452,7 +11252,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id",
+                        "markdown_name": "feature id",
                         "source": [
                             {
                                 "outbound": [
@@ -11463,38 +11263,21 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to table ihm_pseudo_site.id.",
-                        "markdown_name": "Pseudo Site Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_pseudo_site_feature_pseudo_site_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_pseudo_site_feature_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
+                    "Cartn_x",
+                    "Cartn_y",
+                    "Cartn_z",
+                    "radius",
+                    "description",
+                    [
+                        "PDB",
+                        "ihm_pseudo_site_feature_Entry_Related_File_fkey"
+                    ]
                 ],
                 "detailed": [
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -11507,7 +11290,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id",
+                        "markdown_name": "feature id",
                         "source": [
                             {
                                 "outbound": [
@@ -11518,32 +11301,15 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to table ihm_pseudo_site.id.",
-                        "markdown_name": "Pseudo Site Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_pseudo_site_feature_pseudo_site_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_pseudo_site_feature_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
+                    "Cartn_x",
+                    "Cartn_y",
+                    "Cartn_z",
+                    "radius",
+                    "description",
+                    [
+                        "PDB",
+                        "ihm_pseudo_site_feature_Entry_Related_File_fkey"
+                    ],
                     [
                         "PDB",
                         "ihm_pseudo_site_feature_RCB_fkey"
@@ -11562,7 +11328,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -11575,7 +11341,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id",
+                        "markdown_name": "feature id",
                         "source": [
                             {
                                 "outbound": [
@@ -11586,379 +11352,6 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to table ihm_pseudo_site.id.",
-                        "markdown_name": "Pseudo Site Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_pseudo_site_feature_pseudo_site_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
-                ]
-            }
-        },
-#if defined(dev)
-        {
-            "schema": "PDB",
-            "table": "ihm_cross_link_pseudo_site",
-            "uri": "tag:misd.isi.edu,2015:display",
-            "value": {
-                "name": "Chemical Crosslinks with Pseudo Sites",
-                "comment_display": {
-                    "*": {
-                        "table_comment_display" : "inline"
-                    }
-                }
-            }
-        },
-        {
-            "schema": "PDB",
-            "table": "ihm_cross_link_pseudo_site",
-            "uri": "tag:isrd.isi.edu,2016:visible-columns",
-            "value": {
-                "*": [
-                    "RID",
-                    {
-                        "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_pseudo_site_structure_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    "id",
-                    {
-                        "comment": "A reference to table ihm_cross_link_restraint.id.",
-                        "markdown_name": "Restraint Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_pseudo_site_restraint_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    {
-                        "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_pseudo_site_model_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    {
-                        "comment": "A reference to table ihm_pseudo_site.id.",
-                        "markdown_name": "Pseudo Site Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_pseudo_site_pseudo_site_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    [
-                        "PDB",
-                        "ihm_cross_link_pseudo_site_cross_link_partner_fkey"
-                    ],
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_pseudo_site_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
-                ],
-                "detailed": [
-                    "RID",
-                    {
-                        "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_pseudo_site_structure_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    "id",
-                    {
-                        "comment": "A reference to table ihm_cross_link_restraint.id.",
-                        "markdown_name": "Restraint Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_pseudo_site_restraint_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    {
-                        "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_pseudo_site_model_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    {
-                        "comment": "A reference to table ihm_pseudo_site.id.",
-                        "markdown_name": "Pseudo Site Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_pseudo_site_pseudo_site_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    [
-                        "PDB",
-                        "ihm_cross_link_pseudo_site_cross_link_partner_fkey"
-                    ],
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_pseudo_site_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    [
-                        "PDB",
-                        "ihm_cross_link_pseudo_site_RCB_fkey"
-                    ],
-                    [
-                        "PDB",
-                        "ihm_cross_link_pseudo_site_RMB_fkey"
-                    ],
-                    "RCT",
-                    "RMT",
-                    [
-                        "PDB",
-                        "ihm_cross_link_pseudo_site_Owner_fkey"
-                    ]
-                ],
-                "entry": [
-                    {
-                        "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_pseudo_site_structure_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    "id",
-                    {
-                        "comment": "A reference to table ihm_cross_link_restraint.id.",
-                        "markdown_name": "Restraint Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_pseudo_site_restraint_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    {
-                        "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_pseudo_site_model_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    {
-                        "comment": "A reference to table ihm_pseudo_site.id.",
-                        "markdown_name": "Pseudo Site Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_pseudo_site_pseudo_site_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    [
-                        "PDB",
-                        "ihm_cross_link_pseudo_site_cross_link_partner_fkey"
-                    ]
-                ]
-            }
-        },
-        {
-            "schema": "PDB",
-            "table": "ihm_pseudo_site",
-            "uri": "tag:misd.isi.edu,2015:display",
-            "value": {
-                "name": "Pseudo Site Coordinates",
-                "comment_display": {
-                    "*": {
-                        "table_comment_display" : "inline"
-                    }
-                }
-            }
-        },
-        {
-            "schema": "PDB",
-            "table": "ihm_pseudo_site",
-            "uri": "tag:isrd.isi.edu,2016:visible-columns",
-            "value": {
-                "*": [
-                    "RID",
-                    {
-                        "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_pseudo_site_structure_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    "id",
-                    "Cartn_x",
-                    "Cartn_y",
-                    "Cartn_z",
-                    "radius",
-                    "description",
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_pseudo_site_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
-                ],
-                "detailed": [
-                    "RID",
-                    {
-                        "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_pseudo_site_structure_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    "id",
-                    "Cartn_x",
-                    "Cartn_y",
-                    "Cartn_z",
-                    "radius",
-                    "description",
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_pseudo_site_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    [
-                        "PDB",
-                        "ihm_pseudo_site_RCB_fkey"
-                    ],
-                    [
-                        "PDB",
-                        "ihm_pseudo_site_RMB_fkey"
-                    ],
-                    "RCT",
-                    "RMT",
-                    [
-                        "PDB",
-                        "ihm_pseudo_site_Owner_fkey"
-                    ]
-                ],
-                "entry": [
-                    {
-                        "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_pseudo_site_structure_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    "id",
                     "Cartn_x",
                     "Cartn_y",
                     "Cartn_z",
@@ -11967,235 +11360,6 @@
                 ]
             }
         },
-        {
-            "schema": "PDB",
-            "table": "ihm_pseudo_site",
-            "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
-            "value": {
-                "detailed": [
-                    [
-                        "PDB",
-                        "ihm_cross_link_pseudo_site_pseudo_site_id_fkey"
-                    ],
-                    [
-                        "PDB",
-                        "ihm_pseudo_site_feature_pseudo_site_id_fkey"
-                    ]
-                ],
-                "filter": "detailed"
-            }
-        },
-        {
-            "schema": "PDB",
-            "table": "ihm_ensemble_sub_sample",
-            "uri": "tag:misd.isi.edu,2015:display",
-            "value": {
-                "name": "Ensembles with sub-samples",
-                "comment_display": {
-                    "*": {
-                        "table_comment_display" : "inline"
-                    }
-                }
-            }
-        },
-        {
-            "schema": "PDB",
-            "table": "ihm_ensemble_sub_sample",
-            "uri": "tag:isrd.isi.edu,2016:visible-columns",
-            "value": {
-                "*": [
-                    "RID",
-                    {
-                        "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_ensemble_sub_sample_structure_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    "id",
-                    "sample_name",
-                    {
-                        "comment": "A reference to table ihm_ensemble_info.ensemble_id.",
-                        "markdown_name": "Ensemble Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_ensemble_sub_sample_ensemble_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    "num_models",
-                    "num_models_deposited",
-                    {
-                        "comment": "A reference to table ihm_model_group.id.",
-                        "markdown_name": "Model Group Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_ensemble_sub_sample_model_group_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    {
-                        "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "File Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_ensemble_sub_sample_file_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
-                ],
-                "detailed": [
-                    "RID",
-                    {
-                        "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_ensemble_sub_sample_structure_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    "id",
-                    "sample_name",
-                    {
-                        "comment": "A reference to table ihm_ensemble_info.ensemble_id.",
-                        "markdown_name": "Ensemble Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_ensemble_sub_sample_ensemble_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    "num_models",
-                    "num_models_deposited",
-                    {
-                        "comment": "A reference to table ihm_model_group.id.",
-                        "markdown_name": "Model Group Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_ensemble_sub_sample_model_group_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    {
-                        "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "File Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_ensemble_sub_sample_file_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    [
-                        "PDB",
-                        "ihm_ensemble_sub_sample_RCB_fkey"
-                    ],
-                    [
-                        "PDB",
-                        "ihm_ensemble_sub_sample_RMB_fkey"
-                    ],
-                    "RCT",
-                    "RMT",
-                    [
-                        "PDB",
-                        "ihm_ensemble_sub_sample_Owner_fkey"
-                    ]
-                ],
-                "entry": [
-                    {
-                        "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_ensemble_sub_sample_structure_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    "id",
-                    "sample_name",
-                    {
-                        "comment": "A reference to table ihm_ensemble_info.ensemble_id.",
-                        "markdown_name": "Ensemble Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_ensemble_sub_sample_ensemble_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    "num_models",
-                    "num_models_deposited",
-                    {
-                        "comment": "A reference to table ihm_model_group.id.",
-                        "markdown_name": "Model Group Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_ensemble_sub_sample_model_group_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    {
-                        "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "File Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_ensemble_sub_sample_file_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
-                ]
-            }
-        },
-#endif
         {
             "schema": "PDB",
             "table": "ihm_cross_link_result_parameters",
@@ -12218,7 +11382,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -12232,7 +11396,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_cross_link_restraint.id.",
-                        "markdown_name": "Restraint Id",
+                        "markdown_name": "restraint id",
                         "source": [
                             {
                                 "outbound": [
@@ -12245,7 +11409,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -12259,25 +11423,16 @@
                     "psi",
                     "sigma_1",
                     "sigma_2",
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_result_parameters_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
+                    [
+                        "PDB",
+                        "ihm_cross_link_result_parameters_Entry_Related_File_fkey"
+                    ]
                 ],
                 "detailed": [
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -12291,7 +11446,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_cross_link_restraint.id.",
-                        "markdown_name": "Restraint Id",
+                        "markdown_name": "restraint id",
                         "source": [
                             {
                                 "outbound": [
@@ -12304,7 +11459,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -12318,19 +11473,10 @@
                     "psi",
                     "sigma_1",
                     "sigma_2",
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_result_parameters_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
+                    [
+                        "PDB",
+                        "ihm_cross_link_result_parameters_Entry_Related_File_fkey"
+                    ],
                     [
                         "PDB",
                         "ihm_cross_link_result_parameters_RCB_fkey"
@@ -12349,7 +11495,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -12363,7 +11509,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_cross_link_restraint.id.",
-                        "markdown_name": "Restraint Id",
+                        "markdown_name": "restraint id",
                         "source": [
                             {
                                 "outbound": [
@@ -12376,7 +11522,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -12416,7 +11562,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Entry Id",
+                        "markdown_name": "entry id",
                         "source": [
                             {
                                 "outbound": [
@@ -12441,7 +11587,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Entry Id",
+                        "markdown_name": "entry id",
                         "source": [
                             {
                                 "outbound": [
@@ -12479,7 +11625,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Entry Id",
+                        "markdown_name": "entry id",
                         "source": [
                             {
                                 "outbound": [
@@ -12507,7 +11653,7 @@
             "table": "ihm_geometric_object_center",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Geometric Object Centers",
+                "name": "Centers of Geometric Objects",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -12534,7 +11680,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -12554,7 +11700,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -12587,7 +11733,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -12628,7 +11774,7 @@
             "table": "ihm_ensemble_info",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Ensembles",
+                "name": "Details of Ensembles",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -12655,7 +11801,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -12670,7 +11816,7 @@
                     "ensemble_name",
                     {
                         "comment": "A reference to table ihm_model_group.id.",
-                        "markdown_name": "Model Group Id",
+                        "markdown_name": "model group id",
                         "source": [
                             {
                                 "outbound": [
@@ -12683,7 +11829,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_modeling_post_process.id.",
-                        "markdown_name": "Post Process Id",
+                        "markdown_name": "post process id",
                         "source": [
                             {
                                 "outbound": [
@@ -12702,20 +11848,12 @@
                         "PDB",
                         "ihm_ensemble_info_ensemble_clustering_feature_fkey"
                     ],
-                    [
-                        "PDB",
-                        "ihm_ensemble_info_ensemble_sub_sample_flag_fkey"
-                    ],
-                    [
-                        "PDB",
-                        "ihm_ensemble_info_ensemble_sub_sampling_type_fkey"
-                    ],
                     "num_ensemble_models",
                     "num_ensemble_models_deposited",
                     "ensemble_precision_value",
                     {
                         "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "Ensemble File Id",
+                        "markdown_name": "ensemble file id",
                         "source": [
                             {
                                 "outbound": [
@@ -12732,7 +11870,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -12747,7 +11885,7 @@
                     "ensemble_name",
                     {
                         "comment": "A reference to table ihm_model_group.id.",
-                        "markdown_name": "Model Group Id",
+                        "markdown_name": "model group id",
                         "source": [
                             {
                                 "outbound": [
@@ -12760,7 +11898,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_modeling_post_process.id.",
-                        "markdown_name": "Post Process Id",
+                        "markdown_name": "post process id",
                         "source": [
                             {
                                 "outbound": [
@@ -12779,20 +11917,12 @@
                         "PDB",
                         "ihm_ensemble_info_ensemble_clustering_feature_fkey"
                     ],
-                    [
-                        "PDB",
-                        "ihm_ensemble_info_ensemble_sub_sample_flag_fkey"
-                    ],
-                    [
-                        "PDB",
-                        "ihm_ensemble_info_ensemble_sub_sampling_type_fkey"
-                    ],
                     "num_ensemble_models",
                     "num_ensemble_models_deposited",
                     "ensemble_precision_value",
                     {
                         "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "Ensemble File Id",
+                        "markdown_name": "ensemble file id",
                         "source": [
                             {
                                 "outbound": [
@@ -12822,7 +11952,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -12837,7 +11967,7 @@
                     "ensemble_name",
                     {
                         "comment": "A reference to table ihm_model_group.id.",
-                        "markdown_name": "Model Group Id",
+                        "markdown_name": "model group id",
                         "source": [
                             {
                                 "outbound": [
@@ -12850,7 +11980,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_modeling_post_process.id.",
-                        "markdown_name": "Post Process Id",
+                        "markdown_name": "post process id",
                         "source": [
                             {
                                 "outbound": [
@@ -12869,20 +11999,12 @@
                         "PDB",
                         "ihm_ensemble_info_ensemble_clustering_feature_fkey"
                     ],
-                    [
-                        "PDB",
-                        "ihm_ensemble_info_ensemble_sub_sample_flag_fkey"
-                    ],
-                    [
-                        "PDB",
-                        "ihm_ensemble_info_ensemble_sub_sampling_type_fkey"
-                    ],
                     "num_ensemble_models",
                     "num_ensemble_models_deposited",
                     "ensemble_precision_value",
                     {
                         "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "Ensemble File Id",
+                        "markdown_name": "ensemble file id",
                         "source": [
                             {
                                 "outbound": [
@@ -12905,10 +12027,6 @@
                 "detailed": [
                     [
                         "PDB",
-                        "ihm_ensemble_sub_sample_ensemble_id_fkey"
-                    ],
-                    [
-                        "PDB",
                         "ihm_cross_link_result_ensemble_id_fkey"
                     ],
                     [
@@ -12924,7 +12042,7 @@
             "table": "ihm_poly_probe_position",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Polymeric Residue Positions",
+                "name": "Residue Positions in Polymeric Entities where Probes are Attached",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -12941,7 +12059,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -12955,7 +12073,7 @@
                     "id",
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -12969,7 +12087,7 @@
                     "entity_description",
                     {
                         "comment": "A reference to table entity_poly_seq.num.",
-                        "markdown_name": "Sequence Id",
+                        "markdown_name": "seq id",
                         "source": [
                             {
                                 "outbound": [
@@ -12982,7 +12100,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id.",
-                        "markdown_name": "Component Id",
+                        "markdown_name": "comp id",
                         "source": [
                             {
                                 "outbound": [
@@ -13029,8 +12147,8 @@
                     },
                     "description",
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue",
+                        "comment": "A reference to the polymeric residue composite key",
+                        "markdown_name": "polymeric residue",
                         "source": [
                             {
                                 "outbound": [
@@ -13041,25 +12159,16 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_poly_probe_position_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
+                    [
+                        "PDB",
+                        "ihm_poly_probe_position_Entry_Related_File_fkey"
+                    ]
                 ],
                 "detailed": [
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -13073,7 +12182,7 @@
                     "id",
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -13087,7 +12196,7 @@
                     "entity_description",
                     {
                         "comment": "A reference to table entity_poly_seq.num.",
-                        "markdown_name": "Sequence Id",
+                        "markdown_name": "seq id",
                         "source": [
                             {
                                 "outbound": [
@@ -13100,7 +12209,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id.",
-                        "markdown_name": "Component Id",
+                        "markdown_name": "comp id",
                         "source": [
                             {
                                 "outbound": [
@@ -13147,8 +12256,8 @@
                     },
                     "description",
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue",
+                        "comment": "A reference to the polymeric residue composite key",
+                        "markdown_name": "polymeric residue",
                         "source": [
                             {
                                 "outbound": [
@@ -13159,19 +12268,10 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_poly_probe_position_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
+                    [
+                        "PDB",
+                        "ihm_poly_probe_position_Entry_Related_File_fkey"
+                    ],
                     [
                         "PDB",
                         "ihm_poly_probe_position_RCB_fkey"
@@ -13190,7 +12290,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -13204,7 +12304,7 @@
                     "id",
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -13218,7 +12318,7 @@
                     "entity_description",
                     {
                         "comment": "A reference to table entity_poly_seq.num.",
-                        "markdown_name": "Sequence Id",
+                        "markdown_name": "seq id",
                         "source": [
                             {
                                 "outbound": [
@@ -13231,7 +12331,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id.",
-                        "markdown_name": "Component Id",
+                        "markdown_name": "comp id",
                         "source": [
                             {
                                 "outbound": [
@@ -13278,8 +12378,8 @@
                     },
                     "description",
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue",
+                        "comment": "A reference to the polymeric residue composite key",
+                        "markdown_name": "polymeric residue",
                         "source": [
                             {
                                 "outbound": [
@@ -13312,7 +12412,7 @@
             "table": "ihm_ligand_probe",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Non-polymeric Entity Probes",
+                "name": "Non-polymeric Entities used as Probes",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -13329,7 +12429,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -13342,7 +12442,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_probe_list.probe_id.",
-                        "markdown_name": "Probe Id",
+                        "markdown_name": "probe id",
                         "source": [
                             {
                                 "outbound": [
@@ -13355,7 +12455,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -13369,7 +12469,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -13380,25 +12480,16 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_ligand_probe_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
+                    [
+                        "PDB",
+                        "ihm_ligand_probe_Entry_Related_File_fkey"
+                    ]
                 ],
                 "detailed": [
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -13411,7 +12502,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_probe_list.probe_id.",
-                        "markdown_name": "Probe Id",
+                        "markdown_name": "probe id",
                         "source": [
                             {
                                 "outbound": [
@@ -13424,7 +12515,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -13438,7 +12529,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -13449,19 +12540,10 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_ligand_probe_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
+                    [
+                        "PDB",
+                        "ihm_ligand_probe_Entry_Related_File_fkey"
+                    ],
                     [
                         "PDB",
                         "ihm_ligand_probe_RCB_fkey"
@@ -13480,7 +12562,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -13493,7 +12575,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_probe_list.probe_id.",
-                        "markdown_name": "Probe Id",
+                        "markdown_name": "probe id",
                         "source": [
                             {
                                 "outbound": [
@@ -13506,7 +12588,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -13520,7 +12602,7 @@
                     "details",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -13539,7 +12621,7 @@
             "table": "ihm_geometric_object_transformation",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Geometric Object Transformations",
+                "name": "Transformations Applied to Geometric Objects",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -13566,7 +12648,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -13595,7 +12677,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -13637,7 +12719,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -13723,7 +12805,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -13745,7 +12827,7 @@
                     "location",
                     {
                         "comment": "A reference to table citation.id.",
-                        "markdown_name": "Citation Id",
+                        "markdown_name": "citation id",
                         "source": [
                             {
                                 "outbound": [
@@ -13761,7 +12843,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -13783,7 +12865,7 @@
                     "location",
                     {
                         "comment": "A reference to table citation.id.",
-                        "markdown_name": "Citation Id",
+                        "markdown_name": "citation id",
                         "source": [
                             {
                                 "outbound": [
@@ -13854,7 +12936,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -13867,7 +12949,7 @@
                     },
                     {
                         "comment": "A reference to table chem_comp.id.",
-                        "markdown_name": "Component Id",
+                        "markdown_name": "comp id",
                         "source": [
                             {
                                 "outbound": [
@@ -13927,7 +13009,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -13940,7 +13022,7 @@
                     },
                     {
                         "comment": "A reference to table chem_comp.id.",
-                        "markdown_name": "Component Id",
+                        "markdown_name": "comp id",
                         "source": [
                             {
                                 "outbound": [
@@ -14028,7 +13110,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -14041,7 +13123,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -14054,7 +13136,7 @@
                     },
                     {
                         "comment": "A reference to table chem_comp.id.",
-                        "markdown_name": "Monomer Id",
+                        "markdown_name": "mon id",
                         "source": [
                             {
                                 "outbound": [
@@ -14074,7 +13156,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -14087,7 +13169,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -14100,7 +13182,7 @@
                     },
                     {
                         "comment": "A reference to table chem_comp.id.",
-                        "markdown_name": "Monomer Id",
+                        "markdown_name": "mon id",
                         "source": [
                             {
                                 "outbound": [
@@ -14232,7 +13314,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -14260,7 +13342,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -14340,7 +13422,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -14353,7 +13435,7 @@
                     },
                     {
                         "comment": "A reference to table citation.id.",
-                        "markdown_name": "Citation Id",
+                        "markdown_name": "citation id",
                         "source": [
                             {
                                 "outbound": [
@@ -14370,7 +13452,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -14383,7 +13465,7 @@
                     },
                     {
                         "comment": "A reference to table citation.id.",
-                        "markdown_name": "Citation Id",
+                        "markdown_name": "citation id",
                         "source": [
                             {
                                 "outbound": [
@@ -14422,7 +13504,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -14436,7 +13518,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Assembly Id",
+                        "markdown_name": "assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -14449,7 +13531,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Parent Assembly Id",
+                        "markdown_name": "parent assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -14462,7 +13544,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -14476,7 +13558,7 @@
                     "entity_description",
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -14489,7 +13571,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "entity poly segment id",
                         "source": [
                             {
                                 "outbound": [
@@ -14505,7 +13587,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -14519,7 +13601,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Assembly Id",
+                        "markdown_name": "assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -14532,7 +13614,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Parent Assembly Id",
+                        "markdown_name": "parent assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -14545,7 +13627,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -14559,7 +13641,7 @@
                     "entity_description",
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -14572,7 +13654,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "entity poly segment id",
                         "source": [
                             {
                                 "outbound": [
@@ -14601,7 +13683,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -14615,7 +13697,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Assembly Id",
+                        "markdown_name": "assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -14628,7 +13710,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Parent Assembly Id",
+                        "markdown_name": "parent assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -14641,7 +13723,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -14655,7 +13737,7 @@
                     "entity_description",
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -14668,7 +13750,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "entity poly segment id",
                         "source": [
                             {
                                 "outbound": [
@@ -14704,7 +13786,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -14717,7 +13799,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -14740,7 +13822,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -14753,7 +13835,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -14797,7 +13879,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -14810,7 +13892,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -14826,7 +13908,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -14839,7 +13921,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -14860,7 +13942,7 @@
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
                 //"name": "Instances of Molecular Entities in the Structure"
-                "markdown_name": "Instances of Molecular Entities^*^",
+                "markdown_name": "Instances of Molecular Entities in the Structure^*^",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -14893,7 +13975,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -14907,7 +13989,7 @@
                     "id",
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -14935,7 +14017,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -14949,7 +14031,7 @@
                     "id",
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -15079,7 +14161,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -15098,7 +14180,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -15130,7 +14212,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -15171,7 +14253,7 @@
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
                 //"name": "Types of Atoms in the Structure"
-                "markdown_name": "Types of Atoms^*^",
+                "markdown_name": "Types of Atoms in the Structure^*^",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -15204,7 +14286,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -15220,7 +14302,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -15268,7 +14350,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -15296,7 +14378,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -15412,7 +14494,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -15426,7 +14508,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_model_representation.id.",
-                        "markdown_name": "Representation Id",
+                        "markdown_name": "representation id",
                         "source": [
                             {
                                 "outbound": [
@@ -15439,7 +14521,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -15453,7 +14535,7 @@
                     "entity_description",
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Entity Asym Id",
+                        "markdown_name": "entity asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -15466,7 +14548,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "entity poly segment id",
                         "source": [
                             {
                                 "outbound": [
@@ -15492,7 +14574,7 @@
                     ],
                     {
                         "comment": "A reference to table ihm_starting_model_details.starting_model_id.",
-                        "markdown_name": "Starting Model Id",
+                        "markdown_name": "starting model id",
                         "source": [
                             {
                                 "outbound": [
@@ -15509,7 +14591,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -15523,7 +14605,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_model_representation.id.",
-                        "markdown_name": "Representation Id",
+                        "markdown_name": "representation id",
                         "source": [
                             {
                                 "outbound": [
@@ -15536,7 +14618,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -15550,7 +14632,7 @@
                     "entity_description",
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Entity Asym Id",
+                        "markdown_name": "entity asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -15563,7 +14645,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "entity poly segment id",
                         "source": [
                             {
                                 "outbound": [
@@ -15589,7 +14671,7 @@
                     ],
                     {
                         "comment": "A reference to table ihm_starting_model_details.starting_model_id.",
-                        "markdown_name": "Starting Model Id",
+                        "markdown_name": "starting model id",
                         "source": [
                             {
                                 "outbound": [
@@ -15619,7 +14701,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -15633,7 +14715,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_model_representation.id.",
-                        "markdown_name": "Representation Id",
+                        "markdown_name": "representation id",
                         "source": [
                             {
                                 "outbound": [
@@ -15646,7 +14728,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -15660,7 +14742,7 @@
                     "entity_description",
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Entity Asym Id",
+                        "markdown_name": "entity asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -15673,7 +14755,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "entity poly segment id",
                         "source": [
                             {
                                 "outbound": [
@@ -15699,7 +14781,7 @@
                     ],
                     {
                         "comment": "A reference to table ihm_starting_model_details.starting_model_id.",
-                        "markdown_name": "Starting Model Id",
+                        "markdown_name": "starting model id",
                         "source": [
                             {
                                 "outbound": [
@@ -15762,7 +14844,7 @@
                         "source": "id"
                     },
                     {
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -15774,7 +14856,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Component Id Begin",
+                        "markdown_name": "comp id begin",
                         "source": [
                             {
                                 "outbound": [
@@ -15786,7 +14868,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Component Id End",
+                        "markdown_name": "comp id end",
                         "source": [
                             {
                                 "outbound": [
@@ -15798,7 +14880,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Sequence Id Begin",
+                        "markdown_name": "seq id begin",
                         "source": [
                             {
                                 "outbound": [
@@ -15810,7 +14892,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Sequence Id End",
+                        "markdown_name": "seq id end",
                         "source": [
                             {
                                 "outbound": [
@@ -15822,8 +14904,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue Begin",
+                        "markdown_name": "polymeric residue begin",
                         "source": [
                             {
                                 "outbound": [
@@ -15835,8 +14916,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue End",
+                        "markdown_name": "polymeric residue end",
                         "source": [
                             {
                                 "outbound": [
@@ -15867,7 +14947,7 @@
                         "source": "id"
                     },
                     {
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -15879,7 +14959,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Component Id Begin",
+                        "markdown_name": "comp id begin",
                         "source": [
                             {
                                 "outbound": [
@@ -15891,7 +14971,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Component Id End",
+                        "markdown_name": "comp id end",
                         "source": [
                             {
                                 "outbound": [
@@ -15903,7 +14983,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Sequence Id Begin",
+                        "markdown_name": "seq id begin",
                         "source": [
                             {
                                 "outbound": [
@@ -15915,7 +14995,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Sequence Id End",
+                        "markdown_name": "seq id end",
                         "source": [
                             {
                                 "outbound": [
@@ -15927,8 +15007,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue Begin",
+                        "markdown_name": "polymeric residue begin",
                         "source": [
                             {
                                 "outbound": [
@@ -15940,8 +15019,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue End",
+                        "markdown_name": "polymeric residue end",
                         "source": [
                             {
                                 "outbound": [
@@ -16008,7 +15086,7 @@
                         "source": "id"
                     },
                     {
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -16020,7 +15098,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Component Id Begin",
+                        "markdown_name": "comp id begin",
                         "source": [
                             {
                                 "outbound": [
@@ -16032,7 +15110,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Component Id End",
+                        "markdown_name": "comp id end",
                         "source": [
                             {
                                 "outbound": [
@@ -16044,7 +15122,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Sequence Id Begin",
+                        "markdown_name": "seq id begin",
                         "source": [
                             {
                                 "outbound": [
@@ -16056,7 +15134,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Sequence Id End",
+                        "markdown_name": "seq id end",
                         "source": [
                             {
                                 "outbound": [
@@ -16068,8 +15146,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue Begin",
+                        "markdown_name": "polymeric residue begin",
                         "source": [
                             {
                                 "outbound": [
@@ -16081,8 +15158,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue End",
+                        "markdown_name": "polymeric residue end",
                         "source": [
                             {
                                 "outbound": [
@@ -16161,7 +15237,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -16174,7 +15250,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -16212,7 +15288,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -16225,7 +15301,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -16298,7 +15374,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -16311,7 +15387,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -16327,7 +15403,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -16340,7 +15416,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -16377,7 +15453,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -16390,7 +15466,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -16403,7 +15479,7 @@
                     },
                     {
                         "comment": "A reference to table chem_comp.id.",
-                        "markdown_name": "Component Id",
+                        "markdown_name": "comp id",
                         "source": [
                             {
                                 "outbound": [
@@ -16419,7 +15495,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -16432,7 +15508,7 @@
                     },
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -16445,7 +15521,7 @@
                     },
                     {
                         "comment": "A reference to table chem_comp.id.",
-                        "markdown_name": "Component Id",
+                        "markdown_name": "comp id",
                         "source": [
                             {
                                 "outbound": [
@@ -16536,7 +15612,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -16549,7 +15625,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_multi_state_modeling.state_id.",
-                        "markdown_name": "State Id",
+                        "markdown_name": "state id",
                         "source": [
                             {
                                 "outbound": [
@@ -16562,7 +15638,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_group.id.",
-                        "markdown_name": "Model Group Id",
+                        "markdown_name": "model group id",
                         "source": [
                             {
                                 "outbound": [
@@ -16578,7 +15654,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -16591,7 +15667,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_multi_state_modeling.state_id.",
-                        "markdown_name": "State Id",
+                        "markdown_name": "state id",
                         "source": [
                             {
                                 "outbound": [
@@ -16604,7 +15680,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_group.id.",
-                        "markdown_name": "Model Group Id",
+                        "markdown_name": "model group id",
                         "source": [
                             {
                                 "outbound": [
@@ -16633,7 +15709,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -16646,7 +15722,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_multi_state_modeling.state_id.",
-                        "markdown_name": "State Id",
+                        "markdown_name": "state id",
                         "source": [
                             {
                                 "outbound": [
@@ -16659,7 +15735,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_group.id.",
-                        "markdown_name": "Model Group Id",
+                        "markdown_name": "model group id",
                         "source": [
                             {
                                 "outbound": [
@@ -16679,7 +15755,7 @@
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
                 //"name": "Groups of Models"
-                "markdown_name": "Model Groups^*^",
+                "markdown_name": "Groups of Models^*^",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -16706,7 +15782,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -16725,7 +15801,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -16757,7 +15833,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -16803,10 +15879,6 @@
                     [
                         "PDB",
                         "ihm_ensemble_info_model_group_id_fkey"
-                    ],
-                    [
-                        "PDB",
-                        "ihm_ensemble_sub_sample_model_group_id_fkey"
                     ]
                 ],
                 "filter": "detailed"
@@ -16817,7 +15889,7 @@
             "table": "ihm_cross_link_restraint",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Chemical Crosslinking Restraints",
+                "name": "Chemical Crosslinking Restraints Applied in the Modeling",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -16857,7 +15929,7 @@
                     },
                     "id",
                     {
-                        "markdown_name": "Group Id",
+                        "markdown_name": "group id",
                         "source": [
                             {
                                 "outbound": [
@@ -16869,7 +15941,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Entity Id 1",
+                        "markdown_name": "entity id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -16881,7 +15953,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Entity Id 2",
+                        "markdown_name": "entity id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -16893,7 +15965,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Asym Id 1",
+                        "markdown_name": "asym id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -16905,7 +15977,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Asym Id 2",
+                        "markdown_name": "asym id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -16917,7 +15989,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Component Id 1",
+                        "markdown_name": "comp id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -16929,7 +16001,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Component Id 2",
+                        "markdown_name": "comp id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -16941,7 +16013,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Sequence Id 1",
+                        "markdown_name": "seq id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -16953,7 +16025,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Sequence Id 2",
+                        "markdown_name": "seq id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -16985,10 +16057,6 @@
                         "PDB",
                         "ihm_cross_link_restraint_conditional_crosslink_flag_fkey"
                     ],
-                    [
-                        "PDB",
-                        "ihm_cross_link_restraint_pseudo_site_flag_fkey"
-                    ],
                     {
                         "source": [
                             {
@@ -17013,8 +16081,7 @@
                         "source": "sigma_2"
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue 1",
+                        "markdown_name": "polymeric residue 1",
                         "source": [
                             {
                                 "outbound": [
@@ -17026,8 +16093,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue 2",
+                        "markdown_name": "polymeric residue 2",
                         "source": [
                             {
                                 "outbound": [
@@ -17038,19 +16104,10 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_restraint_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
+                    [
+                        "PDB",
+                        "ihm_cross_link_restraint_Entry_Related_File_fkey"
+                    ]
                 ],
                 "detailed": [
                     {
@@ -17069,7 +16126,7 @@
                     },
                     "id",
                     {
-                        "markdown_name": "Group Id",
+                        "markdown_name": "group id",
                         "source": [
                             {
                                 "outbound": [
@@ -17081,7 +16138,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Entity Id 1",
+                        "markdown_name": "entity id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -17093,7 +16150,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Entity Id 2",
+                        "markdown_name": "entity id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -17105,7 +16162,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Asym Id 1",
+                        "markdown_name": "asym id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -17117,7 +16174,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Asym Id 2",
+                        "markdown_name": "asym id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -17129,7 +16186,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Component Id 1",
+                        "markdown_name": "comp id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -17141,7 +16198,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Component Id 2",
+                        "markdown_name": "comp id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -17153,7 +16210,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Sequence Id 1",
+                        "markdown_name": "seq id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -17165,7 +16222,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Sequence Id 2",
+                        "markdown_name": "seq id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -17197,10 +16254,6 @@
                         "PDB",
                         "ihm_cross_link_restraint_conditional_crosslink_flag_fkey"
                     ],
-                    [
-                        "PDB",
-                        "ihm_cross_link_restraint_pseudo_site_flag_fkey"
-                    ],
                     {
                         "source": [
                             {
@@ -17225,8 +16278,7 @@
                         "source": "sigma_2"
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue 1",
+                        "markdown_name": "polymeric residue 1",
                         "source": [
                             {
                                 "outbound": [
@@ -17238,8 +16290,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue 2",
+                        "markdown_name": "polymeric residue 2",
                         "source": [
                             {
                                 "outbound": [
@@ -17250,19 +16301,10 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_restraint_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
+                    [
+                        "PDB",
+                        "ihm_cross_link_restraint_Entry_Related_File_fkey"
+                    ],
                     {
                         "source": "RCT"
                     },
@@ -17317,7 +16359,7 @@
                     },
                     "id",
                     {
-                        "markdown_name": "Group Id",
+                        "markdown_name": "group id",
                         "source": [
                             {
                                 "outbound": [
@@ -17329,7 +16371,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Entity Id 1",
+                        "markdown_name": "entity id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -17341,7 +16383,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Entity Id 2",
+                        "markdown_name": "entity id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -17353,7 +16395,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Asym Id 1",
+                        "markdown_name": "asym id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -17365,7 +16407,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Asym Id 2",
+                        "markdown_name": "asym id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -17377,7 +16419,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Component Id 1",
+                        "markdown_name": "comp id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -17389,7 +16431,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Component Id 2",
+                        "markdown_name": "comp id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -17401,7 +16443,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Sequence Id 1",
+                        "markdown_name": "seq id 1",
                         "source": [
                             {
                                 "outbound": [
@@ -17413,7 +16455,7 @@
                         ]
                     },
                     {
-                        "markdown_name": "Sequence Id 2",
+                        "markdown_name": "seq id 2",
                         "source": [
                             {
                                 "outbound": [
@@ -17445,10 +16487,6 @@
                         "PDB",
                         "ihm_cross_link_restraint_conditional_crosslink_flag_fkey"
                     ],
-                    [
-                        "PDB",
-                        "ihm_cross_link_restraint_pseudo_site_flag_fkey"
-                    ],
                     {
                         "source": [
                             {
@@ -17473,8 +16511,7 @@
                         "source": "sigma_2"
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue 1",
+                        "markdown_name": "polymeric residue 1",
                         "source": [
                             {
                                 "outbound": [
@@ -17486,8 +16523,7 @@
                         ]
                     },
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue 2",
+                        "markdown_name": "polymeric residue 2",
                         "source": [
                             {
                                 "outbound": [
@@ -17507,10 +16543,6 @@
             "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
             "value": {
                 "detailed": [
-                    [
-                        "PDB",
-                        "ihm_cross_link_pseudo_site_restraint_id_fkey"
-                    ],
                     [
                         "PDB",
                         "ihm_cross_link_result_restraint_id_fkey"
@@ -17546,7 +16578,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -17559,7 +16591,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -17572,7 +16604,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_group.id.",
-                        "markdown_name": "Group Id",
+                        "markdown_name": "group id",
                         "source": [
                             {
                                 "outbound": [
@@ -17588,7 +16620,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -17601,7 +16633,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -17614,7 +16646,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_group.id.",
-                        "markdown_name": "Group Id",
+                        "markdown_name": "group id",
                         "source": [
                             {
                                 "outbound": [
@@ -17643,7 +16675,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -17656,7 +16688,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_list.model_id.",
-                        "markdown_name": "Model Id",
+                        "markdown_name": "model id",
                         "source": [
                             {
                                 "outbound": [
@@ -17669,7 +16701,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_model_group.id.",
-                        "markdown_name": "Group Id",
+                        "markdown_name": "group id",
                         "source": [
                             {
                                 "outbound": [
@@ -17688,7 +16720,7 @@
             "table": "ihm_poly_atom_feature",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Molecular Features - Polymeric Atoms",
+                "name": "Molecular Features Comprising of Polymeric Atoms",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -17705,7 +16737,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -17719,7 +16751,7 @@
                     "ordinal_id",
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id",
+                        "markdown_name": "feature id",
                         "source": [
                             {
                                 "outbound": [
@@ -17732,7 +16764,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.entity_id",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -17745,7 +16777,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -17758,7 +16790,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id",
-                        "markdown_name": "Component Id",
+                        "markdown_name": "comp id",
                         "source": [
                             {
                                 "outbound": [
@@ -17771,7 +16803,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num",
-                        "markdown_name": "Sequence Id",
+                        "markdown_name": "seq id",
                         "source": [
                             {
                                 "outbound": [
@@ -17784,8 +16816,7 @@
                     },
                     "atom_id",
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue",
+                        "markdown_name": "polymeric residue",
                         "source": [
                             {
                                 "outbound": [
@@ -17796,25 +16827,16 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_poly_atom_feature_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
+                    [
+                        "PDB",
+                        "ihm_poly_atom_feature_Entry_Related_File_fkey"
+                    ]
                 ],
                 "detailed": [
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -17828,7 +16850,7 @@
                     "ordinal_id",
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id",
+                        "markdown_name": "feature id",
                         "source": [
                             {
                                 "outbound": [
@@ -17841,7 +16863,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.entity_id",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -17854,7 +16876,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -17867,7 +16889,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id",
-                        "markdown_name": "Component Id",
+                        "markdown_name": "comp id",
                         "source": [
                             {
                                 "outbound": [
@@ -17880,7 +16902,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num",
-                        "markdown_name": "Sequence Id",
+                        "markdown_name": "seq id",
                         "source": [
                             {
                                 "outbound": [
@@ -17893,8 +16915,7 @@
                     },
                     "atom_id",
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue",
+                        "markdown_name": "polymeric residue",
                         "source": [
                             {
                                 "outbound": [
@@ -17905,19 +16926,10 @@
                             "RID"
                         ]
                     },
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_poly_atom_feature_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
+                    [
+                        "PDB",
+                        "ihm_poly_atom_feature_Entry_Related_File_fkey"
+                    ],
                     [
                         "PDB",
                         "ihm_poly_atom_feature_RCB_fkey"
@@ -17936,7 +16948,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -17950,7 +16962,7 @@
                     "ordinal_id",
                     {
                         "comment": "A reference to table ihm_feature_list.feature_id.",
-                        "markdown_name": "Feature Id",
+                        "markdown_name": "feature id",
                         "source": [
                             {
                                 "outbound": [
@@ -17963,7 +16975,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.entity_id",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -17976,7 +16988,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -17989,7 +17001,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id",
-                        "markdown_name": "Component Id",
+                        "markdown_name": "comp id",
                         "source": [
                             {
                                 "outbound": [
@@ -18002,7 +17014,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num",
-                        "markdown_name": "Sequence Id",
+                        "markdown_name": "seq id",
                         "source": [
                             {
                                 "outbound": [
@@ -18015,8 +17027,7 @@
                     },
                     "atom_id",
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue",
+                        "markdown_name": "polymeric residue",
                         "source": [
                             {
                                 "outbound": [
@@ -18052,7 +17063,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -18066,7 +17077,7 @@
                     "id",
                     {
                         "comment": "A reference to table entity_poly_seq.entity_id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -18079,7 +17090,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -18092,7 +17103,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num.",
-                        "markdown_name": "Sequence Id",
+                        "markdown_name": "seq id",
                         "source": [
                             {
                                 "outbound": [
@@ -18105,7 +17116,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id.",
-                        "markdown_name": "Component Id",
+                        "markdown_name": "comp id",
                         "source": [
                             {
                                 "outbound": [
@@ -18118,7 +17129,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_starting_model_details.starting_model_id.",
-                        "markdown_name": "Starting Model Id",
+                        "markdown_name": "starting model id",
                         "source": [
                             {
                                 "outbound": [
@@ -18135,8 +17146,8 @@
                     "db_entity_id",
                     "details",
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue",
+                        "comment": "A reference to the polymeric residue composite key",
+                        "markdown_name": "polymeric residue",
                         "source": [
                             {
                                 "outbound": [
@@ -18152,7 +17163,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -18166,7 +17177,7 @@
                     "id",
                     {
                         "comment": "A reference to table entity_poly_seq.entity_id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -18179,7 +17190,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -18192,7 +17203,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num.",
-                        "markdown_name": "Sequence Id",
+                        "markdown_name": "seq id",
                         "source": [
                             {
                                 "outbound": [
@@ -18205,7 +17216,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id.",
-                        "markdown_name": "Component Id",
+                        "markdown_name": "comp id",
                         "source": [
                             {
                                 "outbound": [
@@ -18218,7 +17229,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_starting_model_details.starting_model_id.",
-                        "markdown_name": "Starting Model Id",
+                        "markdown_name": "starting model id",
                         "source": [
                             {
                                 "outbound": [
@@ -18235,8 +17246,8 @@
                     "db_entity_id",
                     "details",
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue",
+                        "comment": "A reference to the polymeric residue composite key",
+                        "markdown_name": "polymeric residue",
                         "source": [
                             {
                                 "outbound": [
@@ -18265,7 +17276,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -18279,7 +17290,7 @@
                     "id",
                     {
                         "comment": "A reference to table entity_poly_seq.entity_id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -18292,7 +17303,7 @@
                     },
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -18305,7 +17316,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.num.",
-                        "markdown_name": "Sequence Id",
+                        "markdown_name": "seq id",
                         "source": [
                             {
                                 "outbound": [
@@ -18318,7 +17329,7 @@
                     },
                     {
                         "comment": "A reference to table entity_poly_seq.mon_id.",
-                        "markdown_name": "Component Id",
+                        "markdown_name": "comp id",
                         "source": [
                             {
                                 "outbound": [
@@ -18331,7 +17342,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_starting_model_details.starting_model_id.",
-                        "markdown_name": "Starting Model Id",
+                        "markdown_name": "starting model id",
                         "source": [
                             {
                                 "outbound": [
@@ -18348,8 +17359,8 @@
                     "db_entity_id",
                     "details",
                     {
-                        "comment": "Refers to a combination of Entity Id, Sequence Id and Component Id in the entity_poly_seq table.",
-                        "markdown_name": "Polymeric Residue",
+                        "comment": "A reference to the polymeric residue composite key",
+                        "markdown_name": "polymeric residue",
                         "source": [
                             {
                                 "outbound": [
@@ -18395,7 +17406,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -18409,7 +17420,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_modeling_protocol.id.",
-                        "markdown_name": "Protocol Id",
+                        "markdown_name": "protocol id",
                         "source": [
                             {
                                 "outbound": [
@@ -18424,7 +17435,7 @@
                     "step_id",
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Struct Assembly Id",
+                        "markdown_name": "struct assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -18437,7 +17448,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_group.id.",
-                        "markdown_name": "Dataset Group Id",
+                        "markdown_name": "dataset group id",
                         "source": [
                             {
                                 "outbound": [
@@ -18461,7 +17472,7 @@
                     "num_models_end",
                     {
                         "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "Script File Id",
+                        "markdown_name": "script file id",
                         "source": [
                             {
                                 "outbound": [
@@ -18474,7 +17485,7 @@
                     },
                     {
                         "comment": "A reference to table software.pdbx_ordinal.",
-                        "markdown_name": "Software Id",
+                        "markdown_name": "software id",
                         "source": [
                             {
                                 "outbound": [
@@ -18491,7 +17502,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -18505,7 +17516,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_modeling_protocol.id.",
-                        "markdown_name": "Protocol Id",
+                        "markdown_name": "protocol id",
                         "source": [
                             {
                                 "outbound": [
@@ -18520,7 +17531,7 @@
                     "step_id",
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Struct Assembly Id",
+                        "markdown_name": "struct assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -18533,7 +17544,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_group.id.",
-                        "markdown_name": "Dataset Group Id",
+                        "markdown_name": "dataset group id",
                         "source": [
                             {
                                 "outbound": [
@@ -18557,7 +17568,7 @@
                     "num_models_end",
                     {
                         "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "Script File Id",
+                        "markdown_name": "script file id",
                         "source": [
                             {
                                 "outbound": [
@@ -18570,7 +17581,7 @@
                     },
                     {
                         "comment": "A reference to table software.pdbx_ordinal.",
-                        "markdown_name": "Software Id",
+                        "markdown_name": "software id",
                         "source": [
                             {
                                 "outbound": [
@@ -18600,7 +17611,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -18614,7 +17625,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_modeling_protocol.id.",
-                        "markdown_name": "Protocol Id",
+                        "markdown_name": "protocol id",
                         "source": [
                             {
                                 "outbound": [
@@ -18629,7 +17640,7 @@
                     "step_id",
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Struct Assembly Id",
+                        "markdown_name": "struct assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -18642,7 +17653,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_group.id.",
-                        "markdown_name": "Dataset Group Id",
+                        "markdown_name": "dataset group id",
                         "source": [
                             {
                                 "outbound": [
@@ -18666,7 +17677,7 @@
                     "num_models_end",
                     {
                         "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "Script File Id",
+                        "markdown_name": "script file id",
                         "source": [
                             {
                                 "outbound": [
@@ -18679,7 +17690,7 @@
                     },
                     {
                         "comment": "A reference to table software.pdbx_ordinal.",
-                        "markdown_name": "Software Id",
+                        "markdown_name": "software id",
                         "source": [
                             {
                                 "outbound": [
@@ -18730,7 +17741,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -18744,7 +17755,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_cross_link_restraint.id.",
-                        "markdown_name": "Restraint Id",
+                        "markdown_name": "restraint id",
                         "source": [
                             {
                                 "outbound": [
@@ -18757,7 +17768,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_ensemble_info.ensemble_id.",
-                        "markdown_name": "Ensemble Id",
+                        "markdown_name": "ensemble id",
                         "source": [
                             {
                                 "outbound": [
@@ -18772,25 +17783,16 @@
                     "distance_threshold",
                     "median_distance",
                     "details",
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_result_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
+                    [
+                        "PDB",
+                        "ihm_cross_link_result_Entry_Related_File_fkey"
+                    ]
                 ],
                 "detailed": [
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -18804,7 +17806,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_cross_link_restraint.id.",
-                        "markdown_name": "Restraint Id",
+                        "markdown_name": "restraint id",
                         "source": [
                             {
                                 "outbound": [
@@ -18817,7 +17819,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_ensemble_info.ensemble_id.",
-                        "markdown_name": "Ensemble Id",
+                        "markdown_name": "ensemble id",
                         "source": [
                             {
                                 "outbound": [
@@ -18832,19 +17834,10 @@
                     "distance_threshold",
                     "median_distance",
                     "details",
-                    {
-                        "comment": "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
-                        "markdown_name": "Uploaded Restraint File",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "ihm_cross_link_result_Entry_Related_File_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
+                    [
+                        "PDB",
+                        "ihm_cross_link_result_Entry_Related_File_fkey"
+                    ],
                     [
                         "PDB",
                         "ihm_cross_link_result_RCB_fkey"
@@ -18863,7 +17856,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -18877,7 +17870,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_cross_link_restraint.id.",
-                        "markdown_name": "Restraint Id",
+                        "markdown_name": "restraint id",
                         "source": [
                             {
                                 "outbound": [
@@ -18890,7 +17883,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_ensemble_info.ensemble_id.",
-                        "markdown_name": "Ensemble Id",
+                        "markdown_name": "ensemble id",
                         "source": [
                             {
                                 "outbound": [
@@ -18930,7 +17923,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -18943,7 +17936,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_starting_model_details.starting_model_id.",
-                        "markdown_name": "Starting Model Id",
+                        "markdown_name": "starting model id",
                         "source": [
                             {
                                 "outbound": [
@@ -18956,7 +17949,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "Script File Id",
+                        "markdown_name": "script file id",
                         "source": [
                             {
                                 "outbound": [
@@ -18969,7 +17962,7 @@
                     },
                     {
                         "comment": "A reference to table software.pdbx_ordinal.",
-                        "markdown_name": "Software Id",
+                        "markdown_name": "software id",
                         "source": [
                             {
                                 "outbound": [
@@ -18985,7 +17978,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -18998,7 +17991,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_starting_model_details.starting_model_id.",
-                        "markdown_name": "Starting Model Id",
+                        "markdown_name": "starting model id",
                         "source": [
                             {
                                 "outbound": [
@@ -19011,7 +18004,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "Script File Id",
+                        "markdown_name": "script file id",
                         "source": [
                             {
                                 "outbound": [
@@ -19024,7 +18017,7 @@
                     },
                     {
                         "comment": "A reference to table software.pdbx_ordinal.",
-                        "markdown_name": "Software Id",
+                        "markdown_name": "software id",
                         "source": [
                             {
                                 "outbound": [
@@ -19053,7 +18046,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -19066,7 +18059,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_starting_model_details.starting_model_id.",
-                        "markdown_name": "Starting Model Id",
+                        "markdown_name": "starting model id",
                         "source": [
                             {
                                 "outbound": [
@@ -19079,7 +18072,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "Script File Id",
+                        "markdown_name": "script file id",
                         "source": [
                             {
                                 "outbound": [
@@ -19092,7 +18085,7 @@
                     },
                     {
                         "comment": "A reference to table software.pdbx_ordinal.",
-                        "markdown_name": "Software Id",
+                        "markdown_name": "software id",
                         "source": [
                             {
                                 "outbound": [
@@ -19139,7 +18132,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -19159,7 +18152,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -19192,7 +18185,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -19254,7 +18247,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -19268,7 +18261,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_starting_model_details.starting_model_id.",
-                        "markdown_name": "Starting Model Id",
+                        "markdown_name": "starting model id",
                         "source": [
                             {
                                 "outbound": [
@@ -19292,7 +18285,7 @@
                     ],
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Template Dataset List Id",
+                        "markdown_name": "template dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -19305,7 +18298,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "Alignment File Id",
+                        "markdown_name": "alignment file id",
                         "source": [
                             {
                                 "outbound": [
@@ -19322,7 +18315,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -19336,7 +18329,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_starting_model_details.starting_model_id.",
-                        "markdown_name": "Starting Model Id",
+                        "markdown_name": "starting model id",
                         "source": [
                             {
                                 "outbound": [
@@ -19360,7 +18353,7 @@
                     ],
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Template Dataset List Id",
+                        "markdown_name": "template dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -19373,7 +18366,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "Alignment File Id",
+                        "markdown_name": "alignment file id",
                         "source": [
                             {
                                 "outbound": [
@@ -19403,7 +18396,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -19417,7 +18410,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_starting_model_details.starting_model_id.",
-                        "markdown_name": "Starting Model Id",
+                        "markdown_name": "starting model id",
                         "source": [
                             {
                                 "outbound": [
@@ -19441,7 +18434,7 @@
                     ],
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Template Dataset List Id",
+                        "markdown_name": "template dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -19454,7 +18447,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "Alignment File Id",
+                        "markdown_name": "alignment file id",
                         "source": [
                             {
                                 "outbound": [
@@ -19492,7 +18485,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -19506,7 +18499,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_modeling_protocol.id.",
-                        "markdown_name": "Protocol Id",
+                        "markdown_name": "protocol id",
                         "source": [
                             {
                                 "outbound": [
@@ -19520,7 +18513,7 @@
                     "step_id",
                     {
                         "comment": "A reference to table ihm_dataset_group.id.",
-                        "markdown_name": "Dataset Group Id",
+                        "markdown_name": "dataset group id",
                         "source": [
                             {
                                 "outbound": [
@@ -19533,7 +18526,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Struct Assembly Id",
+                        "markdown_name": "struct assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -19567,7 +18560,7 @@
                     ],
                     {
                         "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "Script File Id",
+                        "markdown_name": "script file id",
                         "source": [
                             {
                                 "outbound": [
@@ -19580,7 +18573,7 @@
                     },
                     {
                         "comment": "A reference to table software.pdbx_ordinal.",
-                        "markdown_name": "Software Id",
+                        "markdown_name": "software id",
                         "source": [
                             {
                                 "outbound": [
@@ -19597,7 +18590,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -19611,7 +18604,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_modeling_protocol.id.",
-                        "markdown_name": "Protocol Id",
+                        "markdown_name": "protocol id",
                         "source": [
                             {
                                 "outbound": [
@@ -19625,7 +18618,7 @@
                     "step_id",
                     {
                         "comment": "A reference to table ihm_dataset_group.id.",
-                        "markdown_name": "Dataset Group Id",
+                        "markdown_name": "dataset group id",
                         "source": [
                             {
                                 "outbound": [
@@ -19638,7 +18631,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Struct Assembly Id",
+                        "markdown_name": "struct assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -19672,7 +18665,7 @@
                     ],
                     {
                         "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "Script File Id",
+                        "markdown_name": "script file id",
                         "source": [
                             {
                                 "outbound": [
@@ -19685,7 +18678,7 @@
                     },
                     {
                         "comment": "A reference to table software.pdbx_ordinal.",
-                        "markdown_name": "Software Id",
+                        "markdown_name": "software id",
                         "source": [
                             {
                                 "outbound": [
@@ -19715,7 +18708,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -19729,7 +18722,7 @@
                     "id",
                     {
                         "comment": "A reference to table ihm_modeling_protocol.id.",
-                        "markdown_name": "Protocol Id",
+                        "markdown_name": "protocol id",
                         "source": [
                             {
                                 "outbound": [
@@ -19743,7 +18736,7 @@
                     "step_id",
                     {
                         "comment": "A reference to table ihm_dataset_group.id.",
-                        "markdown_name": "Dataset Group Id",
+                        "markdown_name": "dataset group id",
                         "source": [
                             {
                                 "outbound": [
@@ -19756,7 +18749,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Struct Assembly Id",
+                        "markdown_name": "struct assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -19790,7 +18783,7 @@
                     ],
                     {
                         "comment": "A reference to table ihm_external_files.id.",
-                        "markdown_name": "Script File Id",
+                        "markdown_name": "script file id",
                         "source": [
                             {
                                 "outbound": [
@@ -19803,7 +18796,7 @@
                     },
                     {
                         "comment": "A reference to table software.pdbx_ordinal.",
-                        "markdown_name": "Software Id",
+                        "markdown_name": "software id",
                         "source": [
                             {
                                 "outbound": [
@@ -19841,7 +18834,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -19854,7 +18847,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -19867,7 +18860,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_group.id.",
-                        "markdown_name": "Dataset Group Id",
+                        "markdown_name": "dataset group id",
                         "source": [
                             {
                                 "outbound": [
@@ -19883,7 +18876,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -19896,7 +18889,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -19909,7 +18902,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_group.id.",
-                        "markdown_name": "Dataset Group Id",
+                        "markdown_name": "dataset group id",
                         "source": [
                             {
                                 "outbound": [
@@ -19938,7 +18931,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -19951,7 +18944,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -19964,7 +18957,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_dataset_group.id.",
-                        "markdown_name": "Dataset Group Id",
+                        "markdown_name": "dataset group id",
                         "source": [
                             {
                                 "outbound": [
@@ -20011,7 +19004,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -20025,7 +19018,7 @@
                     "starting_model_id",
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -20039,7 +19032,7 @@
                     "entity_description",
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -20052,7 +19045,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "entity poly segment id",
                         "source": [
                             {
                                 "outbound": [
@@ -20072,7 +19065,7 @@
                     "description",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -20089,7 +19082,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -20103,7 +19096,7 @@
                     "starting_model_id",
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -20117,7 +19110,7 @@
                     "entity_description",
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -20130,7 +19123,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "entity poly segment id",
                         "source": [
                             {
                                 "outbound": [
@@ -20150,7 +19143,7 @@
                     "description",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -20184,7 +19177,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -20198,7 +19191,7 @@
                     "starting_model_id",
                     {
                         "comment": "A reference to table entity.id.",
-                        "markdown_name": "Entity Id",
+                        "markdown_name": "entity id",
                         "source": [
                             {
                                 "outbound": [
@@ -20212,7 +19205,7 @@
                     "entity_description",
                     {
                         "comment": "A reference to table struct_asym.id.",
-                        "markdown_name": "Asym Id",
+                        "markdown_name": "asym id",
                         "source": [
                             {
                                 "outbound": [
@@ -20225,7 +19218,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "entity poly segment id",
                         "source": [
                             {
                                 "outbound": [
@@ -20245,7 +19238,7 @@
                     "description",
                     {
                         "comment": "A reference to table ihm_dataset_list.id.",
-                        "markdown_name": "Dataset List Id",
+                        "markdown_name": "dataset list id",
                         "source": [
                             {
                                 "outbound": [
@@ -20424,7 +19417,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -20443,7 +19436,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -20475,7 +19468,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -20543,7 +19536,7 @@
             "table": "ihm_struct_assembly_class",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Structural Assembly Classes",
+                "name": "Structural Assembly Classes in Hierarchical Assemblies",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -20570,7 +19563,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -20593,7 +19586,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -20629,7 +19622,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -20686,7 +19679,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -20699,7 +19692,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Assembly Id",
+                        "markdown_name": "assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -20712,7 +19705,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_struct_assembly_class.id.",
-                        "markdown_name": "Class Id",
+                        "markdown_name": "class id",
                         "source": [
                             {
                                 "outbound": [
@@ -20728,7 +19721,7 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -20741,7 +19734,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Assembly Id",
+                        "markdown_name": "assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -20754,7 +19747,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_struct_assembly_class.id.",
-                        "markdown_name": "Class Id",
+                        "markdown_name": "class id",
                         "source": [
                             {
                                 "outbound": [
@@ -20783,7 +19776,7 @@
                 "entry": [
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
+                        "markdown_name": "structure id",
                         "source": [
                             {
                                 "outbound": [
@@ -20796,7 +19789,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_struct_assembly.id.",
-                        "markdown_name": "Assembly Id",
+                        "markdown_name": "assembly id",
                         "source": [
                             {
                                 "outbound": [
@@ -20809,7 +19802,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_struct_assembly_class.id.",
-                        "markdown_name": "Class Id",
+                        "markdown_name": "class id",
                         "source": [
                             {
                                 "outbound": [
