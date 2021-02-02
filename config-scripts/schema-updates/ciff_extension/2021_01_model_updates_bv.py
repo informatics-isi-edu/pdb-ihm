@@ -136,7 +136,7 @@ def define_Vocab_table(table_name, table_comment):
 # -- define ihm_pseudo_site table --> Brida reviewed
 def define_tdoc_ihm_pseudo_site():
     table_name='ihm_pseudo_site'
-    comment='Details of pseudo sites that may be used in the restraints or model representation'
+    comment='Details of pseudo sites that may be used in the restraints or model representation; can be uploaded as CSV/TSV file above; mmCIF category: ihm_pseudo_site'
 
     column_defs = [
         Column.define(
@@ -176,6 +176,12 @@ def define_tdoc_ihm_pseudo_site():
             nullok=True
         ),
         Column.define(
+            "Entry_Related_File",
+            builtin_types.text,
+            comment='A reference to the uploaded restraint file in the table Entry_Related_File.id.',
+            nullok=True
+        ),
+        Column.define(
             "structure_id",
             builtin_types.text,
             comment='Structure identifier',
@@ -194,6 +200,11 @@ def define_tdoc_ihm_pseudo_site():
                           constraint_names=[["PDB", "ihm_pseudo_site_structure_id_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"   
+        ),
+        ForeignKey.define(["Entry_Related_File"], "PDB", "Entry_Related_File", ["RID"],
+                          constraint_names=[["PDB", "ihm_pseudo_site_Entry_Related_File_fkey"]],
+                          on_update="CASCADE",
+                          on_delete="NO ACTION"
         )
         
     ]
@@ -212,7 +223,7 @@ def define_tdoc_ihm_pseudo_site():
 #====================================================
 def define_tdoc_ihm_cross_link_pseudo_site():
     table_name='ihm_cross_link_pseudo_site'
-    comment='Details of pseudo sites involved in crosslinks'
+    comment='Details of pseudo sites involved in crosslinks; can be uploaded as CSV/TSV file above; mmCIF category: ihm_cross_link_pseudo_site'
 
     column_defs = [
         Column.define(
@@ -246,6 +257,12 @@ def define_tdoc_ihm_cross_link_pseudo_site():
             nullok=True
         ),
         Column.define(
+            "Entry_Related_File",
+            builtin_types.text,
+            comment='A reference to the uploaded restraint file in the table Entry_Related_File.id.',
+            nullok=True
+        ),
+        Column.define(
             "structure_id",
             builtin_types.text,
             comment='Structure identifier',
@@ -275,10 +292,21 @@ def define_tdoc_ihm_cross_link_pseudo_site():
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
+        ForeignKey.define(["structure_id", "pseudo_site_id"], "PDB", "ihm_pseudo_site", ["structure_id", "id"],
+                          constraint_names=[["PDB", "ihm_cross_link_pseudo_site_pseudo_site_id_fkey"]],
+                          on_update="CASCADE",
+                          on_delete="NO ACTION"
+        ),
         ForeignKey.define(["cross_link_partner"], "Vocab", "cross_link_partner", ["Name"],
                           constraint_names=[ ["Vocab", "ihm_cross_link_pseudo_site_cross_link_partner_fkey"] ],
                           on_update="CASCADE",
-                          on_delete="NO ACTION")
+                          on_delete="NO ACTION"
+        ),
+        ForeignKey.define(["Entry_Related_File"], "PDB", "Entry_Related_File", ["RID"],
+                          constraint_names=[["PDB", "ihm_cross_link_pseudo_site_Entry_Related_File_fkey"]],
+                          on_update="CASCADE",
+                          on_delete="NO ACTION"
+        )
 
     ]
 
@@ -296,7 +324,7 @@ def define_tdoc_ihm_cross_link_pseudo_site():
 #====================================================
 def define_tdoc_ihm_ensemble_sub_sample():
     table_name='ihm_ensemble_sub_sample'
-    comment='Details of the sub samples within the ensembles'
+    comment='Details of the sub samples within the ensembles; mmCIF category: ihm_ensemble_sub_sample'
 
     column_defs = [
         Column.define(
@@ -564,19 +592,26 @@ def main(server_name, catalog_id, credentials):
     catalog.dcctx['cid'] = "oneoff/model"
     model = catalog.getCatalogModel()
 
+    #--Drop tables
+    model.schemas['PDB'].tables['ihm_pseudo_site'].drop()
+    model.schemas['PDB'].tables['ihm_cross_link_pseudo_site'].drop()
+    model.schemas['PDB'].tables['ihm_ensemble_sub_sample'].drop()
+
+    model = catalog.getCatalogModel()         #Reload the model to create table after drop - bug
+
     # -- create tables from scratch
-    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('cross_link_partner', 'Identity of the crosslink partner'))
-    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sample_flag', 'Flag for ensembles consisting of sub samples'))
-    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sampling_type', 'Types of sub samples in ensembles'))
+    #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('cross_link_partner', 'Identity of the crosslink partner'))
+    #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sample_flag', 'Flag for ensembles consisting of sub samples'))
+    #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sampling_type', 'Types of sub samples in ensembles'))
     create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_pseudo_site())
     #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('pseudo_site_flag', 'Flag for crosslinks involving pseudo sites'))
     create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_ensemble_sub_sample())
     create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_cross_link_pseudo_site())
 
     # -- update existing tables
-    update_PDB_ihm_pseudo_site_feature(model)
+    #update_PDB_ihm_pseudo_site_feature(model)
     #update_PDB_ihm_cross_link_restraint(model)
-    update_PDB_ihm_ensemble_info(model)
+    #update_PDB_ihm_ensemble_info(model)
     
     # -- data manipulation
     #add_rows_to_Vocab_ihm_cross_link_list_linker_type(catalog)
