@@ -476,7 +476,29 @@ def update_PDB_ihm_cross_link_restraint(model):
                           on_update="CASCADE",
                           on_delete="NO ACTION")
     )
-    
+
+# ---------------
+def update_PDB_ihm_pseudo_site(model):
+    table = model.schemas['PDB'].tables['ihm_pseudo_site']
+   
+    # Add column    
+    table.create_column(
+        Column.define(
+            "Entry_Related_File",
+            builtin_types.text,
+            comment='A reference to the uploaded restraint file in the table Entry_Related_File.id.',
+            nullok=True
+        )
+    )
+
+    # Create the foreign key to new column
+    table.create_fkey(
+        ForeignKey.define(["Entry_Related_File"], "PDB", "Entry_Related_File", ["RID"],
+                          constraint_names=[ ["PDB", "ihm_pseudo_site_Entry_Related_File_fkey"] ],
+                          on_update="CASCADE",
+                          on_delete="NO ACTION")
+    )
+
 # ---------------
 def update_PDB_ihm_ensemble_info(model):
     table = model.schemas['PDB'].tables['ihm_ensemble_info']
@@ -585,6 +607,11 @@ def add_rows_to_Vocab_cross_link_partner(catalog):    #@serban to review
     cross_link_partner = schema.cross_link_partner
     cross_link_partner.insert(rows, defaults=['ID', 'URI'])
 
+#=============================================================
+def update_table_comments(model):
+
+    model.table("PDB", "ihm_pseudo_site").comment = "Details of pseudo sites that may be used in the restraints or model representation; can be uploaded as CSV/TSV file above; mmCIF category: ihm_pseudo_site"
+
 # ============================================================
 def main(server_name, catalog_id, credentials):
     server = DerivaServer('https', server_name, credentials)
@@ -593,33 +620,38 @@ def main(server_name, catalog_id, credentials):
     model = catalog.getCatalogModel()
 
     #--Drop tables
-    model.schemas['PDB'].tables['ihm_pseudo_site'].drop()
-    model.schemas['PDB'].tables['ihm_cross_link_pseudo_site'].drop()
-    model.schemas['PDB'].tables['ihm_ensemble_sub_sample'].drop()
+    #model.schemas['PDB'].tables['ihm_pseudo_site'].drop()
+    #model.schemas['PDB'].tables['ihm_cross_link_pseudo_site'].drop()
+    #model.schemas['PDB'].tables['ihm_ensemble_sub_sample'].drop()
 
-    model = catalog.getCatalogModel()         #Reload the model to create table after drop - bug
+    #model = catalog.getCatalogModel()         #Reload the model to create table after drop - bug
 
     # -- create tables from scratch
     #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('cross_link_partner', 'Identity of the crosslink partner'))
     #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sample_flag', 'Flag for ensembles consisting of sub samples'))
     #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sampling_type', 'Types of sub samples in ensembles'))
-    create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_pseudo_site())
+    #create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_pseudo_site())
     #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('pseudo_site_flag', 'Flag for crosslinks involving pseudo sites'))
-    create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_ensemble_sub_sample())
+    #create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_ensemble_sub_sample())
     create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_cross_link_pseudo_site())
 
     # -- update existing tables
     #update_PDB_ihm_pseudo_site_feature(model)
     #update_PDB_ihm_cross_link_restraint(model)
     #update_PDB_ihm_ensemble_info(model)
-    
+    #update_PDB_ihm_pseudo_site(model)
+
     # -- data manipulation
     #add_rows_to_Vocab_ihm_cross_link_list_linker_type(catalog)
     #add_rows_to_Vocab_pseudo_site_flag(catalog)
-    add_rows_to_Vocab_sub_sample_flag
-    add_rows_to_Vocab_sub_sampling_type
-    add_rows_to_Vocab_cross_link_partner
+    #add_rows_to_Vocab_sub_sample_flag(catalog)
+    #add_rows_to_Vocab_sub_sampling_type(catalog)
+    #add_rows_to_Vocab_cross_link_partner(catalog)
     
+    # -- Update table comments
+    #update_table_comments(model)
+    #model.apply()
+
 # ===================================================    
 
 if __name__ == '__main__':
