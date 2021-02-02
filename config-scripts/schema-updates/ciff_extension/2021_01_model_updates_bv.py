@@ -190,7 +190,7 @@ def define_tdoc_ihm_pseudo_site():
     ]
     
     key_defs = [
-        Key.define(["structure", "id"], constraint_names=[["PDB", "ihm_pseudo_site_primary_key"]] ),
+        Key.define(["structure_id", "id"], constraint_names=[["PDB", "ihm_pseudo_site_primary_key"]] ),
         Key.define(["RID"], constraint_names=[["PDB", "ihm_pseudo_site_RID_key"]] ),        
     ]
 
@@ -422,7 +422,6 @@ def define_tdoc_ihm_ensemble_sub_sample():
 # update existing table
 
 def update_PDB_ihm_pseudo_site_feature(model):
-    #table = model('PDB', 'ihm_pseudo_site_feature')
     table = model.schemas['PDB'].tables['ihm_pseudo_site_feature']
     
     # -- Remove columns from the PDB.ihm_pseudo_site_feature table
@@ -431,9 +430,8 @@ def update_PDB_ihm_pseudo_site_feature(model):
     remove_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'Cartn_z')
     remove_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'radius')
     remove_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'description')
-    
+
     # -- add columns
-    #if table.columns['pseudo_site_id']==None:   #@serban to review
     if 'pseudo_site_id' not in table.columns.elements:
         table.create_column(
             Column.define(
@@ -445,7 +443,6 @@ def update_PDB_ihm_pseudo_site_feature(model):
         )
     # -- add fk
     # Create the foreign key PDB.ihm_pseudo_site_feature.pseudo_site_id references PDB.ihm_pseudo_site.id
-    #if table.foreign_keys[(model.schemas['PDB'],'ihm_pseudo_site_feature_pseudo_site_id_fkey')]==None: #@serban to review
     if (model.schemas['PDB'],'ihm_pseudo_site_feature_pseudo_site_id_fkey') not in table.foreign_keys.elements:
         table.create_fkey(
             ForeignKey.define(["structure_id", "pseudo_site_id"], "PDB", "ihm_pseudo_site", ["structure_id","id"],
@@ -473,28 +470,6 @@ def update_PDB_ihm_cross_link_restraint(model):
     table.create_fkey(
         ForeignKey.define(["pseudo_site_flag"], "Vocab", "pseudo_site_flag", ["Name"],
                           constraint_names=[ ["Vocab", "ihm_cross_link_restraint_pseudo_site_flag_fkey"] ],
-                          on_update="CASCADE",
-                          on_delete="NO ACTION")
-    )
-
-# ---------------
-def update_PDB_ihm_pseudo_site(model):
-    table = model.schemas['PDB'].tables['ihm_pseudo_site']
-   
-    # Add column    
-    table.create_column(
-        Column.define(
-            "Entry_Related_File",
-            builtin_types.text,
-            comment='A reference to the uploaded restraint file in the table Entry_Related_File.id.',
-            nullok=True
-        )
-    )
-
-    # Create the foreign key to new column
-    table.create_fkey(
-        ForeignKey.define(["Entry_Related_File"], "PDB", "Entry_Related_File", ["RID"],
-                          constraint_names=[ ["PDB", "ihm_pseudo_site_Entry_Related_File_fkey"] ],
                           on_update="CASCADE",
                           on_delete="NO ACTION")
     )
@@ -627,19 +602,18 @@ def main(server_name, catalog_id, credentials):
     #model = catalog.getCatalogModel()         #Reload the model to create table after drop - bug
 
     # -- create tables from scratch
-    #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('cross_link_partner', 'Identity of the crosslink partner'))
-    #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sample_flag', 'Flag for ensembles consisting of sub samples'))
-    #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sampling_type', 'Types of sub samples in ensembles'))
-    #create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_pseudo_site())
-    #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('pseudo_site_flag', 'Flag for crosslinks involving pseudo sites'))
-    #create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_ensemble_sub_sample())
+    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('cross_link_partner', 'Identity of the crosslink partner'))
+    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sample_flag', 'Flag for ensembles consisting of sub samples'))
+    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sampling_type', 'Types of sub samples in ensembles'))
+    create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_pseudo_site())
+    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('pseudo_site_flag', 'Flag for crosslinks involving pseudo sites'))
+    create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_ensemble_sub_sample())
     create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_cross_link_pseudo_site())
 
     # -- update existing tables
-    #update_PDB_ihm_pseudo_site_feature(model)
-    #update_PDB_ihm_cross_link_restraint(model)
-    #update_PDB_ihm_ensemble_info(model)
-    #update_PDB_ihm_pseudo_site(model)
+    update_PDB_ihm_pseudo_site_feature(model)
+    update_PDB_ihm_cross_link_restraint(model)
+    update_PDB_ihm_ensemble_info(model)
 
     # -- data manipulation
     #add_rows_to_Vocab_ihm_cross_link_list_linker_type(catalog)
