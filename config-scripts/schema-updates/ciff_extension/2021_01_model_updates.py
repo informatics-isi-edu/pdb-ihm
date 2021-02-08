@@ -268,6 +268,7 @@ def define_tdoc_ihm_cross_link_pseudo_site():
             comment='Structure identifier',
             nullok=False
         ),
+        # HT: to use for Chaise
         Column.define(
             "Model_RID",
             builtin_types.text,
@@ -283,29 +284,35 @@ def define_tdoc_ihm_cross_link_pseudo_site():
 
     # @brinda: add fk pseudo-definition
     fkey_defs = [
+        # HT: it own fk to Entry table
         ForeignKey.define(["structure_id"], "PDB", "entry", ["id"],
                           constraint_names=[["PDB", "ihm_cross_link_pseudo_site_structure_id_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
+        # -- begin ihm_cross_link_restraint
+        # HT: In annotation, apply domain_filter to filter the RID list by constraining structure_id        
         ForeignKey.define(["structure_id", "restraint_id"], "PDB", "ihm_cross_link_restraint", ["structure_id", "id"],
                           constraint_names=[["PDB", "ihm_cross_link_pseudo_site_restraint_id_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
-#       We need this triple compositte key so that Chaise will automatically fill in automatically
-#       We can also do it differently by creating a foreign key with Model_RID and model_id
-        ForeignKey.define(["structure_id", "Model_RID", "model_id"], "PDB", "ihm_model_list", ["structure_id", "RID", "model_id"],
-                          constraint_names=[["PDB", "ihm_cross_link_pseudo_site_model_id_fkey"]],
+        # -- end ihm_cross_link_restraint         
+        # -- begin ihm_model_list table
+        # HT: This is for chaise optional foreign key --> check naming convention
+        # HT: In annotation, apply domain_filter to filter the RID list by constraining structure_id
+        ForeignKey.define(["Model_RID"], "PDB", "ihm_model_list", ["RID"],
+                          constraint_names=[["PDB", "ihm_cross_link_pseudo_site_Model_RID_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
-#       This is for chaise optional foreign key
-        ForeignKey.define(["structure_id", "Model_RID"], "PDB", "ihm_model_list", ["structure_id", "RID"],
-                          constraint_names=[["PDB", "ihm_cross_link_pseudo_site_model_id_fkey"]],
+        # HT: equivalent fk so that Chaise will automatically fill in automatically --> check constraint naming convention
+        ForeignKey.define(["Model_RID", "model_id"], "PDB", "ihm_model_list", ["RID", "id"],
+                          constraint_names=[["PDB", "ihm_cross_link_pseudo_site_Model_RID_model_id_denorm_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
+        # -- end ihm_model_list table
         ForeignKey.define(["structure_id", "pseudo_site_id"], "PDB", "ihm_pseudo_site", ["structure_id", "id"],
                           constraint_names=[["PDB", "ihm_cross_link_pseudo_site_pseudo_site_id_fkey"]],
                           on_update="CASCADE",
@@ -524,6 +531,15 @@ def update_PDB_ihm_ensemble_info(model):
                           on_delete="NO ACTION")
     )
 
+# ---------------
+def update_PDB_ihm_model_list(model):
+    table = model.schemas['PDB'].tables['ihm_model_list']
+    
+    # create additional keys --> check key naming convention
+    table.create_key(    
+        Key.define(["RID", "id"], constraint_names=[["PDB", "ihm_model_list_rid_id_denorm_key"]] )
+    )
+
 # ========================================================
 # add rows to Vocab.ihm_cross_link_list_linker_type table
 def add_rows_to_Vocab_ihm_cross_link_list_linker_type(catalog):
@@ -600,7 +616,7 @@ def add_rows_to_Vocab_cross_link_partner(catalog):    #@serban to review
 def update_table_comments(model):
 
     model.table("PDB", "ihm_pseudo_site").comment = "Details of pseudo sites that may be used in the restraints or model representation; can be uploaded as CSV/TSV file above; mmCIF category: ihm_pseudo_site"
-
+    
 # ============================================================
 def main(server_name, catalog_id, credentials):
     server = DerivaServer('https', server_name, credentials)
