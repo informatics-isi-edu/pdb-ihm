@@ -6,6 +6,17 @@ from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key,
 # ========================================================
 # utility
 
+# drop a table together with the associated reference keys
+def drop_table(model, schema_name, table_name):
+    if schema_name in model.schemas.keys():
+        schema = model.schemas[schema_name]
+        if table_name in schema.tables:
+            table = model.schemas[schema_name].tables[table_name]
+            for foreign_key in table.referenced_by:
+                foreign_key.drop()
+            table.drop()
+
+
 # create a vocabulary table if it does not exixt
 def create_vocabulary_table_if_not_exist(model, schema_name, table_name, comment):
 
@@ -625,6 +636,8 @@ def main(server_name, catalog_id, credentials):
     model = catalog.getCatalogModel()
 
     #--Drop tables
+    #drop_table(model, 'PDB', 'ihm_pseudo_site')
+    
     #model.schemas['PDB'].tables['ihm_pseudo_site'].drop()
     #model.schemas['PDB'].tables['ihm_cross_link_pseudo_site'].drop()
     #model.schemas['PDB'].tables['ihm_ensemble_sub_sample'].drop()
