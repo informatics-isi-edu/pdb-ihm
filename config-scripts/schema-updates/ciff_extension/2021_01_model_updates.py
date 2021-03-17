@@ -636,7 +636,7 @@ def main(server_name, catalog_id, credentials):
     model = catalog.getCatalogModel()
 
     #--Drop tables
-    #drop_table(model, 'PDB', 'ihm_pseudo_site')
+    drop_table(model, 'PDB', 'ihm_pseudo_site')
     
     #model.schemas['PDB'].tables['ihm_pseudo_site'].drop()
     #model.schemas['PDB'].tables['ihm_cross_link_pseudo_site'].drop()
@@ -645,18 +645,18 @@ def main(server_name, catalog_id, credentials):
     #model = catalog.getCatalogModel()         #Reload the model to create table after drop - bug
 
     # -- create tables from scratch
-    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('cross_link_partner', 'Identity of the crosslink partner'))
-    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sample_flag', 'Flag for ensembles consisting of sub samples'))
-    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sampling_type', 'Types of sub samples in ensembles'))
-    create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_pseudo_site())
-    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('pseudo_site_flag', 'Flag for crosslinks involving pseudo sites'))
-    create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_ensemble_sub_sample())
-    create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_cross_link_pseudo_site())
+    #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('cross_link_partner', 'Identity of the crosslink partner'))
+    #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sample_flag', 'Flag for ensembles consisting of sub samples'))
+    #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sampling_type', 'Types of sub samples in ensembles'))
+    #create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_pseudo_site())
+    #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('pseudo_site_flag', 'Flag for crosslinks involving pseudo sites'))
+    #create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_ensemble_sub_sample())
+    #create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_cross_link_pseudo_site())
 
     # -- update existing tables
-    update_PDB_ihm_pseudo_site_feature(model)
-    update_PDB_ihm_cross_link_restraint(model)
-    update_PDB_ihm_ensemble_info(model)
+    #update_PDB_ihm_pseudo_site_feature(model)
+    #update_PDB_ihm_cross_link_restraint(model)
+    #update_PDB_ihm_ensemble_info(model)
 
     # -- data manipulation
     #add_rows_to_Vocab_ihm_cross_link_list_linker_type(catalog)
