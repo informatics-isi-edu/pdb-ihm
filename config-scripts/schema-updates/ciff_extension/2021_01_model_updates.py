@@ -7,13 +7,22 @@ from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key,
 # utility
 
 # drop a table together with the associated reference keys
-def drop_table(model, schema_name, table_name):
+def drop_table(catalog, schema_name, table_name):
+    model = catalog.getCatalogModel()
     if schema_name in model.schemas.keys():
         schema = model.schemas[schema_name]
         if table_name in schema.tables:
+            ready = False
+            while ready == False:
+                model = catalog.getCatalogModel()
+                table = model.schemas[schema_name].tables[table_name]
+                if len(table.referenced_by) == 0:
+                    ready = True
+                else:
+                    for foreign_key in table.referenced_by:
+                        foreign_key.drop()
+            model = catalog.getCatalogModel()
             table = model.schemas[schema_name].tables[table_name]
-            for foreign_key in table.referenced_by:
-                foreign_key.drop()
             table.drop()
 
 
@@ -636,7 +645,7 @@ def main(server_name, catalog_id, credentials):
     model = catalog.getCatalogModel()
 
     #--Drop tables
-    drop_table(model, 'PDB', 'ihm_pseudo_site')
+    drop_table(catalog, 'PDB', 'ihm_pseudo_site')
     
     #model.schemas['PDB'].tables['ihm_pseudo_site'].drop()
     #model.schemas['PDB'].tables['ihm_cross_link_pseudo_site'].drop()
