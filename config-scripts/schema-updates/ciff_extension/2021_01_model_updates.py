@@ -208,13 +208,15 @@ def define_tdoc_ihm_pseudo_site():
             nullok=False
         )
     ]
-    
+    #BV: This is a parent table with mandatory columns in the child table; so combo1 key is defined
     key_defs = [
         Key.define(["structure_id", "id"], constraint_names=[["PDB", "ihm_pseudo_site_primary_key"]] ),
         Key.define(["RID"], constraint_names=[["PDB", "ihm_pseudo_site_RID_key"]] ),        
+        Key.define(["RID", "structure_id", "id"], constraint_names=[["PDB", "ihm_pseudo_site_combo1_key"]] )
     ]
 
     # @brinda: add fk pseudo-definition
+    #BV: No outgoing fkeys other than structure_id and Entry_Related_File
     fkey_defs = [
         ForeignKey.define(["structure_id"], "PDB", "entry", ["id"],
                           constraint_names=[["PDB", "ihm_pseudo_site_structure_id_fkey"]],
@@ -294,9 +296,21 @@ def define_tdoc_ihm_cross_link_pseudo_site():
             builtin_types.text,
             comment='Identifier to the model RID',
             nullok=True
+        ),
+        Column.define(
+            "Pseudo_Site_RID",
+            builtin_types.text,
+            comment='Identifier to the pseudo site RID',
+            nullok=False
+        ),
+        Column.define(
+            "Restraint_RID",
+            builtin_types.text,
+            comment='Identifier to the restraint RID',
+            nullok=False
         )
     ]
-
+    #BV: This is a leaf table; so no combo1/combo2 keys required
     key_defs = [
         Key.define(["structure_id", "id"], constraint_names=[["PDB", "ihm_cross_link_pseudo_site_primary_key"]] ),
         Key.define(["RID"], constraint_names=[["PDB", "ihm_cross_link_pseudo_site_RID_key"]] ),
@@ -312,8 +326,8 @@ def define_tdoc_ihm_cross_link_pseudo_site():
         ),
         # -- begin ihm_cross_link_restraint
         # HT: In annotation, apply domain_filter to filter the RID list by constraining structure_id        
-        ForeignKey.define(["structure_id", "restraint_id"], "PDB", "ihm_cross_link_restraint", ["structure_id", "id"],
-                          constraint_names=[["PDB", "ihm_cross_link_pseudo_site_restraint_id_fkey"]],
+        ForeignKey.define(["Restraint_RID", "structure_id", "restraint_id"], "PDB", "ihm_cross_link_restraint", ["RID", "structure_id", "id"],
+                          constraint_names=[["PDB", "ihm_cross_link_pseudo_site_ihm_cross_link_restraint_combo1_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
@@ -321,20 +335,21 @@ def define_tdoc_ihm_cross_link_pseudo_site():
         # -- begin ihm_model_list table
         # HT: This is for chaise optional foreign key --> check naming convention
         # HT: In annotation, apply domain_filter to filter the RID list by constraining structure_id
-        ForeignKey.define(["Model_RID"], "PDB", "ihm_model_list", ["RID"],
-                          constraint_names=[["PDB", "ihm_cross_link_pseudo_site_Model_RID_fkey"]],
-                          on_update="CASCADE",
-                          on_delete="NO ACTION"
-        ),
+        # BV: Not required anymore based on the google doc with fkey conventions
+        #ForeignKey.define(["Model_RID"], "PDB", "ihm_model_list", ["RID"],
+        #                  constraint_names=[["PDB", "ihm_cross_link_pseudo_site_Model_RID_fkey"]],
+        #                  on_update="CASCADE",
+        #                  on_delete="NO ACTION"
+        #),
         # HT: equivalent fk so that Chaise will automatically fill in automatically --> check constraint naming convention
-        ForeignKey.define(["Model_RID", "model_id"], "PDB", "ihm_model_list", ["RID", "id"],
-                          constraint_names=[["PDB", "ihm_cross_link_pseudo_site_Model_RID_model_id_denorm_fkey"]],
+        ForeignKey.define(["Model_RID", "model_id"], "PDB", "ihm_model_list", ["RID", "model_id"],
+                          constraint_names=[["PDB", "ihm_cross_link_pseudo_site_ihm_model_list_combo2_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
         # -- end ihm_model_list table
-        ForeignKey.define(["structure_id", "pseudo_site_id"], "PDB", "ihm_pseudo_site", ["structure_id", "id"],
-                          constraint_names=[["PDB", "ihm_cross_link_pseudo_site_pseudo_site_id_fkey"]],
+        ForeignKey.define(["Pseudo_Site_RID", "structure_id", "pseudo_site_id"], "PDB", "ihm_pseudo_site", ["RID", "structure_id", "id"],
+                          constraint_names=[["PDB", "ihm_cross_link_pseudo_site_ihm_pseudo_site_combo1_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
@@ -415,9 +430,27 @@ def define_tdoc_ihm_ensemble_sub_sample():
             builtin_types.text,
             comment='Structure identifier',
             nullok=False
+        ),
+        Column.define(
+            "Ensemble_RID",
+            builtin_types.text,
+            comment='Identifier to the ensemble RID',
+            nullok=False
+        ),
+        Column.define(
+            "Model_Group_RID",
+            builtin_types.text,
+            comment='Identifier to the model group RID',
+            nullok=True
+        ),
+        Column.define(
+            "File_RID",
+            builtin_types.text,
+            comment='Identifier to the external file RID',
+            nullok=True
         )
     ]
-
+    #BV: This is a leaf table; so no combo1/combo2 keys required
     key_defs = [
         Key.define(["structure_id", "id"], constraint_names=[["PDB", "ihm_ensemble_sub_sample_primary_key"]] ),
         Key.define(["RID"], constraint_names=[["PDB", "ihm_ensemble_sub_sample_RID_key"]] ),
@@ -430,18 +463,18 @@ def define_tdoc_ihm_ensemble_sub_sample():
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
-        ForeignKey.define(["structure_id", "ensemble_id"], "PDB", "ihm_ensemble_info", ["structure_id", "ensemble_id"],
-                          constraint_names=[["PDB", "ihm_ensemble_sub_sample_ensemble_id_fkey"]],
+        ForeignKey.define(["Ensemble_RID", "structure_id", "ensemble_id"], "PDB", "ihm_ensemble_info", ["RID", "structure_id", "ensemble_id"],
+                          constraint_names=[["PDB", "ihm_ensemble_sub_sample_ihm_ensemble_info_combo1_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
-        ForeignKey.define(["structure_id", "model_group_id"], "PDB", "ihm_model_group", ["structure_id", "id"],
-                          constraint_names=[["PDB", "ihm_ensemble_sub_sample_model_group_id_fkey"]],
+        ForeignKey.define(["Model_Group_RID", "model_group_id"], "PDB", "ihm_model_group", ["RID", "id"],
+                          constraint_names=[["PDB", "ihm_ensemble_sub_sample_ihm_model_group_combo2_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
-        ForeignKey.define(["structure_id", "file_id"], "PDB", "ihm_external_files", ["structure_id", "id"],
-                          constraint_names=[["PDB", "ihm_ensemble_sub_sample_file_id_fkey"]],
+        ForeignKey.define(["File_RID", "file_id"], "PDB", "ihm_external_files", ["RID", "id"],
+                          constraint_names=[["PDB", "ihm_ensemble_sub_sample_ihm_external_files_combo2_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         )
@@ -645,8 +678,10 @@ def main(server_name, catalog_id, credentials):
     model = catalog.getCatalogModel()
 
     #--Drop tables
-    drop_table(catalog, 'PDB', 'ihm_pseudo_site')
-    
+    #drop_table(catalog, 'PDB', 'ihm_pseudo_site')
+    #drop_table(catalog, 'PDB', 'ihm_cross_link_pseudo_site') 
+    #drop_table(catalog, 'PDB', 'ihm_ensemble_sub_sample')
+
     #model.schemas['PDB'].tables['ihm_pseudo_site'].drop()
     #model.schemas['PDB'].tables['ihm_cross_link_pseudo_site'].drop()
     #model.schemas['PDB'].tables['ihm_ensemble_sub_sample'].drop()
@@ -657,10 +692,10 @@ def main(server_name, catalog_id, credentials):
     #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('cross_link_partner', 'Identity of the crosslink partner'))
     #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sample_flag', 'Flag for ensembles consisting of sub samples'))
     #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sampling_type', 'Types of sub samples in ensembles'))
-    #create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_pseudo_site())
+    create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_pseudo_site())
     #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('pseudo_site_flag', 'Flag for crosslinks involving pseudo sites'))
-    #create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_ensemble_sub_sample())
-    #create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_cross_link_pseudo_site())
+    create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_ensemble_sub_sample())
+    create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_cross_link_pseudo_site())
 
     # -- update existing tables
     #update_PDB_ihm_pseudo_site_feature(model)
