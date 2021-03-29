@@ -2,9 +2,64 @@ import sys
 import json
 from deriva.core import ErmrestCatalog, AttrDict, get_credential, DEFAULT_CREDENTIAL_FILE, tag, urlquote, DerivaServer, get_credential, BaseCLI
 from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key, ForeignKey, DomainType, ArrayType
+from __builtin__ import False
 
 # ========================================================
 # utility
+
+# check if a key is defined or not in a table
+# the key parameter is provided as a list of columns names
+def exist_key_in_table(model, schema_name, table_name, key):
+    if schema_name in model.schemas.keys():
+        schema = model.schemas[schema_name]
+        if table_name in schema.tables:
+            key = sorted(key)
+            table = model.schemas[schema_name].tables[table_name]
+            for pk in table.keys:
+                unique_columns_names = []
+                for col in pk.unique_columns:
+                    unique_columns_names.append(col.name)
+                if key == sorted(unique_columns_names):
+                    return True
+    return False
+
+# check if a foreign key is defined or not in a table
+# the key parameter is provided as a list of columns names
+def exist_foreign_key_in_table(model, schema_name, table_name, key):
+    if schema_name in model.schemas.keys():
+        schema = model.schemas[schema_name]
+        if table_name in schema.tables:
+            key = sorted(key)
+            table = model.schemas[schema_name].tables[table_name]
+            for fk in table.foreign_keys:
+                foreign_key_columns_names = []
+                for col in fk.foreign_key_columns:
+                    foreign_key_columns_names.append(col.name)
+                if key == sorted(foreign_key_columns_names):
+                    return True
+    return False
+
+# check if a key is defined or not in a table
+def exist_key_name_in_table(model, schema_name, table_name, key_name):
+    if schema_name in model.schemas.keys():
+        schema = model.schemas[schema_name]
+        if table_name in schema.tables:
+            table = model.schemas[schema_name].tables[table_name]
+            for pk in table.keys:
+                if key_name == pk.constraint_name:
+                    return True
+    return False
+
+# check if a foreign key is defined or not in a table
+def exist_foreign_key_name_in_table(model, schema_name, table_name, key_name):
+    if schema_name in model.schemas.keys():
+        schema = model.schemas[schema_name]
+        if table_name in schema.tables:
+            table = model.schemas[schema_name].tables[table_name]
+            for fk in table.foreign_keys:
+                if key_name == fk.constraint_name:
+                    return True
+    return False
 
 # drop a table together with the associated reference keys
 def drop_table(catalog, schema_name, table_name):
