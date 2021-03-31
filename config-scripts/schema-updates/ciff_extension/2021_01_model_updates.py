@@ -7,6 +7,19 @@ from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key,
 # ========================================================
 # utility
 
+# rename a key
+# the key parameter is provided as as a name
+# usage example: rename_key(model, 'PDB', 'ihm_model_group', 'ihm_model_group_RID_id_key', 'ihm_model_group_combo1_key')
+def rename_key(model, schema_name, table_name, old_constraint_name, new_constraint_name):
+    if schema_name in model.schemas.keys():
+        schema = model.schemas[schema_name]
+        if table_name in schema.tables:
+            table = model.schemas[schema_name].tables[table_name]
+            for pk in table.keys:
+                if old_constraint_name == pk.constraint_name:
+                    pk.alter(constraint_name=new_constraint_name)
+                    return
+
 # check if a key is defined or not in a table
 # the key parameter is provided as a list of columns names
 def exist_key_in_table(model, schema_name, table_name, key):
