@@ -583,12 +583,40 @@ def update_PDB_ihm_pseudo_site_feature(model):
                 nullok=False
             )
         )
+    if 'pseudo_site_RID' not in table.columns.elements:
+        table.create_column(
+            Column.define(
+                'pseudo_site_RID',
+                builtin_types.text,
+                comment='Identifier to the pseudo site RID',
+                nullok=False
+            )
+        )
+
+    if 'feature_RID' not in table.columns.elements:
+        table.create_column(
+            Column.define(
+                'feature_RID',
+                builtin_types.text,
+                comment='Identifier to the feature RID',
+                nullok=False
+            )
+        )
+
     # -- add fk
     # Create the foreign key PDB.ihm_pseudo_site_feature.pseudo_site_id references PDB.ihm_pseudo_site.id
-    if (model.schemas['PDB'],'ihm_pseudo_site_feature_pseudo_site_id_fkey') not in table.foreign_keys.elements:
+    if (model.schemas['PDB'],'ihm_pseudo_site_feature_ihm_pseudo_site_combo1_fkey') not in table.foreign_keys.elements:
         table.create_fkey(
-            ForeignKey.define(["structure_id", "pseudo_site_id"], "PDB", "ihm_pseudo_site", ["structure_id","id"],
-                            constraint_names=[ ["PDB", "ihm_pseudo_site_feature_pseudo_site_id_fkey"] ],
+            ForeignKey.define(["pseudo_site_RID", "structure_id", "pseudo_site_id"], "PDB", "ihm_pseudo_site", ["RID", "structure_id", "id"],
+                            constraint_names=[ ["PDB", "ihm_pseudo_site_feature_ihm_pseudo_site_combo1_fkey"] ],
+                            on_update="CASCADE",
+                            on_delete="NO ACTION")  # won't allow delete until there is no reference
+        )
+
+    if (model.schemas['PDB'],'ihm_pseudo_site_feature_ihm_feature_list_combo1_fkey') not in table.foreign_keys.elements:
+        table.create_fkey(
+            ForeignKey.define(["feature_RID", "structure_id", "feature_id"], "PDB", "ihm_feature_list", ["RID", "structure_id", "feature_id"],
+                            constraint_names=[ ["PDB", "ihm_pseudo_site_feature_ihm_feature_list_combo1_fkey"] ],
                             on_update="CASCADE",
                             on_delete="NO ACTION")  # won't allow delete until there is no reference
         )
@@ -670,19 +698,11 @@ def update_PDB_ihm_model_list(model):
     )
 
 # ---------------
-def update_PDB_ihm_model_group(model):
-    table = model.schemas['PDB'].tables['ihm_model_group']
-
-    table.create_key(
-        Key.define(["RID", "id"], constraint_names=[["PDB", "ihm_model_group_combo2_key"]] )
-    )
-
-# ---------------
-def update_PDB_ihm_external_files(model):
-    table = model.schemas['PDB'].tables['ihm_external_files']
-
-    table.create_key(
-        Key.define(["RID", "id"], constraint_names=[["PDB", "ihm_external_files_combo2_key"]] )
+def update_PDB_ihm_feature_list(model):
+    table = model.schemas['PDB'].tables['ihm_feature_list']
+   
+    table.create_key(   
+        Key.define(["RID", "structure_id", "feature_id"], constraint_names=[["PDB", "ihm_feature_list_combo1_key"]] )
     )
 
 # ========================================================
@@ -784,18 +804,21 @@ def main(server_name, catalog_id, credentials):
     #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('cross_link_partner', 'Identity of the crosslink partner'))
     #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sample_flag', 'Flag for ensembles consisting of sub samples'))
     #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sampling_type', 'Types of sub samples in ensembles'))
-    create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_pseudo_site())
+    #create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_pseudo_site())
     #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('pseudo_site_flag', 'Flag for crosslinks involving pseudo sites'))
     #create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_ensemble_sub_sample())
-    create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_cross_link_pseudo_site())
+    #create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_cross_link_pseudo_site())
 
     # -- update existing tables
-    #update_PDB_ihm_pseudo_site_feature(model)
+    update_PDB_ihm_feature_list(model)
+    update_PDB_ihm_pseudo_site_feature(model)
     #update_PDB_ihm_cross_link_restraint(model)
     #update_PDB_ihm_model_list(model)
     #update_PDB_ihm_ensemble_info(model)
-    #update_PDB_ihm_external_files(model)
-    #update_PDB_ihm_model_group(model)
+
+    # Rename existing keys
+    #rename_key(model, 'PDB', 'ihm_model_group', 'ihm_model_group_RID_id_key', 'ihm_model_group_combo2_key')
+    #rename_key(model, 'PDB', 'ihm_external_files', 'ihm_external_files_id_RID_key', 'ihm_external_files_combo2_key')
 
     # -- data manipulation
     #add_rows_to_Vocab_ihm_cross_link_list_linker_type(catalog)
