@@ -566,6 +566,10 @@ def define_tdoc_ihm_ensemble_sub_sample():
 def update_PDB_ihm_pseudo_site_feature(model):
     table = model.schemas['PDB'].tables['ihm_pseudo_site_feature']
     
+    # Drop fkeys
+    if (model.schemas['PDB'],'ihm_pseudo_site_feature_feature_id_fkey') in table.foreign_keys.elements:
+        table.foreign_keys[(model.schemas['PDB'], 'ihm_pseudo_site_feature_feature_id_fkey')].drop()
+
     # -- Remove columns from the PDB.ihm_pseudo_site_feature table
     remove_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'Cartn_x')
     remove_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'Cartn_y')
@@ -810,7 +814,7 @@ def main(server_name, catalog_id, credentials):
     #create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_cross_link_pseudo_site())
 
     # -- update existing tables
-    update_PDB_ihm_feature_list(model)
+    #update_PDB_ihm_feature_list(model)
     update_PDB_ihm_pseudo_site_feature(model)
     #update_PDB_ihm_cross_link_restraint(model)
     #update_PDB_ihm_model_list(model)
@@ -819,7 +823,6 @@ def main(server_name, catalog_id, credentials):
     # Rename existing keys
     #rename_key(model, 'PDB', 'ihm_model_group', 'ihm_model_group_RID_id_key', 'ihm_model_group_combo2_key')
     #rename_key(model, 'PDB', 'ihm_external_files', 'ihm_external_files_id_RID_key', 'ihm_external_files_combo2_key')
-
     # -- data manipulation
     #add_rows_to_Vocab_ihm_cross_link_list_linker_type(catalog)
     #add_rows_to_Vocab_pseudo_site_flag(catalog)
