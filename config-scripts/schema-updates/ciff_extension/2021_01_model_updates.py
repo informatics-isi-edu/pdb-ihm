@@ -560,7 +560,127 @@ def define_tdoc_ihm_ensemble_sub_sample():
 
     return table_def
 
-# ===================================================
+# ========================================================
+def define_tdoc_ihm_data_transformation():
+    table_name='ihm_data_transformation'
+    comment='Details of rotation matrix and translation vector that can be applied to transform data; mmCIF category: ihm_data_transformation'
+
+    column_defs = [
+        Column.define(
+            "id",
+            builtin_types.int8,
+            comment='An identifier to the transformation matrix',
+            nullok=False
+        ),
+        Column.define(
+            "rot_matrix[1][1]",
+            builtin_types.float8,
+            comment='Data item [1][1] of the rotation matrix used in the transformation',
+            nullok=True
+        ),
+        Column.define(
+            "rot_matrix[2][1]",
+            builtin_types.float8,
+            comment='Data item [2][1] of the rotation matrix used in the transformation',
+            nullok=True
+        ),
+        Column.define(
+            "rot_matrix[3][1]",
+            builtin_types.float8,
+            comment='Data item [3][1] of the rotation matrix used in the transformation',
+            nullok=True
+        ),
+        Column.define(
+            "rot_matrix[1][2]",
+            builtin_types.float8,
+            comment='Data item [1][2] of the rotation matrix used in the transformation',
+            nullok=True
+        ),
+        Column.define(
+            "rot_matrix[2][2]",
+            builtin_types.float8,
+            comment='Data item [2][2] of the rotation matrix used in the transformation',
+            nullok=True
+        ),
+        Column.define(
+            "rot_matrix[3][2]",
+            builtin_types.float8,
+            comment='Data item [3][2] of the rotation matrix used in the transformation',
+            nullok=True
+        ),
+        Column.define(
+            "rot_matrix[1][3]",
+            builtin_types.float8,
+            comment='Data item [1][3] of the rotation matrix used in the transformation',
+            nullok=True
+        ),
+        Column.define(
+            "rot_matrix[2][3]",
+            builtin_types.float8,
+            comment='Data item [2][3] of the rotation matrix used in the transformation',
+            nullok=True
+        ),
+        Column.define(
+            "rot_matrix[3][3]",
+            builtin_types.float8,
+            comment='Data item [3][3] of the rotation matrix used in the transformation',
+            nullok=True
+        ),
+        Column.define(
+            "tr_vector[1]",
+            builtin_types.float8,
+            comment='Data item [1] of the translation vector used in the transformation',
+            nullok=True
+        ),
+        Column.define(
+            "tr_vector[2]",
+            builtin_types.float8,
+            comment='Data item [2] of the translation vector used in the transformation',
+            nullok=True
+        ),
+        Column.define(
+            "tr_vector[3]",
+            builtin_types.float8,
+            comment='Data item [3] of the translation vector used in the transformation',
+            nullok=True
+        ),
+        Column.define(
+            "structure_id",
+            builtin_types.text,
+            comment='Structure identifier',
+            nullok=False
+        )
+    ]
+    #BV: This is a parent table with optional columns in the child table; so combo2 key is defined
+    key_defs = [
+        Key.define(["structure_id", "id"], constraint_names=[["PDB", "ihm_data_transformation_primary_key"]] ),
+        Key.define(["RID"], constraint_names=[["PDB", "ihm_data_transformation_RID_key"]] ),        
+        Key.define(["RID", "id"], constraint_names=[["PDB", "ihm_data_transformation_combo2_key"]] )
+    ]
+
+    # @brinda: add fk pseudo-definition
+    #BV: No outgoing fkeys other than structure_id
+    fkey_defs = [
+        ForeignKey.define(["structure_id"], "PDB", "entry", ["id"],
+                          constraint_names=[["PDB", "ihm_data_transformation_structure_id_fkey"]],
+                          on_update="CASCADE",
+                          on_delete="NO ACTION"   
+        )
+        
+    ]
+    
+    table_def = Table.define(
+        table_name,
+        column_defs,
+        key_defs=key_defs,
+        fkey_defs=fkey_defs,
+        comment=comment,
+        provide_system=True
+    )
+    
+    return table_def
+
+#====================================================
 # update existing table
 
 def update_PDB_ihm_pseudo_site_feature(model):
@@ -709,6 +829,38 @@ def update_PDB_ihm_feature_list(model):
         Key.define(["RID", "structure_id", "feature_id"], constraint_names=[["PDB", "ihm_feature_list_combo1_key"]] )
     )
 
+# ---------------
+def update_PDB_ihm_related_datasets(model):
+    table = model.schemas['PDB'].tables['ihm_related_datasets']
+    
+    # -- add columns
+    if 'transformation_id' not in table.columns.elements:
+        table.create_column(
+            Column.define(
+                'transformation_id',
+                builtin_types.int8,
+                comment='Identifier corresponding to the transformation matrix to be applied to the derived dataset in order to transform it to the primary dataset',
+                nullok=True
+            )
+        )
+    if 'transformation_RID' not in table.columns.elements:
+        table.create_column(
+            Column.define(
+                'transformation_RID',
+                builtin_types.text,
+                comment='Identifier to the transformation RID',
+                nullok=True
+            )
+        )
+
+    # -- add fk
+    if (model.schemas['PDB'],'ihm_related_datasets_ihm_data_transformation_combo2_fkey') not in table.foreign_keys.elements:
+        table.create_fkey(
+            ForeignKey.define(["transformation_RID", "transformation_id"], "PDB", "ihm_data_transformation", ["RID", "id"],
+                            constraint_names=[ ["PDB", "ihm_related_datasets_ihm_data_transformation_combo2_fkey"] ],
+                            on_update="CASCADE",
+                            on_delete="NO ACTION")  # won't allow delete until there is no reference
+        )
 # ========================================================
 # add rows to Vocab.ihm_cross_link_list_linker_type table
 def add_rows_to_Vocab_ihm_cross_link_list_linker_type(catalog):
@@ -812,13 +964,15 @@ def main(server_name, catalog_id, credentials):
     #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('pseudo_site_flag', 'Flag for crosslinks involving pseudo sites'))
     #create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_ensemble_sub_sample())
     #create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_cross_link_pseudo_site())
+    create_table_if_not_exist(model, "PDB", define_tdoc_ihm_data_transformation()) 
 
     # -- update existing tables
     #update_PDB_ihm_feature_list(model)
-    update_PDB_ihm_pseudo_site_feature(model)
+    #update_PDB_ihm_pseudo_site_feature(model)
     #update_PDB_ihm_cross_link_restraint(model)
     #update_PDB_ihm_model_list(model)
     #update_PDB_ihm_ensemble_info(model)
+    update_PDB_ihm_related_datasets(model)
 
     # Rename existing keys
     #rename_key(model, 'PDB', 'ihm_model_group', 'ihm_model_group_RID_id_key', 'ihm_model_group_combo2_key')
