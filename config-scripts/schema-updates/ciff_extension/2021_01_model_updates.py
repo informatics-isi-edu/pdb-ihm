@@ -7,6 +7,16 @@ from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key,
 # ========================================================
 # utility
 
+# rename a column
+# usage example: rename_key(model, 'PDB', 'ihm_hdx_restraint', 'feature_id', 'feature_ID')
+def rename_column(model, schema_name, table_name, old_name, new_name):
+    if schema_name in model.schemas.keys():
+        schema = model.schemas[schema_name]
+        if table_name in schema.tables:
+            table = model.schemas[schema_name].tables[table_name]
+            if old_name in table.column_definitions.elements:
+                table.column_definitions[old_name].alter(name=new_name)
+
 # rename a key
 # the key parameter is provided as as a name
 # usage example: rename_key(model, 'PDB', 'ihm_model_group', 'ihm_model_group_RID_id_key', 'ihm_model_group_combo1_key')
