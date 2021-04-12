@@ -135,13 +135,25 @@ def add_fkey(model, schema_name, table_name, column_name, reference_schema, refe
 
 # ---------------------------------------
 # remove a column
-def remove_column_if_exist(model, schema_name, table_name, column_name):
+def drop_column_if_exist(model, schema_name, table_name, column_name):
     if table_name in model.schemas[schema_name].tables:
         table = model.schemas[schema_name].tables[table_name]
         if column_name in table.columns.elements:
             #table[column_name].drop()
             table.column_definitions[column_name].drop()
             print("Dropped column %s.%s.%s" % (schema_name, table_name, column_name))
+
+# ---------------------------------------
+# drop fkey if exist
+def remove_fkey_if_exist(model, schema_name, table_name, fkey_name):
+
+    schema = model.schemas[schema_name]
+    table = schema.tables[table_name]
+    try:
+        table.foreign_keys[(schema, fkey_name)].drop()
+        print("Dropped fkey %s.%s fkey:%s" % (schema_name, table_name, fkey_name))
+    except KeyError:
+        continue
 
 # ---------------------------------------
 # define a vocabulary table (with specific structure)
@@ -801,11 +813,11 @@ def update_PDB_ihm_pseudo_site_feature(model):
         table.foreign_keys[(model.schemas['PDB'], 'ihm_pseudo_site_feature_feature_id_fkey')].drop()
 
     # -- Remove columns from the PDB.ihm_pseudo_site_feature table
-    remove_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'Cartn_x')
-    remove_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'Cartn_y')
-    remove_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'Cartn_z')
-    remove_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'radius')
-    remove_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'description')
+    drop_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'Cartn_x')
+    drop_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'Cartn_y')
+    drop_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'Cartn_z')
+    drop_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'radius')
+    drop_column_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'description')
 
     # -- add columns
     if 'pseudo_site_id' not in table.columns.elements:
