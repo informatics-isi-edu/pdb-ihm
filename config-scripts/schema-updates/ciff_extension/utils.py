@@ -24,7 +24,7 @@ def rename_key_if_exist(model, schema_name, table_name, old_key_name, new_key_na
 # The option flag changes whether it raises KeyError or returns None if no key is found for those columns.
 def exist_key_by_columns(model, schema_name, table_name, key_column_names):
     table = model.schemas[schema_name].tables[table_name]
-    return table.key_by_columns(key_column_names) is not None
+    return table.key_by_columns(key_column_names, raise_nomatch=False) is not None
 
 # ---------------------------------------
 def exist_key_by_name(model, schema_name, table_name, key_name):
@@ -54,19 +54,6 @@ def exist_foreign_key_in_table(model, schema_name, table_name, key):
                 for col in fk.foreign_key_columns:
                     foreign_key_columns_names.append(col.name)
                 if key == sorted(foreign_key_columns_names):
-                    return True
-    return False
-
-# ---------------------------------------
-# check if a foreign key is defined or not in a table
-# HT: TO BE DELETED
-def exist_foreign_key_name_in_table(model, schema_name, table_name, key_name):
-    if schema_name in model.schemas.keys():
-        schema = model.schemas[schema_name]
-        if table_name in schema.tables:
-            table = model.schemas[schema_name].tables[table_name]
-            for fk in table.foreign_keys:
-                if key_name == fk.constraint_name:
                     return True
     return False
 
