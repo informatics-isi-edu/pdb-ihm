@@ -9,7 +9,7 @@ import utils
 # -- create a table that is not a Vocab structure
 def define_tdoc_ihm_derived_angle_restraint():
     table_name='ihm_derived_angle_restraint'
-    comment='Details of angle restraints used in integrative modeling; mmCIF category: ihm_derived_angle_restraint'
+    comment='Details of angle restraints used in integrative modeling; can be uploaded as CSV/TSV file above; mmCIF category: ihm_derived_angle_restraint'
 
     column_defs = [
         Column.define(
