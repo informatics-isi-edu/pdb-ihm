@@ -59,6 +59,7 @@ class PDBClient (object):
         self.port = None
         if len(host_port) > 1:
             self.port = host_port[1]
+        self.catalog_number = int(self.path.split('/')[-1])
         self.is_catalog_dev = (int(self.path.split('/')[-1]) == catalog_dev_number)
         self.make_mmCIF = kwargs.get("make_mmCIF")
         self.mmCIF_Schema_Version = kwargs.get("mmCIF_Schema_Version")
@@ -245,7 +246,7 @@ class PDBClient (object):
         self.logger.debug('Ended PDB Processing for the %s:%s table.' % (schema, table)) 
         
     """
-    Process the mmCIF file of the entry table
+    Export the mmCIF file of the entry table
     """
     def export_mmCIF(self, schema_pdb, table_entry, rid, status='in progress'):
         deriva_tables = ['entry']
@@ -1117,9 +1118,9 @@ class PDBClient (object):
                         Any empty value will be treated as NULL
                         """
                         del entity[column]
-                    elif column_definitions[column]._wrapped_column.type.typename == 'jsonb':
+                    elif column_definitions[column].type.typename == 'jsonb':
                         entity[column] = json.loads(entity[column])
-                    elif column_definitions[column]._wrapped_column.type.typename.endswith('[]'):
+                    elif column_definitions[column].type.typename.endswith('[]'):
                         entity[column] = entity[column][1:-1].split(',')
                 
                 """
@@ -1160,7 +1161,7 @@ class PDBClient (object):
     def getRecordUpdatedWithFK(self, tname, row, entry_id):
         with open('{}'.format(self.entry), 'r') as f:
             pdb = json.load(f)
-        referenced_by = pdb['Catalog 1']['schemas']['PDB']['tables']['entry']['referenced_by']
+        referenced_by = pdb['Catalog {}'.format(self.catalog_number)]['schemas']['PDB']['tables']['entry']['referenced_by']
         columns = []
         for k,v in referenced_by.items():
             if v['table'] == tname:
@@ -1179,7 +1180,7 @@ class PDBClient (object):
     def getUpdatedRecord(self, tname, row, entry_id):
         with open('{}'.format(self.entry), 'r') as f:
             pdb = json.load(f)
-        referenced_by = pdb['Catalog 1']['schemas']['PDB']['tables']['entry']['referenced_by']
+        referenced_by = pdb['Catalog {}'.format(self.catalog_number)]['schemas']['PDB']['tables']['entry']['referenced_by']
         columns = []
         for k,v in referenced_by.items():
             if v['table'] == tname:
