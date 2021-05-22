@@ -1034,7 +1034,8 @@ def add_rows_to_Vocab_ihm_cross_link_list_linker_type(catalog):
         {'Name': 'SDA', 'Description': 'SDA'},
         {'Name': 'DSA', 'Description': 'DSA'},
         {'Name': 'BrdU', 'Description': 'BrdU'},
-        {'Name': 'LCSDA', 'Description': 'LCSDA'}
+        {'Name': 'LCSDA', 'Description': 'LCSDA'},
+        {'Name': 'ADH', 'Description': 'ADH'}
     ]
     
     pb = catalog.getPathBuilder()
