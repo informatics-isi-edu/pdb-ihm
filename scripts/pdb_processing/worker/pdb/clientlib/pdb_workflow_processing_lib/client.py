@@ -1118,9 +1118,9 @@ class PDBClient (object):
                         Any empty value will be treated as NULL
                         """
                         del entity[column]
-                    elif column_definitions[column].type.typename == 'jsonb':
+                    elif column_definitions[column]._wrapped_column.type.typename == 'jsonb':
                         entity[column] = json.loads(entity[column])
-                    elif column_definitions[column].type.typename.endswith('[]'):
+                    elif column_definitions[column]._wrapped_column.type.typename.endswith('[]'):
                         entity[column] = entity[column][1:-1].split(',')
                 
                 """
