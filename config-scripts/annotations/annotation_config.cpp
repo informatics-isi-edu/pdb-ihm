@@ -5415,19 +5415,6 @@
                     "RID",
                     {
                         "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "pdbx_entry_details_structure_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
-                    {
-                        "comment": "A reference to table entry.id.",
                         "markdown_name": "Entry Id",
                         "source": [
                             {
@@ -5443,19 +5430,6 @@
                 ],
                 "detailed": [
                     "RID",
-                    {
-                        "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "pdbx_entry_details_structure_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
                     {
                         "comment": "A reference to table entry.id.",
                         "markdown_name": "Entry Id",
@@ -5486,19 +5460,6 @@
                     ]
                 ],
                 "entry": [
-                    {
-                        "comment": "A reference to table entry.id.",
-                        "markdown_name": "Structure Id",
-                        "source": [
-                            {
-                                "outbound": [
-                                    "PDB",
-                                    "pdbx_entry_details_structure_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
                     {
                         "comment": "A reference to table entry.id.",
                         "markdown_name": "Entry Id",
@@ -6466,10 +6427,6 @@
                     [
                         "PDB",
                         "pdbx_entity_poly_na_type_structure_id_fkey"
-                    ],
-                    [
-                        "PDB",
-                        "pdbx_entry_details_structure_id_fkey"
                     ]
                 ],
                 "filter": "detailed"
