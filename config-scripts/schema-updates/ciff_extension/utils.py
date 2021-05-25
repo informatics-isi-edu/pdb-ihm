@@ -223,3 +223,35 @@ def define_Vocab_table(table_name, table_comment):
     )
     
     return table_def
+
+"""
+set the table acl_bindings
+"""
+def set_table_acl_bindings(catalog, schema_name, table_name, acl_bindings):
+    model = catalog.getCatalogModel()
+    schema = model.schemas[schema_name]
+    table = model.schemas[schema_name].tables[table_name]
+    table.acl_bindings = acl_bindings
+    model.apply()
+
+"""
+set the table acls
+"""
+def set_table_acls(catalog, schema_name, table_name, acls):
+    model = catalog.getCatalogModel()
+    schema = model.schemas[schema_name]
+    table = model.schemas[schema_name].tables[table_name]
+    table.acls = acls
+    model.apply()
+
+"""
+set the foreign key acls
+"""
+def set_foreign_key_acls(catalog, schema_name, table_name, constraint_name, acls):
+    model = catalog.getCatalogModel()
+    schema = model.schemas[schema_name]
+    table = model.schemas[schema_name].tables[table_name]
+    fk = table.foreign_keys.__getitem__((schema, constraint_name))
+    fk.acls = acls
+    model.apply()
+
