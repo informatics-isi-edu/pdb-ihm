@@ -1,1 +1,1 @@
-id,group_id,entity_id_1,asym_id_1,seq_id_1,comp_id_1,atom_id_1,entity_id_2,asym_id_2,seq_id_2,comp_id_2,atom_id_2,restraint_type,distance_threshold,conditional_crosslink_flag,model_granularity,psi,sigma1,sigma2
+id,group_id,entity_id_1,asym_id_1,seq_id_1,comp_id_1,atom_id_1,entity_id_2,asym_id_2,seq_id_2,comp_id_2,atom_id_2,restraint_type,distance_threshold,conditional_crosslink_flag,model_granularity,psi,sigma1,sigma2,pseudo_site_flag
