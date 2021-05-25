@@ -225,6 +225,15 @@ def define_Vocab_table(table_name, table_comment):
     return table_def
 
 """
+add rows to a table
+"""
+def add_rows_to_vocab_table(catalog, table_name, rows):
+    pb = catalog.getPathBuilder()
+    schema = pb.Vocab
+    table = schema.__getattr__(table_name)
+    table.insert(rows, defaults=['ID', 'URI'])
+
+"""
 set the table acl_bindings
 """
 def set_table_acl_bindings(catalog, schema_name, table_name, acl_bindings):
