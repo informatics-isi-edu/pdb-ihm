@@ -59,6 +59,7 @@ class PDBClient (object):
         self.port = None
         if len(host_port) > 1:
             self.port = host_port[1]
+        self.catalog_number = int(self.path.split('/')[-1])
         self.is_catalog_dev = (int(self.path.split('/')[-1]) == catalog_dev_number)
         self.make_mmCIF = kwargs.get("make_mmCIF")
         self.mmCIF_Schema_Version = kwargs.get("mmCIF_Schema_Version")
@@ -245,7 +246,7 @@ class PDBClient (object):
         self.logger.debug('Ended PDB Processing for the %s:%s table.' % (schema, table)) 
         
     """
-    Process the mmCIF file of the entry table
+    Export the mmCIF file of the entry table
     """
     def export_mmCIF(self, schema_pdb, table_entry, rid, status='in progress'):
         deriva_tables = ['entry']
@@ -362,8 +363,9 @@ class PDBClient (object):
                     if table_name in ['entry', 'chem_comp_atom']:
                         continue
                     table = schema.tables[table_name]
+                    self.logger.debug('Exporting table: {}'.format(table_name))
                     path = table.path
-                    if table_name == 'struct':
+                    if table_name in ['struct', 'pdbx_entry_details']:
                         entry_id_column = table.column_definitions['entry_id']
                         path.filter(entry_id_column == entry_id)
                     else:
@@ -399,6 +401,7 @@ class PDBClient (object):
                             if value == None:
                                 self.logger.debug('Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
                                 self.sendMail('FAILURE PDB: Could not find column value', 'Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
+                                error_message = ''.join(traceback.format_exception(et, ev, tb))
                                 return 1
                             line.append(value)
                         fw.write('{}\n'.format('\t'.join(line)))
@@ -410,6 +413,7 @@ class PDBClient (object):
                 self.logger.debug('exportData got exception "%s"' % str(ev))
                 self.logger.debug('%s' % ''.join(traceback.format_exception(et, ev, tb)))
                 self.sendMail('FAILURE PDB: exportData got exception', '%s\nThe process might have been stopped\n' % ''.join(traceback.format_exception(et, ev, tb)))
+                error_message = ''.join(traceback.format_exception(et, ev, tb))
                 return 1
 
         def exportCIF():
@@ -437,6 +441,7 @@ class PDBClient (object):
                         self.logger.debug('Unexpected line after loop_:\n{}'.format(line))
                         fr.close()
                         self.sendMail('FAILURE PDB: Unknown status', 'status = {}\nThe process might have been stopped\n'.format(status))
+                        error_message = 'Unknown status', 'status = {}\nThe process might have been stopped\n'.format(status)
                         return 1
             
                 elif status == 'columns':
@@ -462,6 +467,7 @@ class PDBClient (object):
                 else:
                     self.logger.debug('Unknown status: {}'.format(status))
                     self.sendMail('FAILURE PDB: Unknown status', 'status = {}\nThe process might have been stopped\n'.format(status))
+                    error_message = 'Unknown status', 'status = {}\nThe process might have been stopped\n'.format(status)
                     return 1
         
             fr.close()
@@ -1160,7 +1166,7 @@ class PDBClient (object):
     def getRecordUpdatedWithFK(self, tname, row, entry_id):
         with open('{}'.format(self.entry), 'r') as f:
             pdb = json.load(f)
-        referenced_by = pdb['Catalog 1']['schemas']['PDB']['tables']['entry']['referenced_by']
+        referenced_by = pdb['Catalog {}'.format(self.catalog_number)]['schemas']['PDB']['tables']['entry']['referenced_by']
         columns = []
         for k,v in referenced_by.items():
             if v['table'] == tname:
@@ -1179,7 +1185,7 @@ class PDBClient (object):
     def getUpdatedRecord(self, tname, row, entry_id):
         with open('{}'.format(self.entry), 'r') as f:
             pdb = json.load(f)
-        referenced_by = pdb['Catalog 1']['schemas']['PDB']['tables']['entry']['referenced_by']
+        referenced_by = pdb['Catalog {}'.format(self.catalog_number)]['schemas']['PDB']['tables']['entry']['referenced_by']
         columns = []
         for k,v in referenced_by.items():
             if v['table'] == tname:
