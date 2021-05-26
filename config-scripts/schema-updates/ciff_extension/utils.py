@@ -286,7 +286,7 @@ def set_table_acl_bindings(catalog, schema_name, table_name, acl_bindings):
     table = model.schemas[schema_name].tables[table_name]
     table.acl_bindings = acl_bindings
     model.apply()
-    print('Set acl_bindings for table {}'.format(schema_name, table_name))
+    print('Set acl_bindings for table {}:{}'.format(schema_name, table_name))
 
 """
 set the table acls
@@ -297,7 +297,7 @@ def set_table_acls(catalog, schema_name, table_name, acls):
     table = model.schemas[schema_name].tables[table_name]
     table.acls = acls
     model.apply()
-    print('Set acls for table {}'.format(schema_name, table_name))
+    print('Set acls for table {}:{}'.format(schema_name, table_name))
 
 """
 set the foreign key acls
@@ -309,5 +309,5 @@ def set_foreign_key_acls(catalog, schema_name, table_name, constraint_name, acls
     fk = table.foreign_keys.__getitem__((schema, constraint_name))
     fk.acls = acls
     model.apply()
-    print('Set acls for the foreign key of the table {}:{}'.format(constraint_name, schema_name, table_name))
+    print('Set acls for the foreign key {} of the table {}:{}'.format(constraint_name, schema_name, table_name))
 

@@ -129,7 +129,9 @@ ihm_data_transformation: ACL should mimic ihm_related_datasets
 ihm_hdx_restraint: ACL should mimic ihm_hydroxyl_radical_fp_restraint
 ihm_derived_angle_restraint: ACL should mimic ihm_derived_distance_restraint
 ihm_derived_dihedral_restraint: ACL should mimic ihm_derived_distance_restraint
-
+struct_ref: ACL should mimic entity
+struct_ref_seq: ACL should mimic entity
+struct_ref_seq_dif: ACL should mimic entity
 """
 
 def main(server_name, catalog_id, credentials):
@@ -147,6 +149,9 @@ def main(server_name, catalog_id, credentials):
     utils.set_table_acls(catalog, 'PDB', 'ihm_derived_angle_restraint', table_acls)
     utils.set_table_acls(catalog, 'PDB', 'ihm_hdx_restraint', table_acls)
     utils.set_table_acls(catalog, 'PDB', 'ihm_derived_dihedral_restraint', table_acls)
+    utils.set_table_acls(catalog, 'PDB', 'struct_ref', table_acls)
+    utils.set_table_acls(catalog, 'PDB', 'struct_ref_seq', table_acls)
+    utils.set_table_acls(catalog, 'PDB', 'struct_ref_seq_dif', table_acls)
 
     """
     set the table acl_bindings
@@ -158,6 +163,9 @@ def main(server_name, catalog_id, credentials):
     utils.set_table_acl_bindings(catalog, 'PDB', 'ihm_hdx_restraint', literal_eval(table_acl_bindings_pattern.replace('fkey_constraint_name', 'ihm_hdx_restraint_structure_id_fkey')))
     utils.set_table_acl_bindings(catalog, 'PDB', 'ihm_derived_angle_restraint', literal_eval(table_acl_bindings_pattern.replace('fkey_constraint_name', 'ihm_derived_angle_restraint_structure_id_fkey')))
     utils.set_table_acl_bindings(catalog, 'PDB', 'ihm_derived_dihedral_restraint', literal_eval(table_acl_bindings_pattern.replace('fkey_constraint_name', 'ihm_derived_dihedral_restraint_structure_id_fkey')))
+    utils.set_table_acl_bindings(catalog, 'PDB', 'struct_ref', literal_eval(table_acl_bindings_pattern.replace('fkey_constraint_name', 'struct_ref_structure_id_fkey')))
+    utils.set_table_acl_bindings(catalog, 'PDB', 'struct_ref_seq', literal_eval(table_acl_bindings_pattern.replace('fkey_constraint_name', 'struct_ref_seq_structure_id_fkey')))
+    utils.set_table_acl_bindings(catalog, 'PDB', 'struct_ref_seq_dif', literal_eval(table_acl_bindings_pattern.replace('fkey_constraint_name', 'struct_ref_seq_dif_structure_id_fkey')))
 
     """
     set the foreign key acls
@@ -169,6 +177,11 @@ def main(server_name, catalog_id, credentials):
     utils.set_foreign_key_acls(catalog, 'PDB', 'ihm_hdx_restraint', 'ihm_hdx_restraint_structure_id_fkey', foreign_key_acls)
     utils.set_foreign_key_acls(catalog, 'PDB', 'ihm_derived_angle_restraint', 'ihm_derived_angle_restraint_structure_id_fkey', foreign_key_acls)
     utils.set_foreign_key_acls(catalog, 'PDB', 'ihm_derived_dihedral_restraint', 'ihm_derived_dihedral_restraint_structure_id_fkey', foreign_key_acls)
+    utils.set_foreign_key_acls(catalog, 'PDB', 'struct_ref', 'struct_ref_structure_id_fkey', foreign_key_acls)
+    utils.set_foreign_key_acls(catalog, 'PDB', 'struct_ref', 'struct_ref_db_name_fkey', foreign_key_acls)
+    utils.set_foreign_key_acls(catalog, 'PDB', 'struct_ref_seq', 'struct_ref_seq_structure_id_fkey', foreign_key_acls)
+    utils.set_foreign_key_acls(catalog, 'PDB', 'struct_ref_seq_dif', 'struct_ref_seq_dif_structure_id_fkey', foreign_key_acls)
+    utils.set_foreign_key_acls(catalog, 'PDB', 'struct_ref_seq_dif', 'struct_ref_seq_dif_details_fkey', foreign_key_acls)
 
 if __name__ == '__main__':
     args = BaseCLI("ad-hoc table creation tool", None, 1).parse_cli()
