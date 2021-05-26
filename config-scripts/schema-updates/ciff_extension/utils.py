@@ -77,6 +77,7 @@ def drop_table(catalog, schema_name, table_name):
             model = catalog.getCatalogModel()
             table = model.schemas[schema_name].tables[table_name]
             table.drop()
+            print('Dropped table {}:{}'.format(schema_name, table_name))
 
 # ---------------------------------------
 # create a vocabulary table if it does not exixt
@@ -84,6 +85,7 @@ def create_vocabulary_table_if_not_exist(model, schema_name, table_name, comment
     schema = model.schemas[schema_name]
     if table_name not in schema.tables:
         schema.create_table(Table.define_vocabulary(table_name, 'PDB:{RID}', comment=comment))
+        print('Created table {}:{}'.format(schema_name, table_name))
 
 # ---------------------------------------
 # add table if not exist or update if exist
@@ -91,6 +93,16 @@ def create_table_if_not_exist(model, schema_name, tdoc):
     schema = model.schemas[schema_name]
     if tdoc["table_name"] not in schema.tables:
         schema.create_table(tdoc)
+        print('Created table {}:{}'.format(schema_name, tdoc["table_name"]))
+
+# add table if not exist or update if exist
+def set_table_comment_if_exist(model, schema_name, table_name, comment):
+    if schema_name in model.schemas.keys():
+        schema = model.schemas[schema_name]
+        if table_name in schema.tables:
+            table = schema.tables[table_name]
+            table.comment = comment
+            print('Set comment for table {}:{}'.format(schema_name, table_name))
 
 # ---------------------------------------
 # remove a column if it exists
@@ -104,6 +116,16 @@ def drop_column_if_exist(model, schema_name, table_name, column_name):
         print("Dropped column %s.%s column:%s" % (schema_name, table_name, column_name))        
     except KeyError:
         pass
+
+# add a column if it does not exist
+def create_column_if_not_exist(model, schema_name, table_name, column):
+    if schema_name in model.schemas.keys():
+        schema = model.schemas[schema_name]
+        if table_name in schema.tables:
+            table = schema.tables[table_name]
+            if column['name'] not in table.columns.elements:
+                table.create_column(column)
+                print("Added column {}:{}:{}".format(schema_name, table_name, column['name']))
 
     # these approach doesn't validate the schema and table names
     #if table_name in model.schemas[schema_name].tables:
@@ -138,6 +160,27 @@ def drop_key_if_exist(model, schema_name, table_name, key_name):
         pass
 
 
+def create_key_if_not_exists(model, schema_name, table_name, columns, constraint_name):
+    if schema_name in model.schemas.keys():
+        schema = model.schemas[schema_name]
+        if table_name in schema.tables:
+            table = schema.tables[table_name]
+            if table.key_by_columns(columns, raise_nomatch=False) is None:
+                table.create_key(   
+                    Key.define(columns, constraint_names=[[schema_name, constraint_name]] )
+                )
+                print('Created Key {} for table {}:{}'.format(constraint_name, schema_name, table_name))
+    
+def create_foreign_key_if_not_exists(model, schema_name, table_name, constraint_name, foreign_key):
+    if schema_name in model.schemas.keys():
+        schema = model.schemas[schema_name]
+        if table_name in schema.tables:
+            table = schema.tables[table_name]
+            if (schema, constraint_name) not in table.foreign_keys.elements:
+                table.create_fkey(foreign_key)
+                print('Created Foreign Key {} for table {}:{}'.format(constraint_name, schema_name, table_name))
+
+    
 # ---------------------------------------
 # define a vocabulary table (with specific structure)
 def define_Vocab_table(table_name, table_comment):
@@ -232,6 +275,7 @@ def add_rows_to_vocab_table(catalog, table_name, rows):
     schema = pb.Vocab
     table = schema.__getattr__(table_name)
     table.insert(rows, defaults=['ID', 'URI'])
+    print('Added rows to the vocabulary table {}'.format(table_name))
 
 """
 set the table acl_bindings
@@ -242,6 +286,7 @@ def set_table_acl_bindings(catalog, schema_name, table_name, acl_bindings):
     table = model.schemas[schema_name].tables[table_name]
     table.acl_bindings = acl_bindings
     model.apply()
+    print('Set acl_bindings for table {}'.format(schema_name, table_name))
 
 """
 set the table acls
@@ -252,6 +297,7 @@ def set_table_acls(catalog, schema_name, table_name, acls):
     table = model.schemas[schema_name].tables[table_name]
     table.acls = acls
     model.apply()
+    print('Set acls for table {}'.format(schema_name, table_name))
 
 """
 set the foreign key acls
@@ -263,4 +309,5 @@ def set_foreign_key_acls(catalog, schema_name, table_name, constraint_name, acls
     fk = table.foreign_keys.__getitem__((schema, constraint_name))
     fk.acls = acls
     model.apply()
+    print('Set acls for the foreign key of the table {}:{}'.format(constraint_name, schema_name, table_name))
 
