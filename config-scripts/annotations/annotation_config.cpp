@@ -6100,6 +6100,20 @@
                         "PDB",
                         "entity_src_gen_structure_id_fkey"
                     ],
+#if defined(dev) 
+                    [
+                        "PDB",
+                        "struct_ref_structure_id_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "struct_ref_seq_structure_id_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "struct_ref_seq_dif_structure_id_fkey"
+                    ],
+#endif
                     [
                         "PDB",
                         "entity_poly_structure_id_fkey"
@@ -6280,12 +6294,6 @@
                         "PDB",
                         "ihm_epr_restraint_structure_id_fkey"
                     ],
-#if defined(dev) 
-                    [
-                        "PDB",
-                        "ihm_hdx_restraint_structure_id_fkey"
-                    ],
-#endif
                     [
                         "PDB",
                         "ihm_chemical_component_descriptor_structure_id_fkey"
@@ -6378,6 +6386,12 @@
                         "PDB",
                         "ihm_hydroxyl_radical_fp_restraint_structure_id_fkey"
                     ],
+#if defined(dev) 
+                    [   
+                        "PDB",
+                        "ihm_hdx_restraint_structure_id_fkey"
+                    ],
+#endif
                     [
                         "PDB",
                         "ihm_feature_list_structure_id_fkey"
@@ -8379,7 +8393,7 @@
             "table": "ihm_derived_angle_restraint",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Derived angle restraints",
+                "name": "Angle Restraints Between Molecular Features",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -8706,7 +8720,7 @@
             "table": "ihm_derived_dihedral_restraint",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Derived dihedral restraints",
+                "name": "Dihedral Restraints Between Molecular Features",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -9072,7 +9086,7 @@
             "table": "ihm_hdx_restraint",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "H/D exchange restraints",
+                "name": "H/D Exchange Restraints",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -9279,7 +9293,7 @@
             "table": "ihm_data_transformation",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Data transformation",
+                "name": "Data Transformation",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -9406,6 +9420,472 @@
                     ]
                 ],
                 "filter": "detailed"
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "struct_ref",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Reference sequence information",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "struct_ref",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    {
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "struct_ref_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "id",
+                    {
+                        "comment": "A reference to table entity.id.",
+                        "markdown_name": "Entity Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "struct_ref_entity_combo1_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    [
+                        "PDB",
+                        "struct_ref_db_name_fkey"
+                    ],
+                    "db_code",
+                    "pdbx_db_accession",
+                    "pdbx_db_isoform",
+                    "pdbx_align_begin",
+                    "pdbx_align_end",
+                    "pdbx_seq_one_letter_code",
+                    "details"
+                ],
+                "detailed": [
+                    "RID",
+                    {   
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {   
+                                "outbound": [
+                                    "PDB",
+                                    "struct_ref_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "id",
+                    {   
+                        "comment": "A reference to table entity.id.",
+                        "markdown_name": "Entity Id",
+                        "source": [
+                            {   
+                                "outbound": [
+                                    "PDB",
+                                    "struct_ref_entity_combo1_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },  
+                    [   
+                        "PDB",
+                        "struct_ref_db_name_fkey"
+                    ],
+                    "db_code",
+                    "pdbx_db_accession",
+                    "pdbx_db_isoform",
+                    "pdbx_align_begin",
+                    "pdbx_align_end",
+                    "pdbx_seq_one_letter_code",
+                    "details",
+                    [
+                        "PDB",
+                        "struct_ref_RCB_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "struct_ref_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "PDB",
+                        "struct_ref_Owner_fkey"
+                    ]
+                ],
+                "entry": [
+                    {   
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {   
+                                "outbound": [
+                                    "PDB",
+                                    "struct_ref_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "id",
+                    {   
+                        "comment": "A reference to table entity.id.",
+                        "markdown_name": "Entity Id",
+                        "source": [
+                            {   
+                                "outbound": [
+                                    "PDB",
+                                    "struct_ref_entity_combo1_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },  
+                    [   
+                        "PDB",
+                        "struct_ref_db_name_fkey"
+                    ],
+                    "db_code",
+                    "pdbx_db_accession",
+                    "pdbx_db_isoform",
+                    "pdbx_align_begin",
+                    "pdbx_align_end",
+                    "pdbx_seq_one_letter_code",
+                    "details"
+                ]
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "struct_ref",
+            "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+            "value": {
+                "detailed": [
+                    [
+                        "PDB",
+                        "struct_ref_seq_struct_ref_combo1_fkey"
+                    ]
+                ],
+                "filter": "detailed"
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "struct_ref_seq",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Alignment information with the reference sequence",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "struct_ref_seq",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    {
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "struct_ref_seq_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "align_id",
+                    {
+                        "comment": "A reference to table struct_ref.id.",
+                        "markdown_name": "Reference Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "struct_ref_seq_struct_ref_combo1_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "db_align_beg",
+                    "db_align_end",
+                    "seq_align_beg",
+                    "seq_align_end",
+                    "details"
+                ],
+                "detailed": [
+                    "RID",
+                    {   
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {   
+                                "outbound": [
+                                    "PDB",
+                                    "struct_ref_seq_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "align_id",
+                    {   
+                        "comment": "A reference to table struct_ref.id.",
+                        "markdown_name": "Reference Id",
+                        "source": [
+                            {   
+                                "outbound": [
+                                    "PDB",
+                                    "struct_ref_seq_struct_ref_combo1_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "db_align_beg",
+                    "db_align_end",
+                    "seq_align_beg",
+                    "seq_align_end",
+                    "details",
+                    [
+                        "PDB",
+                        "struct_ref_seq_RCB_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "struct_ref_seq_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "PDB",
+                        "struct_ref_seq_Owner_fkey"
+                    ]
+                ],
+                "entry": [
+                    {   
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {   
+                                "outbound": [
+                                    "PDB",
+                                    "struct_ref_seq_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "align_id",
+                    {   
+                        "comment": "A reference to table struct_ref.id.",
+                        "markdown_name": "Reference Id",
+                        "source": [
+                            {   
+                                "outbound": [
+                                    "PDB",
+                                    "struct_ref_seq_struct_ref_combo1_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "db_align_beg",
+                    "db_align_end",
+                    "seq_align_beg",
+                    "seq_align_end",
+                    "details"
+                ]
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "struct_ref_seq",
+            "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+            "value": {
+                "detailed": [
+                    [
+                        "PDB",
+                        "struct_ref_seq_dif_struct_ref_seq_combo1_fkey"
+                    ]
+                ],
+                "filter": "detailed"
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "struct_ref_seq_dif",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Point differences in the alignment with the reference sequence",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "struct_ref_seq_dif",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    {
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "struct_ref_seq_dif_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "pdbx_ordinal",
+                    {
+                        "comment": "A reference to table struct_ref_seq.align_id.",
+                        "markdown_name": "Align Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "struct_ref_seq_dif_struct_ref_seq_combo1_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "seq_num",
+                    "mon_id",
+                    "db_mon_id",
+                    [
+                        "PDB",
+                        "struct_ref_seq_dif_details_fkey"
+                    ]
+                ],
+                "detailed": [
+                    "RID",
+                    {   
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {   
+                                "outbound": [
+                                    "PDB",
+                                    "struct_ref_seq_dif_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "pdbx_ordinal",
+                    {   
+                        "comment": "A reference to table struct_ref_seq.align_id.",
+                        "markdown_name": "Align Id",
+                        "source": [
+                            {   
+                                "outbound": [
+                                    "PDB",
+                                    "struct_ref_seq_dif_struct_ref_seq_combo1_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "seq_num",
+                    "mon_id",
+                    "db_mon_id",
+                    [   
+                        "PDB",
+                        "struct_ref_seq_dif_details_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "struct_ref_seq_dif_RCB_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "struct_ref_seq_dif_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "PDB",
+                        "struct_ref_seq_dif_Owner_fkey"
+                    ]
+                ],
+                "entry": [
+                    {   
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {   
+                                "outbound": [
+                                    "PDB",
+                                    "struct_ref_seq_dif_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "pdbx_ordinal",
+                    {   
+                        "comment": "A reference to table struct_ref_seq.align_id.",
+                        "markdown_name": "Align Id",
+                        "source": [
+                            {   
+                                "outbound": [
+                                    "PDB",
+                                    "struct_ref_seq_dif_struct_ref_seq_combo1_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "seq_num",
+                    "mon_id",
+                    "db_mon_id",
+                    [   
+                        "PDB",
+                        "struct_ref_seq_dif_details_fkey"
+                    ]
+                ]
             }
         },
 #endif
@@ -13102,7 +13582,7 @@
             "table": "ihm_ensemble_sub_sample",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Ensembles with sub-samples",
+                "name": "Ensembles with Sub-samples",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -16469,6 +16949,12 @@
                         "PDB",
                         "entity_src_gen_entity_id_fkey"
                     ],
+#if defined(dev) 
+                    [  
+                        "PDB",
+                        "struct_ref_entity_combo1_fkey"
+                    ],
+#endif
                     [
                         "PDB",
                         "entity_poly_entity_id_fkey"
@@ -28295,6 +28781,39 @@
             "foreign_key_schema": "PDB",
             "schema": "PDB",
             "table": "ihm_derived_dihedral_restraint",
+            "uri": "tag:isrd.isi.edu,2016:foreign-key",
+            "value": {
+                "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+                "template_engine": "handlebars"
+            }
+        },
+        {
+            "foreign_key": "struct_ref_entity_combo1_fkey",
+            "foreign_key_schema": "PDB",
+            "schema": "PDB",
+            "table": "struct_ref",
+            "uri": "tag:isrd.isi.edu,2016:foreign-key",
+            "value": {
+                "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+                "template_engine": "handlebars"
+            }
+        },
+        {
+            "foreign_key": "struct_ref_seq_struct_ref_combo1_fkey",
+            "foreign_key_schema": "PDB",
+            "schema": "PDB",
+            "table": "struct_ref_seq",
+            "uri": "tag:isrd.isi.edu,2016:foreign-key",
+            "value": {
+                "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+                "template_engine": "handlebars"
+            }
+        },
+        {
+            "foreign_key": "struct_ref_seq_dif_struct_ref_seq_combo1_fkey",
+            "foreign_key_schema": "PDB",
+            "schema": "PDB",
+            "table": "struct_ref_seq_dif",
             "uri": "tag:isrd.isi.edu,2016:foreign-key",
             "value": {
                 "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
