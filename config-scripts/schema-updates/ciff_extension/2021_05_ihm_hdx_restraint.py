@@ -142,8 +142,21 @@ def main(server_name, catalog_id, credentials):
     catalog.dcctx['cid'] = 'oneoff/model'
     model = catalog.getCatalogModel()
 
+    """
+    Create table
+    """
     utils.create_table_if_not_exist(model, 'PDB',  define_tdoc_ihm_hdx_restraint())
+    
+    """
+    Update existing model
+    """
     update_PDB_ihm_derived_distance_restraint(model)
+    
+    """
+    Rename columns
+    """
+    utils.rename_column_if_exists(model, 'PDB', 'ihm_hdx_restraint', 'feature_RID', 'Feature_RID')
+    utils.rename_column_if_exists(model, 'PDB', 'ihm_hdx_restraint', 'dataset_list_RID', 'Dataset_List_RID')
     
 
 # ===================================================    

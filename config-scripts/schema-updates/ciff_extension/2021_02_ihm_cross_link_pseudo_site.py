@@ -155,8 +155,14 @@ def main(server_name, catalog_id, credentials):
     catalog.dcctx['cid'] = 'oneoff/model'
     model = catalog.getCatalogModel()
     
-    # new changes
+    """
+    Create table
+    """
     utils.create_table_if_not_exist(model, 'PDB',  define_tdoc_ihm_cross_link_pseudo_site())
+    
+    """
+    Create primary keys
+    """
     utils.create_key_if_not_exists(model, 'PDB', 'ihm_cross_link_restraint', ['RID', 'structure_id', 'id'], 'ihm_cross_link_restraint_combo1_key')
     
 # ===================================================    

@@ -138,6 +138,9 @@ def main(server_name, catalog_id, credentials):
     catalog.dcctx['cid'] = 'oneoff/model'
     model = catalog.getCatalogModel()
 
+    """
+    Create table
+    """
     utils.create_table_if_not_exist(model, 'PDB',  define_tdoc_ihm_data_transformation())
 
 # ===================================================    

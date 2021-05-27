@@ -136,7 +136,14 @@ def main(server_name, catalog_id, credentials):
     catalog.dcctx['cid'] = 'oneoff/model'
     model = catalog.getCatalogModel()
 
+    """
+    Create table
+    """
     utils.create_table_if_not_exist(model, 'PDB',  define_tdoc_ihm_ensemble_sub_sample())
+    
+    """
+    Create primary keys
+    """
     utils.create_key_if_not_exists(model, 'PDB', 'ihm_ensemble_info', ['RID', 'structure_id', 'ensemble_id'], 'ihm_ensemble_info_combo1_key')
         
 
