@@ -1180,20 +1180,20 @@ def main(server_name, catalog_id, credentials):
     #model = catalog.getCatalogModel()         #Reload the model to create table after drop - bug
 
     # -- create Vocab tables
-    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('cross_link_partner', 'Identity of the crosslink partner'))
-    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sample_flag', 'Flag for ensembles consisting of sub samples'))
-    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sampling_type', 'Types of sub samples in ensembles'))
-    create_table_if_not_exist(model, "Vocab",  define_Vocab_table('pseudo_site_flag', 'Flag for crosslinks involving pseudo sites'))
+    #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('cross_link_partner', 'Identity of the crosslink partner'))
+    #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sample_flag', 'Flag for ensembles consisting of sub samples'))
+    #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('sub_sampling_type', 'Types of sub samples in ensembles'))
+    #create_table_if_not_exist(model, "Vocab",  define_Vocab_table('pseudo_site_flag', 'Flag for crosslinks involving pseudo sites'))
 
     # -- add rows to Vocab tables
-    #add_rows_to_Vocab_ihm_cross_link_list_linker_type(catalog)
+    add_rows_to_Vocab_ihm_cross_link_list_linker_type(catalog)
     #add_rows_to_Vocab_pseudo_site_flag(catalog)
     #add_rows_to_Vocab_sub_sample_flag(catalog)
     #add_rows_to_Vocab_sub_sampling_type(catalog)
     #add_rows_to_Vocab_cross_link_partner(catalog)
-    #add_rows_to_Vocab_ihm_dataset_list_data_type(catalog)
-    #add_rows_to_Vocab_ihm_dataset_related_db_reference_db_name(catalog)
-    #add_rows_to_Vocab_ihm_derived_distance_restraint_restraint_type(catalog)
+    add_rows_to_Vocab_ihm_dataset_list_data_type(catalog)
+    add_rows_to_Vocab_ihm_dataset_related_db_reference_db_name(catalog)
+    add_rows_to_Vocab_ihm_derived_distance_restraint_restraint_type(catalog)
 
     # -- create PDB tables
     create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_pseudo_site())

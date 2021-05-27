@@ -379,10 +379,10 @@ def main(server_name, catalog_id, credentials):
     if True:
         model = catalog.getCatalogModel()    
     
-        utils.create_table_if_not_exist(model, "Vocab",  utils.define_Vocab_table('struct_ref_db_name', 'The name of the database containing reference information'))
-        utils.create_table_if_not_exist(model, "Vocab",  utils.define_Vocab_table('struct_ref_seq_dif_details', 'Details about the special aspects of point differences in the alignment of the macromolecular sequence in the integrative model and the sequence in the reference database'))
-        add_rows_to_Vocab_struct_ref_db_name(catalog)
-        add_rows_to_Vocab_struct_ref_seq_dif_details(catalog)
+        #utils.create_table_if_not_exist(model, "Vocab",  utils.define_Vocab_table('struct_ref_db_name', 'The name of the database containing reference information'))
+        #utils.create_table_if_not_exist(model, "Vocab",  utils.define_Vocab_table('struct_ref_seq_dif_details', 'Details about the special aspects of point differences in the alignment of the macromolecular sequence in the integrative model and the sequence in the reference database'))
+        #add_rows_to_Vocab_struct_ref_db_name(catalog)
+        #add_rows_to_Vocab_struct_ref_seq_dif_details(catalog)
         update_PDB_entity(model)
         utils.create_table_if_not_exist(model, "PDB",  define_tdoc_struct_ref())
         utils.create_table_if_not_exist(model, "PDB",  define_tdoc_struct_ref_seq())

@@ -250,10 +250,10 @@ def main(server_name, catalog_id, credentials):
     if True:
         model = catalog.getCatalogModel()    
     
-        utils.create_table_if_not_exist(model, "Vocab",  utils.define_Vocab_table('ihm_derived_angle_restraint_group_conditionality', 'Conditionality of a group of angles restrained together'))
-        utils.create_table_if_not_exist(model, "Vocab",  utils.define_Vocab_table('ihm_derived_angle_restraint_restraint_type', 'The type of angle restraint'))
-        add_rows_to_Vocab_ihm_derived_angle_restraint_group_conditionality(catalog)
-        add_rows_to_Vocab_ihm_derived_angle_restraint_restraint_type(catalog)
+        #utils.create_table_if_not_exist(model, "Vocab",  utils.define_Vocab_table('ihm_derived_angle_restraint_group_conditionality', 'Conditionality of a group of angles restrained together'))
+        #utils.create_table_if_not_exist(model, "Vocab",  utils.define_Vocab_table('ihm_derived_angle_restraint_restraint_type', 'The type of angle restraint'))
+        #add_rows_to_Vocab_ihm_derived_angle_restraint_group_conditionality(catalog)
+        #add_rows_to_Vocab_ihm_derived_angle_restraint_restraint_type(catalog)
         utils.create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_derived_angle_restraint())
         
     # vocab
