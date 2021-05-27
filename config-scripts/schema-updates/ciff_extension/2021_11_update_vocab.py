@@ -6,6 +6,47 @@ import utils
 
 # add scripts for updating vocabs that has nothing to do with mmcif model changes.
 
+acl_bindings = {
+  "released_reader": {
+    "types": [
+      "select"
+    ],
+    "scope_acl": [
+      "https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1"
+    ],
+    "projection": [
+      "RID"
+    ],
+    "projection_type": "nonnull"
+  },
+  "self_service_group": {
+    "types": [
+      "update",
+      "delete"
+    ],
+    "scope_acl": [
+      "*"
+    ],
+    "projection": [
+      "Owner"
+    ],
+    "projection_type": "acl"
+  },
+  "self_service_creator": {
+    "types": [
+      "update",
+      "delete"
+    ],
+    "scope_acl": [
+      "*"
+    ],
+    "projection": [
+      "RCB"
+    ],
+    "projection_type": "acl"
+  }
+}
+
 cross_link_partner_rows =[
     {'Name': '1', 'Description': 'The first partner in the crosslink as identified in the ihm_cross_link_restraint table'},
     {'Name': '2', 'Description': 'The second partner in the crosslink as identified in the ihm_cross_link_restraint table'}
@@ -80,6 +121,18 @@ def main(server_name, catalog_id, credentials):
     utils.add_rows_to_vocab_table(catalog, 'ihm_derived_angle_restraint_restraint_type', ihm_derived_angle_restraint_restraint_type_rows)
     utils.add_rows_to_vocab_table(catalog, 'ihm_derived_dihedral_restraint_group_conditionality', ihm_derived_dihedral_restraint_group_conditionality_rows)
     utils.add_rows_to_vocab_table(catalog, 'ihm_derived_dihedral_restraint_restraint_type', ihm_derived_dihedral_restraint_restraint_type_rows)
+
+    """
+    Create the acls bindings
+    """
+    utils.set_table_acl_bindings(catalog, 'Vocab', 'cross_link_partner', acl_bindings)
+    utils.set_table_acl_bindings(catalog, 'Vocab', 'sub_sample_flag', acl_bindings)
+    utils.set_table_acl_bindings(catalog, 'Vocab', 'sub_sampling_type', acl_bindings)
+    utils.set_table_acl_bindings(catalog, 'Vocab', 'pseudo_site_flag', acl_bindings)
+    utils.set_table_acl_bindings(catalog, 'Vocab', 'ihm_derived_angle_restraint_group_conditionality', acl_bindings)
+    utils.set_table_acl_bindings(catalog, 'Vocab', 'ihm_derived_angle_restraint_restraint_type', acl_bindings)
+    utils.set_table_acl_bindings(catalog, 'Vocab', 'ihm_derived_dihedral_restraint_group_conditionality', acl_bindings)
+    utils.set_table_acl_bindings(catalog, 'Vocab', 'ihm_derived_dihedral_restraint_restraint_type', acl_bindings)
 
 if __name__ == '__main__':
     args = BaseCLI("ad-hoc table creation tool", None, 1).parse_cli()
