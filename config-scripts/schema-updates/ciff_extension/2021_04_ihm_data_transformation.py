@@ -13,85 +13,85 @@ def define_tdoc_ihm_data_transformation():
 
     column_defs = [
         Column.define(
-            "id",
+            'id',
             builtin_types.int8,
             comment='An identifier to the transformation matrix',
             nullok=False
         ),
         Column.define(
-            "rot_matrix[1][1]",
+            'rot_matrix[1][1]',
             builtin_types.float8,
             comment='Data item [1][1] of the rotation matrix used in the transformation',
             nullok=True
         ),
         Column.define(
-            "rot_matrix[2][1]",
+            'rot_matrix[2][1]',
             builtin_types.float8,
             comment='Data item [2][1] of the rotation matrix used in the transformation',
             nullok=True
         ),
         Column.define(
-            "rot_matrix[3][1]",
+            'rot_matrix[3][1]',
             builtin_types.float8,
             comment='Data item [3][1] of the rotation matrix used in the transformation',
             nullok=True
         ),
         Column.define(
-            "rot_matrix[1][2]",
+            'rot_matrix[1][2]',
             builtin_types.float8,
             comment='Data item [1][2] of the rotation matrix used in the transformation',
             nullok=True
         ),
         Column.define(
-            "rot_matrix[2][2]",
+            'rot_matrix[2][2]',
             builtin_types.float8,
             comment='Data item [2][2] of the rotation matrix used in the transformation',
             nullok=True
         ),
         Column.define(
-            "rot_matrix[3][2]",
+            'rot_matrix[3][2]',
             builtin_types.float8,
             comment='Data item [3][2] of the rotation matrix used in the transformation',
             nullok=True
         ),
         Column.define(
-            "rot_matrix[1][3]",
+            'rot_matrix[1][3]',
             builtin_types.float8,
             comment='Data item [1][3] of the rotation matrix used in the transformation',
             nullok=True
         ),
         Column.define(
-            "rot_matrix[2][3]",
+            'rot_matrix[2][3]',
             builtin_types.float8,
             comment='Data item [2][3] of the rotation matrix used in the transformation',
             nullok=True
         ),
         Column.define(
-            "rot_matrix[3][3]",
+            'rot_matrix[3][3]',
             builtin_types.float8,
             comment='Data item [3][3] of the rotation matrix used in the transformation',
             nullok=True
         ),
         Column.define(
-            "tr_vector[1]",
+            'tr_vector[1]',
             builtin_types.float8,
             comment='Data item [1] of the translation vector used in the transformation',
             nullok=True
         ),
         Column.define(
-            "tr_vector[2]",
+            'tr_vector[2]',
             builtin_types.float8,
             comment='Data item [2] of the translation vector used in the transformation',
             nullok=True
         ),
         Column.define(
-            "tr_vector[3]",
+            'tr_vector[3]',
             builtin_types.float8,
             comment='Data item [3] of the translation vector used in the transformation',
             nullok=True
         ),
         Column.define(
-            "structure_id",
+            'structure_id',
             builtin_types.text,
             comment='Structure identifier',
             nullok=False
@@ -99,18 +99,18 @@ def define_tdoc_ihm_data_transformation():
     ]
     #BV: This is a parent table with optional columns in the child table; so combo2 key is defined
     key_defs = [
-        Key.define(["structure_id", "id"], constraint_names=[["PDB", "ihm_data_transformation_primary_key"]] ),
-        Key.define(["RID"], constraint_names=[["PDB", "ihm_data_transformation_RID_key"]] ),        
-        Key.define(["RID", "id"], constraint_names=[["PDB", "ihm_data_transformation_combo2_key"]] )
+        Key.define(['structure_id', 'id'], constraint_names=[['PDB', 'ihm_data_transformation_primary_key']] ),
+        Key.define(['RID'], constraint_names=[['PDB', 'ihm_data_transformation_RID_key']] ),        
+        Key.define(['RID', 'id'], constraint_names=[['PDB', 'ihm_data_transformation_combo2_key']] )
     ]
 
     # @brinda: add fk pseudo-definition
     #BV: No outgoing fkeys other than structure_id
     fkey_defs = [
-        ForeignKey.define(["structure_id"], "PDB", "entry", ["id"],
-                          constraint_names=[["PDB", "ihm_data_transformation_structure_id_fkey"]],
-                          on_update="CASCADE",
-                          on_delete="NO ACTION"   
+        ForeignKey.define(['structure_id'], 'PDB', 'entry', ['id'],
+                          constraint_names=[['PDB', 'ihm_data_transformation_structure_id_fkey']],
+                          on_update='CASCADE',
+                          on_delete='NO ACTION'   
         )
         
     ]
@@ -126,66 +126,49 @@ def define_tdoc_ihm_data_transformation():
     
     return table_def
 
-
 # ==========================================================================
 # update existing table
 def update_PDB_ihm_related_datasets(model):
-    table = model.schemas['PDB'].tables['ihm_related_datasets']
-    
     # -- add columns
-    if 'transformation_id' not in table.columns.elements:
-        table.create_column(
-            Column.define(
-                'transformation_id',
-                builtin_types.int8,
-                comment='Identifier corresponding to the transformation matrix to be applied to the derived dataset in order to transform it to the primary dataset',
-                nullok=True
-            )
-        )
-    if 'transformation_RID' not in table.columns.elements:
-        table.create_column(
-            Column.define(
-                'transformation_RID',
-                builtin_types.text,
-                comment='Identifier to the transformation RID',
-                nullok=True
-            )
-        )
+    utils.create_column_if_not_exist(model, 'PDB', 'ihm_related_datasets', 
+                                     Column.define(
+                                        'transformation_id',
+                                        builtin_types.int8,
+                                        comment='Identifier corresponding to the transformation matrix to be applied to the derived dataset in order to transform it to the primary dataset',
+                                        nullok=True
+                                    ))
+    utils.create_column_if_not_exist(model, 'PDB', 'ihm_related_datasets', 
+                                     Column.define(
+                                        'transformation_RID',
+                                        builtin_types.text,
+                                        comment='Identifier to the transformation RID',
+                                        nullok=True
+                                    ))
 
     # -- add fk
-    if (model.schemas['PDB'],'ihm_related_datasets_ihm_data_transformation_combo2_fkey') not in table.foreign_keys.elements:
-        table.create_fkey(
-            ForeignKey.define(["transformation_RID", "transformation_id"], "PDB", "ihm_data_transformation", ["RID", "id"],
-                            constraint_names=[ ["PDB", "ihm_related_datasets_ihm_data_transformation_combo2_fkey"] ],
-                            on_update="CASCADE",
-                            on_delete="NO ACTION")  # won't allow delete until there is no reference
-        )
-
-
-
-# ==========================================================================
-# upload vocab table
-
-
+    utils.create_foreign_key_if_not_exists(model, 'PDB', 'ihm_related_datasets', 'ihm_related_datasets_ihm_data_transformation_combo2_fkey', 
+                                            ForeignKey.define(['transformation_RID', 'transformation_id'], 'PDB', 'ihm_data_transformation', ['RID', 'id'],
+                                                            constraint_names=[ ['PDB', 'ihm_related_datasets_ihm_data_transformation_combo2_fkey'] ],
+                                                            on_update='CASCADE',
+                                                            on_delete='NO ACTION')  # won't allow delete until there is no reference
+                                           )
 
 # ============================================================
 def main(server_name, catalog_id, credentials):
     server = DerivaServer('https', server_name, credentials)
     catalog = server.connect_ermrest(catalog_id)
-    catalog.dcctx['cid'] = "oneoff/model"
+    catalog.dcctx['cid'] = 'oneoff/model'
     model = catalog.getCatalogModel()
 
-    
-    #-- clean up
-
-    #create_table_if_not_exist(model, "PDB", define_tdoc_ihm_data_transformation()) 
+    utils.create_table_if_not_exist(model, 'PDB',  define_tdoc_ihm_data_transformation())
+    update_PDB_ihm_related_datasets(model)
     
 
 
 # ===================================================    
 
 if __name__ == '__main__':
-    args = BaseCLI("ad-hoc table creation tool", None, 1).parse_cli()
+    args = BaseCLI('ad-hoc table creation tool', None, 1).parse_cli()
     credentials = get_credential(args.host, args.credential_file)
 #    if args.catalog is None:
 #        catalog_id = 99
