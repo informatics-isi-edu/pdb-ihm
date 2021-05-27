@@ -4052,7 +4052,7 @@
                         //"ihm_pseudo_site_feature_feature_id_fkey"
                         "ihm_pseudo_site_feature_ihm_feature_list_combo1_fkey"
                     ],
-#if defined(dev)
+#if true
                     [
                         "PDB",
                         "ihm_hdx_restraint_ihm_feature_list_combo1_fkey"
@@ -4062,7 +4062,7 @@
                         "PDB",
                         "ihm_derived_distance_restraint_feature_id_1_fkey"
                     ],
-#if defined(dev) 
+#if true
                     [
                         "PDB",
                         "ihm_derived_angle_restraint_ihm_feature_list_1_combo1_fkey"
@@ -6100,7 +6100,7 @@
                         "PDB",
                         "entity_src_gen_structure_id_fkey"
                     ],
-#if defined(dev) 
+#if true 
                     [
                         "PDB",
                         "struct_ref_structure_id_fkey"
@@ -6146,7 +6146,7 @@
                         "PDB",
                         "ihm_dataset_group_link_structure_id_fkey"
                     ],
-#if defined(dev) 
+#if true 
                     [   
                         "PDB",
                         "ihm_data_transformation_structure_id_fkey"
@@ -6264,7 +6264,7 @@
                         "PDB",
                         "ihm_ensemble_info_structure_id_fkey"
                     ],
-#if defined(dev) 
+#if true 
                     [
                         "PDB",
                         "ihm_ensemble_sub_sample_structure_id_fkey"
@@ -6350,7 +6350,7 @@
                         "PDB",
                         "Entry_Related_File_entry_id_fkey"
                     ],
-#if defined(dev) 
+#if true 
                     [
                         "PDB",
                         "ihm_pseudo_site_structure_id_fkey"
@@ -6364,7 +6364,7 @@
                         "PDB",
                         "ihm_cross_link_restraint_structure_id_fkey"
                     ],
-#if defined(dev) 
+#if true 
                     [
                         "PDB",
                         "ihm_cross_link_pseudo_site_structure_id_fkey"
@@ -6386,7 +6386,7 @@
                         "PDB",
                         "ihm_hydroxyl_radical_fp_restraint_structure_id_fkey"
                     ],
-#if defined(dev) 
+#if true 
                     [   
                         "PDB",
                         "ihm_hdx_restraint_structure_id_fkey"
@@ -6420,7 +6420,7 @@
                         "PDB",
                         "ihm_derived_distance_restraint_structure_id_fkey"
                     ],
-#if defined(dev) 
+#if true 
                     [
                         "PDB",
                         "ihm_derived_angle_restraint_structure_id_fkey"
@@ -6899,7 +6899,7 @@
                         "PDB",
                         "ihm_epr_restraint_dataset_list_id_fkey"
                     ],
-#if defined(dev)
+#if true
                     [
                         "PDB",
                         "ihm_hdx_restraint_ihm_dataset_list_combo1_fkey"
@@ -6921,7 +6921,7 @@
                         "PDB",
                         "ihm_derived_distance_restraint_dataset_list_id_fkey"
                     ],
-#if defined(dev) 
+#if true 
                     [
                         "PDB",
                         "ihm_derived_angle_restraint_ihm_dataset_list_combo1_fkey"
@@ -8387,7 +8387,7 @@
                 ]
             }
         },
-#if defined(dev)
+#if true
         {
             "schema": "PDB",
             "table": "ihm_derived_angle_restraint",
@@ -13183,7 +13183,7 @@
                 ]
             }
         },
-#if defined(dev)
+#if true
         {
             "schema": "PDB",
             "table": "ihm_cross_link_pseudo_site",
@@ -16949,7 +16949,7 @@
                         "PDB",
                         "entity_src_gen_entity_id_fkey"
                     ],
-#if defined(dev) 
+#if true 
                     [  
                         "PDB",
                         "struct_ref_entity_combo1_fkey"
@@ -28559,7 +28559,7 @@
                 "domain_filter_pattern": "structure_id={{structure_id}}"
             }
         },
-#if defined(dev)
+#if true  
         {
             "foreign_key": "ihm_cross_link_pseudo_site_ihm_cross_link_restraint_combo1_fkey",
             "foreign_key_schema": "PDB",
