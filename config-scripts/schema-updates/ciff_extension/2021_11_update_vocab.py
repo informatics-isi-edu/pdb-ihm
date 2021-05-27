@@ -92,6 +92,29 @@ ihm_derived_dihedral_restraint_restraint_type_rows =[
     {'Name': 'harmonic', 'Description': 'harmonic'}
 ]
 
+struct_ref_seq_dif_details_rows =[
+        {'Name': 'acetylation', 'Description': 'acetylation'},
+        {'Name': 'amidation', 'Description': 'amidation'},
+        {'Name': 'chromophore', 'Description': 'chromophore'},
+        {'Name': 'cloning artifact', 'Description': 'cloning artifact'},
+        {'Name': 'conflict', 'Description': 'conflict'},
+        {'Name': 'deletion', 'Description': 'deletion'},
+        {'Name': 'engineered mutation', 'Description': 'engineered mutation'},
+        {'Name': 'expression tag', 'Description': 'expression tag'},
+        {'Name': 'initiating methionine', 'Description': 'initiating methionine'},
+        {'Name': 'insertion', 'Description': 'insertion'},
+        {'Name': 'linker', 'Description': 'linker'},
+        {'Name': 'microheterogeneity', 'Description': 'microheterogeneity'},
+        {'Name': 'microheterogeneity/modified residue', 'Description': 'microheterogeneity/modified residue'},
+        {'Name': 'modified residue', 'Description': 'modified residue'},
+        {'Name': 'variant', 'Description': 'variant'},
+    ]
+    
+struct_ref_db_name_rows =[
+        {'Name': 'UNP', 'Description': 'UNIPROT'},
+        {'Name': 'GB', 'Description': 'GENBANK'}
+    ]
+
 def main(server_name, catalog_id, credentials):
     server = DerivaServer('https', server_name, credentials)
     catalog = server.connect_ermrest(catalog_id)
@@ -109,6 +132,8 @@ def main(server_name, catalog_id, credentials):
     utils.create_table_if_not_exist(model, 'Vocab', utils.define_Vocab_table('ihm_derived_angle_restraint_restraint_type', 'The type of angle restraint'))
     utils.create_table_if_not_exist(model, 'Vocab', utils.define_Vocab_table('ihm_derived_dihedral_restraint_group_conditionality', 'Conditionality of a group of dihedrals restrained together'))
     utils.create_table_if_not_exist(model, 'Vocab', utils.define_Vocab_table('ihm_derived_dihedral_restraint_restraint_type', 'The type of dihedral restraint'))
+    utils.create_table_if_not_exist(model, 'Vocab', utils.define_Vocab_table('struct_ref_seq_dif_details', 'Details about the special aspects of point differences in the alignment of the macromolecular sequence in the integrative model and the sequence in the reference database'))
+    utils.create_table_if_not_exist(model, 'Vocab', utils.define_Vocab_table('struct_ref_db_name', 'The name of the database containing reference information'))
 
     """
     Load data into the new vocabulary tables
@@ -121,6 +146,8 @@ def main(server_name, catalog_id, credentials):
     utils.add_rows_to_vocab_table(catalog, 'ihm_derived_angle_restraint_restraint_type', ihm_derived_angle_restraint_restraint_type_rows)
     utils.add_rows_to_vocab_table(catalog, 'ihm_derived_dihedral_restraint_group_conditionality', ihm_derived_dihedral_restraint_group_conditionality_rows)
     utils.add_rows_to_vocab_table(catalog, 'ihm_derived_dihedral_restraint_restraint_type', ihm_derived_dihedral_restraint_restraint_type_rows)
+    utils.add_rows_to_vocab_table(catalog, 'struct_ref_seq_dif_details', struct_ref_seq_dif_details_rows)
+    utils.add_rows_to_vocab_table(catalog, 'struct_ref_db_name', struct_ref_db_name_rows)
 
     """
     Create the acls bindings
@@ -133,6 +160,8 @@ def main(server_name, catalog_id, credentials):
     utils.set_table_acl_bindings(catalog, 'Vocab', 'ihm_derived_angle_restraint_restraint_type', acl_bindings)
     utils.set_table_acl_bindings(catalog, 'Vocab', 'ihm_derived_dihedral_restraint_group_conditionality', acl_bindings)
     utils.set_table_acl_bindings(catalog, 'Vocab', 'ihm_derived_dihedral_restraint_restraint_type', acl_bindings)
+    utils.set_table_acl_bindings(catalog, 'Vocab', 'struct_ref_seq_dif_details', acl_bindings)
+    utils.set_table_acl_bindings(catalog, 'Vocab', 'struct_ref_db_name', acl_bindings)
 
 if __name__ == '__main__':
     args = BaseCLI("ad-hoc table creation tool", None, 1).parse_cli()
