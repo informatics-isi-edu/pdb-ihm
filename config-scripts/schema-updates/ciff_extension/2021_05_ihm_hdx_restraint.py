@@ -25,7 +25,7 @@ def define_tdoc_ihm_hdx_restraint():
             nullok=False
         ),
         Column.define(
-            "feature_RID",
+            "Feature_RID",
             builtin_types.text,
             comment='Identifier to the feature RID',
             nullok=False
@@ -43,7 +43,7 @@ def define_tdoc_ihm_hdx_restraint():
             nullok=False
         ),
         Column.define(
-            "dataset_list_RID",
+            "Dataset_List_RID",
             builtin_types.text,
             comment='Identifier to the dataset list RID',
             nullok=False
@@ -78,12 +78,12 @@ def define_tdoc_ihm_hdx_restraint():
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
-        ForeignKey.define(["feature_RID", "structure_id", "feature_id"], "PDB", "ihm_feature_list", ["RID", "structure_id", "feature_id"],
+        ForeignKey.define(["Feature_RID", "structure_id", "feature_id"], "PDB", "ihm_feature_list", ["RID", "structure_id", "feature_id"],
                           constraint_names=[["PDB", "ihm_hdx_restraint_ihm_feature_list_combo1_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
-        ForeignKey.define(["dataset_list_RID", "structure_id", "dataset_list_id"], "PDB", "ihm_dataset_list", ["RID", "structure_id", "id"],
+        ForeignKey.define(["Dataset_List_RID", "structure_id", "dataset_list_id"], "PDB", "ihm_dataset_list", ["RID", "structure_id", "id"],
                           constraint_names=[["PDB", "ihm_hdx_restraint_ihm_dataset_list_combo1_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
@@ -106,39 +106,26 @@ def define_tdoc_ihm_hdx_restraint():
 
     return table_def
 
-
 # ==========================================================================
 # update existing table
 
 # ---------------
 def update_PDB_ihm_derived_distance_restraint(model):
-    table = model.schemas['PDB'].tables['ihm_derived_distance_restraint']
-    
     # -- add columns
-    if 'distance_threshold_mean' not in table.columns.elements:
-        table.create_column(
-            Column.define(
-                'distance_threshold_mean',
-                builtin_types.float8,
-                comment='The distance threshold mean applied to the restraint',
-                nullok=True
-            )
-        )
-    if 'distance_threshold_esd' not in table.columns.elements:
-        table.create_column(
-            Column.define(
-                'distance_threshold_esd',
-                builtin_types.float8,
-                comment='The estimated standard deviation of the distance threshold applied to the restraint',
-                nullok=True
-            )
-        )
-
-
-# ==========================================================================
-# upload vocab table
-
-
+    utils.create_column_if_not_exist(model, 'PDB', 'ihm_derived_distance_restraint', 
+                                     Column.define(
+                                        'distance_threshold_mean',
+                                        builtin_types.float8,
+                                        comment='The distance threshold mean applied to the restraint',
+                                        nullok=True
+                                    ))
+    utils.create_column_if_not_exist(model, 'PDB', 'ihm_derived_distance_restraint', 
+                                     Column.define(
+                                        'distance_threshold_esd',
+                                        builtin_types.float8,
+                                        comment='The estimated standard deviation of the distance threshold applied to the restraint',
+                                        nullok=True
+                                    ))
 
 # ============================================================
 def main(server_name, catalog_id, credentials):
@@ -147,11 +134,8 @@ def main(server_name, catalog_id, credentials):
     catalog.dcctx['cid'] = "oneoff/model"
     model = catalog.getCatalogModel()
 
-    
-    #-- clean up
-    create_table_if_not_exist(model, "PDB", define_tdoc_ihm_hdx_restraint())
-
-    #update_PDB_ihm_derived_distance_restraint(model)
+    utils.create_table_if_not_exist(model, 'PDB',  define_tdoc_ihm_hdx_restraint())
+    update_PDB_ihm_derived_distance_restraint(model)
     
 
 # ===================================================    
