@@ -4,6 +4,11 @@ from deriva.core import ErmrestCatalog, AttrDict, get_credential, DEFAULT_CREDEN
 from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key, ForeignKey, DomainType, ArrayType
 import utils
 
+"""
+This script will be run after:
+    - 2021_11_update_vocab.py
+    - 2021_04_ihm_data_transformation.py
+"""
 
 # ========================================================
 # -- create a table that is not a Vocab structure
@@ -97,9 +102,103 @@ def define_tdoc_ihm_pseudo_site():
     return table_def
 
 # --------------------------------------------------------------
-def update_PDB_ihm_pseudo_site_feature(model):
-    table = model.schemas['PDB'].tables['ihm_pseudo_site_feature']
+def update_PDB_ihm_derived_distance_restraint(model):
+    # -- add columns
+    utils.create_column_if_not_exist(model, 'PDB', 'ihm_pseudo_site_feature', 
+                                     Column.define(
+                                        'distance_threshold_mean',
+                                        builtin_types.float8,
+                                        comment='The distance threshold mean applied to the restraint',
+                                        nullok=True
+                                    ))
+    utils.create_column_if_not_exist(model, 'PDB', 'ihm_pseudo_site_feature', 
+                                     Column.define(
+                                        'distance_threshold_esd',
+                                        builtin_types.float8,
+                                        comment='The estimated standard deviation of the distance threshold applied to the restraint',
+                                        nullok=True
+                                    ))
 
+def update_PDB_ihm_cross_link_restraint(model):
+    # Add the PDB.ihm_cross_link_restraint.pseudo_site_flag column    
+    utils.create_column_if_not_exist(model, 'PDB', 'ihm_cross_link_restraint', 
+                                     Column.define(
+                                        'pseudo_site_flag',
+                                        builtin_types.text,
+                                        comment='A flag indicating if the cross link involves a pseudo site that is not part of the model representation',
+                                        nullok=True
+                                    ))
+
+    # Create the foreign key PDB.ihm_cross_link_restraint.pseudo_site_flag references Vocab.pseudo_site_flag.Name
+    utils.create_foreign_key_if_not_exists(model, 'PDB', 'ihm_cross_link_restraint', 'ihm_cross_link_restraint_pseudo_site_flag_fkey', 
+                                            ForeignKey.define(['pseudo_site_flag'], 'Vocab', 'pseudo_site_flag', ['Name'],
+                                              constraint_names=[ ['Vocab', 'ihm_cross_link_restraint_pseudo_site_flag_fkey'] ],
+                                              on_update='CASCADE',
+                                              on_delete='NO ACTION')
+                                           )
+
+    # Create combo1 key
+    utils.create_key_if_not_exists(model, 'PDB', 'ihm_cross_link_restraint', ['RID', 'structure_id', 'id'], 'ihm_cross_link_restraint_combo1_key')
+
+def update_PDB_ihm_ensemble_info(model):
+    # Add the PDB.ihm_ensemble_info.sub_sample_flag and PDB.ihm_ensemble_info.sub_sampling_type columns   
+    utils.create_column_if_not_exist(model, 'PDB', 'ihm_ensemble_info', 
+                                     Column.define(
+                                        'sub_sample_flag',
+                                        builtin_types.text,
+                                        comment='A flag that indicates whether the ensemble consists of sub samples',
+                                        nullok=True
+                                    ))
+    utils.create_column_if_not_exist(model, 'PDB', 'ihm_ensemble_info', 
+                                     Column.define(
+                                        'sub_sampling_type',
+                                        builtin_types.text,
+                                        comment='Type of sub sampling',
+                                        nullok=True
+                                    ))
+
+    # Create the foreign keys
+    utils.create_foreign_key_if_not_exists(model, 'PDB', 'ihm_ensemble_info', 'ihm_ensemble_info_sub_sample_flag_fkey', 
+                                            ForeignKey.define(['sub_sample_flag'], 'Vocab', 'sub_sample_flag', ['Name'],
+                                              constraint_names=[ ['Vocab', 'ihm_ensemble_info_sub_sample_flag_fkey'] ],
+                                              on_update='CASCADE',
+                                              on_delete='NO ACTION')
+                                           )
+    utils.create_foreign_key_if_not_exists(model, 'PDB', 'ihm_ensemble_info', 'ihm_ensemble_info_sub_sampling_type_fkey', 
+                                            ForeignKey.define(['sub_sampling_type'], 'Vocab', 'sub_sampling_type', ['Name'],
+                                              constraint_names=[ ['Vocab', 'ihm_ensemble_info_sub_sampling_type_fkey'] ],
+                                              on_update='CASCADE',
+                                              on_delete='NO ACTION')
+                                           )
+
+    utils.create_key_if_not_exists(model, 'PDB', 'ihm_ensemble_info', ['RID', 'structure_id', 'ensemble_id'], 'ihm_ensemble_info_combo1_key')
+
+def update_PDB_ihm_related_datasets(model):
+    # -- add columns
+    utils.create_column_if_not_exist(model, 'PDB', 'ihm_related_datasets', 
+                                     Column.define(
+                                        'transformation_id',
+                                        builtin_types.int8,
+                                        comment='Identifier corresponding to the transformation matrix to be applied to the derived dataset in order to transform it to the primary dataset',
+                                        nullok=True
+                                    ))
+    utils.create_column_if_not_exist(model, 'PDB', 'ihm_related_datasets', 
+                                     Column.define(
+                                        'Transformation_RID',
+                                        builtin_types.text,
+                                        comment='Identifier to the transformation RID',
+                                        nullok=True
+                                    ))
+
+    # -- add fk
+    utils.create_foreign_key_if_not_exists(model, 'PDB', 'ihm_related_datasets', 'ihm_related_datasets_ihm_data_transformation_combo2_fkey', 
+                                            ForeignKey.define(['Transformation_RID', 'transformation_id'], 'PDB', 'ihm_data_transformation', ['RID', 'id'],
+                                                constraint_names=[ ['PDB', 'ihm_related_datasets_ihm_data_transformation_combo2_fkey'] ],
+                                                on_update='CASCADE',
+                                                on_delete='NO ACTION')
+                                           )
+
+def update_PDB_ihm_pseudo_site_feature(model):
     # Drop fkeys from ihm_pseudo_site_feature
     utils.drop_fkey_if_exist(model, 'PDB', 'ihm_pseudo_site_feature', 'ihm_pseudo_site_feature_feature_id_fkey')
 
@@ -155,17 +254,43 @@ def main(server_name, catalog_id, credentials):
     catalog.dcctx['cid'] = 'oneoff/model'
     model = catalog.getCatalogModel()
 
-    # new changes
-    model = catalog.getCatalogModel()    
+    """
+    Create table
+    """
     utils.create_table_if_not_exist(model, 'PDB',  define_tdoc_ihm_pseudo_site())
-    utils.create_key_if_not_exists(model, 'PDB', 'ihm_pseudo_site', ['RID', 'structure_id', 'id'], 'ihm_pseudo_site_combo1_key')
-    utils.create_key_if_not_exists(model, 'PDB', 'ihm_feature_list', ['RID', 'structure_id', 'feature_id'], 'ihm_feature_list_combo1_key')
     
+    """
+    Create primary keys
+    """
+    utils.create_key_if_not_exists(model, 'PDB', 'ihm_model_list', ['RID', 'model_id'], 'ihm_model_list_combo2_key')
+    utils.create_key_if_not_exists(model, 'PDB', 'ihm_feature_list', ['RID', 'structure_id', 'feature_id'], 'ihm_feature_list_combo1_key')
+    utils.create_key_if_not_exists(model, 'PDB', 'ihm_dataset_list', ['RID', 'structure_id', 'id'], 'ihm_dataset_list_combo1_key')
+    utils.create_key_if_not_exists(model, 'PDB', 'ihm_pseudo_site', ['RID', 'structure_id', 'id'], 'ihm_pseudo_site_combo1_key')
+    
+    """
+    Update existing model
+    """
+    update_PDB_ihm_derived_distance_restraint(model)
+    update_PDB_ihm_cross_link_restraint(model) #Requires pseudo_site_flag
+    update_PDB_ihm_ensemble_info(model) #Requires sub_sample_flag and sub_sampling_type
+    update_PDB_ihm_related_datasets(model) #Requires ihm_data_transformation
     update_PDB_ihm_pseudo_site_feature(model)
+    
+    """
+    Rename primary keys
+    """
+    utils.rename_key_if_exist(model, 'PDB', 'ihm_model_group', 'ihm_model_group_RID_id_key', 'ihm_model_group_combo2_key')
+    utils.rename_key_if_exist(model, 'PDB', 'ihm_external_files', 'ihm_external_files_id_RID_key', 'ihm_external_files_combo2_key')
+    
+    """
+    Rename columns
+    """
+    utils.rename_column_if_exists(model, 'PDB', 'ihm_related_datasets', 'transformation_RID', 'Transformation_RID')
+    utils.rename_column_if_exists(model, 'PDB', 'ihm_pseudo_site_feature', 'pseudo_site_RID', 'Pseudo_Site_RID')
+    utils.rename_column_if_exists(model, 'PDB', 'ihm_pseudo_site_feature', 'feature_RID', 'Feature_RID')
+
     utils.set_table_comment_if_exist(model, 'PDB', 'ihm_pseudo_site', 'Details of pseudo sites that may be used in the restraints or model representation; can be uploaded as CSV/TSV file above; mmCIF category: ihm_pseudo_site')
     
-      
-
 # ===================================================    
 
 if __name__ == '__main__':

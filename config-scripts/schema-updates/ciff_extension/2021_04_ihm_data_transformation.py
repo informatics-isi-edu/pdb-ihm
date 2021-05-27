@@ -4,6 +4,10 @@ from deriva.core import ErmrestCatalog, AttrDict, get_credential, DEFAULT_CREDEN
 from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key, ForeignKey, DomainType, ArrayType
 import utils
 
+"""
+This script will be run after:
+    - 2021_11_update_vocab.py
+"""
 
 # ========================================================
 # -- create a table that is not a Vocab structure
@@ -126,32 +130,6 @@ def define_tdoc_ihm_data_transformation():
     
     return table_def
 
-# ==========================================================================
-# update existing table
-def update_PDB_ihm_related_datasets(model):
-    # -- add columns
-    utils.create_column_if_not_exist(model, 'PDB', 'ihm_related_datasets', 
-                                     Column.define(
-                                        'transformation_id',
-                                        builtin_types.int8,
-                                        comment='Identifier corresponding to the transformation matrix to be applied to the derived dataset in order to transform it to the primary dataset',
-                                        nullok=True
-                                    ))
-    utils.create_column_if_not_exist(model, 'PDB', 'ihm_related_datasets', 
-                                     Column.define(
-                                        'transformation_RID',
-                                        builtin_types.text,
-                                        comment='Identifier to the transformation RID',
-                                        nullok=True
-                                    ))
-
-    # -- add fk
-    utils.create_foreign_key_if_not_exists(model, 'PDB', 'ihm_related_datasets', 'ihm_related_datasets_ihm_data_transformation_combo2_fkey', 
-                                            ForeignKey.define(['transformation_RID', 'transformation_id'], 'PDB', 'ihm_data_transformation', ['RID', 'id'],
-                                                            constraint_names=[ ['PDB', 'ihm_related_datasets_ihm_data_transformation_combo2_fkey'] ],
-                                                            on_update='CASCADE',
-                                                            on_delete='NO ACTION')  # won't allow delete until there is no reference
-                                           )
 
 # ============================================================
 def main(server_name, catalog_id, credentials):
@@ -161,9 +139,6 @@ def main(server_name, catalog_id, credentials):
     model = catalog.getCatalogModel()
 
     utils.create_table_if_not_exist(model, 'PDB',  define_tdoc_ihm_data_transformation())
-    update_PDB_ihm_related_datasets(model)
-    
-
 
 # ===================================================    
 

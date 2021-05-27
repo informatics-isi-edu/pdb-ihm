@@ -5,92 +5,32 @@ from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key,
 import utils
 
 
-def define_tdoc_ihm_hdx_restraint():
-    table_name='ihm_hdx_restraint'
-    comment='Details of restraint derived from hydrogen-deuterium (H/D) exchange experiments; can be uploaded as CSV/TSV file above; mmCIF category: ihm_hdx_restraint'
+"""
+def define_tdoc_ihm():
+    table_name='...'
+    comment='...'
 
     column_defs = [
         Column.define(
-            'id',
-            builtin_types.int8,
-            comment='A unique id for the H/D exchange restraint',
-            nullok=False
+            '...',
+            builtin_types....,
+            comment='...',
+            nullok=...
         ),
-        Column.define(
-            'feature_id',
-            builtin_types.int8,
-            comment='An identifier for the peptide / residue feature',
-            nullok=False
-        ),
-        Column.define(
-            'Feature_RID',
-            builtin_types.text,
-            comment='Identifier to the feature RID',
-            nullok=False
-        ),
-        Column.define(
-            'protection_factor',
-            builtin_types.float8,
-            comment='The value of the protection factor determined from H/D exchange experiments',
-            nullok=True
-        ),
-        Column.define(
-            'dataset_list_id',
-            builtin_types.int8,
-            comment='Identifier to the H/D exchange input data from which the restraints are derived',
-            nullok=False
-        ),
-        Column.define(
-            'Dataset_List_RID',
-            builtin_types.text,
-            comment='Identifier to the dataset list RID',
-            nullok=False
-        ),
-        Column.define(
-            'details',
-            builtin_types.text,
-            comment='Additional details regarding the H/D exchange restraint',
-            nullok=True
-        ),
-        Column.define(
-            'structure_id',
-            builtin_types.text,
-            comment='Structure identifier',
-            nullok=False
-        ),
-        Column.define(
-            'Entry_Related_File',
-            builtin_types.text,
-            comment='A reference to the uploaded restraint file in the table Entry_Related_File.id',
-            nullok=True
-        )
+        ...
     ]
     key_defs = [
-        Key.define(['structure_id', 'id'], constraint_names=[['PDB', 'ihm_hdx_restraint_primary_key']] ),
-        Key.define(['RID'], constraint_names=[['PDB', 'ihm_hdx_restraint_RID_key']] ),
+        Key.define(['...', '...'], constraint_names=[['PDB', 'ihm_..._key']] ),
+        ...
     ]
 
     fkey_defs = [
-        ForeignKey.define(['structure_id'], 'PDB', 'entry', ['id'],
-                          constraint_names=[['PDB', 'ihm_hdx_restraint_structure_id_fkey']],
+        ForeignKey.define(['...'], 'PDB', '...', ['...'],
+                          constraint_names=[['PDB', 'ihm_..._fkey']],
                           on_update='CASCADE',
                           on_delete='NO ACTION'
         ),
-        ForeignKey.define(['Feature_RID', 'structure_id', 'feature_id'], 'PDB', 'ihm_feature_list', ['RID', 'structure_id', 'feature_id'],
-                          constraint_names=[['PDB', 'ihm_hdx_restraint_ihm_feature_list_combo1_fkey']],
-                          on_update='CASCADE',
-                          on_delete='NO ACTION'
-        ),
-        ForeignKey.define(['Dataset_List_RID', 'structure_id', 'dataset_list_id'], 'PDB', 'ihm_dataset_list', ['RID', 'structure_id', 'id'],
-                          constraint_names=[['PDB', 'ihm_hdx_restraint_ihm_dataset_list_combo1_fkey']],
-                          on_update='CASCADE',
-                          on_delete='NO ACTION'
-        ),
-        ForeignKey.define(['Entry_Related_File'], 'PDB', 'Entry_Related_File', ['RID'],
-                          constraint_names=[['PDB', 'ihm_hdx_restraint_Entry_Related_File_fkey']],
-                          on_update='CASCADE',
-                          on_delete='NO ACTION'
-        )
+        ...
     ]
 
     table_def = Table.define(
@@ -103,7 +43,7 @@ def define_tdoc_ihm_hdx_restraint():
     )
 
     return table_def
-
+"""
 
 
 # ============================================================
@@ -113,7 +53,7 @@ def main(server_name, catalog_id, credentials):
     catalog.dcctx['cid'] = 'oneoff/model'
     model = catalog.getCatalogModel()
 
-    create_table_if_not_exist(model, 'PDB', define_tdoc_ihm_hdx_restraint())
+    #create_table_if_not_exist(model, 'PDB', define_tdoc_ihm())
 
 # ===================================================    
 

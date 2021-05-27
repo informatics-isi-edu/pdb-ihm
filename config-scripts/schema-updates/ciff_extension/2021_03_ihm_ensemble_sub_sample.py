@@ -4,6 +4,13 @@ from deriva.core import ErmrestCatalog, AttrDict, get_credential, DEFAULT_CREDEN
 from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key, ForeignKey, DomainType, ArrayType
 import utils
 
+"""
+This script will be run after:
+    - 2021_11_update_vocab.py
+    - 2021_04_ihm_data_transformation.py
+    - 2021_01_ihm_data_transformation.py
+    - 2021_02_ihm_data_transformation.py
+"""
 
 # ========================================================
 # -- create a table that is not a Vocab structure
