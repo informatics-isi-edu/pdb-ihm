@@ -145,20 +145,13 @@ def main(server_name, catalog_id, credentials):
     """
     Create table
     """
-    utils.create_table_if_not_exist(model, 'PDB',  define_tdoc_ihm_hdx_restraint())
+    utils.create_table_if_not_exist(model, 'PDB',  define_tdoc_ihm_hdx_restraint()) #Requires ihm_feature_list, ihm_dataset_list
     
     """
     Update existing model
     """
     update_PDB_ihm_derived_distance_restraint(model)
     
-    """
-    Rename columns
-    """
-    utils.rename_column_if_exists(model, 'PDB', 'ihm_hdx_restraint', 'feature_RID', 'Feature_RID')
-    utils.rename_column_if_exists(model, 'PDB', 'ihm_hdx_restraint', 'dataset_list_RID', 'Dataset_List_RID')
-    
-
 # ===================================================    
 
 if __name__ == '__main__':

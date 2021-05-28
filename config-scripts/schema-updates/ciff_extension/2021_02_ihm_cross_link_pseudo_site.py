@@ -158,12 +158,7 @@ def main(server_name, catalog_id, credentials):
     """
     Create table
     """
-    utils.create_table_if_not_exist(model, 'PDB',  define_tdoc_ihm_cross_link_pseudo_site())
-    
-    """
-    Create primary keys
-    """
-    utils.create_key_if_not_exists(model, 'PDB', 'ihm_cross_link_restraint', ['RID', 'structure_id', 'id'], 'ihm_cross_link_restraint_combo1_key')
+    utils.create_table_if_not_exist(model, 'PDB',  define_tdoc_ihm_cross_link_pseudo_site()) #Requires ihm_cross_link_restraint, ihm_model_list, ihm_pseudo_site, cross_link_partner
     
 # ===================================================    
 

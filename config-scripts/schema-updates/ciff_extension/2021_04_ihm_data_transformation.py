@@ -168,7 +168,10 @@ def main(server_name, catalog_id, credentials):
     Create table
     """
     utils.create_table_if_not_exist(model, 'PDB',  define_tdoc_ihm_data_transformation())
-    
+
+    """
+    Update existing model
+    """    
     update_PDB_ihm_related_datasets(model) #Requires ihm_data_transformation
 
 # ===================================================    

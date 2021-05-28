@@ -313,15 +313,6 @@ def define_tdoc_struct_ref_seq_dif():
     return table_def
 
 # ==========================================================================
-
-def update_PDB_entity(model):
-    table = model.schemas['PDB'].tables['entity']
-
-    table.create_key(
-        Key.define(["RID", "structure_id", "id"], constraint_names=[["PDB", "entity_combo1_key"]] )
-    )
-
-# ---------------
 # update vocab table
 def add_rows_to_Vocab_struct_ref_seq_dif_details(catalog):
 
@@ -383,17 +374,11 @@ def main(server_name, catalog_id, credentials):
         #utils.create_table_if_not_exist(model, "Vocab",  utils.define_Vocab_table('struct_ref_seq_dif_details', 'Details about the special aspects of point differences in the alignment of the macromolecular sequence in the integrative model and the sequence in the reference database'))
         #add_rows_to_Vocab_struct_ref_db_name(catalog)
         #add_rows_to_Vocab_struct_ref_seq_dif_details(catalog)
-        update_PDB_entity(model)
+        utils.create_key_if_not_exists(model, 'PDB', 'entity', ['RID', 'structure_id', 'id'], 'entity_combo1_key')
         utils.create_table_if_not_exist(model, "PDB",  define_tdoc_struct_ref())
         utils.create_table_if_not_exist(model, "PDB",  define_tdoc_struct_ref_seq())
         utils.create_table_if_not_exist(model, "PDB",  define_tdoc_struct_ref_seq_dif())
         
-    # vocab
-    #if False:
-    #    add_rows_to_Vocab_ihm_derived_angle_restraint_group_conditionality(catalog)
-    #    add_rows_to_Vocab_ihm_derived_angle_restraint_restraint_type(catalog)
-    
-
 # ===================================================    
 
 if __name__ == '__main__':

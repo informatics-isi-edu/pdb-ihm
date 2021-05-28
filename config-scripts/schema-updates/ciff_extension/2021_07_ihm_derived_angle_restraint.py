@@ -256,12 +256,6 @@ def main(server_name, catalog_id, credentials):
         #add_rows_to_Vocab_ihm_derived_angle_restraint_restraint_type(catalog)
         utils.create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_derived_angle_restraint())
         
-    # vocab
-    #if False:
-    #    add_rows_to_Vocab_ihm_derived_angle_restraint_group_conditionality(catalog)
-    #    add_rows_to_Vocab_ihm_derived_angle_restraint_restraint_type(catalog)
-    
-
 # ===================================================    
 
 if __name__ == '__main__':

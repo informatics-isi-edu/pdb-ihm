@@ -115,6 +115,37 @@ struct_ref_db_name_rows =[
         {'Name': 'GB', 'Description': 'GENBANK'}
     ]
 
+ihm_cross_link_list_linker_type_rows = [
+        {'Name': 'CYS', 'Description': 'CYS'},
+        {'Name': 'BMSO', 'Description': 'BMSO'},
+        {'Name': 'DHSO', 'Description': 'DHSO'},
+        {'Name': 'SDA', 'Description': 'SDA'},
+        {'Name': 'DSA', 'Description': 'DSA'},
+        {'Name': 'BrdU', 'Description': 'BrdU'},
+        {'Name': 'LCSDA', 'Description': 'LCSDA'},
+        {'Name': 'ADH', 'Description': 'ADH'}
+    ]
+
+ihm_dataset_list_data_type_rows = [
+    {'Name': 'X-ray diffraction data', 'Description': 'X-ray diffraction data'}
+    ]
+
+ihm_dataset_related_db_reference_db_name_rows = [
+    {'Name': 'ProXL', 'Description': 'ProXL'}
+    ]
+
+ihm_derived_distance_restraint_restraint_type_rows = [
+    {'Name': 'harmonic', 'Description': 'harmonic'}
+    ]
+
+File_Type_rows = [
+    {'Name': 'Pseudo Site Coordinates', 'Table Name': 'ihm_pseudo_site', 'Description': 'Details of pseudo sites that may be used in restraints or in model representation'},
+    {'Name': 'Chemical Crosslinks with Pseudo Sites', 'Table Name': 'ihm_cross_link_pseudo_site', 'Description': 'Details of pseudo sites involved in crosslinks'},
+    {'Name': 'HD Exchange Restraints', 'Table Name': 'ihm_hdx_restraint', 'Description': 'Details of restraint derived from hydrogen-deuterium exchange experiments'},
+    {'Name': 'Generic Angle Restraints Between Molecular Features', 'Table Name': 'ihm_derived_angle_restraint', 'Description': 'Generic angle restraints between features (atoms, residues, non-polymeric entities, pseudo sites)'},
+    {'Name': 'Generic Dihedral Restraints Between Molecular Features', 'Table Name': 'ihm_derived_dihedral_restraint', 'Description': 'Generic dihedral restraints between features (atoms, residues, non-polymeric entities, pseudo sites)'}
+    ]
+
 def main(server_name, catalog_id, credentials):
     server = DerivaServer('https', server_name, credentials)
     catalog = server.connect_ermrest(catalog_id)
@@ -148,6 +179,15 @@ def main(server_name, catalog_id, credentials):
     utils.add_rows_to_vocab_table(catalog, 'ihm_derived_dihedral_restraint_restraint_type', ihm_derived_dihedral_restraint_restraint_type_rows)
     utils.add_rows_to_vocab_table(catalog, 'struct_ref_seq_dif_details', struct_ref_seq_dif_details_rows)
     utils.add_rows_to_vocab_table(catalog, 'struct_ref_db_name', struct_ref_db_name_rows)
+
+    """
+    Load data into existing vocabulary tables
+    """
+    utils.add_rows_to_vocab_table(catalog, 'ihm_cross_link_list_linker_type', ihm_cross_link_list_linker_type_rows)
+    utils.add_rows_to_vocab_table(catalog, 'ihm_dataset_list_data_type', ihm_dataset_list_data_type_rows)
+    utils.add_rows_to_vocab_table(catalog, 'ihm_dataset_related_db_reference_db_name', ihm_dataset_related_db_reference_db_name_rows)
+    utils.add_rows_to_vocab_table(catalog, 'ihm_derived_distance_restraint_restraint_type', ihm_derived_distance_restraint_restraint_type_rows)
+    utils.add_rows_to_vocab_table(catalog, 'File_Type', File_Type_rows)
 
     """
     Create the acls bindings

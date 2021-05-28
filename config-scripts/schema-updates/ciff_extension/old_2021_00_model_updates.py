@@ -1110,8 +1110,8 @@ def add_rows_to_Vocab_ihm_dataset_list_data_type(catalog):    #@serban to review
 
     pb = catalog.getPathBuilder()
     schema = pb.Vocab
-    cross_link_partner = schema.ihm_dataset_list_data_type
-    cross_link_partner.insert(rows, defaults=['ID', 'URI'])
+    ihm_dataset_list_data_type = schema.ihm_dataset_list_data_type
+    ihm_dataset_list_data_type.insert(rows, defaults=['ID', 'URI'])
 
 # -----------------------------------
 # add rows to Vocab.ihm_dataset_related_db_reference_db_name
@@ -1123,8 +1123,8 @@ def add_rows_to_Vocab_ihm_dataset_related_db_reference_db_name(catalog):    #@se
 
     pb = catalog.getPathBuilder()
     schema = pb.Vocab
-    cross_link_partner = schema.ihm_dataset_related_db_reference_db_name
-    cross_link_partner.insert(rows, defaults=['ID', 'URI'])
+    ihm_dataset_related_db_reference_db_name = schema.ihm_dataset_related_db_reference_db_name
+    ihm_dataset_related_db_reference_db_name.insert(rows, defaults=['ID', 'URI'])
 
 # -----------------------------------
 # add rows to Vocab.ihm_derived_distance_restraint_restraint_type
@@ -1136,25 +1136,25 @@ def add_rows_to_Vocab_ihm_derived_distance_restraint_restraint_type(catalog):   
 
     pb = catalog.getPathBuilder()
     schema = pb.Vocab
-    cross_link_partner = schema.ihm_derived_distance_restraint_restraint_type
-    cross_link_partner.insert(rows, defaults=['ID', 'URI'])
+    ihm_derived_distance_restraint_restraint_type = schema.ihm_derived_distance_restraint_restraint_type
+    ihm_derived_distance_restraint_restraint_type.insert(rows, defaults=['ID', 'URI'])
 
 # -----------------------------------
 # add rows to Vocab.File_Type
 def add_rows_to_Vocab_File_Type(catalog):    
 
     rows =[
-        {'Name': 'Pseudo site coordinates', 'Table Name': 'ihm_pseudo_site', 'Description': 'Details of pseudo sites that may be used in the restraints or model representation'},
+        {'Name': 'Pseudo Site Coordinates', 'Table Name': 'ihm_pseudo_site', 'Description': 'Details of pseudo sites that may be used in restraints or in model representation'},
         {'Name': 'Chemical Crosslinks with Pseudo Sites', 'Table Name': 'ihm_cross_link_pseudo_site', 'Description': 'Details of pseudo sites involved in crosslinks'},
-        {'Name': 'H/D exchange restraints', 'Table Name': 'ihm_hdx_restraint', 'Description': 'Details of restraint derived from hydrogen-deuterium (H/D) exchange experiments'},
-        {'Name': 'Derived angle restraints', 'Table Name': 'ihm_derived_angle_restraint', 'Description': 'Details of angle restraints used in integrative modeling'},
-        {'Name': 'Derived dihedral restraints', 'Table Name': 'ihm_derived_dihedral_restraint', 'Description': 'Details of dihedral restraints used in integrative modeling'}
+        {'Name': 'HD Exchange Restraints', 'Table Name': 'ihm_hdx_restraint', 'Description': 'Details of restraint derived from hydrogen-deuterium exchange experiments'},
+        {'Name': 'Generic Angle Restraints Between Molecular Features', 'Table Name': 'ihm_derived_angle_restraint', 'Description': 'Generic angle restraints between features (atoms, residues, non-polymeric entities, pseudo sites)'},
+        {'Name': 'Generic Dihedral Restraints Between Molecular Features', 'Table Name': 'ihm_derived_dihedral_restraint', 'Description': 'Generic dihedral restraints between features (atoms, residues, non-polymeric entities, pseudo sites)'}
     ]
 
     pb = catalog.getPathBuilder()
     schema = pb.Vocab
-    cross_link_partner = schema.ihm_derived_distance_restraint_restraint_type
-    cross_link_partner.insert(rows, defaults=['ID', 'URI'])
+    File_Type = schema.ihm_derived_distance_restraint_restraint_type
+    File_Type.insert(rows, defaults=['ID', 'URI'])
 
 #=============================================================
 def update_table_comments(model):
@@ -1194,6 +1194,7 @@ def main(server_name, catalog_id, credentials):
     add_rows_to_Vocab_ihm_dataset_list_data_type(catalog)
     add_rows_to_Vocab_ihm_dataset_related_db_reference_db_name(catalog)
     add_rows_to_Vocab_ihm_derived_distance_restraint_restraint_type(catalog)
+    add_rows_to_Vocab_File_Type(catalog)
 
     # -- create PDB tables
     create_table_if_not_exist(model, "PDB",  define_tdoc_ihm_pseudo_site())

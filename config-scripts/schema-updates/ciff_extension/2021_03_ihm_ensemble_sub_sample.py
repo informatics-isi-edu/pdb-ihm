@@ -128,6 +128,38 @@ def define_tdoc_ihm_ensemble_sub_sample():
 
     return table_def
 
+def update_PDB_ihm_ensemble_info(model):
+    # Add the PDB.ihm_ensemble_info.sub_sample_flag and PDB.ihm_ensemble_info.sub_sampling_type columns   
+    utils.create_column_if_not_exist(model, 'PDB', 'ihm_ensemble_info',
+                                     Column.define(
+                                        'sub_sample_flag',
+                                        builtin_types.text,
+                                        comment='A flag that indicates whether the ensemble consists of sub samples',
+                                        nullok=True
+                                    ))
+    utils.create_column_if_not_exist(model, 'PDB', 'ihm_ensemble_info',
+                                     Column.define(
+                                        'sub_sampling_type',
+                                        builtin_types.text,
+                                        comment='Type of sub sampling',
+                                        nullok=True
+                                    ))
+
+    # Create the foreign keys
+    utils.create_foreign_key_if_not_exists(model, 'PDB', 'ihm_ensemble_info', 'ihm_ensemble_info_sub_sample_flag_fkey',
+                                            ForeignKey.define(['sub_sample_flag'], 'Vocab', 'sub_sample_flag', ['Name'],
+                                              constraint_names=[ ['Vocab', 'ihm_ensemble_info_sub_sample_flag_fkey'] ],
+                                              on_update='CASCADE',
+                                              on_delete='NO ACTION')
+                                           )
+    utils.create_foreign_key_if_not_exists(model, 'PDB', 'ihm_ensemble_info', 'ihm_ensemble_info_sub_sampling_type_fkey',
+                                            ForeignKey.define(['sub_sampling_type'], 'Vocab', 'sub_sampling_type', ['Name'],
+                                              constraint_names=[ ['Vocab', 'ihm_ensemble_info_sub_sampling_type_fkey'] ],
+                                              on_update='CASCADE',
+                                              on_delete='NO ACTION')
+                                           )
+
+    utils.create_key_if_not_exists(model, 'PDB', 'ihm_ensemble_info', ['RID', 'structure_id', 'ensemble_id'], 'ihm_ensemble_info_combo1_key')
 
 # ============================================================
 def main(server_name, catalog_id, credentials):
@@ -137,16 +169,15 @@ def main(server_name, catalog_id, credentials):
     model = catalog.getCatalogModel()
 
     """
+    Update existing model
+    """
+    update_PDB_ihm_ensemble_info(model) #Requires sub_sample_flag and sub_sampling_type
+
+    """
     Create table
     """
-    utils.create_table_if_not_exist(model, 'PDB',  define_tdoc_ihm_ensemble_sub_sample())
-    
-    """
-    Create primary keys
-    """
-    utils.create_key_if_not_exists(model, 'PDB', 'ihm_ensemble_info', ['RID', 'structure_id', 'ensemble_id'], 'ihm_ensemble_info_combo1_key')
-        
-
+    utils.create_table_if_not_exist(model, 'PDB',  define_tdoc_ihm_ensemble_sub_sample()) #Requires ihm_ensemble_info, ihm_model_group, ihm_external_files
+ 
 # ===================================================    
 
 if __name__ == '__main__':
