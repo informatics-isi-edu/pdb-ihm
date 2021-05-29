@@ -94,6 +94,7 @@ def set_acl_binding(catalog, schema_name, table_name, acl_binding):
     table = model.schemas[schema_name].tables[table_name]
     table.acl_bindings = acl_binding
     model.apply()
+    print('Set acl_bindings to {}:{}'.format(schema_name, table_name))
 
 def drop_column(catalog, schema_name, table_name, column_name):
     model = catalog.getCatalogModel()
@@ -101,6 +102,7 @@ def drop_column(catalog, schema_name, table_name, column_name):
     table = model.schemas[schema_name].tables[table_name]
     column = table.column_definitions[column_name]
     column.drop()
+    print('Dropped in {}:{} table the column {}'.format(schema_name, table_name, column_name))
 
 def drop_fk(catalog, schema_name, table_name, constraint_name):
     model = catalog.getCatalogModel()
@@ -108,6 +110,7 @@ def drop_fk(catalog, schema_name, table_name, constraint_name):
     table = model.schemas[schema_name].tables[table_name]
     fk = table.foreign_keys.__getitem__((schema, constraint_name))
     fk.drop()
+    print('Dropped in {}:{} table the foreign key {}'.format(schema_name, table_name, constraint_name))
 
 def create_pk(catalog, schema_name, table_name, columns, constraint_name):
     model = catalog.getCatalogModel()
@@ -115,6 +118,7 @@ def create_pk(catalog, schema_name, table_name, columns, constraint_name):
     table = model.schemas[schema_name].tables[table_name]
     pkey_def = Key.define(columns, constraint_names=[ [schema_name, constraint_name] ])
     table.create_key(pkey_def)
+    print('Created in {}:{} table the primary key {}'.format(schema_name, table_name, constraint_name))
 
 def rename_pk(catalog, schema_name, table_name, old_name, new_name):
     model = catalog.getCatalogModel()
@@ -122,6 +126,7 @@ def rename_pk(catalog, schema_name, table_name, old_name, new_name):
     table = model.schemas[schema_name].tables[table_name]
     pk = table.keys.__getitem__((schema, old_name))
     pk.alter(constraint_name=new_name)
+    print('Renamed in {}:{} table the primary key {} to {}'.format(schema_name, table_name, old_name, new_name))
 
 def main(server_name, catalog_id, credentials):
     server = DerivaServer('https', server_name, credentials)
