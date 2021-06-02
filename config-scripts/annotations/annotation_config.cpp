@@ -9086,7 +9086,7 @@
             "table": "ihm_hdx_restraint",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "H/D Exchange Restraints",
+                "name": "HD Exchange Restraints",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -28823,3 +28823,4 @@
 #endif
     ]
 }
+
