@@ -649,6 +649,7 @@ class PDBClient (object):
             et, ev, tb = sys.exc_info()
             self.logger.error('got exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+            self.export_error_message = '%s' % ''.join(traceback.format_exception(et, ev, tb))
             self.sendMail('FAILURE IMAGE PROCESSING: CREATE ENTITY ERROR', 'RID: %s\n%s\n' % (rid, ''.join(traceback.format_exception(et, ev, tb))))
             return None
 
