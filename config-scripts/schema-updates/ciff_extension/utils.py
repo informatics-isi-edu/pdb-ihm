@@ -155,6 +155,19 @@ def create_column_if_not_exist(model, schema_name, table_name, column):
     #        print("Dropped column %s.%s.%s" % (schema_name, table_name, column_name))
 
 # ----------------------------------------
+# alter on update fkey if exist
+# if schema_name and table_name are not in the model, throw an error.
+def alter_on_update_fkey_if_exist(model, schema_name, table_name, fkey_name, value):
+
+    schema = model.schemas[schema_name]
+    table = schema.tables[table_name]
+    try:
+        table.foreign_keys[(schema, fkey_name)].alter(on_update=value)
+        print("Altered fkey %s of table %s.%s on_update=%s" % (fkey_name, schema_name, table_name, value))
+    except KeyError:
+        pass
+
+# ----------------------------------------
 # drop fkey if exist
 # if schema_name and table_name are not in the model, throw an error.
 def drop_fkey_if_exist(model, schema_name, table_name, fkey_name):
