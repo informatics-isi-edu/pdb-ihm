@@ -142,8 +142,8 @@ File_Type_rows = [
     {'Name': 'Pseudo Site Coordinates', 'Table Name': 'ihm_pseudo_site', 'Description': 'Details of pseudo sites that may be used in restraints or in model representation'},
     {'Name': 'Chemical Crosslinks with Pseudo Sites', 'Table Name': 'ihm_cross_link_pseudo_site', 'Description': 'Details of pseudo sites involved in crosslinks'},
     {'Name': 'HD Exchange Restraints', 'Table Name': 'ihm_hdx_restraint', 'Description': 'Details of restraint derived from hydrogen-deuterium exchange experiments'},
-    {'Name': 'Generic Angle Restraints Between Molecular Features', 'Table Name': 'ihm_derived_angle_restraint', 'Description': 'Generic angle restraints between features (atoms, residues, non-polymeric entities, pseudo sites)'},
-    {'Name': 'Generic Dihedral Restraints Between Molecular Features', 'Table Name': 'ihm_derived_dihedral_restraint', 'Description': 'Generic dihedral restraints between features (atoms, residues, non-polymeric entities, pseudo sites)'}
+    {'Name': 'Angle Restraints Between Molecular Features', 'Table Name': 'ihm_derived_angle_restraint', 'Description': 'Generic angle restraints between features (atoms, residues, non-polymeric entities, pseudo sites)'},
+    {'Name': 'Dihedral Restraints Between Molecular Features', 'Table Name': 'ihm_derived_dihedral_restraint', 'Description': 'Generic dihedral restraints between features (atoms, residues, non-polymeric entities, pseudo sites)'}
     ]
 
 def main(server_name, catalog_id, credentials):
