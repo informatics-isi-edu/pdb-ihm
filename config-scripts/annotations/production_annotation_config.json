@@ -1255,6 +1255,141 @@
          "value" : {
             "name" : "Dictionary Version"
          }
+      },
+      {
+         "column" : "db_name",
+         "schema" : "PDB",
+         "table" : "struct_ref",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Database Name"
+         }
+      },
+      {
+         "column" : "db_code",
+         "schema" : "PDB",
+         "table" : "struct_ref",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Database Code"
+         }
+      },
+      {
+         "column" : "pdbx_db_accession",
+         "schema" : "PDB",
+         "table" : "struct_ref",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Database Accession Number"
+         }
+      },
+      {
+         "column" : "pdbx_db_isoform",
+         "schema" : "PDB",
+         "table" : "struct_ref",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Database Code Sequence Isoform"
+         }
+      },
+      {
+         "column" : "pdbx_align_begin",
+         "schema" : "PDB",
+         "table" : "struct_ref",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Database Sequence Align Begin"
+         }
+      },
+      {
+         "column" : "pdbx_align_end",
+         "schema" : "PDB",
+         "table" : "struct_ref",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Database Sequence Align End"
+         }
+      },
+      {
+         "column" : "pdbx_seq_one_letter_code",
+         "schema" : "PDB",
+         "table" : "struct_ref",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Sequence One Letter Code"
+         }
+      },
+      {
+         "column" : "db_align_beg",
+         "schema" : "PDB",
+         "table" : "struct_ref_seq",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Database Sequence Align Begin"
+         }
+      },
+      {
+         "column" : "db_align_end",
+         "schema" : "PDB",
+         "table" : "struct_ref_seq",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Database Sequence Align End"
+         }
+      },
+      {
+         "column" : "seq_align_beg",
+         "schema" : "PDB",
+         "table" : "struct_ref_seq",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Sequence Align Begin"
+         }
+      },
+      {
+         "column" : "seq_align_end",
+         "schema" : "PDB",
+         "table" : "struct_ref_seq",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Sequence Align End"
+         }
+      },
+      {
+         "column" : "pdbx_ordinal",
+         "schema" : "PDB",
+         "table" : "struct_ref_seq_dif",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Ordinal"
+         }
+      },
+      {
+         "column" : "seq_num",
+         "schema" : "PDB",
+         "table" : "struct_ref_seq_dif",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Residue Number"
+         }
+      },
+      {
+         "column" : "mon_id",
+         "schema" : "PDB",
+         "table" : "struct_ref_seq_dif",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Residue Name"
+         }
+      },
+      {
+         "column" : "db_mon_id",
+         "schema" : "PDB",
+         "table" : "struct_ref_seq_dif",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Database Residue Name"
+         }
       }
    ],
    "foreign_key_annotations" : [
@@ -2340,16 +2475,6 @@
          }
       },
       {
-         "foreign_key" : "ihm_pseudo_site_feature_feature_id_fkey",
-         "foreign_key_schema" : "PDB",
-         "schema" : "PDB",
-         "table" : "ihm_pseudo_site_feature",
-         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
-         "value" : {
-            "domain_filter_pattern" : "structure_id={{structure_id}}"
-         }
-      },
-      {
          "foreign_key" : "ihm_cross_link_result_parameters_model_id_fkey",
          "foreign_key_schema" : "PDB",
          "schema" : "PDB",
@@ -3321,6 +3446,266 @@
          "uri" : "tag:isrd.isi.edu,2016:foreign-key",
          "value" : {
             "domain_filter_pattern" : "structure_id={{structure_id}}"
+         }
+      },
+      {
+         "foreign_key" : "ihm_cross_link_pseudo_site_ihm_cross_link_restraint_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_cross_link_pseudo_site",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_cross_link_pseudo_site_ihm_model_list_combo2_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_cross_link_pseudo_site",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_cross_link_pseudo_site_ihm_pseudo_site_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_cross_link_pseudo_site",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_ensemble_sub_sample_ihm_ensemble_info_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_ensemble_sub_sample",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_ensemble_sub_sample_ihm_model_group_combo2_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_ensemble_sub_sample",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_ensemble_sub_sample_ihm_external_files_combo2_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_ensemble_sub_sample",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_hdx_restraint_ihm_feature_list_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_hdx_restraint",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_hdx_restraint_ihm_dataset_list_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_hdx_restraint",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_pseudo_site_feature_ihm_pseudo_site_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_pseudo_site_feature",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_pseudo_site_feature_ihm_feature_list_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_pseudo_site_feature",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_related_datasets_ihm_data_transformation_combo2_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_related_datasets",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_derived_angle_restraint_ihm_feature_list_1_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_derived_angle_restraint",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "from_name" : "Ihm Angle Restraint Feature 1",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_derived_angle_restraint_ihm_feature_list_2_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_derived_angle_restraint",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "from_name" : "Ihm Angle Restraint Feature 2",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_derived_angle_restraint_ihm_feature_list_3_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_derived_angle_restraint",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "from_name" : "Ihm Angle Restraint Feature 3",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_derived_angle_restraint_ihm_dataset_list_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_derived_angle_restraint",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_derived_dihedral_restraint_ihm_feature_list_1_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_derived_dihedral_restraint",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "from_name" : "Ihm Dihedral Restraint Feature 1",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_derived_dihedral_restraint_ihm_feature_list_2_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_derived_dihedral_restraint",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "from_name" : "Ihm Dihedral Restraint Feature 2",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_derived_dihedral_restraint_ihm_feature_list_3_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_derived_dihedral_restraint",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "from_name" : "Ihm Dihedral Restraint Feature 3",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_derived_dihedral_restraint_ihm_feature_list_4_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_derived_dihedral_restraint",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "from_name" : "Ihm Dihedral Restraint Feature 4",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_derived_dihedral_restraint_ihm_dataset_list_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_derived_dihedral_restraint",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "struct_ref_entity_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "struct_ref",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "struct_ref_seq_struct_ref_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "struct_ref_seq",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "struct_ref_seq_dif_struct_ref_seq_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "struct_ref_seq_dif",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
          }
       }
    ],
@@ -6006,7 +6391,7 @@
                ],
                [
                   "PDB",
-                  "ihm_cross_link_pseudo_site_model_id_fkey"
+                  "ihm_cross_link_pseudo_site_ihm_model_list_combo2_fkey"
                ]
             ],
             "filter" : "detailed"
@@ -6187,11 +6572,23 @@
                ],
                [
                   "PDB",
-                  "ihm_pseudo_site_feature_feature_id_fkey"
+                  "ihm_pseudo_site_feature_ihm_feature_list_combo1_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_hdx_restraint_ihm_feature_list_combo1_fkey"
                ],
                [
                   "PDB",
                   "ihm_derived_distance_restraint_feature_id_1_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_derived_angle_restraint_ihm_feature_list_1_combo1_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_derived_dihedral_restraint_ihm_feature_list_1_combo1_fkey"
                ],
                [
                   "PDB",
@@ -7536,19 +7933,6 @@
                "RID",
                {
                   "comment" : "A reference to table entry.id.",
-                  "markdown_name" : "Structure Id",
-                  "source" : [
-                     {
-                        "outbound" : [
-                           "PDB",
-                           "pdbx_entry_details_structure_id_fkey"
-                        ]
-                     },
-                     "RID"
-                  ]
-               },
-               {
-                  "comment" : "A reference to table entry.id.",
                   "markdown_name" : "Entry Id",
                   "source" : [
                      {
@@ -7564,19 +7948,6 @@
             ],
             "detailed" : [
                "RID",
-               {
-                  "comment" : "A reference to table entry.id.",
-                  "markdown_name" : "Structure Id",
-                  "source" : [
-                     {
-                        "outbound" : [
-                           "PDB",
-                           "pdbx_entry_details_structure_id_fkey"
-                        ]
-                     },
-                     "RID"
-                  ]
-               },
                {
                   "comment" : "A reference to table entry.id.",
                   "markdown_name" : "Entry Id",
@@ -7607,19 +7978,6 @@
                ]
             ],
             "entry" : [
-               {
-                  "comment" : "A reference to table entry.id.",
-                  "markdown_name" : "Structure Id",
-                  "source" : [
-                     {
-                        "outbound" : [
-                           "PDB",
-                           "pdbx_entry_details_structure_id_fkey"
-                        ]
-                     },
-                     "RID"
-                  ]
-               },
                {
                   "comment" : "A reference to table entry.id.",
                   "markdown_name" : "Entry Id",
@@ -7695,6 +8053,19 @@
                      },
                      "RID"
                   ]
+               },
+               {
+                  "comment" : "Identifier corresponding to the transformation matrix to be applied to the derived dataset in order to transform it to the primary dataset",
+                  "markdown_name" : "Data Transformation Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_related_datasets_ihm_data_transformation_combo2_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
                }
             ],
             "detailed" : [
@@ -7733,6 +8104,19 @@
                         "outbound" : [
                            "PDB",
                            "ihm_related_datasets_dataset_list_id_primary_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier corresponding to the transformation matrix to be applied to the derived dataset in order to transform it to the primary dataset",
+                  "markdown_name" : "Data Transformation Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_related_datasets_ihm_data_transformation_combo2_fkey"
                         ]
                      },
                      "RID"
@@ -7788,6 +8172,19 @@
                         "outbound" : [
                            "PDB",
                            "ihm_related_datasets_dataset_list_id_primary_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier corresponding to the transformation matrix to be applied to the derived dataset in order to transform it to the primary dataset",
+                  "markdown_name" : "Data Transformation Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_related_datasets_ihm_data_transformation_combo2_fkey"
                         ]
                      },
                      "RID"
@@ -8216,6 +8613,18 @@
                ],
                [
                   "PDB",
+                  "struct_ref_structure_id_fkey"
+               ],
+               [
+                  "PDB",
+                  "struct_ref_seq_structure_id_fkey"
+               ],
+               [
+                  "PDB",
+                  "struct_ref_seq_dif_structure_id_fkey"
+               ],
+               [
+                  "PDB",
                   "entity_poly_structure_id_fkey"
                ],
                [
@@ -8245,6 +8654,10 @@
                [
                   "PDB",
                   "ihm_dataset_group_link_structure_id_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_data_transformation_structure_id_fkey"
                ],
                [
                   "PDB",
@@ -8360,6 +8773,10 @@
                ],
                [
                   "PDB",
+                  "ihm_ensemble_sub_sample_structure_id_fkey"
+               ],
+               [
+                  "PDB",
                   "ihm_localization_density_files_structure_id_fkey"
                ],
                [
@@ -8440,11 +8857,19 @@
                ],
                [
                   "PDB",
+                  "ihm_pseudo_site_structure_id_fkey"
+               ],
+               [
+                  "PDB",
                   "ihm_cross_link_list_structure_id_fkey"
                ],
                [
                   "PDB",
                   "ihm_cross_link_restraint_structure_id_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_cross_link_pseudo_site_structure_id_fkey"
                ],
                [
                   "PDB",
@@ -8461,6 +8886,10 @@
                [
                   "PDB",
                   "ihm_hydroxyl_radical_fp_restraint_structure_id_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_hdx_restraint_structure_id_fkey"
                ],
                [
                   "PDB",
@@ -8492,6 +8921,14 @@
                ],
                [
                   "PDB",
+                  "ihm_derived_angle_restraint_structure_id_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_derived_dihedral_restraint_structure_id_fkey"
+               ],
+               [
+                  "PDB",
                   "ihm_geometric_object_distance_restraint_structure_id_fkey"
                ],
                [
@@ -8501,10 +8938,6 @@
                [
                   "PDB",
                   "pdbx_entity_poly_na_type_structure_id_fkey"
-               ],
-               [
-                  "PDB",
-                  "pdbx_entry_details_structure_id_fkey"
                ]
             ],
             "filter" : "detailed"
@@ -8964,6 +9397,10 @@
                ],
                [
                   "PDB",
+                  "ihm_hdx_restraint_ihm_dataset_list_combo1_fkey"
+               ],
+               [
+                  "PDB",
                   "ihm_hydroxyl_radical_fp_restraint_dataset_list_id_fkey"
                ],
                [
@@ -8977,6 +9414,14 @@
                [
                   "PDB",
                   "ihm_derived_distance_restraint_dataset_list_id_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_derived_angle_restraint_ihm_dataset_list_combo1_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_derived_dihedral_restraint_ihm_dataset_list_combo1_fkey"
                ],
                [
                   "PDB",
@@ -10225,6 +10670,8 @@
                "distance_upper_limit",
                "distance_lower_limit_esd",
                "distance_upper_limit_esd",
+               "distance_threshold_mean",
+               "distance_threshold_esd",
                "probability",
                "random_exclusion_fraction",
                "mic_value",
@@ -10310,6 +10757,8 @@
                "distance_upper_limit",
                "distance_lower_limit_esd",
                "distance_upper_limit_esd",
+               "distance_threshold_mean",
+               "distance_threshold_esd",
                "probability",
                "random_exclusion_fraction",
                "mic_value",
@@ -10408,6 +10857,8 @@
                "distance_upper_limit",
                "distance_lower_limit_esd",
                "distance_upper_limit_esd",
+               "distance_threshold_mean",
+               "distance_threshold_esd",
                "probability",
                "random_exclusion_fraction",
                "mic_value",
@@ -10424,6 +10875,1506 @@
                      "RID"
                   ]
                }
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_derived_angle_restraint",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "comment_display" : {
+               "*" : {
+                  "table_comment_display" : "inline"
+               }
+            },
+            "name" : "Angle Restraints Between Molecular Features"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_derived_angle_restraint",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_angle_restraint_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "group_id",
+               {
+                  "comment" : "The feature identifier for the first partner in the angle restraint",
+                  "markdown_name" : "Feature Id 1",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_angle_restraint_ihm_feature_list_1_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "The feature identifier for the second partner in the angle restraint",
+                  "markdown_name" : "Feature Id 2",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_angle_restraint_ihm_feature_list_2_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "The feature identifier for the third partner in the angle restraint",
+                  "markdown_name" : "Feature Id 3",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_angle_restraint_ihm_feature_list_3_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               [
+                  "PDB",
+                  "ihm_derived_angle_restraint_group_conditionality_fkey"
+               ],
+               "angle_lower_limit",
+               "angle_upper_limit",
+               "angle_lower_limit_esd",
+               "angle_upper_limit_esd",
+               "probability",
+               [
+                  "PDB",
+                  "ihm_derived_angle_restraint_restraint_type_fkey"
+               ],
+               "angle_threshold_mean",
+               "angle_threshold_mean_esd",
+               {
+                  "comment" : "Identifier to the input data from which the angle restraint is derived",
+                  "markdown_name" : "Dataset List Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_angle_restraint_ihm_dataset_list_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
+                  "markdown_name" : "Uploaded Restraint File",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_angle_restraint_Entry_Related_File_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               }
+            ],
+            "detailed" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_angle_restraint_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "group_id",
+               {
+                  "comment" : "The feature identifier for the first partner in the angle restraint",
+                  "markdown_name" : "Feature Id 1",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_angle_restraint_ihm_feature_list_1_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "The feature identifier for the second partner in the angle restraint",
+                  "markdown_name" : "Feature Id 2",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_angle_restraint_ihm_feature_list_2_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "The feature identifier for the third partner in the angle restraint",
+                  "markdown_name" : "Feature Id 3",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_angle_restraint_ihm_feature_list_3_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               [
+                  "PDB",
+                  "ihm_derived_angle_restraint_group_conditionality_fkey"
+               ],
+               "angle_lower_limit",
+               "angle_upper_limit",
+               "angle_lower_limit_esd",
+               "angle_upper_limit_esd",
+               "probability",
+               [
+                  "PDB",
+                  "ihm_derived_angle_restraint_restraint_type_fkey"
+               ],
+               "angle_threshold_mean",
+               "angle_threshold_mean_esd",
+               {
+                  "comment" : "Identifier to the input data from which the angle restraint is derived",
+                  "markdown_name" : "Dataset List Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_angle_restraint_ihm_dataset_list_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
+                  "markdown_name" : "Uploaded Restraint File",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_angle_restraint_Entry_Related_File_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               [
+                  "PDB",
+                  "ihm_derived_angle_restraint_RCB_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_derived_angle_restraint_RMB_fkey"
+               ],
+               "RCT",
+               "RMT",
+               [
+                  "PDB",
+                  "ihm_derived_angle_restraint_Owner_fkey"
+               ]
+            ],
+            "entry" : [
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_angle_restraint_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "group_id",
+               {
+                  "comment" : "The feature identifier for the first partner in the angle restraint",
+                  "markdown_name" : "Feature Id 1",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_angle_restraint_ihm_feature_list_1_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "The feature identifier for the second partner in the angle restraint",
+                  "markdown_name" : "Feature Id 2",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_angle_restraint_ihm_feature_list_2_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "The feature identifier for the third partner in the angle restraint",
+                  "markdown_name" : "Feature Id 3",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_angle_restraint_ihm_feature_list_3_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               [
+                  "PDB",
+                  "ihm_derived_angle_restraint_group_conditionality_fkey"
+               ],
+               "angle_lower_limit",
+               "angle_upper_limit",
+               "angle_lower_limit_esd",
+               "angle_upper_limit_esd",
+               "probability",
+               [
+                  "PDB",
+                  "ihm_derived_angle_restraint_restraint_type_fkey"
+               ],
+               "angle_threshold_mean",
+               "angle_threshold_mean_esd",
+               {
+                  "comment" : "Identifier to the input data from which the angle restraint is derived",
+                  "markdown_name" : "Dataset List Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_angle_restraint_ihm_dataset_list_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
+                  "markdown_name" : "Uploaded Restraint File",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_angle_restraint_Entry_Related_File_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               }
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_derived_dihedral_restraint",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "comment_display" : {
+               "*" : {
+                  "table_comment_display" : "inline"
+               }
+            },
+            "name" : "Dihedral Restraints Between Molecular Features"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_derived_dihedral_restraint",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_dihedral_restraint_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "group_id",
+               {
+                  "comment" : "The feature identifier for the first partner in the dihedral restraint",
+                  "markdown_name" : "Feature Id 1",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_dihedral_restraint_ihm_feature_list_1_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "The feature identifier for the second partner in the dihedral restraint",
+                  "markdown_name" : "Feature Id 2",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_dihedral_restraint_ihm_feature_list_2_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "The feature identifier for the third partner in the dihedral restraint",
+                  "markdown_name" : "Feature Id 3",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_dihedral_restraint_ihm_feature_list_3_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "The feature identifier for the fourth partner in the dihedral restraint",
+                  "markdown_name" : "Feature Id 4",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_dihedral_restraint_ihm_feature_list_4_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               [
+                  "PDB",
+                  "ihm_derived_dihedral_restraint_group_conditionality_fkey"
+               ],
+               "dihedral_lower_limit",
+               "dihedral_upper_limit",
+               "dihedral_lower_limit_esd",
+               "dihedral_upper_limit_esd",
+               "probability",
+               [
+                  "PDB",
+                  "ihm_derived_dihedral_restraint_restraint_type_fkey"
+               ],
+               "dihedral_threshold_mean",
+               "dihedral_threshold_mean_esd",
+               {
+                  "comment" : "Identifier to the input data from which the dihedral restraint is derived",
+                  "markdown_name" : "Dataset List Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_dihedral_restraint_ihm_dataset_list_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
+                  "markdown_name" : "Uploaded Restraint File",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_dihedral_restraint_Entry_Related_File_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               }
+            ],
+            "detailed" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_dihedral_restraint_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "group_id",
+               {
+                  "comment" : "The feature identifier for the first partner in the dihedral restraint",
+                  "markdown_name" : "Feature Id 1",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_dihedral_restraint_ihm_feature_list_1_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "The feature identifier for the second partner in the dihedral restraint",
+                  "markdown_name" : "Feature Id 2",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_dihedral_restraint_ihm_feature_list_2_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "The feature identifier for the third partner in the dihedral restraint",
+                  "markdown_name" : "Feature Id 3",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_dihedral_restraint_ihm_feature_list_3_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "The feature identifier for the fourth partner in the dihedral restraint",
+                  "markdown_name" : "Feature Id 4",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_dihedral_restraint_ihm_feature_list_4_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               [
+                  "PDB",
+                  "ihm_derived_dihedral_restraint_group_conditionality_fkey"
+               ],
+               "dihedral_lower_limit",
+               "dihedral_upper_limit",
+               "dihedral_lower_limit_esd",
+               "dihedral_upper_limit_esd",
+               "probability",
+               [
+                  "PDB",
+                  "ihm_derived_dihedral_restraint_restraint_type_fkey"
+               ],
+               "dihedral_threshold_mean",
+               "dihedral_threshold_mean_esd",
+               {
+                  "comment" : "Identifier to the input data from which the dihedral restraint is derived",
+                  "markdown_name" : "Dataset List Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_dihedral_restraint_ihm_dataset_list_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
+                  "markdown_name" : "Uploaded Restraint File",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_dihedral_restraint_Entry_Related_File_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               [
+                  "PDB",
+                  "ihm_derived_dihedral_restraint_RCB_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_derived_dihedral_restraint_RMB_fkey"
+               ],
+               "RCT",
+               "RMT",
+               [
+                  "PDB",
+                  "ihm_derived_dihedral_restraint_Owner_fkey"
+               ]
+            ],
+            "entry" : [
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_dihedral_restraint_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "group_id",
+               {
+                  "comment" : "The feature identifier for the first partner in the dihedral restraint",
+                  "markdown_name" : "Feature Id 1",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_dihedral_restraint_ihm_feature_list_1_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "The feature identifier for the second partner in the dihedral restraint",
+                  "markdown_name" : "Feature Id 2",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_dihedral_restraint_ihm_feature_list_2_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "The feature identifier for the third partner in the dihedral restraint",
+                  "markdown_name" : "Feature Id 3",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_dihedral_restraint_ihm_feature_list_3_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "The feature identifier for the fourth partner in the dihedral restraint",
+                  "markdown_name" : "Feature Id 4",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_dihedral_restraint_ihm_feature_list_4_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               [
+                  "PDB",
+                  "ihm_derived_dihedral_restraint_group_conditionality_fkey"
+               ],
+               "dihedral_lower_limit",
+               "dihedral_upper_limit",
+               "dihedral_lower_limit_esd",
+               "dihedral_upper_limit_esd",
+               "probability",
+               [
+                  "PDB",
+                  "ihm_derived_dihedral_restraint_restraint_type_fkey"
+               ],
+               "dihedral_threshold_mean",
+               "dihedral_threshold_mean_esd",
+               {
+                  "comment" : "Identifier to the input data from which the dihedral restraint is derived",
+                  "markdown_name" : "Dataset List Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_dihedral_restraint_ihm_dataset_list_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
+                  "markdown_name" : "Uploaded Restraint File",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_derived_dihedral_restraint_Entry_Related_File_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               }
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_hdx_restraint",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "comment_display" : {
+               "*" : {
+                  "table_comment_display" : "inline"
+               }
+            },
+            "name" : "HD Exchange Restraints"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_hdx_restraint",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_hdx_restraint_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               {
+                  "comment" : "An identifier for the peptide / residue feature",
+                  "markdown_name" : "Feature Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_hdx_restraint_ihm_feature_list_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "protection_factor",
+               {
+                  "comment" : "Identifier to the H/D exchange input data from which the restraints are derived",
+                  "markdown_name" : "Dataset List Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_hdx_restraint_ihm_dataset_list_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "details",
+               {
+                  "comment" : "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
+                  "markdown_name" : "Uploaded Restraint File",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_hdx_restraint_Entry_Related_File_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               }
+            ],
+            "detailed" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_hdx_restraint_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               {
+                  "comment" : "An identifier for the peptide / residue feature",
+                  "markdown_name" : "Feature Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_hdx_restraint_ihm_feature_list_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "protection_factor",
+               {
+                  "comment" : "Identifier to the H/D exchange input data from which the restraints are derived",
+                  "markdown_name" : "Dataset List Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_hdx_restraint_ihm_dataset_list_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "details",
+               {
+                  "comment" : "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
+                  "markdown_name" : "Uploaded Restraint File",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_hdx_restraint_Entry_Related_File_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               [
+                  "PDB",
+                  "ihm_hdx_restraint_RCB_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_hdx_restraint_RMB_fkey"
+               ],
+               "RCT",
+               "RMT",
+               [
+                  "PDB",
+                  "ihm_hdx_restraint_Owner_fkey"
+               ]
+            ],
+            "entry" : [
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_hdx_restraint_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               {
+                  "comment" : "An identifier for the peptide / residue feature",
+                  "markdown_name" : "Feature Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_hdx_restraint_ihm_feature_list_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "protection_factor",
+               {
+                  "comment" : "Identifier to the H/D exchange input data from which the restraints are derived",
+                  "markdown_name" : "Dataset List Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_hdx_restraint_ihm_dataset_list_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "details",
+               {
+                  "comment" : "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
+                  "markdown_name" : "Uploaded Restraint File",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_hdx_restraint_Entry_Related_File_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               }
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_data_transformation",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "comment_display" : {
+               "*" : {
+                  "table_comment_display" : "inline"
+               }
+            },
+            "name" : "Data Transformation"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_data_transformation",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_data_transformation_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "rot_matrix[1][1]",
+               "rot_matrix[2][1]",
+               "rot_matrix[3][1]",
+               "rot_matrix[1][2]",
+               "rot_matrix[2][2]",
+               "rot_matrix[3][2]",
+               "rot_matrix[1][3]",
+               "rot_matrix[2][3]",
+               "rot_matrix[3][3]",
+               "tr_vector[1]",
+               "tr_vector[2]",
+               "tr_vector[3]"
+            ],
+            "detailed" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_data_transformation_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "rot_matrix[1][1]",
+               "rot_matrix[2][1]",
+               "rot_matrix[3][1]",
+               "rot_matrix[1][2]",
+               "rot_matrix[2][2]",
+               "rot_matrix[3][2]",
+               "rot_matrix[1][3]",
+               "rot_matrix[2][3]",
+               "rot_matrix[3][3]",
+               "tr_vector[1]",
+               "tr_vector[2]",
+               "tr_vector[3]",
+               [
+                  "PDB",
+                  "ihm_data_transformation_RCB_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_data_transformation_RMB_fkey"
+               ],
+               "RCT",
+               "RMT",
+               [
+                  "PDB",
+                  "ihm_data_transformation_Owner_fkey"
+               ]
+            ],
+            "entry" : [
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_data_transformation_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "rot_matrix[1][1]",
+               "rot_matrix[2][1]",
+               "rot_matrix[3][1]",
+               "rot_matrix[1][2]",
+               "rot_matrix[2][2]",
+               "rot_matrix[3][2]",
+               "rot_matrix[1][3]",
+               "rot_matrix[2][3]",
+               "rot_matrix[3][3]",
+               "tr_vector[1]",
+               "tr_vector[2]",
+               "tr_vector[3]"
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_data_transformation",
+         "uri" : "tag:isrd.isi.edu,2016:visible-foreign-keys",
+         "value" : {
+            "detailed" : [
+               [
+                  "PDB",
+                  "ihm_related_datasets_ihm_data_transformation_combo2_fkey"
+               ]
+            ],
+            "filter" : "detailed"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "struct_ref",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "comment_display" : {
+               "*" : {
+                  "table_comment_display" : "inline"
+               }
+            },
+            "name" : "Reference sequence information"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "struct_ref",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "struct_ref_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               {
+                  "comment" : "A reference to table entity.id.",
+                  "markdown_name" : "Entity Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "struct_ref_entity_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               [
+                  "PDB",
+                  "struct_ref_db_name_fkey"
+               ],
+               "db_code",
+               "pdbx_db_accession",
+               "pdbx_db_isoform",
+               "pdbx_align_begin",
+               "pdbx_align_end",
+               "pdbx_seq_one_letter_code",
+               "details"
+            ],
+            "detailed" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "struct_ref_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               {
+                  "comment" : "A reference to table entity.id.",
+                  "markdown_name" : "Entity Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "struct_ref_entity_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               [
+                  "PDB",
+                  "struct_ref_db_name_fkey"
+               ],
+               "db_code",
+               "pdbx_db_accession",
+               "pdbx_db_isoform",
+               "pdbx_align_begin",
+               "pdbx_align_end",
+               "pdbx_seq_one_letter_code",
+               "details",
+               [
+                  "PDB",
+                  "struct_ref_RCB_fkey"
+               ],
+               [
+                  "PDB",
+                  "struct_ref_RMB_fkey"
+               ],
+               "RCT",
+               "RMT",
+               [
+                  "PDB",
+                  "struct_ref_Owner_fkey"
+               ]
+            ],
+            "entry" : [
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "struct_ref_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               {
+                  "comment" : "A reference to table entity.id.",
+                  "markdown_name" : "Entity Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "struct_ref_entity_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               [
+                  "PDB",
+                  "struct_ref_db_name_fkey"
+               ],
+               "db_code",
+               "pdbx_db_accession",
+               "pdbx_db_isoform",
+               "pdbx_align_begin",
+               "pdbx_align_end",
+               "pdbx_seq_one_letter_code",
+               "details"
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "struct_ref",
+         "uri" : "tag:isrd.isi.edu,2016:visible-foreign-keys",
+         "value" : {
+            "detailed" : [
+               [
+                  "PDB",
+                  "struct_ref_seq_struct_ref_combo1_fkey"
+               ]
+            ],
+            "filter" : "detailed"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "struct_ref_seq",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "comment_display" : {
+               "*" : {
+                  "table_comment_display" : "inline"
+               }
+            },
+            "name" : "Alignment information with the reference sequence"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "struct_ref_seq",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "struct_ref_seq_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "align_id",
+               {
+                  "comment" : "A reference to table struct_ref.id.",
+                  "markdown_name" : "Reference Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "struct_ref_seq_struct_ref_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "db_align_beg",
+               "db_align_end",
+               "seq_align_beg",
+               "seq_align_end",
+               "details"
+            ],
+            "detailed" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "struct_ref_seq_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "align_id",
+               {
+                  "comment" : "A reference to table struct_ref.id.",
+                  "markdown_name" : "Reference Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "struct_ref_seq_struct_ref_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "db_align_beg",
+               "db_align_end",
+               "seq_align_beg",
+               "seq_align_end",
+               "details",
+               [
+                  "PDB",
+                  "struct_ref_seq_RCB_fkey"
+               ],
+               [
+                  "PDB",
+                  "struct_ref_seq_RMB_fkey"
+               ],
+               "RCT",
+               "RMT",
+               [
+                  "PDB",
+                  "struct_ref_seq_Owner_fkey"
+               ]
+            ],
+            "entry" : [
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "struct_ref_seq_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "align_id",
+               {
+                  "comment" : "A reference to table struct_ref.id.",
+                  "markdown_name" : "Reference Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "struct_ref_seq_struct_ref_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "db_align_beg",
+               "db_align_end",
+               "seq_align_beg",
+               "seq_align_end",
+               "details"
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "struct_ref_seq",
+         "uri" : "tag:isrd.isi.edu,2016:visible-foreign-keys",
+         "value" : {
+            "detailed" : [
+               [
+                  "PDB",
+                  "struct_ref_seq_dif_struct_ref_seq_combo1_fkey"
+               ]
+            ],
+            "filter" : "detailed"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "struct_ref_seq_dif",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "comment_display" : {
+               "*" : {
+                  "table_comment_display" : "inline"
+               }
+            },
+            "name" : "Point differences in the alignment with the reference sequence"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "struct_ref_seq_dif",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "struct_ref_seq_dif_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "pdbx_ordinal",
+               {
+                  "comment" : "A reference to table struct_ref_seq.align_id.",
+                  "markdown_name" : "Align Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "struct_ref_seq_dif_struct_ref_seq_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "seq_num",
+               "mon_id",
+               "db_mon_id",
+               [
+                  "PDB",
+                  "struct_ref_seq_dif_details_fkey"
+               ]
+            ],
+            "detailed" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "struct_ref_seq_dif_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "pdbx_ordinal",
+               {
+                  "comment" : "A reference to table struct_ref_seq.align_id.",
+                  "markdown_name" : "Align Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "struct_ref_seq_dif_struct_ref_seq_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "seq_num",
+               "mon_id",
+               "db_mon_id",
+               [
+                  "PDB",
+                  "struct_ref_seq_dif_details_fkey"
+               ],
+               [
+                  "PDB",
+                  "struct_ref_seq_dif_RCB_fkey"
+               ],
+               [
+                  "PDB",
+                  "struct_ref_seq_dif_RMB_fkey"
+               ],
+               "RCT",
+               "RMT",
+               [
+                  "PDB",
+                  "struct_ref_seq_dif_Owner_fkey"
+               ]
+            ],
+            "entry" : [
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "struct_ref_seq_dif_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "pdbx_ordinal",
+               {
+                  "comment" : "A reference to table struct_ref_seq.align_id.",
+                  "markdown_name" : "Align Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "struct_ref_seq_dif_struct_ref_seq_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "seq_num",
+               "mon_id",
+               "db_mon_id",
+               [
+                  "PDB",
+                  "struct_ref_seq_dif_details_fkey"
+               ]
             ]
          }
       },
@@ -11668,7 +13619,7 @@
                ],
                [
                   "PDB",
-                  "ihm_ensemble_sub_sample_file_id_fkey"
+                  "ihm_ensemble_sub_sample_ihm_external_files_combo2_fkey"
                ],
                [
                   "PDB",
@@ -13568,7 +15519,7 @@
                      {
                         "outbound" : [
                            "PDB",
-                           "ihm_pseudo_site_feature_feature_id_fkey"
+                           "ihm_pseudo_site_feature_ihm_feature_list_combo1_fkey"
                         ]
                      },
                      "RID"
@@ -13581,7 +15532,7 @@
                      {
                         "outbound" : [
                            "PDB",
-                           "ihm_pseudo_site_feature_pseudo_site_id_fkey"
+                           "ihm_pseudo_site_feature_ihm_pseudo_site_combo1_fkey"
                         ]
                      },
                      "RID"
@@ -13623,7 +15574,7 @@
                      {
                         "outbound" : [
                            "PDB",
-                           "ihm_pseudo_site_feature_feature_id_fkey"
+                           "ihm_pseudo_site_feature_ihm_feature_list_combo1_fkey"
                         ]
                      },
                      "RID"
@@ -13636,7 +15587,7 @@
                      {
                         "outbound" : [
                            "PDB",
-                           "ihm_pseudo_site_feature_pseudo_site_id_fkey"
+                           "ihm_pseudo_site_feature_ihm_pseudo_site_combo1_fkey"
                         ]
                      },
                      "RID"
@@ -13691,7 +15642,7 @@
                      {
                         "outbound" : [
                            "PDB",
-                           "ihm_pseudo_site_feature_feature_id_fkey"
+                           "ihm_pseudo_site_feature_ihm_feature_list_combo1_fkey"
                         ]
                      },
                      "RID"
@@ -13704,7 +15655,599 @@
                      {
                         "outbound" : [
                            "PDB",
-                           "ihm_pseudo_site_feature_pseudo_site_id_fkey"
+                           "ihm_pseudo_site_feature_ihm_pseudo_site_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               }
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_cross_link_pseudo_site",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "comment_display" : {
+               "*" : {
+                  "table_comment_display" : "inline"
+               }
+            },
+            "name" : "Chemical Crosslinks with Pseudo Sites"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_cross_link_pseudo_site",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_cross_link_pseudo_site_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               {
+                  "comment" : "A reference to table ihm_cross_link_restraint.id.",
+                  "markdown_name" : "Restraint Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_cross_link_pseudo_site_ihm_cross_link_restraint_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "A reference to table ihm_model_list.model_id.",
+                  "markdown_name" : "Model Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_cross_link_pseudo_site_ihm_model_list_combo2_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "A reference to table ihm_pseudo_site.id.",
+                  "markdown_name" : "Pseudo Site Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_cross_link_pseudo_site_ihm_pseudo_site_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               [
+                  "PDB",
+                  "ihm_cross_link_pseudo_site_cross_link_partner_fkey"
+               ],
+               {
+                  "comment" : "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
+                  "markdown_name" : "Uploaded Restraint File",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_cross_link_pseudo_site_Entry_Related_File_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               }
+            ],
+            "detailed" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_cross_link_pseudo_site_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               {
+                  "comment" : "A reference to table ihm_cross_link_restraint.id.",
+                  "markdown_name" : "Restraint Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_cross_link_pseudo_site_ihm_cross_link_restraint_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "A reference to table ihm_model_list.model_id.",
+                  "markdown_name" : "Model Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_cross_link_pseudo_site_ihm_model_list_combo2_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "A reference to table ihm_pseudo_site.id.",
+                  "markdown_name" : "Pseudo Site Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_cross_link_pseudo_site_ihm_pseudo_site_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               [
+                  "PDB",
+                  "ihm_cross_link_pseudo_site_cross_link_partner_fkey"
+               ],
+               {
+                  "comment" : "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
+                  "markdown_name" : "Uploaded Restraint File",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_cross_link_pseudo_site_Entry_Related_File_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               [
+                  "PDB",
+                  "ihm_cross_link_pseudo_site_RCB_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_cross_link_pseudo_site_RMB_fkey"
+               ],
+               "RCT",
+               "RMT",
+               [
+                  "PDB",
+                  "ihm_cross_link_pseudo_site_Owner_fkey"
+               ]
+            ],
+            "entry" : [
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_cross_link_pseudo_site_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               {
+                  "comment" : "A reference to table ihm_cross_link_restraint.id.",
+                  "markdown_name" : "Restraint Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_cross_link_pseudo_site_ihm_cross_link_restraint_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "A reference to table ihm_model_list.model_id.",
+                  "markdown_name" : "Model Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_cross_link_pseudo_site_ihm_model_list_combo2_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "A reference to table ihm_pseudo_site.id.",
+                  "markdown_name" : "Pseudo Site Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_cross_link_pseudo_site_ihm_pseudo_site_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               [
+                  "PDB",
+                  "ihm_cross_link_pseudo_site_cross_link_partner_fkey"
+               ]
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_pseudo_site",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "comment_display" : {
+               "*" : {
+                  "table_comment_display" : "inline"
+               }
+            },
+            "name" : "Pseudo Site Coordinates"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_pseudo_site",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_pseudo_site_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "Cartn_x",
+               "Cartn_y",
+               "Cartn_z",
+               "radius",
+               "description",
+               {
+                  "comment" : "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
+                  "markdown_name" : "Uploaded Restraint File",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_pseudo_site_Entry_Related_File_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               }
+            ],
+            "detailed" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_pseudo_site_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "Cartn_x",
+               "Cartn_y",
+               "Cartn_z",
+               "radius",
+               "description",
+               {
+                  "comment" : "A reference to the uploaded restraint file in the table Entry_Related_File.id.",
+                  "markdown_name" : "Uploaded Restraint File",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_pseudo_site_Entry_Related_File_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               [
+                  "PDB",
+                  "ihm_pseudo_site_RCB_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_pseudo_site_RMB_fkey"
+               ],
+               "RCT",
+               "RMT",
+               [
+                  "PDB",
+                  "ihm_pseudo_site_Owner_fkey"
+               ]
+            ],
+            "entry" : [
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_pseudo_site_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "Cartn_x",
+               "Cartn_y",
+               "Cartn_z",
+               "radius",
+               "description"
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_pseudo_site",
+         "uri" : "tag:isrd.isi.edu,2016:visible-foreign-keys",
+         "value" : {
+            "detailed" : [
+               [
+                  "PDB",
+                  "ihm_cross_link_pseudo_site_ihm_pseudo_site_combo1_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_pseudo_site_feature_ihm_pseudo_site_combo1_fkey"
+               ]
+            ],
+            "filter" : "detailed"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_ensemble_sub_sample",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "comment_display" : {
+               "*" : {
+                  "table_comment_display" : "inline"
+               }
+            },
+            "name" : "Ensembles with Sub-samples"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_ensemble_sub_sample",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_ensemble_sub_sample_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "sample_name",
+               {
+                  "comment" : "A reference to table ihm_ensemble_info.ensemble_id.",
+                  "markdown_name" : "Ensemble Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_ensemble_sub_sample_ihm_ensemble_info_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "num_models",
+               "num_models_deposited",
+               {
+                  "comment" : "A reference to table ihm_model_group.id.",
+                  "markdown_name" : "Model Group Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_ensemble_sub_sample_ihm_model_group_combo2_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "A reference to table ihm_external_files.id.",
+                  "markdown_name" : "File Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_ensemble_sub_sample_ihm_external_files_combo2_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               }
+            ],
+            "detailed" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_ensemble_sub_sample_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "sample_name",
+               {
+                  "comment" : "A reference to table ihm_ensemble_info.ensemble_id.",
+                  "markdown_name" : "Ensemble Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_ensemble_sub_sample_ihm_ensemble_info_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "num_models",
+               "num_models_deposited",
+               {
+                  "comment" : "A reference to table ihm_model_group.id.",
+                  "markdown_name" : "Model Group Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_ensemble_sub_sample_ihm_model_group_combo2_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "A reference to table ihm_external_files.id.",
+                  "markdown_name" : "File Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_ensemble_sub_sample_ihm_external_files_combo2_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               [
+                  "PDB",
+                  "ihm_ensemble_sub_sample_RCB_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_ensemble_sub_sample_RMB_fkey"
+               ],
+               "RCT",
+               "RMT",
+               [
+                  "PDB",
+                  "ihm_ensemble_sub_sample_Owner_fkey"
+               ]
+            ],
+            "entry" : [
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_ensemble_sub_sample_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "sample_name",
+               {
+                  "comment" : "A reference to table ihm_ensemble_info.ensemble_id.",
+                  "markdown_name" : "Ensemble Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_ensemble_sub_sample_ihm_ensemble_info_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "num_models",
+               "num_models_deposited",
+               {
+                  "comment" : "A reference to table ihm_model_group.id.",
+                  "markdown_name" : "Model Group Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_ensemble_sub_sample_ihm_model_group_combo2_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "A reference to table ihm_external_files.id.",
+                  "markdown_name" : "File Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_ensemble_sub_sample_ihm_external_files_combo2_fkey"
                         ]
                      },
                      "RID"
@@ -14220,11 +16763,11 @@
                ],
                [
                   "PDB",
-                  "ihm_ensemble_info_ensemble_sub_sample_flag_fkey"
+                  "ihm_ensemble_info_sub_sample_flag_fkey"
                ],
                [
                   "PDB",
-                  "ihm_ensemble_info_ensemble_sub_sampling_type_fkey"
+                  "ihm_ensemble_info_sub_sampling_type_fkey"
                ],
                "num_ensemble_models",
                "num_ensemble_models_deposited",
@@ -14297,11 +16840,11 @@
                ],
                [
                   "PDB",
-                  "ihm_ensemble_info_ensemble_sub_sample_flag_fkey"
+                  "ihm_ensemble_info_sub_sample_flag_fkey"
                ],
                [
                   "PDB",
-                  "ihm_ensemble_info_ensemble_sub_sampling_type_fkey"
+                  "ihm_ensemble_info_sub_sampling_type_fkey"
                ],
                "num_ensemble_models",
                "num_ensemble_models_deposited",
@@ -14387,11 +16930,11 @@
                ],
                [
                   "PDB",
-                  "ihm_ensemble_info_ensemble_sub_sample_flag_fkey"
+                  "ihm_ensemble_info_sub_sample_flag_fkey"
                ],
                [
                   "PDB",
-                  "ihm_ensemble_info_ensemble_sub_sampling_type_fkey"
+                  "ihm_ensemble_info_sub_sampling_type_fkey"
                ],
                "num_ensemble_models",
                "num_ensemble_models_deposited",
@@ -14421,7 +16964,7 @@
             "detailed" : [
                [
                   "PDB",
-                  "ihm_ensemble_sub_sample_ensemble_id_fkey"
+                  "ihm_ensemble_sub_sample_ihm_ensemble_info_combo1_fkey"
                ],
                [
                   "PDB",
@@ -16850,6 +19393,10 @@
                ],
                [
                   "PDB",
+                  "struct_ref_entity_combo1_fkey"
+               ],
+               [
+                  "PDB",
                   "entity_poly_entity_id_fkey"
                ],
                [
@@ -18309,7 +20856,7 @@
                ],
                [
                   "PDB",
-                  "ihm_ensemble_sub_sample_model_group_id_fkey"
+                  "ihm_ensemble_sub_sample_ihm_model_group_combo2_fkey"
                ]
             ],
             "filter" : "detailed"
@@ -19012,7 +21559,7 @@
             "detailed" : [
                [
                   "PDB",
-                  "ihm_cross_link_pseudo_site_restraint_id_fkey"
+                  "ihm_cross_link_pseudo_site_ihm_cross_link_restraint_combo1_fkey"
                ],
                [
                   "PDB",

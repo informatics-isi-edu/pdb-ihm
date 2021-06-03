@@ -1244,6 +1244,141 @@
             "value": {
                 "name": "Dictionary Version"
             }
+        },
+        {     
+            "column": "db_name",
+            "schema": "PDB",
+            "table": "struct_ref",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Database Name"
+            }     
+        },
+        {     
+            "column": "db_code",
+            "schema": "PDB",
+            "table": "struct_ref",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Database Code"
+            }     
+        },
+        {     
+            "column": "pdbx_db_accession",
+            "schema": "PDB",
+            "table": "struct_ref",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Database Accession Number"
+            }     
+        },
+        {
+            "column": "pdbx_db_isoform",
+            "schema": "PDB",
+            "table": "struct_ref",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Database Code Sequence Isoform"
+            }
+        },
+        {
+            "column": "pdbx_align_begin",
+            "schema": "PDB",
+            "table": "struct_ref",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Database Sequence Align Begin"
+            }
+        },
+        {
+            "column": "pdbx_align_end",
+            "schema": "PDB",
+            "table": "struct_ref",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Database Sequence Align End"
+            }
+        },
+        {
+            "column": "pdbx_seq_one_letter_code",
+            "schema": "PDB",
+            "table": "struct_ref",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Sequence One Letter Code"
+            }
+        },
+        {
+            "column": "db_align_beg",
+            "schema": "PDB",
+            "table": "struct_ref_seq",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Database Sequence Align Begin"
+            }
+        },
+        {
+            "column": "db_align_end",
+            "schema": "PDB",
+            "table": "struct_ref_seq",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Database Sequence Align End"
+            }
+        },
+        {
+            "column": "seq_align_beg",
+            "schema": "PDB",
+            "table": "struct_ref_seq",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Sequence Align Begin"
+            }
+        },
+        {   
+            "column": "seq_align_end",
+            "schema": "PDB",
+            "table": "struct_ref_seq",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Sequence Align End"
+            }
+        },
+        {
+            "column": "pdbx_ordinal",
+            "schema": "PDB",
+            "table": "struct_ref_seq_dif",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Ordinal"
+            }
+        },
+        {
+            "column": "seq_num",
+            "schema": "PDB",
+            "table": "struct_ref_seq_dif",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Residue Number"
+            }
+        },
+        {
+            "column": "mon_id",
+            "schema": "PDB",
+            "table": "struct_ref_seq_dif",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Residue Name"
+            }
+        },
+        {
+            "column": "db_mon_id",
+            "schema": "PDB",
+            "table": "struct_ref_seq_dif",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Database Residue Name"
+            }
         }
     ],
     "table_annotations": [
@@ -4052,7 +4187,7 @@
                         //"ihm_pseudo_site_feature_feature_id_fkey"
                         "ihm_pseudo_site_feature_ihm_feature_list_combo1_fkey"
                     ],
-#if true
+#if 1
                     [
                         "PDB",
                         "ihm_hdx_restraint_ihm_feature_list_combo1_fkey"
@@ -4062,7 +4197,7 @@
                         "PDB",
                         "ihm_derived_distance_restraint_feature_id_1_fkey"
                     ],
-#if true
+#if 1
                     [
                         "PDB",
                         "ihm_derived_angle_restraint_ihm_feature_list_1_combo1_fkey"
@@ -6100,7 +6235,7 @@
                         "PDB",
                         "entity_src_gen_structure_id_fkey"
                     ],
-#if true 
+#if 1 
                     [
                         "PDB",
                         "struct_ref_structure_id_fkey"
@@ -6146,7 +6281,7 @@
                         "PDB",
                         "ihm_dataset_group_link_structure_id_fkey"
                     ],
-#if true 
+#if 1 
                     [   
                         "PDB",
                         "ihm_data_transformation_structure_id_fkey"
@@ -6264,7 +6399,7 @@
                         "PDB",
                         "ihm_ensemble_info_structure_id_fkey"
                     ],
-#if true 
+#if 1 
                     [
                         "PDB",
                         "ihm_ensemble_sub_sample_structure_id_fkey"
@@ -6350,7 +6485,7 @@
                         "PDB",
                         "Entry_Related_File_entry_id_fkey"
                     ],
-#if true 
+#if 1 
                     [
                         "PDB",
                         "ihm_pseudo_site_structure_id_fkey"
@@ -6364,7 +6499,7 @@
                         "PDB",
                         "ihm_cross_link_restraint_structure_id_fkey"
                     ],
-#if true 
+#if 1 
                     [
                         "PDB",
                         "ihm_cross_link_pseudo_site_structure_id_fkey"
@@ -6386,7 +6521,7 @@
                         "PDB",
                         "ihm_hydroxyl_radical_fp_restraint_structure_id_fkey"
                     ],
-#if true 
+#if 1 
                     [   
                         "PDB",
                         "ihm_hdx_restraint_structure_id_fkey"
@@ -6420,7 +6555,7 @@
                         "PDB",
                         "ihm_derived_distance_restraint_structure_id_fkey"
                     ],
-#if true 
+#if 1 
                     [
                         "PDB",
                         "ihm_derived_angle_restraint_structure_id_fkey"
@@ -6899,7 +7034,7 @@
                         "PDB",
                         "ihm_epr_restraint_dataset_list_id_fkey"
                     ],
-#if true
+#if 1
                     [
                         "PDB",
                         "ihm_hdx_restraint_ihm_dataset_list_combo1_fkey"
@@ -6921,7 +7056,7 @@
                         "PDB",
                         "ihm_derived_distance_restraint_dataset_list_id_fkey"
                     ],
-#if true 
+#if 1 
                     [
                         "PDB",
                         "ihm_derived_angle_restraint_ihm_dataset_list_combo1_fkey"
@@ -8387,7 +8522,7 @@
                 ]
             }
         },
-#if true
+#if 1
         {
             "schema": "PDB",
             "table": "ihm_derived_angle_restraint",
@@ -13183,7 +13318,7 @@
                 ]
             }
         },
-#if true
+#if 1
         {
             "schema": "PDB",
             "table": "ihm_cross_link_pseudo_site",
@@ -16949,7 +17084,7 @@
                         "PDB",
                         "entity_src_gen_entity_id_fkey"
                     ],
-#if true 
+#if 1 
                     [  
                         "PDB",
                         "struct_ref_entity_combo1_fkey"
@@ -28559,7 +28694,7 @@
                 "domain_filter_pattern": "structure_id={{structure_id}}"
             }
         },
-#if true  
+#if 1  
         {
             "foreign_key": "ihm_cross_link_pseudo_site_ihm_cross_link_restraint_combo1_fkey",
             "foreign_key_schema": "PDB",
