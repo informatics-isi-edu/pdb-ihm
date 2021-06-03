@@ -252,7 +252,7 @@ class PDBClient (object):
         deriva_tables = ['entry']
         mmCIF_tables = []
         mmCIF_ignored = []
-        error_message = None
+        self.export_error_message = None
 
         """
         Query for detecting the record to be exported
@@ -320,7 +320,7 @@ class PDBClient (object):
             if column_type == 'text':
                 if '\t' in column_value:
                     self.logger.debug('tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
-                    error_message = 'tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value)
+                    self.export_error_message = 'tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value)
                     return None
                 if '\n' in column_value:
                     return '\n;{}\n;\n'.format(column_value)
@@ -333,11 +333,11 @@ class PDBClient (object):
                 else:
                     self.logger.debug('Both " and \' are in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
                     return '\n;{}\n;\n'.format(column_value)
-                error_message = 'Unhandled value in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value)
+                self.export_error_message = 'Unhandled value in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value)
                 return None
             else:
                 self.logger.debug('unknown type: {}, table: {}, column: {}'.format(column_type, table_name, column_name))
-                error_message = 'unknown type: {}, table: {}, column: {}'.format(column_type, table_name, column_name)
+                self.export_error_message = 'unknown type: {}, table: {}, column: {}'.format(column_type, table_name, column_name)
                 return None
 
         def exportData():
@@ -401,7 +401,7 @@ class PDBClient (object):
                             if value == None:
                                 self.logger.debug('Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
                                 self.sendMail('FAILURE PDB: Could not find column value', 'Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
-                                error_message = ''.join(traceback.format_exception(et, ev, tb))
+                                self.export_error_message = 'Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value)
                                 return 1
                             line.append(value)
                         fw.write('{}\n'.format('\t'.join(line)))
@@ -413,7 +413,7 @@ class PDBClient (object):
                 self.logger.debug('exportData got exception "%s"' % str(ev))
                 self.logger.debug('%s' % ''.join(traceback.format_exception(et, ev, tb)))
                 self.sendMail('FAILURE PDB: exportData got exception', '%s\nThe process might have been stopped\n' % ''.join(traceback.format_exception(et, ev, tb)))
-                error_message = ''.join(traceback.format_exception(et, ev, tb))
+                self.export_error_message = ''.join(traceback.format_exception(et, ev, tb))
                 return 1
 
         def exportCIF():
@@ -441,7 +441,7 @@ class PDBClient (object):
                         self.logger.debug('Unexpected line after loop_:\n{}'.format(line))
                         fr.close()
                         self.sendMail('FAILURE PDB: Unknown status', 'status = {}\nThe process might have been stopped\n'.format(status))
-                        error_message = 'Unknown status', 'status = {}'.format(status)
+                        self.export_error_message = 'Unknown status', 'status = {}'.format(status)
                         return 1
             
                 elif status == 'columns':
@@ -467,7 +467,7 @@ class PDBClient (object):
                 else:
                     self.logger.debug('Unknown status: {}'.format(status))
                     self.sendMail('FAILURE PDB: Unknown status', 'status = {}\nThe process might have been stopped\n'.format(status))
-                    error_message = 'Unknown status', 'status = {}'.format(status)
+                    self.export_error_message = 'Unknown status', 'status = {}'.format(status)
                     return 1
         
             fr.close()
@@ -480,13 +480,14 @@ class PDBClient (object):
         if exportData() != 0:
             self.logger.debug('Update error in exportData()')
             fw.close()
+            os.remove(hatracFile)
             self.updateAttributes(schema_pdb,
                                   table_entry,
                                   rid,
                                   ["Process_Status", "Record_Status_Detail", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
                                   {'RID': rid,
                                   'Process_Status': 'ERROR',
-                                  'Record_Status_Detail': 'Update error in exportData():\n{}'.format(error_message),
+                                  'Record_Status_Detail': 'Update error in exportData():\n{}'.format(self.export_error_message),
                                   'Workflow_Status': 'ERROR',
                                   'Generated_mmCIF_Processing_Status': 'ERROR'
                                   })
@@ -494,13 +495,14 @@ class PDBClient (object):
         if exportCIF() != 0:
             self.logger.debug('Update error in exportCIF()')
             fw.close()
+            os.remove(hatracFile)
             self.updateAttributes(schema_pdb,
                                   table_entry,
                                   rid,
                                   ["Process_Status", "Record_Status_Detail", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
                                   {'RID': rid,
                                   'Process_Status': 'ERROR',
-                                  'Record_Status_Detail': 'Update error in exportCIF():\n{}'.format(error_message),
+                                  'Record_Status_Detail': 'Update error in exportCIF():\n{}'.format(self.export_error_message),
                                   'Workflow_Status': 'ERROR',
                                   'Generated_mmCIF_Processing_Status': 'ERROR'
                                   })
@@ -608,7 +610,7 @@ class PDBClient (object):
                                       ["Process_Status", "Record_Status_Detail", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
                                       {'RID': rid,
                                       'Process_Status': 'ERROR',
-                                      'Record_Status_Detail': 'Update error in createEntity():\n{}'.format(error_message),
+                                      'Record_Status_Detail': 'Update error in createEntity():\n{}'.format(self.export_error_message),
                                       'Workflow_Status': 'ERROR',
                                       'Generated_mmCIF_Processing_Status': 'ERROR'
                                       })
@@ -647,6 +649,7 @@ class PDBClient (object):
             et, ev, tb = sys.exc_info()
             self.logger.error('got exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+            self.export_error_message = '%s' % ''.join(traceback.format_exception(et, ev, tb))
             self.sendMail('FAILURE IMAGE PROCESSING: CREATE ENTITY ERROR', 'RID: %s\n%s\n' % (rid, ''.join(traceback.format_exception(et, ev, tb))))
             return None
 
