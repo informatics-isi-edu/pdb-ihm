@@ -1,7 +1,7 @@
 import sys
 import json
 from deriva.core import get_credential, DerivaServer, BaseCLI
-from deriva.core.ermrest_model import Key
+from deriva.core.ermrest_model import Key, Column
 import utils
 
 # add scripts for updating vocabs that has nothing to do with mmcif model changes.
@@ -139,11 +139,11 @@ ihm_derived_distance_restraint_restraint_type_rows = [
     ]
 
 File_Type_rows = [
-    {'Name': 'Pseudo Site Coordinates', 'Table Name': 'ihm_pseudo_site', 'Description': 'Details of pseudo sites that may be used in restraints or in model representation'},
-    {'Name': 'Chemical Crosslinks with Pseudo Sites', 'Table Name': 'ihm_cross_link_pseudo_site', 'Description': 'Details of pseudo sites involved in crosslinks'},
-    {'Name': 'HD Exchange Restraints', 'Table Name': 'ihm_hdx_restraint', 'Description': 'Details of restraint derived from hydrogen-deuterium exchange experiments'},
-    {'Name': 'Angle Restraints Between Molecular Features', 'Table Name': 'ihm_derived_angle_restraint', 'Description': 'Generic angle restraints between features (atoms, residues, non-polymeric entities, pseudo sites)'},
-    {'Name': 'Dihedral Restraints Between Molecular Features', 'Table Name': 'ihm_derived_dihedral_restraint', 'Description': 'Generic dihedral restraints between features (atoms, residues, non-polymeric entities, pseudo sites)'}
+    {'Name': 'Pseudo Site Coordinates', 'Table_Name': 'ihm_pseudo_site', 'Description': 'Details of pseudo sites that may be used in restraints or in model representation'},
+    {'Name': 'Chemical Crosslinks with Pseudo Sites', 'Table_Name': 'ihm_cross_link_pseudo_site', 'Description': 'Details of pseudo sites involved in crosslinks'},
+    {'Name': 'HD Exchange Restraints', 'Table_Name': 'ihm_hdx_restraint', 'Description': 'Details of restraint derived from hydrogen-deuterium exchange experiments'},
+    {'Name': 'Angle Restraints Between Molecular Features', 'Table_Name': 'ihm_derived_angle_restraint', 'Description': 'Generic angle restraints between features (atoms, residues, non-polymeric entities, pseudo sites)'},
+    {'Name': 'Dihedral Restraints Between Molecular Features', 'Table_Name': 'ihm_derived_dihedral_restraint', 'Description': 'Generic dihedral restraints between features (atoms, residues, non-polymeric entities, pseudo sites)'}
     ]
 
 def main(server_name, catalog_id, credentials):
@@ -152,6 +152,15 @@ def main(server_name, catalog_id, credentials):
     catalog.dcctx['cid'] = "oneoff/model"
     model = catalog.getCatalogModel()
     
+    """
+    Add the Table_Name column to the Vocab.File_Type table
+    """
+    utils.create_column_if_not_exist(model, 'Vocab', 'File_Type',
+                                     Column.define(
+                                        'Table_Name',
+                                        builtin_types.text,
+                                        nullok=True
+                                    ))
     """
     Create the new vocabulary tables
     """
