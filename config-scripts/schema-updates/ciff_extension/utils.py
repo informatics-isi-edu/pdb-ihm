@@ -168,6 +168,19 @@ def alter_on_update_fkey_if_exist(model, schema_name, table_name, fkey_name, val
         pass
 
 # ----------------------------------------
+# rename fkey if exist
+# if schema_name and table_name are not in the model, throw an error.
+def rename_fkey_if_exist(model, schema_name, table_name, old_key_name, new_key_name):
+
+    schema = model.schemas[schema_name]
+    table = schema.tables[table_name]
+    try:
+        table.foreign_keys[(schema, old_key_name)].alter(constraint_name=new_key_name)
+        print("Renamed fkey %s of table %s.%s to %s" % (old_key_name, schema_name, table_name, new_key_name))
+    except KeyError:
+        pass
+
+# ----------------------------------------
 # drop fkey if exist
 # if schema_name and table_name are not in the model, throw an error.
 def drop_fkey_if_exist(model, schema_name, table_name, fkey_name):

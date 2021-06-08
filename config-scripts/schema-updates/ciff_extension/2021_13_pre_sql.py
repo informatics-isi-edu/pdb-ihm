@@ -15,23 +15,86 @@ def main(server_name, catalog_id, credentials):
     model = catalog.getCatalogModel()
 
     utils.alter_on_update_fkey_if_exist(model, 'PDB', 'Entry_Related_File', 'Entry_Related_File_File_Type_fkey', 'CASCADE')
-    utils.create_column_if_not_exist(model, 'PDB', 'ihm_entity_poly_segment',
+
+    utils.create_column_if_not_exist(model, 'PDB', 'ihm_starting_computational_models',
                                      Column.define(
-                                        'Entity_Poly_Seq_RID_Begin',
+                                        'External_Files_RID',
                                         builtin_types.text,
+                                        comment='Identifier to the external files RID',
                                         nullok=True
                                     ))
-    utils.create_column_if_not_exist(model, 'PDB', 'ihm_entity_poly_segment',
+    utils.create_column_if_not_exist(model, 'PDB', 'ihm_starting_computational_models',
                                      Column.define(
-                                        'Entity_Poly_Seq_RID_End',
+                                        'Software_RID',
                                         builtin_types.text,
+                                        comment='Identifier to the software RID',
                                         nullok=True
                                     ))
-    utils.create_key_if_not_exists(model, 'PDB', 'struct', ['entry_id'], 'struct_primary_key')
-    utils.create_key_if_not_exists(model, 'PDB', 'entity_poly_seq', ['num', 'RID', 'entity_id', 'mon_id'], 'entity_poly_seq_combo2_key')
-    utils.create_key_if_not_exists(model, 'PDB', 'entity_poly_seq', ['mon_id', 'num', 'structure_id', 'entity_id', 'RID'], 'entity_poly_seq_combo1_key')
-    utils.drop_fkey_if_exist(model, 'PDB', 'ihm_entity_poly_segment', 'ihm_entity_poly_segment_mm_poly_res_label_begin_fkey')
-    utils.drop_fkey_if_exist(model, 'PDB', 'ihm_entity_poly_segment', 'ihm_entity_poly_segment_mm_poly_res_label_end_fkey')
+    utils.create_column_if_not_exist(model, 'PDB', 'ihm_interface_residue_feature',
+                                     Column.define(
+                                        'Dataset_List_RID',
+                                        builtin_types.text,
+                                        comment='Identifier to the dataset list RID',
+                                        nullok=True
+                                    ))
+    utils.create_column_if_not_exist(model, 'PDB', 'ihm_derived_distance_restraint',
+                                     Column.define(
+                                        'Dataset_List_RID',
+                                        builtin_types.text,
+                                        comment='Identifier to the dataset list RID',
+                                        nullok=True
+                                    ))
+    utils.create_column_if_not_exist(model, 'PDB', 'ihm_geometric_object_distance_restraint',
+                                     Column.define(
+                                        'Dataset_List_RID',
+                                        builtin_types.text,
+                                        comment='Identifier to the dataset list RID',
+                                        nullok=True
+                                    ))
+
+    utils.rename_fkey_if_exist(model, 'PDB', 'ihm_starting_computational_models', 'ihm_starting_computational_models_script_file_id_fkey', 'ihm_starting_computational_models_script_file_id_fk')
+    utils.rename_fkey_if_exist(model, 'PDB', 'ihm_starting_computational_models', 'ihm_starting_computational_models_software_id_fkey', 'ihm_starting_computational_models_software_id_fk')
+    utils.rename_fkey_if_exist(model, 'PDB', 'ihm_interface_residue_feature', 'ihm_interface_residue_feature_dataset_list_id_fkey', 'ihm_interface_residue_feature_dataset_list_id_fk')
+    utils.rename_fkey_if_exist(model, 'PDB', 'ihm_derived_distance_restraint', 'ihm_derived_distance_restraint_dataset_list_id_fkey', 'ihm_derived_distance_restraint_dataset_list_id_fk')
+    utils.rename_fkey_if_exist(model, 'PDB', 'ihm_geometric_object_distance_restraint', 'ihm_geometric_object_distance_restraint_dataset_list_id_fkey', 'ihm_geometric_object_distance_restraint_dataset_list_id_fk')
+
+    utils.create_key_if_not_exists(model, 'PDB', 'ihm_dataset_list', ['RID', 'id'], 'ihm_dataset_list_combo2_key')
+
+    model = catalog.getCatalogModel()
+    utils.create_foreign_key_if_not_exists(model, 'PDB', 'ihm_starting_computational_models', 'ihm_starting_computational_models_script_file_id_fkey', 
+                                            ForeignKey.define(['External_Files_RID', 'script_file_id'], 'PDB', 'ihm_external_files', ['RID', 'id'],
+                                                                                            constraint_names=[ ['PDB', 'ihm_starting_computational_models_script_file_id_fkey'] ],
+                                                                                            on_update='CASCADE',
+                                                                                            on_delete='NO ACTION')
+                                                )
+    model = catalog.getCatalogModel()
+    utils.create_foreign_key_if_not_exists(model, 'PDB', 'ihm_starting_computational_models', 'ihm_starting_computational_models_software_id_fkey', 
+                                            ForeignKey.define(['Software_RID', 'software_id'], 'PDB', 'software', ['RID', 'pdbx_ordinal'],
+                                                                                            constraint_names=[ ['PDB', 'ihm_starting_computational_models_software_id_fkey'] ],
+                                                                                            on_update='CASCADE',
+                                                                                            on_delete='NO ACTION')
+                                                )
+    model = catalog.getCatalogModel()
+    utils.create_foreign_key_if_not_exists(model, 'PDB', 'ihm_interface_residue_feature', 'ihm_interface_residue_feature_dataset_list_id_fkey', 
+                                            ForeignKey.define(['Dataset_List_RID', 'dataset_list_id'], 'PDB', 'ihm_dataset_list', ['RID', 'id'],
+                                                                                            constraint_names=[ ['PDB', 'ihm_interface_residue_feature_dataset_list_id_fkey'] ],
+                                                                                            on_update='CASCADE',
+                                                                                            on_delete='NO ACTION')
+                                                )
+    model = catalog.getCatalogModel()
+    utils.create_foreign_key_if_not_exists(model, 'PDB', 'ihm_derived_distance_restraint', 'ihm_derived_distance_restraint_dataset_list_id_fkey', 
+                                            ForeignKey.define(['Dataset_List_RID', 'dataset_list_id'], 'PDB', 'ihm_dataset_list', ['RID', 'id'],
+                                                                                            constraint_names=[ ['PDB', 'ihm_derived_distance_restraint_dataset_list_id_fkey'] ],
+                                                                                            on_update='CASCADE',
+                                                                                            on_delete='NO ACTION')
+                                                )
+    model = catalog.getCatalogModel()
+    utils.create_foreign_key_if_not_exists(model, 'PDB', 'ihm_geometric_object_distance_restraint', 'ihm_geometric_object_distance_restraint_dataset_list_id_fkey', 
+                                            ForeignKey.define(['Dataset_List_RID', 'dataset_list_id'], 'PDB', 'ihm_dataset_list', ['RID', 'id'],
+                                                                                            constraint_names=[ ['PDB', 'ihm_geometric_object_distance_restraint_dataset_list_id_fkey'] ],
+                                                                                            on_update='CASCADE',
+                                                                                            on_delete='NO ACTION')
+                                                )
     
 
 # ===================================================    
@@ -42,5 +105,5 @@ if __name__ == '__main__':
 #    if args.catalog is None:
 #        catalog_id = 99
 
-    main(args.host, 50, credentials)
+    main(args.host, 99, credentials)
     

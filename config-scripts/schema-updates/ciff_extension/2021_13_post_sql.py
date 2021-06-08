@@ -15,20 +15,6 @@ def main(server_name, catalog_id, credentials):
     model = catalog.getCatalogModel()
 
     utils.set_nullok_column_if_exists(model, 'Vocab', 'File_Type', 'Table_Name', False)
-    utils.set_nullok_column_if_exists(model, 'PDB', 'ihm_entity_poly_segment', 'Entity_Poly_Seq_RID_Begin', False)
-    utils.set_nullok_column_if_exists(model, 'PDB', 'ihm_entity_poly_segment', 'Entity_Poly_Seq_RID_End', False)
-    utils.create_foreign_key_if_not_exists(model, 'PDB', 'ihm_entity_poly_segment', 'ihm_entity_poly_segment_mm_poly_res_label_begin_fkey', 
-                                            ForeignKey.define(['Entity_Poly_Seq_RID_Begin', 'structure_id', 'comp_id_begin', 'entity_id', 'seq_id_begin'], 'PDB', 'entity_poly_seq', ['RID', 'structure_id', 'mon_id', 'entity_id', 'num'],
-                                                                                            constraint_names=[ ['PDB', 'ihm_entity_poly_segment_mm_poly_res_label_begin_fkey'] ],
-                                                                                            on_update='CASCADE',
-                                                                                            on_delete='SET NULL')
-                                                )
-    utils.create_foreign_key_if_not_exists(model, 'PDB', 'ihm_entity_poly_segment', 'ihm_entity_poly_segment_mm_poly_res_label_end_fkey', 
-                                            ForeignKey.define(['Entity_Poly_Seq_RID_End', 'seq_id_end', 'structure_id', 'comp_id_end', 'entity_id'], 'PDB', 'entity_poly_seq', ['RID', 'num', 'structure_id', 'mon_id', 'entity_id'],
-                                                                                            constraint_names=[ ['PDB', 'ihm_entity_poly_segment_mm_poly_res_label_end_fkey'] ],
-                                                                                            on_update='CASCADE',
-                                                                                            on_delete='SET NULL')
-                                                )
 
 # ===================================================    
 
