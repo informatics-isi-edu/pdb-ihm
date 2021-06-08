@@ -1,7 +1,7 @@
 import sys
 import json
 from deriva.core import get_credential, DerivaServer, BaseCLI
-from deriva.core.ermrest_model import Key, Column
+from deriva.core.ermrest_model import Key, Column, builtin_types
 import utils
 
 # add scripts for updating vocabs that has nothing to do with mmcif model changes.
