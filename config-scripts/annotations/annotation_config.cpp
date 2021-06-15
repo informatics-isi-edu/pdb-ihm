@@ -25167,7 +25167,7 @@
                                     "name": "Workflow"
                                 }
                             ],
-                            "name": "PDB"
+                            "name": "Data Categories"
                         },
                         {
                             "children": [
@@ -25644,6 +25644,20 @@
                                 }
                             ],
                             "name": "Templates"
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [
+                                        {
+                                            "name": "PDB-Dev",
+                                            "url": "https://docs.google.com/document/d/1577tJoeXxY5MtolMHzJ5000b-dz2M8JrONAyhZRvXVc/"
+                                        }
+                                    ],
+                                    "name": "User Guide"
+                                }
+                            ],
+                            "name": "Documentation"
                         }
                     ],
                     "newTab": false
@@ -26141,7 +26155,7 @@
                                     "name": "Workflow"
                                 }
                             ],
-                            "name": "PDB"
+                            "name": "Data Categories"
                         },
                         {
                             "children": [
@@ -26618,6 +26632,20 @@
                                 }
                             ],
                             "name": "Templates"
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [
+                                        {
+                                            "name": "PDB-Dev",
+                                            "url": "https://docs.google.com/document/d/1577tJoeXxY5MtolMHzJ5000b-dz2M8JrONAyhZRvXVc/"
+                                        }
+                                    ],
+                                    "name": "User Guide"
+                                }
+                            ],
+                            "name": "Documentation"
                         }
                     ],
                     "newTab": false
