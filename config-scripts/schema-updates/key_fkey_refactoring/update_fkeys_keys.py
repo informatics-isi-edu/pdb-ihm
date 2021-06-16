@@ -17,12 +17,15 @@ KEY_TYPE_SUFFIX_DICT = {
     "COMBO1" : "_combo1_key", 
     "COMBO2" : "_combo2_key",
     "PRIMARY" : "_primary_key",
+    "UNKNOWN" : "_key",
 }
 
 FKEY_TYPE_SUFFIX_DICT = {
     "COMBO1" : "_combo1_fkey", 
     "COMBO2" : "_combo2_fkey",
-    "MMCIF" : "_mmcif_fkey",   
+    "MMCIF" : "_mmcif_fkey",
+    "RID" : "_rid_fkey",
+    "UNKNOWN" : "_fkey"
 }
 
 ''' Thees string subsitition are used to shorten the key and forieng key names
@@ -63,33 +66,33 @@ PARENT_RID_COLUMN_NAME_DICT = {
     # -- no need for this group of dict. Use hueristics
     #('ihm_cross_link_restraint', 'struct_asym', ('asym_id_1', 'structure_id')) : 'Asym_1_RID',
     #('ihm_cross_link_restraint', 'struct_asym', ('asym_id_2', 'structure_id')) : 'Asym_2_RID', 
-    #('ihm_derived_distance_restraint', 'ihm_feature_list', ('feature_id_1', 'structure_id')) : 'Feature_list_RID_1', 
-    #('ihm_derived_distance_restraint', 'ihm_feature_list', ('feature_id_2', 'structure_id')) : 'Feature_list_RID_2', 
-    #('ihm_ordered_ensemble', 'ihm_model_group', ('model_group_id_begin', 'structure_id')) : 'Model_group_RID_begin', 
-    #('ihm_ordered_ensemble', 'ihm_model_group', ('model_group_id_end', 'structure_id')) : 'Model_group_end_RID',  
+    #('ihm_derived_distance_restraint', 'ihm_feature_list', ('feature_id_1', 'structure_id')) : 'Feature_List_RID_1', 
+    #('ihm_derived_distance_restraint', 'ihm_feature_list', ('feature_id_2', 'structure_id')) : 'Feature_List_RID_2', 
+    #('ihm_ordered_ensemble', 'ihm_model_group', ('model_group_id_begin', 'structure_id')) : 'Model_Group_RID_Begin', 
+    #('ihm_ordered_ensemble', 'ihm_model_group', ('model_group_id_end', 'structure_id')) : 'Model_Group_End_RID',  
     #('ihm_predicted_contact_restraint', 'struct_asym', ('asym_id_1', 'structure_id')) : 'Asym_RID_1', 
     #('ihm_predicted_contact_restraint', 'struct_asym', ('asym_id_2', 'structure_id')) : 'Asym_RID_2', 
     #('ihm_probe_list', 'ihm_chemical_component_descriptor', ('reactive_probe_chem_comp_descriptor_id')) : 'Reactive_Probe_Chem_Comp_Descriptor_RID', # single fkey
-    #('ihm_probe_list', 'ihm_chemical_component_descriptor', ('probe_chem_comp_descriptor_id')) : 'Probe_chem_comp_descriptor_RID', 
-    #('ihm_related_datasets', 'ihm_dataset_list', ('dataset_list_id_derived', 'structure_id')) : 'Dataset_list_RID_derived', 
-    #('ihm_related_datasets', 'ihm_dataset_list', ('dataset_list_id_primary', 'structure_id')) : 'Dataset_list_RID_primary', 
-    #('ihm_struct_assembly_details', 'ihm_struct_assembly', ('parent_assembly_id', 'structure_id')) : 'parent_assembly_RID', 
+    #('ihm_probe_list', 'ihm_chemical_component_descriptor', ('probe_chem_comp_descriptor_id')) : 'Probe_Chem_Comp_Descriptor_RID', 
+    #('ihm_related_datasets', 'ihm_dataset_list', ('dataset_list_id_derived', 'structure_id')) : 'Dataset_List_RID_Derived', 
+    #('ihm_related_datasets', 'ihm_dataset_list', ('dataset_list_id_primary', 'structure_id')) : 'Dataset_List_RID_Primary', 
+    #('ihm_struct_assembly_details', 'ihm_struct_assembly', ('parent_assembly_id', 'structure_id')) : 'Parent_Assembly_RID', 
     #('ihm_struct_assembly_details', 'ihm_struct_assembly', ('assembly_id', 'structure_id')) : 'Assembly_RID',
     #
-    # -- out of place RID column name
+    # -- TODO: out of place RID column name. Replace with "Script_File_RID"
     ('ihm_starting_computational_models', 'ihm_external_files', ('script_file_id', 'structure_id')) : 'External_Files_RID',
     #
     # multiple keys to the same parent tables: 4-column with RID. Need to lookup
-    ('ihm_cross_link_list', 'entity_poly_seq', ('comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : 'Entity_poly_seq_RID_1', 
-    ('ihm_cross_link_list', 'entity_poly_seq', ('comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : 'Entity_poly_seq_RID_2', 
-    ('ihm_cross_link_restraint', 'entity_poly_seq', ('comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : 'Entity_poly_seq_RID_1', 
-    ('ihm_cross_link_restraint', 'entity_poly_seq', ('comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : 'Entity_poly_seq_RID_2', 
-    ('ihm_poly_residue_feature', 'entity_poly_seq', ('comp_id_begin', 'entity_id', 'seq_id_begin', 'structure_id')) : 'Entity_poly_seq_RID_begin', 
-    ('ihm_poly_residue_feature', 'entity_poly_seq', ('comp_id_end', 'entity_id', 'seq_id_end', 'structure_id')) : 'Entity_poly_seq_RID_end',
-    ('ihm_predicted_contact_restraint', 'entity_poly_seq', ('comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : 'Entity_poly_seq_RID_1', 
-    ('ihm_predicted_contact_restraint', 'entity_poly_seq', ('comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : 'Entity_poly_seq_RID_2',
-    ('ihm_residues_not_modeled', 'entity_poly_seq', ('comp_id_begin', 'entity_id', 'seq_id_begin', 'structure_id')) : 'Entity_poly_seq_RID_begin',     
-    ('ihm_residues_not_modeled', 'entity_poly_seq', ('comp_id_end', 'entity_id', 'seq_id_end', 'structure_id')) : 'Entity_poly_seq_RID_end', 
+    ('ihm_cross_link_list', 'entity_poly_seq', ('comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : 'Entity_Poly_Seq_RID_1', 
+    ('ihm_cross_link_list', 'entity_poly_seq', ('comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : 'Entity_Poly_Seq_RID_2', 
+    ('ihm_cross_link_restraint', 'entity_poly_seq', ('comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : 'Entity_Poly_Seq_RID_1', 
+    ('ihm_cross_link_restraint', 'entity_poly_seq', ('comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : 'Entity_Poly_Seq_RID_2', 
+    ('ihm_poly_residue_feature', 'entity_poly_seq', ('comp_id_begin', 'entity_id', 'seq_id_begin', 'structure_id')) : 'Entity_Poly_Seq_RID_Begin', 
+    ('ihm_poly_residue_feature', 'entity_poly_seq', ('comp_id_end', 'entity_id', 'seq_id_end', 'structure_id')) : 'Entity_Poly_Seq_RID_End',
+    ('ihm_predicted_contact_restraint', 'entity_poly_seq', ('comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : 'Entity_Poly_Seq_RID_1', 
+    ('ihm_predicted_contact_restraint', 'entity_poly_seq', ('comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : 'Entity_Poly_Seq_RID_2',
+    ('ihm_residues_not_modeled', 'entity_poly_seq', ('comp_id_begin', 'entity_id', 'seq_id_begin', 'structure_id')) : 'Entity_Poly_Seq_RID_Begin',     
+    ('ihm_residues_not_modeled', 'entity_poly_seq', ('comp_id_end', 'entity_id', 'seq_id_end', 'structure_id')) : 'Entity_Poly_Seq_RID_End', 
 }
 
 ''' Lookup table based on foreign columns to forieng key name.
@@ -148,6 +151,7 @@ FKEY_NAME_DICT = {
     ('ihm_residues_not_modeled', 'entity_poly_seq', ('Entity_poly_seq_end_RID', 'comp_id_end', 'entity_id', 'seq_id_end', 'structure_id')) : "ihm_residues_not_modeled__mm_poly_res_label_end_combo1_fkey",
 }
 
+# ----------------------------------------------
 # print all keys that [RID, structure_id] is a subset of
 # key.name returns [schema_obj, constraint_name]
 def print_rid_structure_id_keys(model):
@@ -157,7 +161,7 @@ def print_rid_structure_id_keys(model):
             if {'RID', 'structure_id'}.issubset(set([ c.name for c in key.unique_columns ])) == True:                                   
                 print("%s %s: %s" % (table.name, key.constraint_name, set([ c.name for c in key.unique_columns ])))
 
-
+# ----------------------------------------------
 # rename these incorrect key constraint
 def print_keys_with_rid(model):
     # all composite keys contains [RID, structure_id] 
@@ -186,11 +190,11 @@ def print_keys_with_rid(model):
                         # need correction
                         print("-- ** [%d] %s %s => %s : %s" % (key_length, table.name, key.constraint_name, key_name, set([ c.name for c in key.unique_columns ])))
 
-
+# ----------------------------------------------
 # given a primary key, get equivalent combo fkey 
-def get_key_name(table, key_column_names):
+def get_key_name_by_column_names(table, key_column_names):
     rid_included = True if "RID" in key_column_names else False
-    struct_id_included = True if "struct_id" in key_column_names else False
+    struct_id_included = True if "structure_id" in key_column_names else False
     key_length = len(key_column_names)
     
     if rid_included and struct_id_included:
@@ -222,18 +226,32 @@ def get_key_name(table, key_column_names):
     return(key_name)
 
 
-
+# ----------------------------------------------
 ''' This function returns a combo1/combo2 names of a foreign key based on the provided flag. 
     If the flag is empty, the combo position in the string is empty. 
     The function consults existing FKEY_NAME_DICT.
     If the name is too long, it will apply string replacement to shorten the names. 
 '''
-def get_fkey_constraint_name(fkey, expected_fkey_col_names, combo_flag=''):
-    key = (fkey.table.name, fkey.pk_table.name, tuple(sorted(expected_fkey_col_names)))
-    suffix = ('combo'+combo_flag+'_fkey') if combo_flag else 'fkey'
+def get_fkey_constraint_name(fkey, expected_fkey_from_col_names, expected_fkey_to_col_names):
+    fkey_dict_key = (fkey.table.name, fkey.pk_table.name, tuple(sorted(expected_fkey_from_col_names)))
+    rid_included = True if "RID" in expected_fkey_to_col_names else False
+    struct_id_included = True if "structure_id" in expected_fkey_to_col_names else False
+    fkey_len = len(expected_fkey_to_col_names)
     
-    if key in FKEY_NAME_DICT.keys():
-        expected_fkey_constraint_name = FKEY_NAME_DICT[key]
+    if rid_included and struct_id_included:
+        suffix = '_combo1_fkey'
+    elif rid_included and fkey_length > 1:
+        suffix = '_combo2_fkey'
+    elif rid_included and fkey_length == 1:
+        suffix = '_RID_fkey'
+    elif struct_id_included:
+        suffix = '_mmcif_fkey'
+    else:
+        suffix = '_fkey'
+        print("FKEY COLUMN NAME ERROR: fkey_column_names %s is not combo or mmcif key" % (expected_fkey_to_col_names))
+
+    if fkey_dict_key in FKEY_NAME_DICT.keys():
+        expected_fkey_constraint_name = FKEY_NAME_DICT[fkey_dict_key]
     else:
         expected_fkey_constraint_name = '_'.join([fkey.table.name, fkey.pk_table.name, suffix])                            
     
@@ -246,14 +264,14 @@ def get_fkey_constraint_name(fkey, expected_fkey_col_names, combo_flag=''):
         contraint_name_length = len(constraint_name)
         
     if contraint_name_length > MAX_NAME_LENGTH:            
-        print('ERROR: FKEY NAME TOO LONG: %s: "%s"  # %d' % ( key, expected_fkey_constraint_name, len(expected_fkey_constraint_name)))
+        print('ERROR: FKEY NAME TOO LONG: %s: "%s"  # %d' % ( fkey_dict_key, expected_fkey_constraint_name, len(expected_fkey_constraint_name)))
 
     if constraint_name != expected_fkey_constraint_name:
-        print('  WARNING: RENAME FKEY: %s: %s[%d] v.s. %s[%d] ' % ( key, expected_fkey_constraint_name, len(expected_fkey_constraint_name), constraint_name, len(constraint_name)))
+        print('WARNING: FKEY NAME TOO LONG. RENAME FKEY: %s: from %s[%d] to %s[%d] ' % ( fkey_dict_key, expected_fkey_constraint_name, len(expected_fkey_constraint_name), constraint_name, len(constraint_name)))
     
     return(constraint_name)
 
-
+# ----------------------------------------------
 def get_fkey_type(fkey):
     fkey_col_names = {c.name for c in fkey.column_map.keys()}    
     fkey_parent_col_names = {c.name for c in fkey.column_map.values()}
@@ -274,6 +292,7 @@ def get_fkey_type(fkey):
 
     return(fkey_type)
 
+# ----------------------------------------------
 def get_fkey_rid_column(fkey):
     rid_column = None
     if 'RID' in {c.name for c in fkey.column_map.values()}:
@@ -283,6 +302,7 @@ def get_fkey_rid_column(fkey):
                 rid_column = from_col
     return(rid_column)
 
+# ----------------------------------------------
 def get_fkey_id_column(fkey):
     id_column = None
     if 'id' in {c.name for c in fkey.column_map.values()}:
@@ -292,6 +312,7 @@ def get_fkey_id_column(fkey):
                 id_column = from_col
     return(id_column)
 
+# ----------------------------------------------
 # When do the lookup, the function will remove RID column and add structure_id column for searching
 def get_fkey_parent_rid_column_name(fkey):
     rid_col_name = None    
@@ -329,7 +350,7 @@ def get_fkey_parent_rid_column_name(fkey):
 
     return(rid_col_name)
 
-
+# ----------------------------------------------
 # given fkey, get the corresponding fkey based on the fkey_type except itself. 
 def get_equivalent_fkey_by_type(fkey, fkey_type="*"):
     fkey_col_names = {c.name for c in fkey.column_map.keys()}    
@@ -341,8 +362,14 @@ def get_equivalent_fkey_by_type(fkey, fkey_type="*"):
 
     # try capitalize: a hack since we have both patter!!
     if not rid_column_exist:
-        parent_rid_col_name = (parent_rid_col_name.capitalize()).replace("_rid", "_RID")
-        rid_column_exist = (True if parent_rid_col_name in fkey.table.columns.elements else False)
+        # Different naming convention.
+        parent_rid_col_name_alt = (parent_rid_col_name.capitalize()).replace("_rid", "_RID")
+        rid_column_exist = (True if parent_rid_col_name_alt in fkey.table.columns.elements else False)
+        if rid_column_exist:
+            # TODO: RENAME RID column to be consistent
+            print("WARNING: RID COLUMN NAME MISMATCHED: %s should be %s" % (parent_rid_col_name_alt, parent_rid_col_name))
+            #fkey.pk_table.columns[parent_rid_col_name_alt].alter(name=parent_rid_col_name)
+        parent_rid_col_name = parent_rid_col_name_alt
         
     #print("-- check equivalent fkey of type %s: %s %s parent_rid:%s" % (fkey_type, fkey.table.name, fkey_col_names, parent_rid_col_name))
     
@@ -373,6 +400,15 @@ def get_equivalent_fkey_by_type(fkey, fkey_type="*"):
     else:
         return(match_list[0])
 
+# ----------------------------------------------
+'''paramters:    
+   model: relevant ermrest model 
+   ncols: number of fkey columns to be investigated
+   deriva_included: whether to include fkeys of deriva-related table (i.e. non-mmcif tables)
+   combo1_included: whether to include COMBO1 fkeys in the logic
+   combo2_included: whether to include COMBO2 fkeys in the logic
+   primary_types: the types of primary fkeys to be included e.g. ("COMBO1"). If empty, no primary fkeys will be included. 
+'''
 def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, combo2_included=True, primary_types=('combo1', 'combo2')):
     schema = model.schemas["PDB"]
     deriva_tables = {'Catalog_Group', 'ERMrest_Client', 'Entry_Related_File'}
@@ -402,9 +438,11 @@ def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, co
                     continue
                 mmcif_fk = get_equivalent_fkey_by_type(fkey, "MMCIF")
                 if mmcif_fk:
-                    print("[%2d] -c1  p  [%d] %s -> %s : %s : %s -> %s" % (combo1_count, fkey_length, table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names))
+                    print("[%2d] --c1  p  [%d] %s -> %s : %s : %s -> %s" % (combo1_count, fkey_length, table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names))
+                    # TODO: remove fkey
+                    # mmcif_fk.drop()
                 else:
-                    print("[%2d] -c1      [%d] %s -> %s : %s : %s -> %s" % (combo1_count, fkey_length, table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names))
+                    print("[%2d] --c1      [%d] %s -> %s : %s : %s -> %s" % (combo1_count, fkey_length, table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names))
 
                 combo1_count = combo1_count + 1
 
@@ -413,9 +451,11 @@ def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, co
                     continue
                 mmcif_fk = get_equivalent_fkey_by_type(fkey, "MMCIF")
                 if mmcif_fk:
-                    print("[%2d] -c2  p  [%d] %s -> %s : %s : %s -> %s" % (combo2_count, fkey_length, table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names))
+                    print("[%2d] --c2  p  [%d] %s -> %s : %s : %s -> %s" % (combo2_count, fkey_length, table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names))
+                    # TODO: remove fkey
+                    # mmcif_fk.drop()                    
                 else:
-                    print("[%2d] -c2      [%d] %s -> %s : %s : %s -> %s" % (combo2_count, fkey_length, table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names))
+                    print("[%2d] --c2      [%d] %s -> %s : %s : %s -> %s" % (combo2_count, fkey_length, table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names))
 
                 combo2_count = combo2_count + 1
             
@@ -426,251 +466,93 @@ def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, co
                 # 1. determine whether it needs combo1 or combo2:
                 # Except for structure_id, if a column in the key is not-null, then it is mandatory
                 mandatory = False
-                for col in fkey.column_map:
+                for from_col in fkey.column_map:
                     # exclude structure_id 
-                    if col.name == 'structure_id':
+                    if from_col.name == 'structure_id':
                         continue
-                    if col.nullok == False:
+                    if from_col.nullok == False:
                         mandatory = True
                         break
                 
                 # 2. setup variables
                 parent_rid_column_name = get_fkey_parent_rid_column_name(fkey)
                 if mandatory == True:
-                    expected_fkey_col_names = fkey_col_names|{parent_rid_column_name}
-                    expected_fkey_parent_col_names = fkey_parent_col_names|{'RID'}
                     flag = '1'
                     fkey_type = "COMBO1"
                 else:
-                    expected_fkey_col_names = (fkey_col_names|{parent_rid_column_name})-{'structure_id'}
-                    expected_fkey_parent_col_names = (fkey_parent_col_names|{'RID'})-{'structure_id'}
                     flag = '2'
                     fkey_type = "COMBO2"
+
+                combo_fkey_from_col_names = []
+                combo_fkey_to_col_names = []                
+                # add RID
+                if fkey_type == "COMBO1" or fkey_type == "COMBO2":
+                    combo_fkey_from_col_names.append(parent_rid_column_name)
+                    combo_fkey_to_col_names.append("RID")
+                for from_col, to_col in fkey.column_map.items():
+                    # remove structure_id
+                    if fkey_type == "COMBO2" and from_col.name == "structure_id":
+                        continue
+                    combo_fkey_from_col_names.append(from_col.name)
+                    combo_fkey_to_col_names.append(to_col.name)
                     
                 # -- selectively omit primary fkeys investigation depending on the flag. This help with the printout readability
-                if 'combo'+flag not in primary_types: 
+                if fkey_type not in primary_types: 
                     continue
-                expected_parent_key_name = '_'.join([pk_table.name, 'combo'+flag, 'key'])
-                expected_fkey_constraint_name = get_fkey_constraint_name(fkey, expected_fkey_col_names, flag)
+                combo_fkey_parent_key_name = get_key_name_by_column_names(pk_table, combo_fkey_to_col_names)
+                combo_fkey_constraint_name = get_fkey_constraint_name(fkey, combo_fkey_from_col_names, combo_fkey_to_col_names)
                     
                 combo_fk = get_equivalent_fkey_by_type(fkey, fkey_type)
                 if combo_fk:
-                    print("[%2d] --p  c%s [%d] %s -> %s : %s : %s -> %s combo:%s" % (primary_count, flag, fkey_length, table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names, {c.name for c in combo_fk.column_map.keys()}))                        
+                    print("[%2d] --p  c%s [%d] %s -> %s : %s : %s -> %s combo:%s" % (primary_count, flag, fkey_length, table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names, {c.name for c in combo_fk.column_map.keys()}))
+                    if (combo_fk.constraint_name != combo_fkey_constraint_name):
+                        # TODO: rename fkey if the name are not consistent
+                        #combo_fk.alter(constraint_name=combo_fkey_constraint_name)
+                        print("       RENAME COMBO_FKEY: from %s[%d] to %s[%d]" % (combo_fk.constraint_name, len(combo_fk.constraint_name), combo_fkey_constraint_name, len(combo_fkey_constraint_name)))
+                        pass
+
                 else:
                     #create
                     print("[%2d] --p      [%d] %s -> %s : %s : %s -> %s" % (primary_count, fkey_length, table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names))
-                    exit()
+
                     # 5.1 check parent column in the table
                     if parent_rid_column_name not in table.columns.elements:
-                        # TODO: add column
-                        print("    +col: Add new column: %s.%s for fkey %s:%s" % (table.name, parent_rid_column_name, fkey.constraint_name, fkey_col_names))
+                        # TODO: create parent RID column
+                        print("    +col: Add new column: %s : %s for fkey %s:%s" % (table.name, parent_rid_column_name, fkey.constraint_name, fkey_col_names))
+                        #table.create_column(Column.define(
+                        #    parent_rid_column_name,
+                        #    builtin_types.text,
+                        #    nullok=(True if mandatory else False)
+                        #))
                         
                     # 5.2 check whether expected key exist in the parent table
-                    if fkey.pk_table.key_by_columns(expected_fkey_parent_col_names, raise_nomatch=False) is None:
-                        print("    *key: c%s create %s %s:%s" % (flag, pk_table.name, expected_parent_key_name, expected_fkey_parent_col_names))
+                    parent_key = fkey.pk_table.key_by_columns(combo_fkey_to_col_names, raise_nomatch=False) 
+                    if parent_key is None:
+                        print("    +key: c%s create %s %s:%s" % (flag, pk_table.name, combo_fkey_parent_key_name, combo_fkey_to_col_names))
                         # TODO: create a new key
+                        #Key.define(combo_fkey_to_col_names, constraint_names = [[pk_table.schema.name, combo_fkey_parent_key_name]])
+                    else:
+                        # TODO: rename incorrect key names
+                        if (parent_key.constraint_name != combo_fkey_parent_key_name):
+                            print("    *key exists: rename %s from %s to %s" % (combo_fkey_to_col_names, parent_key.constraint_name, combo_fkey_parent_key_name))
+                            #parent_key.alter(name=combo_fkey_parent_key_name)
                             
                     # 5.3 create a new fkey
-                    print("    +c%s  [%d] %s -> %s : %s : %s -> %s" % (flag, fkey_length, table.name, fkey.pk_table.name, expected_fkey_constraint_name, expected_fkey_col_names, expected_fkey_parent_col_names))
-                        
+                    print("    +c%s:  Add fkey(len=%d) %s -> %s : %s : %s -> %s" % (flag, fkey_length, table.name, fkey.pk_table.name, combo_fkey_constraint_name, combo_fkey_from_col_names, combo_fkey_to_col_names))
+                    # TODO: create fkey
+                    #ForeignKey.define(combo_fkey_from_col_names, table.schema.name, table.name, combo_fkey_to_col_names,
+                    #                  constraint_names = [[table.schema.name, combo_fkey_constraint_name]],
+                    #                  on_update = 'CASECADE',
+                    #                  on_delete = 'NO ACTION'
+                    #)
+                    
                 primary_count = primary_count + 1
-            
+                print("")
             else:
                 if fkey.pk_table.name not in deriva_tables or deriva_included == True:
                     print("---ERROR:    [%d] %s -> %s : %s : %s -> %s" % (fkey_length, table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names))
 
                 
-    
-'''paramters:    
-   model: relevant ermrest model 
-   ncols: number of fkey columns to be investigated
-   deriva_included: whether to include fkeys of deriva-related table (i.e. non-mmcif tables)
-   combo1_included: whether to include combo1 fkeys in the logic
-   combo2_included: whether to include combo2 fkeys in the logic
-   primary_types: the types of primary fkeys to be included. If empty, no primary fkeys will be included. 
-'''
-def print_fkeys_with_rid(model, ncols, deriva_included=False, combo1_included=True, combo2_included=True, primary_types=('combo1', 'combo2')):
-    schema = model.schemas["PDB"]
-    deriva_tables = {'Catalog_Group', 'ERMrest_Client', 'Entry_Related_File'}
-    combo1_count = 1
-    combo2_count = 1
-    primary_count = 1
-    
-    print("=========== print_fkeys_with_rid with ncols = %d ================= " % (ncols))
-    for table in sorted(schema.tables.values(), key = lambda x: x.name):
-        
-        #if table.name == 'ihm_cross_link_pseudo_site':
-            #print("********* TABLE NAME = %s fkeys: %s" % (table.name, table.foreign_keys))
-        
-        for fkey in table.foreign_keys:
-            fkey_length = len(fkey.columns)
-            fkey_parent_col_names = {c.name for c in fkey.column_map.values()}
-            fkey_col_names = {c.name for c in fkey.column_map.keys()}
-            pk_table = fkey.pk_table
-
-            # only look at fkeys to PDB schema (not Vocab)
-            if fkey.pk_table.schema.name != 'PDB':
-                continue
-            
-            # focus on a particular number of columns
-            if (fkey_length != ncols):
-                continue
-
-            #print("table name = %s, fkey_col_names = %s, parent_col_names = %s" % (table.name, fkey_col_names, fkey_parent_col_names))
-            
-            # combo1 or combo2 fkeys
-            if ('RID' in fkey_parent_col_names):
-                
-                # check for column_name corresponding to RID in the parent table
-                for from_col, to_col in fkey.column_map.items():
-                    if to_col.name == 'RID':
-                        primary_col_names = fkey_col_names - {from_col.name}
-
-                # -- combo1 
-                if ('structure_id' in fkey_parent_col_names):
-                    if not combo1_included:
-                        continue
-                    # check whether primiary key still exists
-                    primary_fkeys = list(table.fkeys_by_columns(primary_col_names, raise_nomatch=False))
-                    if primary_fkeys:                    
-                        print("-c1  p  [%d] %s -> %s : %s : %s -> %s" % (fkey_length, table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names))
-                        # TODO: for ncols=2, delete corresponding primary key from the model. Somehow some are deleted but some are still present.
-                        local_fk = get_equivalent_fkey_by_type(fkey, "MMCIF")
-                        if local_fk and local_fk is not primary_fkeys[0]:
-                            print("ERROR: COMBO1 MISMATCHED PRIMARY_FKEY: %s v.s. %s" % (local_fk.constraint_name, primary_fkeys[0].constraint_name))
-                    else:
-                        print("-c1      [%d] %s -> %s : %s : %s -> %s" % (fkey_length, table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names))
-                    combo1_count = combo1_count + 1
-                # -- combo2 case                
-                else:
-                    if not combo2_included:
-                        continue
-                    primary_col_names = primary_col_names | {'structure_id'}
-                    # check whether primiary key still exists
-                    primary_fkeys = list(table.fkeys_by_columns(primary_col_names, raise_nomatch=False))
-                    if primary_fkeys:
-                        print("%2d: -c2  p  [%d] %s -> %s : %s : %s -> %s --> p%s" % (combo2_count, fkey_length, table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names, primary_col_names))
-                        # TODO: for ncols=2, delete corresponding primary key from the model. Somehow some are deleted but some are still present.
-                        local_fk = get_equivalent_fkey_by_type(fkey, "MMCIF")
-                        if local_fk and local_fk is not primary_fkeys[0]:
-                            print("ERROR: COMBO2 MISMATCHED PRIMARY_FKEY: %s v.s. %s" % (local_fk.constraint_name, primary_fkeys[0].constraint_name))
-                    else:
-                        print("%2d: -c2     [%d] %s -> %s : %s : %s -> %s -- p%s" % (combo2_count, fkey_length, table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names, primary_col_names))
-                    combo2_count = combo2_count + 1
-                    
-            # primary key with structure_id or other kinds
-            else :
-                # -- normal composite key
-                if ('structure_id' in fkey_parent_col_names):
-                    
-                    if not primary_types:
-                        continue
-                    # TODO: create a lookup table for long table names
-                    # can't check for combo1/2 since the parent_table RID column is not known. Some tables have shorter name lookup
-                    
-                    # 1. determine whether it needs combo1 or combo2:
-                    # Except for structure_id, if a column in the key is not-null, then it is mandatory
-                    mandatory = False
-                    for col in fkey.column_map:
-                        # exclude structure_id 
-                        if col.name == 'structure_id':
-                            continue
-                        if col.nullok == False:
-                            mandatory = True
-                            break
-
-                    # 2. determine whether there are multiple fkeys pointing to the same parent table.
-                    dup_fkey_parent = False
-                    dup_fkey_parent_fkey = None
-                    for fk in table.foreign_keys:
-                        if dup_fkey_parent == True:
-                            break
-                        # exclude fkey to other tables or its own
-                        if fk.pk_table != pk_table or fkey is fk:
-                            continue
-                        # found same parent table
-                        fk_parent_col_names = {c.name for c in fk.column_map.values()}
-                        if 'RID' not in fk_parent_col_names:  # exclude combo keys
-                            dup_fkey_parent = True
-                            dup_fkey_parent_fkey = fk
-                            print("    *dup: %s -> %s : %s vs %s : %s->%s" % (table.name, pk_table.name, fk.constraint_name, fkey.constraint_name, {c.name for c in fk.column_map.keys()}, {c.name for c in fk.column_map.values()}))
-                        
-                    # 3. setup variables
-                    parent_rid_column_name = get_fkey_parent_rid_column_name(fkey)
-                    if mandatory == True:
-                        expected_fkey_col_names = fkey_col_names|{parent_rid_column_name}
-                        expected_fkey_parent_col_names = fkey_parent_col_names|{'RID'}
-                        flag = '1'
-                        fkey_type = "COMBO1"
-                    else:
-                        expected_fkey_col_names = (fkey_col_names|{parent_rid_column_name})-{'structure_id'}
-                        expected_fkey_parent_col_names = (fkey_parent_col_names|{'RID'})-{'structure_id'}
-                        flag = '2'
-                        fkey_type = "COMBO2"
-                        
-                    # -- selectively omit primary fkeys investigation depending on the flag. This help with the printout readability
-                    if 'combo'+flag not in primary_types: 
-                        continue
-                    expected_parent_key_name = '_'.join([pk_table.name, 'combo'+flag, 'key'])
-                    expected_fkey_constraint_name = get_fkey_constraint_name(fkey, expected_fkey_col_names, flag)
-                    
-                    # need a different fkey name suffix to distinguish between multiple fkeys
-                    #if dup_fkey_parent:
-                    #    key = (table.name, pk_table.name, tuple(sorted(expected_fkey_col_names)))
-                    #    value = fkey.constraint_name.replace("_fkey", "_combo"+flag+"_fkey")
-                    #    print('%s : "%s",' % (key, value))
-
-                    
-                    parent_rid_column_exist = (True if parent_rid_column_name in fkey.table.columns.elements else False)
-                    combo_fk = get_equivalent_fkey_by_type(fkey, fkey_type)
-                    if combo_fk:
-                        print("**%2d: --p  c%s [%d] %s -> %s : %s : %s -> %s combo:%s" % (primary_count, flag, fkey_length, table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names, {c.name for c in combo_fk.column_map.keys()}))                        
-                    else:
-                        #create
-                        print("**%2d: --p      [%d] %s -> %s : %s : %s -> %s" % (primary_count, fkey_length, table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names))
-                        exit()
-                        # 5.1 check parent column in the table
-                        if parent_rid_column_name not in table.columns.elements:
-                            # TODO: add column
-                            print("    +col: Add new column: %s.%s for fkey %s:%s" % (table.name, parent_rid_column_name, fkey.constraint_name, fkey_col_names))
-                                        
-                        # 5.2 check whether expected key exist in the parent table
-                        if fkey.pk_table.key_by_columns(expected_fkey_parent_col_names, raise_nomatch=False) is None:
-                            print("    *key: c%s create %s %s:%s" % (flag, pk_table.name, expected_parent_key_name, expected_fkey_parent_col_names))
-                            # TODO: create a new key
-                            
-                        # 5.3 create a new fkey
-                        print("    +c%s  [%d] %s -> %s : %s : %s -> %s" % (flag, fkey_length, table.name, fkey.pk_table.name, expected_fkey_constraint_name, expected_fkey_col_names, expected_fkey_parent_col_names))
-                        
-                    
-                    # 4. check whether the combo fkeys already exist.
-                    #found = False                    
-                    #for fk in table.foreign_keys:
-                    #    if found == True:
-                    #        break
-                    #    
-                    #    # exclude fkey to other tables
-                    #    if fk.pk_table != pk_table or fk is fkey:
-                    #        continue
-                    #    
-                    #    # look for fk with 'RID' in it.
-                    #    fk_parent_col_names = {c.name for c in fk.column_map.values()}
-                    #    if 'RID' in fk_parent_col_names:
-                    #        if fk_parent_col_names == expected_fkey_parent_col_names:
-                    #            found = True
-                    #            print("%2d: --p  c%s [%d] %s -> %s : %s : %s -> %s combo:%s" % (primary_count, flag, fkey_length, table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names, {c.name for c in combo_fk.column_map.keys()}))
-                    #        else:
-                    #            print("ERROR: found 'RID' fkey but not combo%s in %s -> %s : %s : %s -> %s" % (flag, table.name, pk_table.name, fk.constraint_name, {c.name for c in fk.column_map.keys()}, {c.name for c in fk.column_map.values()}))
-                    
-                    primary_count = primary_count + 1
-
-
-                # -- single keys or composite keys without structure_id (which should be none)
-                else:
-                    if fkey.pk_table.name not in deriva_tables or deriva_included == True:
-                        print("---ERROR:    [%d] %s -> %s : %s : %s -> %s" % (fkey_length, table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names))
-
-
 # fix inconsistant naming
 # Entry_Related_File:
 #  column name:
@@ -680,17 +562,13 @@ def print_fkeys_with_rid(model, ncols, deriva_included=False, combo1_included=Tr
 #    "Entry_Related_File_process_status_fkey" FOREIGN KEY ("Process_Status") REFERENCES "Vocab".process_status("Name") ON UPDATE CASCADE ON DELETE SET NULL
 #    "Entry_Related_File_workflow_status_fkey" FOREIGN KEY ("Workflow_Status") REFERENCES "Vocab".workflow_status("Name") ON UPDATE CASCADE
 
-
 def main(server_name, catalog_id, credentials):
     server = DerivaServer('https', server_name, credentials)
     catalog = server.connect_ermrest(catalog_id)
     catalog.dcctx['cid'] = "oneoff/model"
     model = catalog.getCatalogModel()
 
-    refactor_fkeys(model, 2, combo1_included=True, combo2_included=False, primary_types=("combo2"))
-    #print_fkeys_with_rid(model, 2, combo1_included=True, combo2_included=False, primary_types=("combo2"))
-    
-    #print_fkeys_with_rid(model, 4, combo1_included=False, combo2_included=True, primary_types=("x"))
+    refactor_fkeys(model, 2, combo1_included=True, combo2_included=False, primary_types=("COMBO1"))
  
         
 
