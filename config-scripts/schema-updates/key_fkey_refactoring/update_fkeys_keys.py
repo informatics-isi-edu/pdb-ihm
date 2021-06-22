@@ -7,6 +7,29 @@ from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key,
 from collections import OrderedDict
 import re
 
+# TODO:
+# - Create combo1 fkeys (2 column).
+#    - Note on the number of fkeys created.
+#    - Track a mapping of mmcif fkey and combo1 fkey names. Will need this to update the annotations and ACL docs.
+#    - Update annotations, ACL
+#    - Test chaise to make sure that it works appropriately e.g. attempting to make structure_id inconsistent with combo1 key will throw an error.
+#    - Note: you might want to test the script to only 1 table first to make sure everything is good before proceeding with all.
+# - Delete combo1 mmcif fkeys (2 column). Make sure the number matches with combo1 created.
+# - Repeat above for 4-column fkeys
+#
+# - Rename combo2 fkeys.
+#    - Save the mapping between old and new names. Will need this to replace the strings in annotations and ACLs.
+#    - Update the annottions and ACL
+# - Rename combo2 key names.
+#    - Save the mapping between old and new names. Will need this to replace the strings in annotations and ACLs.
+#    - Update the annottions and ACL
+# 
+# - Rename RID columns
+#    - Turn capitalized column names to Titled column names. Make note of the changes, so we can apply the change to ACL
+#    - Rename out of place RID column name. Replace with "Script_File_RID", then remove this entry from the map.
+#      ('ihm_starting_computational_models', 'ihm_external_files', ('script_file_id', 'structure_id')) : 'External_Files_RID',
+#
+
 #
 # The purpose is to refactor the keys and forieng keys of the PDB table to conform to the naming convention.
 #
@@ -484,7 +507,8 @@ def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, co
                     fkey_type = "COMBO2"
 
                 combo_fkey_from_col_names = []
-                combo_fkey_to_col_names = []                
+                combo_fkey_to_col_names = []
+                # create from column names and to column names in order, so they can be used for creation.
                 # add RID
                 if fkey_type == "COMBO1" or fkey_type == "COMBO2":
                     combo_fkey_from_col_names.append(parent_rid_column_name)
@@ -504,6 +528,7 @@ def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, co
                     
                 combo_fk = get_equivalent_fkey_by_type(fkey, fkey_type)
                 if combo_fk:
+                    # check existing combo names for consistentcy
                     print("[%2d] --p  c%s [%d] %s -> %s : %s : %s -> %s combo:%s" % (primary_count, flag, fkey_length, table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names, {c.name for c in combo_fk.column_map.keys()}))
                     if (combo_fk.constraint_name != combo_fkey_constraint_name):
                         # TODO: rename fkey if the name are not consistent
