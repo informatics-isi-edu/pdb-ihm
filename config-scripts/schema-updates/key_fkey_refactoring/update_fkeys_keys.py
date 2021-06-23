@@ -12,9 +12,11 @@ import re
 #    - Note on the number of fkeys created.
 #    - Track a mapping of mmcif fkey and combo1 fkey names. Will need this to update the annotations and ACL docs.
 #    - Update annotations, ACL
+#    - * After model change, update RID column values. (SQL)
+#    - * Update the model to set null-ok for RID column to False. (Another script/function)
 #    - Test chaise to make sure that it works appropriately e.g. attempting to make structure_id inconsistent with combo1 key will throw an error.
 #    - Note: you might want to test the script to only 1 table first to make sure everything is good before proceeding with all.
-# - Delete combo1 mmcif fkeys (2 column). Make sure the number matches with combo1 created.
+# - Delete combo1's corresponding mmcif fkeys (2 column). Make sure the number matches with combo1 created.
 # - Repeat above for 4-column fkeys
 #
 # - Rename combo2 fkeys.
@@ -34,12 +36,13 @@ import re
 # The purpose is to refactor the keys and forieng keys of the PDB table to conform to the naming convention.
 #
 
-MAX_NAME_LENGTH = 62
+MAX_NAME_LENGTH = 63
 
 KEY_TYPE_SUFFIX_DICT = {
     "COMBO1" : "_combo1_key", 
     "COMBO2" : "_combo2_key",
     "PRIMARY" : "_primary_key",
+    "RID" : "_RID_key",
     "UNKNOWN" : "_key",
 }
 
@@ -242,8 +245,8 @@ def get_key_name_by_column_names(table, key_column_names):
         
     if key_name_length > MAX_NAME_LENGTH:            
         print('ERROR: KEY NAME TOO LONG (%d): t: %s, key name: %s' % (len(key_name), table.name, key_name))
-
-    if key_name != expected_key_name:
+        key_name = None
+    elif key_name != expected_key_name:
         print('WARNING: RENAME KEY in table %s: "%s[%d] v.s. %s[%d]"  # ' % ( table.name, expected_key_name, len(expected_key_name), key_name, len(key_name)))
 
     return(key_name)
@@ -288,8 +291,8 @@ def get_fkey_constraint_name(fkey, expected_fkey_from_col_names, expected_fkey_t
         
     if contraint_name_length > MAX_NAME_LENGTH:            
         print('ERROR: FKEY NAME TOO LONG: %s: "%s"  # %d' % ( fkey_dict_key, expected_fkey_constraint_name, len(expected_fkey_constraint_name)))
-
-    if constraint_name != expected_fkey_constraint_name:
+        constraint_name = None
+    elif constraint_name != expected_fkey_constraint_name:
         print('WARNING: FKEY NAME TOO LONG. RENAME FKEY: %s: from %s[%d] to %s[%d] ' % ( fkey_dict_key, expected_fkey_constraint_name, len(expected_fkey_constraint_name), constraint_name, len(constraint_name)))
     
     return(constraint_name)
@@ -375,7 +378,7 @@ def get_fkey_parent_rid_column_name(fkey):
 
 # ----------------------------------------------
 # given fkey, get the corresponding fkey based on the fkey_type except itself. 
-def get_equivalent_fkey_by_type(fkey, fkey_type="*"):
+def get_equivalent_fkey_by_type(fkey, fkey_type="MMCIF"):
     fkey_col_names = {c.name for c in fkey.column_map.keys()}    
     fkey_parent_col_names = {c.name for c in fkey.column_map.values()}
 
@@ -383,7 +386,7 @@ def get_equivalent_fkey_by_type(fkey, fkey_type="*"):
     parent_rid_col_name = get_fkey_parent_rid_column_name(fkey)
     rid_column_exist = (True if parent_rid_col_name in fkey.table.columns.elements else False)
 
-    # try capitalize: a hack since we have both patter!!
+    # try capitalize: a hack since we have both patterns!!
     if not rid_column_exist:
         # Different naming convention.
         parent_rid_col_name_alt = (parent_rid_col_name.capitalize()).replace("_rid", "_RID")
@@ -403,8 +406,6 @@ def get_equivalent_fkey_by_type(fkey, fkey_type="*"):
         col_names = (fkey_col_names|{parent_rid_col_name}) - {"structure_id"}
     elif fkey_type == 'MMCIF':
         col_names = (fkey_col_names - {parent_rid_col_name}) | {"structure_id"}
-    elif fkey_type == '*' and rid_column_exist:
-        col_names = (fkey_col_names - {parent_rid_col_name}) | {"structure_id"}
     else:
         return None
 
@@ -421,6 +422,7 @@ def get_equivalent_fkey_by_type(fkey, fkey_type="*"):
         print("SCHEMA ERROR: MULTIPLE MATCH EXIST: More than 1 are found")
         return(match_list[0])
     else:
+        print("-- found matching %s fkey: %s : %s => %s -> %s " % (fkey_type, fk.table.name, fk.constraint_name, {c.name for c in fk.column_map.keys()}, {c.name for c in fk.column_map.values()}))
         return(match_list[0])
 
 # ----------------------------------------------
@@ -439,15 +441,17 @@ def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, co
     combo2_count = 1
     primary_count = 1
     
-    print("=========== print_fkeys_with_rid with ncols = %d ================= " % (ncols))
+    #print("=========== print_fkeys_with_rid with ncols = %d ================= " % (ncols))
     for table in sorted(schema.tables.values(), key = lambda x: x.name):
-        
+        #print("\n====== table: %s ================= " % (table.name))        
         for fkey in table.foreign_keys:
             fkey_length = len(fkey.columns)
             fkey_parent_col_names = {c.name for c in fkey.column_map.values()}
             fkey_col_names = {c.name for c in fkey.column_map.keys()}
             pk_table = fkey.pk_table
 
+            #print("---- %s -> %s : %s : %s -> %s" % (table.name, fkey.pk_table.name, fkey.constraint_name, fkey_col_names, fkey_parent_col_names))
+            
             # only look at fkeys to PDB schema (not Vocab)
             if fkey.pk_table.schema.name != 'PDB':
                 continue
@@ -542,7 +546,7 @@ def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, co
 
                     # 5.1 check parent column in the table
                     if parent_rid_column_name not in table.columns.elements:
-                        # TODO: create parent RID column
+                        # TODO: create parent RID column. Can't set nullok to False. Need to set after all rows have RID filled in. 
                         print("    +col: Add new column: %s : %s for fkey %s:%s" % (table.name, parent_rid_column_name, fkey.constraint_name, fkey_col_names))
                         #table.create_column(Column.define(
                         #    parent_rid_column_name,
@@ -593,7 +597,8 @@ def main(server_name, catalog_id, credentials):
     catalog.dcctx['cid'] = "oneoff/model"
     model = catalog.getCatalogModel()
 
-    refactor_fkeys(model, 2, combo1_included=True, combo2_included=False, primary_types=("COMBO1"))
+    #refactor_fkeys(model, 2, combo1_included=True, combo2_included=False, primary_types=("COMBO1"))
+    refactor_fkeys(model, 2, combo1_included=True, combo2_included=True, primary_types=())
  
         
 
