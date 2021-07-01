@@ -296,7 +296,7 @@ header .kicker { text-align: center; letter-spacing: 0.05em; color: white; line-
 @media (max-width: 640px) { header { background-position: 50% 20px, 50% 50%; }
   header nav { float: none; text-align: center; padding-top: 90px; }
   header h1 { padding-top: 0px; } }
-footer { border-top: 1px solid #333; height: 132px; background-color: #B4B2B1; }
+footer { border-top: 1px solid #333; height: 132px; background-color: #857C77; }
 footer .lockup { padding: 20px; }
 footer .lockup:after { content: ""; display: table; clear: both; }
 footer .lockup .content-wrap { margin: 10px auto; display: block; width: 60%; text-align: center; }
