@@ -281,11 +281,11 @@ table tr:last-child td:last-child { -moz-border-radius-bottomright: 3px; -webkit
 .alt-section table { margin: 0px auto; }
 .alt-section td, .alt-section th { border: 1px solid #999; padding: 0.5rem; }
 
-h3, header nav a, header .kicker, footer .lockup .content-wrap a { font-size: 14px; font-weight: 600; }
 
-header { padding-bottom: 30px; margin-top: 40px; }
-header nav { float: right; padding: 30px 30px 0 0; margin: 0.67em 0; }
-header nav a { display: inline-block; margin-left: 20px; color: #404040; font-size: 1.25em; }
+
+header { padding-bottom: 0; margin-top: 0; }
+header nav { float: right; padding: 0; margin: 0; width: 100%;}
+header nav a { display: inline-block; margin-left: 20px; color: #404040; }
 header nav a:hover { color: #90b3e0; }
 header span.titlewrap { display: inline-block; }
 header h1 { text-align: left; font-size: 2.8rem; font-weight: 700; color: #404040; letter-spacing: 0.025em; margin-bottom: 20px; clear: both; }
@@ -296,7 +296,7 @@ header .kicker { text-align: center; letter-spacing: 0.05em; color: white; line-
 @media (max-width: 640px) { header { background-position: 50% 20px, 50% 50%; }
   header nav { float: none; text-align: center; padding-top: 90px; }
   header h1 { padding-top: 0px; } }
-footer { border-top: 1px solid #333; height: 132px; background-color: #6C6473; }
+footer { border-top: 1px solid #333; height: 132px; background-color: #B4B2B1; }
 footer .lockup { padding: 20px; }
 footer .lockup:after { content: ""; display: table; clear: both; }
 footer .lockup .content-wrap { margin: 10px auto; display: block; width: 60%; text-align: center; }
@@ -349,13 +349,17 @@ footer .lockup .content-wrap a:hover { color: #90b3e0; }
 .section-help { margin-bottom: 50px; }
 .section-help .help-content { margin: 0; font-size: 16px; min-height: 338px; margin-bottom: 50px; }
 
-html { margin: 0; padding: 30px ; }
+html { margin: 0; padding: 0; }
 
-body { background-color: #5D6D7E; }
+body { background-color: #5D6D7E !important; }
 
-.wrap { width: 1100px; margin: 40px auto; background-color: #fff; }
+.wrap { width: 1100px; margin: 80px auto; background-color: #fff; }
 
 .section { width: 820px; margin: 0 auto; }
+
+.container {display: flex; flex-direction: row; flex-wrap: nowrap; align-items: flex-start; padding: 0px 25px 0px 25px;}
+
+.logo img {flex: 1; width: 33.33%;}
 
 @media screen and (max-width: 1344px) { .wrap { width: 1220px; } }
 @media screen and (max-width: 1280px) { .wrap { width: 1100px; } }
