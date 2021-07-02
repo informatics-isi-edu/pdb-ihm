@@ -285,7 +285,7 @@ table tr:last-child td:last-child { -moz-border-radius-bottomright: 3px; -webkit
 
 header { padding-bottom: 0; margin-top: 0; }
 header nav { float: right; padding: 0; margin: 0; width: 100%;}
-header nav a { display: inline-block; margin-left: 20px; color: #404040; }
+header nav a { display: inline-block; color: #404040; }
 header nav a:hover { color: #90b3e0; }
 header span.titlewrap { display: inline-block; }
 header h1 { text-align: left; font-size: 2.8rem; font-weight: 700; color: #404040; letter-spacing: 0.025em; margin-bottom: 20px; clear: both; }
