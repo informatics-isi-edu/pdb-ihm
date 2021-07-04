@@ -138,7 +138,7 @@ _work_units.append(
 
 class Worker (object):
     # server to talk to... defaults to our own FQDN
-    servername = os.getenv('PDB_SERVER', 'pdb.isrd.isi.edu')
+    servername = os.getenv('PDB_SERVER', 'data.pdb-dev.org')
 
     # catalog number
     catalog_number = os.getenv('CATALOG', '1')
