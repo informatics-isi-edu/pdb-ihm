@@ -6150,7 +6150,7 @@
                      "markdown_name" : "Workflow Status",
                      "source" : [
                         {
-                           "out" : [
+                           "outbound" : [
                               "PDB",
                               "entry_workflow_status_fkey"
                            ]
