@@ -6139,6 +6139,67 @@
                         "entry_Owner_fkey"
                     ]
                 ],
+                "filter": {
+                	"and":
+                	[
+                  {
+                     "markdown_name" : "Accession Code",
+                     "source" : "accession_code"
+                  },
+                  {
+                     "markdown_name" : "Workflow Status",
+                     "source" : [
+                        {
+                           "out" : [
+                              "PDB",
+                              "entry_workflow_status_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "Generated mmCIF Processing Status",
+                     "source" : "Generated_mmCIF_Processing_Status"
+                  },
+                  {
+                     "markdown_name" : "Authors",
+                     "source" : [
+                        {
+                           "inbound" : [
+                              "PDB",
+                              "citation_author_structure_id_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "Citations",
+                     "source" : [
+                        {
+                           "inbound" : [
+                              "PDB",
+                              "citation_structure_id_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "Software",
+                     "source" : [
+                        {
+                           "inbound" : [
+                              "PDB",
+                              "software_structure_id_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  }
+                ]
+                },
                 "detailed": [
                     "RID",
                     "id",
