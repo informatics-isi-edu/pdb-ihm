@@ -6102,6 +6102,14 @@
             "table": "entry",
             "uri": "tag:isrd.isi.edu,2016:table-display",
             "value": {
+	            "compact" : {
+	               "row_order" : [
+	                  {
+	                     "column" : "RCT",
+	                     "descending" : true
+	                  }
+	               ]
+	            },
                 "row_name": {
                     "row_markdown_pattern": "{{{id}}}"
                 }
@@ -6124,14 +6132,30 @@
                     "Generated_mmCIF_Processing_Status",
                     "Record_Status_Detail",
                     "accession_code",
-                    [
-                        "PDB",
-                        "entry_RCB_fkey"
-                    ],
-                    [
-                        "PDB",
-                        "entry_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "entry_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "entry_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -6220,16 +6244,6 @@
                     "Generated_mmCIF_Processing_Status",
                     "Record_Status_Detail",
                     "accession_code",
-                    [
-                        "PDB",
-                        "entry_RCB_fkey"
-                    ],
-                    [
-                        "PDB",
-                        "entry_RMB_fkey"
-                    ],
-                    "RCT",
-                    "RMT",
                     [
                         "PDB",
                         "entry_Owner_fkey"
