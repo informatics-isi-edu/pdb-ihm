@@ -4,7 +4,7 @@
 # Distributed under the (new) BSD License. See LICENSE.txt for more info.
 #
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name="PDB WORKFLOW",

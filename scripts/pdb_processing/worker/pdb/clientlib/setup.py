@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(name='pdb_workflow_processing_lib',
       description='library for generating the pdb workflow processing',
