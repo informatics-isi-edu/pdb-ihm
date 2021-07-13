@@ -9,7 +9,7 @@ from setuptools import setup
 setup(
     name="pdb_workflow_processing_client",
     description="Script for pdb workflow processing",
-    version="0.1-prerelease",
+    version="0.1.1",
     scripts=[
         "pdb_workflow_processing.py",
     ],

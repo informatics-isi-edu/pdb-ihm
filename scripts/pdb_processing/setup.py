@@ -9,7 +9,7 @@ from setuptools import setup
 setup(
     name="PDB WORKFLOW",
     description="PDB WORKFLOW PROCESSING",
-    version="0.1-prerelease",
+    version="0.1.1",
     scripts=[
         "bin/pdb_worker"
     ],
