@@ -6129,9 +6129,9 @@
                         "PDB",
                         "entry_workflow_status_fkey"
                     ],
+                    "accession_code",
                     "Generated_mmCIF_Processing_Status",
                     "Record_Status_Detail",
-                    "accession_code",
                   {
                      "markdown_name" : "RCB",
                      "source" : [
@@ -6241,9 +6241,9 @@
                         "PDB",
                         "entry_workflow_status_fkey"
                     ],
+                    "accession_code",
                     "Generated_mmCIF_Processing_Status",
                     "Record_Status_Detail",
-                    "accession_code",
                     [
                         "PDB",
                         "entry_Owner_fkey"
