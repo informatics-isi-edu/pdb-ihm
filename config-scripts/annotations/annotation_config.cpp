@@ -168,11 +168,11 @@
             "uri": "tag:isrd.isi.edu,2016:column-display",
             "value": {
                 "compact": {
-                    "markdown_pattern": "{{#if Image_File_URL }}[![{{Image_File_Name}}]({{{Image_File_URL}}}){width=200 height=200}]({{{Image_File_URL}}}){target=_blank}{{/if}}",
+                    "markdown_pattern": "{{#if Image_File_URL }}[![{{Image_File_Name}}]({{{Image_File_URL}}}){width=auto height=200}]({{{Image_File_URL}}}){target=_blank}{{/if}}",
                     "template_engine": "handlebars"
                 },
                 "detailed": {
-                    "markdown_pattern": "{{#if Image_File_URL }}![{{Image_File_Name}}]({{{Image_File_URL}}}){width=500 height=auto}{{/if}}",
+                    "markdown_pattern": "{{#if Image_File_URL }}![{{Image_File_Name}}]({{{Image_File_URL}}}){width=auto height=300}{{/if}}",
                     "template_engine": "handlebars"
                 }
             }
