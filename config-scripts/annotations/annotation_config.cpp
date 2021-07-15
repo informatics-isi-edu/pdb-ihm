@@ -6172,6 +6172,8 @@
                   },
                   {
                      "markdown_name" : "Workflow Status",
+					  "hide_null_choice": true, 
+					  "hide_not_null_choice": true,
                      "source" : [
                         {
                            "outbound" : [
@@ -10119,7 +10121,7 @@
             "uri": "tag:isrd.isi.edu,2016:table-display",
             "value": {
                 "row_name": {
-                    "row_markdown_pattern": "{{{id}}}"
+                    "row_markdown_pattern": "{{{title}}}, {{{journal_abbrev}}}, {{{year}}}"
                 }
             }
         },
@@ -15528,7 +15530,7 @@
             "uri": "tag:isrd.isi.edu,2016:table-display",
             "value": {
                 "row_name": {
-                    "row_markdown_pattern": "{{{pdbx_ordinal}}}"
+                    "row_markdown_pattern": "{{{name}}} {{{version}}}"
                 }
             }
         },
