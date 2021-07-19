@@ -172,7 +172,7 @@
                     "template_engine": "handlebars"
                 },
                 "detailed": {
-                    "markdown_pattern": "{{#if Image_File_URL }}![{{Image_File_Name}}]({{{Image_File_URL}}}){width=auto height=300}{{/if}}",
+                    "markdown_pattern": "{{#if Image_File_URL }}[![{{Image_File_Name}}]({{{Image_File_URL}}}){width=auto height=300}]({{{Image_File_URL}}}){target=_blank}{{/if}}",
                     "template_engine": "handlebars"
                 }
             }
