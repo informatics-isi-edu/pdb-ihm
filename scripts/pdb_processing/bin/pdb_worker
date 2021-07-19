@@ -19,7 +19,8 @@ FORMAT = '%(asctime)s: %(levelname)s <%(module)s>: %(message)s'
 logger = logging.getLogger(__name__)
 loglevel = os.getenv('LOGLEVEL', 'info')
 loglevel =__LOGLEVEL.get(loglevel)
-init_logging(level=loglevel, log_format=FORMAT, file_path='/home/pdbihm/pdb/log/pdb.log')
+logfile = os.getenv('PDB_LOG', '/home/pdbihm/pdb/log/pdb.log')
+init_logging(level=loglevel, log_format=FORMAT, file_path=logfile)
 
 class WorkerRuntimeError (RuntimeError):
     pass
