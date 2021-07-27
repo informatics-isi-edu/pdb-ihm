@@ -78,6 +78,7 @@ STRING_REPLACEMENT_DICT = OrderedDict([
     ("_class_", "_cla_"),
     ("_group_", "_grp_"),
     ("_state_", "_sta_"),
+    ("_reactive_", "_react_"),    
 ])
 
 TABLE_NAME_DICT = {
@@ -89,21 +90,21 @@ KEY_NAME_DICT = {
 
 # multiple keys to the same parent tables: 2-column with RID
 PARENT_RID_COLUMN_NAME_DICT = {
-    # -- no need for this group of dict. Use hueristics
-    #('ihm_cross_link_restraint', 'struct_asym', ('asym_id_1', 'structure_id')) : 'Asym_1_RID',
-    #('ihm_cross_link_restraint', 'struct_asym', ('asym_id_2', 'structure_id')) : 'Asym_2_RID', 
-    #('ihm_derived_distance_restraint', 'ihm_feature_list', ('feature_id_1', 'structure_id')) : 'Feature_List_RID_1', 
-    #('ihm_derived_distance_restraint', 'ihm_feature_list', ('feature_id_2', 'structure_id')) : 'Feature_List_RID_2', 
-    #('ihm_ordered_ensemble', 'ihm_model_group', ('model_group_id_begin', 'structure_id')) : 'Model_Group_RID_Begin', 
-    #('ihm_ordered_ensemble', 'ihm_model_group', ('model_group_id_end', 'structure_id')) : 'Model_Group_End_RID',  
-    #('ihm_predicted_contact_restraint', 'struct_asym', ('asym_id_1', 'structure_id')) : 'Asym_RID_1', 
-    #('ihm_predicted_contact_restraint', 'struct_asym', ('asym_id_2', 'structure_id')) : 'Asym_RID_2', 
-    #('ihm_probe_list', 'ihm_chemical_component_descriptor', ('reactive_probe_chem_comp_descriptor_id')) : 'Reactive_Probe_Chem_Comp_Descriptor_RID', # single fkey
-    #('ihm_probe_list', 'ihm_chemical_component_descriptor', ('probe_chem_comp_descriptor_id')) : 'Probe_Chem_Comp_Descriptor_RID', 
-    #('ihm_related_datasets', 'ihm_dataset_list', ('dataset_list_id_derived', 'structure_id')) : 'Dataset_List_RID_Derived', 
-    #('ihm_related_datasets', 'ihm_dataset_list', ('dataset_list_id_primary', 'structure_id')) : 'Dataset_List_RID_Primary', 
-    #('ihm_struct_assembly_details', 'ihm_struct_assembly', ('parent_assembly_id', 'structure_id')) : 'Parent_Assembly_RID', 
-    #('ihm_struct_assembly_details', 'ihm_struct_assembly', ('assembly_id', 'structure_id')) : 'Assembly_RID',
+    # -- May not need for this group of dict. Might be able to use hueristics. But this is fine too.
+    ('ihm_cross_link_restraint', 'struct_asym', ('asym_id_1', 'structure_id')) : 'Asym_RID_1',
+    ('ihm_cross_link_restraint', 'struct_asym', ('asym_id_2', 'structure_id')) : 'Asym_RID_2', 
+    ('ihm_derived_distance_restraint', 'ihm_feature_list', ('feature_id_1', 'structure_id')) : 'Feature_RID_1', 
+    ('ihm_derived_distance_restraint', 'ihm_feature_list', ('feature_id_2', 'structure_id')) : 'Feature_RID_2', 
+    ('ihm_ordered_ensemble', 'ihm_model_group', ('model_group_id_begin', 'structure_id')) : 'Model_Group_RID_Begin', 
+    ('ihm_ordered_ensemble', 'ihm_model_group', ('model_group_id_end', 'structure_id')) : 'Model_Group_RID_End',  
+    ('ihm_predicted_contact_restraint', 'struct_asym', ('asym_id_1', 'structure_id')) : 'Asym_RID_1', 
+    ('ihm_predicted_contact_restraint', 'struct_asym', ('asym_id_2', 'structure_id')) : 'Asym_RID_2', 
+    ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('reactive_probe_chem_comp_descriptor_id')) : 'Reactive_Probe_Chem_Comp_Descriptor_RID', # single fkey
+    ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('probe_chem_comp_descriptor_id')) : 'Probe_Chem_Comp_Descriptor_RID', 
+    ('ihm_related_datasets', 'ihm_dataset_list', ('dataset_list_id_derived', 'structure_id')) : 'Dataset_List_RID_Derived', 
+    ('ihm_related_datasets', 'ihm_dataset_list', ('dataset_list_id_primary', 'structure_id')) : 'Dataset_List_RID_Primary', 
+    ('ihm_struct_assembly_details', 'ihm_struct_assembly', ('parent_assembly_id', 'structure_id')) : 'Parent_Assembly_RID', 
+    ('ihm_struct_assembly_details', 'ihm_struct_assembly', ('assembly_id', 'structure_id')) : 'Assembly_RID',
     #
     # -- TODO: out of place RID column name. Replace with "Script_File_RID"
     ('ihm_starting_computational_models', 'ihm_external_files', ('script_file_id', 'structure_id')) : 'External_Files_RID',
@@ -126,7 +127,7 @@ PARENT_RID_COLUMN_NAME_DICT = {
     The names in the dict should not exceed the maximum name length.
 '''
 FKEY_NAME_DICT = {
-    # names too long
+    # Names too long. Use hueristics for this group.
     #('ihm_2dem_class_average_fitting', 'ihm_2dem_class_average_restraint', ('Ihm_2dem_class_average_restraint_RID', 'restraint_id', 'structure_id')): "ihm_2dem_class_average_fitting_ihm_2dem_class_average_restraint_combo1_fkey",  # 75
     #('ihm_cross_link_result_parameters', 'ihm_cross_link_restraint', ('Ihm_cross_link_restraint_RID', 'restraint_id', 'structure_id')): "ihm_cross_link_result_parameters_ihm_cross_link_restraint_combo1_fkey",  # 69
     #('ihm_geometric_object_axis', 'ihm_geometric_object_transformation', ('Ihm_geometric_object_transformation_RID', 'transformation_id')): "ihm_geometric_object_axis_ihm_geometric_object_transformation_combo2_fkey",  # 73
@@ -147,34 +148,38 @@ FKEY_NAME_DICT = {
     #('ihm_starting_comparative_models', 'ihm_starting_model_details', ('Ihm_starting_model_details_RID', 'starting_model_id', 'structure_id')): "ihm_starting_comparative_models_ihm_starting_model_details_combo1_fkey",  # 70
     #('ihm_starting_computational_models', 'ihm_starting_model_details', ('Ihm_starting_model_details_RID', 'starting_model_id', 'structure_id')): "ihm_starting_computational_models_ihm_starting_model_details_combo1_fkey",  # 72
     #('ihm_struct_assembly_class_link', 'ihm_struct_assembly_class', ('Ihm_struct_assembly_class_RID', 'class_id', 'structure_id')): "ihm_struct_assembly_class_link_ihm_struct_assembly_class_combo1_fkey",  # 68
-    
-    # multiple keys to the same parent tables: 2-column with RID
-    ('ihm_cross_link_restraint', 'struct_asym', ('Struct_asym_1_RID', 'asym_id_1', 'structure_id')) : "ihm_cross_link_restraint__struct_asym_1_combo1_fkey",
-    ('ihm_cross_link_restraint', 'struct_asym', ('Struct_asym_2_RID', 'asym_id_2', 'structure_id')) : "ihm_cross_link_restraint__struct_asym_2_combo1_fkey",
+    #
+    # multiple keys to the same parent tables: 2-column with RID.
+    # Note: - When remove _ihm_ replace, with _ to easily identify the table.
+    #       - All RID column names in this group should follow naming convention above e.g. Struct_asym_1_RID should be Asym_RID_1
+    #       - if needed, shorten reactive to react
+    ('ihm_cross_link_restraint', 'struct_asym', ('Struct_asym_1_RID', 'asym_id_1', 'structure_id')) : "ihm_cross_link_restraint_struct_asym_1_combo1_fkey",
+    ('ihm_cross_link_restraint', 'struct_asym', ('Struct_asym_2_RID', 'asym_id_2', 'structure_id')) : "ihm_cross_link_restraint_struct_asym_2_combo1_fkey",
     ('ihm_derived_distance_restraint', 'ihm_feature_list', ('Ihm_feature_list_1_RID', 'feature_id_1', 'structure_id')) : "ihm_derived_distance_restraint__feature_list_1_combo1_fkey",
     ('ihm_derived_distance_restraint', 'ihm_feature_list', ('Ihm_feature_list_2_RID', 'feature_id_2', 'structure_id')) : "ihm_derived_distance_restraint__feature_list_2_combo1_fkey",
     ('ihm_ordered_ensemble', 'ihm_model_group', ('Ihm_model_group_begin_RID', 'model_group_id_begin', 'structure_id')) : "ihm_ordered_ensemble__model_group_begin_combo1_fkey",
     ('ihm_ordered_ensemble', 'ihm_model_group', ('Ihm_model_group_end_RID', 'model_group_id_end', 'structure_id')) : "ihm_ordered_ensemble__model_group_end_combo1_fkey",
-    ('ihm_predicted_contact_restraint', 'struct_asym', ('Struct_asym_1_RID', 'asym_id_1', 'structure_id')) : "ihm_predicted_contact_restraint__struct_asym_1_combo1_fkey",
-    ('ihm_predicted_contact_restraint', 'struct_asym', ('Struct_asym_2_RID', 'asym_id_2', 'structure_id')) : "ihm_predicted_contact_restraint__struct_asym_2_combo1_fkey",
-    ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('Ihm_chemical_component_descriptor_reactive_RID', 'reactive_probe_chem_comp_descriptor_id')) : "ihm_probe_list__chem_comp_descriptor_reactive_combo2_fkey",
-    ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('Ihm_chemical_component_descriptor_probe_RID', 'probe_chem_comp_descriptor_id')) : "ihm_probe_list__chem_comp_descriptor_probe_combo2_fkey", #??
+    ('ihm_predicted_contact_restraint', 'struct_asym', ('Struct_asym_1_RID', 'asym_id_1', 'structure_id')) : "ihm_predicted_contact_restraint_struct_asym_1_combo1_fkey",
+    ('ihm_predicted_contact_restraint', 'struct_asym', ('Struct_asym_2_RID', 'asym_id_2', 'structure_id')) : "ihm_predicted_contact_restraint_struct_asym_2_combo1_fkey",
+    ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('Ihm_chemical_component_descriptor_reactive_RID', 'reactive_probe_chem_comp_descriptor_id')) : "ihm_probe_list__chem_comp_descriptor_reactive_probe_combo2_fkey",
+    ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('Ihm_chemical_component_descriptor_probe_RID', 'probe_chem_comp_descriptor_id')) : "ihm_probe_list__chem_comp_descriptor_probe_combo2_fkey", 
     ('ihm_related_datasets', 'ihm_dataset_list', ('Ihm_dataset_list_derived_RID', 'dataset_list_id_derived', 'structure_id')) : "ihm_related_datasets__dataset_list_derived_combo1_fkey",
     ('ihm_related_datasets', 'ihm_dataset_list', ('Ihm_dataset_list_primary_RID', 'dataset_list_id_primary', 'structure_id')) : "ihm_related_datasets__dataset_list_primary_combo1_fkey",
     ('ihm_struct_assembly_details', 'ihm_struct_assembly', ('Ihm_struct_assembly_parent_RID', 'parent_assembly_id', 'structure_id')) : "ihm_struct_assembly_details__struct_assembly_parent_combo1_fkey",
-    ('ihm_struct_assembly_details', 'ihm_struct_assembly', ('Ihm_struct_assembly_RID', 'assembly_id', 'structure_id')) : "ihm_struct_assembly_details__struct_assembly_self_combo1_fkey", #??
-
+    ('ihm_struct_assembly_details', 'ihm_struct_assembly', ('Ihm_struct_assembly_RID', 'assembly_id', 'structure_id')) : "ihm_struct_assembly_details__struct_assembly_combo1_fkey", 
+    #
     # multiple keys to the same parent tables: 4-column with RID
-    ('ihm_cross_link_list', 'entity_poly_seq', ('Entity_poly_seq_1_RID', 'comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : "ihm_cross_link_list__mm_poly_res_label_1_combo1_fkey",
-    ('ihm_cross_link_list', 'entity_poly_seq', ('Entity_poly_seq_2_RID', 'comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : "ihm_cross_link_list__mm_poly_res_label_2_combo1_fkey",
-    ('ihm_cross_link_restraint', 'entity_poly_seq', ('Entity_poly_seq_1_RID', 'comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : "ihm_cross_link_restraint__mm_poly_res_label_1_combo1_fkey",
-    ('ihm_cross_link_restraint', 'entity_poly_seq', ('Entity_poly_seq_2_RID', 'comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : "ihm_cross_link_restraint__mm_poly_res_label_2_combo1_fkey",
-    ('ihm_poly_residue_feature', 'entity_poly_seq', ('Entity_poly_seq_begin_RID', 'comp_id_begin', 'entity_id', 'seq_id_begin', 'structure_id')) : "ihm_poly_residue_feature__mm_poly_res_label_begin_combo1_fkey",
-    ('ihm_poly_residue_feature', 'entity_poly_seq', ('Entity_poly_seq_end_RID', 'comp_id_end', 'entity_id', 'seq_id_end', 'structure_id')) : "ihm_poly_residue_feature__mm_poly_res_label_end_combo1_fkey",
-    ('ihm_predicted_contact_restraint', 'entity_poly_seq', ('Entity_poly_seq_1_RID', 'comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : "ihm_predicted_contact_restraint__mm_poly_res_label_1_combo1_fkey",
-    ('ihm_predicted_contact_restraint', 'entity_poly_seq', ('Entity_poly_seq_2_RID', 'comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : "ihm_predicted_contact_restraint__mm_poly_res_label_2_combo1_fkey",
-    ('ihm_residues_not_modeled', 'entity_poly_seq', ('Entity_poly_seq_begin_RID', 'comp_id_begin', 'entity_id', 'seq_id_begin', 'structure_id')) : "ihm_residues_not_modeled__mm_poly_res_label_begin_combo1_fkey",    
-    ('ihm_residues_not_modeled', 'entity_poly_seq', ('Entity_poly_seq_end_RID', 'comp_id_end', 'entity_id', 'seq_id_end', 'structure_id')) : "ihm_residues_not_modeled__mm_poly_res_label_end_combo1_fkey",
+    # Note: - The RID column names should be Capitalized e.g. Entity_Poly_Seq_RID_1
+    ('ihm_cross_link_list', 'entity_poly_seq', ('Entity_poly_seq_1_RID', 'comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : "ihm_cross_link_list_entity_poly_seq_1_combo1_fkey",
+    ('ihm_cross_link_list', 'entity_poly_seq', ('Entity_poly_seq_2_RID', 'comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : "ihm_cross_link_list_entity_poly_seq_2_combo1_fkey",
+    ('ihm_cross_link_restraint', 'entity_poly_seq', ('Entity_poly_seq_1_RID', 'comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : "ihm_cross_link_restraint_entity_poly_seq_1_combo1_fkey",
+    ('ihm_cross_link_restraint', 'entity_poly_seq', ('Entity_poly_seq_2_RID', 'comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : "ihm_cross_link_restraint_entity_poly_seq_2_combo1_fkey",
+    ('ihm_poly_residue_feature', 'entity_poly_seq', ('Entity_poly_seq_begin_RID', 'comp_id_begin', 'entity_id', 'seq_id_begin', 'structure_id')) : "ihm_poly_residue_feature_entity_poly_seq_begin_combo1_fkey",
+    ('ihm_poly_residue_feature', 'entity_poly_seq', ('Entity_poly_seq_end_RID', 'comp_id_end', 'entity_id', 'seq_id_end', 'structure_id')) : "ihm_poly_residue_feature_entity_poly_seq_end_combo1_fkey",
+    ('ihm_predicted_contact_restraint', 'entity_poly_seq', ('Entity_poly_seq_1_RID', 'comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : "ihm_predicted_contact_restraint_entity_poly_seq_1_combo1_fkey",
+    ('ihm_predicted_contact_restraint', 'entity_poly_seq', ('Entity_poly_seq_2_RID', 'comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : "ihm_predicted_contact_restraint_entity_poly_seq_2_combo1_fkey",
+    ('ihm_residues_not_modeled', 'entity_poly_seq', ('Entity_poly_seq_begin_RID', 'comp_id_begin', 'entity_id', 'seq_id_begin', 'structure_id')) : "ihm_residues_not_modeled_entity_poly_seq_begin_combo1_fkey",    
+    ('ihm_residues_not_modeled', 'entity_poly_seq', ('Entity_poly_seq_end_RID', 'comp_id_end', 'entity_id', 'seq_id_end', 'structure_id')) : "ihm_residues_not_modeled_entity_poly_seq_end_combo1_fkey",
 }
 
 # ----------------------------------------------
