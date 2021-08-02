@@ -91,20 +91,20 @@ KEY_NAME_DICT = {
 # multiple keys to the same parent tables: 2-column with RID
 PARENT_RID_COLUMN_NAME_DICT = {
     # -- May not need for this group of dict. Might be able to use hueristics. But this is fine too.
-    ('ihm_cross_link_restraint', 'struct_asym', ('asym_id_1', 'structure_id')) : 'Asym_RID_1',
+    ('ihm_cross_link_restraint', 'struct_asym', ('asym_id_1', 'structure_id')) : 'Asym_RID_1',  # Struct_Asym_RID_1
     ('ihm_cross_link_restraint', 'struct_asym', ('asym_id_2', 'structure_id')) : 'Asym_RID_2', 
-    ('ihm_derived_distance_restraint', 'ihm_feature_list', ('feature_id_1', 'structure_id')) : 'Feature_RID_1', 
+    ('ihm_derived_distance_restraint', 'ihm_feature_list', ('feature_id_1', 'structure_id')) : 'Feature_RID_1', # Ihm_Feature_List_RID_1 (without Ihm?)
     ('ihm_derived_distance_restraint', 'ihm_feature_list', ('feature_id_2', 'structure_id')) : 'Feature_RID_2', 
-    ('ihm_ordered_ensemble', 'ihm_model_group', ('model_group_id_begin', 'structure_id')) : 'Model_Group_RID_Begin', 
+    ('ihm_ordered_ensemble', 'ihm_model_group', ('model_group_id_begin', 'structure_id')) : 'Model_Group_RID_Begin',  
     ('ihm_ordered_ensemble', 'ihm_model_group', ('model_group_id_end', 'structure_id')) : 'Model_Group_RID_End',  
-    ('ihm_predicted_contact_restraint', 'struct_asym', ('asym_id_1', 'structure_id')) : 'Asym_RID_1', 
+    ('ihm_predicted_contact_restraint', 'struct_asym', ('asym_id_1', 'structure_id')) : 'Asym_RID_1',  # Struct_Asym_RID_1
     ('ihm_predicted_contact_restraint', 'struct_asym', ('asym_id_2', 'structure_id')) : 'Asym_RID_2', 
-    ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('reactive_probe_chem_comp_descriptor_id')) : 'Reactive_Probe_Chem_Comp_Descriptor_RID', # single fkey
-    ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('probe_chem_comp_descriptor_id')) : 'Probe_Chem_Comp_Descriptor_RID', 
-    ('ihm_related_datasets', 'ihm_dataset_list', ('dataset_list_id_derived', 'structure_id')) : 'Dataset_List_RID_Derived', 
-    ('ihm_related_datasets', 'ihm_dataset_list', ('dataset_list_id_primary', 'structure_id')) : 'Dataset_List_RID_Primary', 
-    ('ihm_struct_assembly_details', 'ihm_struct_assembly', ('parent_assembly_id', 'structure_id')) : 'Parent_Assembly_RID', 
-    ('ihm_struct_assembly_details', 'ihm_struct_assembly', ('assembly_id', 'structure_id')) : 'Assembly_RID',
+    ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('reactive_probe_chem_comp_descriptor_id')) : 'Reactive_Probe_Chem_Comp_Descriptor_RID', ##! single col 
+    ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('probe_chem_comp_descriptor_id')) : 'Probe_Chem_Comp_Descriptor_RID', ##! single column
+    ('ihm_related_datasets', 'ihm_dataset_list', ('dataset_list_id_derived', 'structure_id')) : 'Dataset_List_RID_Derived',  
+    ('ihm_related_datasets', 'ihm_dataset_list', ('dataset_list_id_primary', 'structure_id')) : 'Dataset_List_RID_Primary',  
+    ('ihm_struct_assembly_details', 'ihm_struct_assembly', ('parent_assembly_id', 'structure_id')) : 'Parent_Assembly_RID',  # Ihm_Parent_Struct_Assemboy_RID
+    ('ihm_struct_assembly_details', 'ihm_struct_assembly', ('assembly_id', 'structure_id')) : 'Assembly_RID',                # Ihm_Struct_Assembly_RID
     #
     # -- TODO: out of place RID column name. Replace with "Script_File_RID"
     ('ihm_starting_computational_models', 'ihm_external_files', ('script_file_id', 'structure_id')) : 'External_Files_RID',
