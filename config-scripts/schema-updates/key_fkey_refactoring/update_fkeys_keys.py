@@ -267,7 +267,7 @@ def get_fkey_constraint_name(fkey, expected_fkey_from_col_names, expected_fkey_t
     fkey_dict_key = (fkey.table.name, fkey.pk_table.name, tuple(sorted(expected_fkey_from_col_names)))
     rid_included = True if "RID" in expected_fkey_to_col_names else False
     struct_id_included = True if "structure_id" in expected_fkey_to_col_names else False
-    fkey_len = len(expected_fkey_to_col_names)
+    fkey_length = len(expected_fkey_to_col_names)
     
     if rid_included and struct_id_included:
         suffix = '_combo1_fkey'
@@ -439,7 +439,7 @@ def get_equivalent_fkey_by_type(fkey, fkey_type="MMCIF"):
    combo2_included: whether to include COMBO2 fkeys in the logic
    primary_types: the types of primary fkeys to be included e.g. ("COMBO1"). If empty, no primary fkeys will be included. 
 '''
-def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, combo2_included=True, primary_types=('combo1', 'combo2')):
+def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, combo2_included=True, primary_types=('COMBO1', 'COMBO2')):
     schema = model.schemas["PDB"]
     deriva_tables = {'Catalog_Group', 'ERMrest_Client', 'Entry_Related_File'}
     combo1_count = 1
