@@ -36,6 +36,16 @@ import re
 # The purpose is to refactor the keys and forieng keys of the PDB table to conform to the naming convention.
 #
 
+messages = []
+
+def write_message(log_file, message):
+    if message in messages:
+        return
+    messages.append(message)
+    fw = open(log_file, 'a')
+    fw.write('{}\n'.format(message))
+    fw.close()
+
 MAX_NAME_LENGTH = 63
 
 KEY_TYPE_SUFFIX_DICT = {
@@ -253,6 +263,7 @@ def get_key_name_by_column_names(table, key_column_names):
         key_name = None
     elif key_name != expected_key_name:
         print('WARNING: RENAME KEY in table %s: "%s[%d] v.s. %s[%d]"  # ' % ( table.name, expected_key_name, len(expected_key_name), key_name, len(key_name)))
+        write_message('rename.log', 'RENAME KEY {}:{} TO {}'.format(table.name, expected_key_name, key_name))
 
     return(key_name)
 
@@ -299,6 +310,7 @@ def get_fkey_constraint_name(fkey, expected_fkey_from_col_names, expected_fkey_t
         constraint_name = None
     elif constraint_name != expected_fkey_constraint_name:
         print('WARNING: FKEY NAME TOO LONG. RENAME FKEY: %s: from %s[%d] to %s[%d] ' % ( fkey_dict_key, expected_fkey_constraint_name, len(expected_fkey_constraint_name), constraint_name, len(constraint_name)))
+        write_message('rename.log', 'RENAME FKEY {}:{} TO {}'.format(fkey.table.name, fkey.constraint_name, constraint_name))
     
     return(constraint_name)
 
@@ -399,6 +411,7 @@ def get_equivalent_fkey_by_type(fkey, fkey_type="MMCIF"):
         if rid_column_exist:
             # TODO: RENAME RID column to be consistent
             print("WARNING: RID COLUMN NAME MISMATCHED: %s should be %s" % (parent_rid_col_name_alt, parent_rid_col_name))
+            write_message('rename.log', 'RENAME COLUMN {}:{} TO {}'.format(fkey.table.name, parent_rid_col_name_alt, parent_rid_col_name))
             #fkey.pk_table.columns[parent_rid_col_name_alt].alter(name=parent_rid_col_name)
         parent_rid_col_name = parent_rid_col_name_alt
         
@@ -543,6 +556,7 @@ def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, co
                         # TODO: rename fkey if the name are not consistent
                         #combo_fk.alter(constraint_name=combo_fkey_constraint_name)
                         print("       RENAME COMBO_FKEY: from %s[%d] to %s[%d]" % (combo_fk.constraint_name, len(combo_fk.constraint_name), combo_fkey_constraint_name, len(combo_fkey_constraint_name)))
+                        write_message('rename.log', 'RENAME FKEY {}:{} TO {}'.format(fkey.table.name, fkey.constraint_name, combo_fkey_constraint_name))
                         pass
 
                 else:
@@ -569,6 +583,7 @@ def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, co
                         # TODO: rename incorrect key names
                         if (parent_key.constraint_name != combo_fkey_parent_key_name):
                             print("    *key exists: rename %s from %s to %s" % (combo_fkey_to_col_names, parent_key.constraint_name, combo_fkey_parent_key_name))
+                            write_message('rename.log', 'RENAME FKEY {}:{} TO {}'.format(fkey.table.name, fkey.constraint_name, combo_fkey_parent_key_name))
                             #parent_key.alter(name=combo_fkey_parent_key_name)
                             
                     # 5.3 create a new fkey
@@ -603,7 +618,8 @@ def main(server_name, catalog_id, credentials):
     model = catalog.getCatalogModel()
 
     #refactor_fkeys(model, 2, combo1_included=True, combo2_included=False, primary_types=("COMBO1"))
-    refactor_fkeys(model, 2, combo1_included=True, combo2_included=True, primary_types=())
+    #refactor_fkeys(model, 2, combo1_included=True, combo2_included=True, primary_types=())
+    refactor_fkeys(model, 2, combo1_included=True, combo2_included=True)
  
         
 
