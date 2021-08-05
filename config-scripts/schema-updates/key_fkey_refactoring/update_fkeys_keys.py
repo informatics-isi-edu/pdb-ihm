@@ -310,7 +310,7 @@ def get_fkey_constraint_name(fkey, expected_fkey_from_col_names, expected_fkey_t
         constraint_name = None
     elif constraint_name != expected_fkey_constraint_name:
         print('WARNING: FKEY NAME TOO LONG. RENAME FKEY: %s: from %s[%d] to %s[%d] ' % ( fkey_dict_key, expected_fkey_constraint_name, len(expected_fkey_constraint_name), constraint_name, len(constraint_name)))
-        write_message('rename.log', 'RENAME FKEY {}:{} TO {}'.format(fkey.table.name, fkey.constraint_name, constraint_name))
+        #write_message('rename.log', 'RENAME FKEY {}:{} TO {}'.format(fkey.table.name, fkey.constraint_name, constraint_name))
     
     return(constraint_name)
 
@@ -556,7 +556,7 @@ def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, co
                         # TODO: rename fkey if the name are not consistent
                         #combo_fk.alter(constraint_name=combo_fkey_constraint_name)
                         print("       RENAME COMBO_FKEY: from %s[%d] to %s[%d]" % (combo_fk.constraint_name, len(combo_fk.constraint_name), combo_fkey_constraint_name, len(combo_fkey_constraint_name)))
-                        write_message('rename.log', 'RENAME FKEY {}:{} TO {}'.format(fkey.table.name, fkey.constraint_name, combo_fkey_constraint_name))
+                        write_message('rename.log', 'RENAME FKEY {}:{} TO {}'.format(fkey.table.name, combo_fk.constraint_name, combo_fkey_constraint_name))
                         pass
 
                 else:
