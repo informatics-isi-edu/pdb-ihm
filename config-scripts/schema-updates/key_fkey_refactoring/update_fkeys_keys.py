@@ -171,8 +171,8 @@ FKEY_NAME_DICT = {
     ('ihm_ordered_ensemble', 'ihm_model_group', ('Ihm_model_group_end_RID', 'model_group_id_end', 'structure_id')) : "ihm_ordered_ensemble__model_group_end_combo1_fkey",
     ('ihm_predicted_contact_restraint', 'struct_asym', ('Struct_asym_1_RID', 'asym_id_1', 'structure_id')) : "ihm_predicted_contact_restraint_struct_asym_1_combo1_fkey",
     ('ihm_predicted_contact_restraint', 'struct_asym', ('Struct_asym_2_RID', 'asym_id_2', 'structure_id')) : "ihm_predicted_contact_restraint_struct_asym_2_combo1_fkey",
-    ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('Ihm_chemical_component_descriptor_reactive_RID', 'reactive_probe_chem_comp_descriptor_id')) : "ihm_probe_list__chem_comp_descriptor_reactive_probe_combo2_fkey",
-    ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('Ihm_chemical_component_descriptor_probe_RID', 'probe_chem_comp_descriptor_id')) : "ihm_probe_list__chem_comp_descriptor_probe_combo2_fkey", 
+    ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('Reactive_Probe_Chem_Comp_Descriptor_RID', 'reactive_probe_chem_comp_descriptor_id')) : "ihm_probe_list__chem_comp_descriptor_reactive_probe_combo2_fkey",
+    ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('Probe_Chem_Comp_Descriptor_RID', 'probe_chem_comp_descriptor_id')) : "ihm_probe_list__chem_comp_descriptor_probe_combo2_fkey", 
     ('ihm_related_datasets', 'ihm_dataset_list', ('Ihm_dataset_list_derived_RID', 'dataset_list_id_derived', 'structure_id')) : "ihm_related_datasets__dataset_list_derived_combo1_fkey",
     ('ihm_related_datasets', 'ihm_dataset_list', ('Ihm_dataset_list_primary_RID', 'dataset_list_id_primary', 'structure_id')) : "ihm_related_datasets__dataset_list_primary_combo1_fkey",
     ('ihm_struct_assembly_details', 'ihm_struct_assembly', ('Ihm_struct_assembly_parent_RID', 'parent_assembly_id', 'structure_id')) : "ihm_struct_assembly_details__struct_assembly_parent_combo1_fkey",
@@ -295,7 +295,7 @@ def get_fkey_constraint_name(fkey, expected_fkey_from_col_names, expected_fkey_t
     if fkey_dict_key in FKEY_NAME_DICT.keys():
         expected_fkey_constraint_name = FKEY_NAME_DICT[fkey_dict_key]
     else:
-        expected_fkey_constraint_name = '_'.join([fkey.table.name, fkey.pk_table.name, suffix])                            
+        expected_fkey_constraint_name = '_'.join([fkey.table.name, fkey.pk_table.name, suffix[1:]])                            
     
     constraint_name = expected_fkey_constraint_name
     contraint_name_length = len(expected_fkey_constraint_name)
@@ -310,7 +310,6 @@ def get_fkey_constraint_name(fkey, expected_fkey_from_col_names, expected_fkey_t
         constraint_name = None
     elif constraint_name != expected_fkey_constraint_name:
         print('WARNING: FKEY NAME TOO LONG. RENAME FKEY: %s: from %s[%d] to %s[%d] ' % ( fkey_dict_key, expected_fkey_constraint_name, len(expected_fkey_constraint_name), constraint_name, len(constraint_name)))
-        #write_message('rename.log', 'RENAME FKEY {}:{} TO {}'.format(fkey.table.name, fkey.constraint_name, constraint_name))
     
     return(constraint_name)
 
@@ -567,6 +566,7 @@ def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, co
                     if parent_rid_column_name not in table.columns.elements:
                         # TODO: create parent RID column. Can't set nullok to False. Need to set after all rows have RID filled in. 
                         print("    +col: Add new column: %s : %s for fkey %s:%s" % (table.name, parent_rid_column_name, fkey.constraint_name, fkey_col_names))
+                        write_message('new.log', 'NEW COLUMN {}:{}'.format(table.name, parent_rid_column_name))
                         #table.create_column(Column.define(
                         #    parent_rid_column_name,
                         #    builtin_types.text,
@@ -577,6 +577,7 @@ def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, co
                     parent_key = fkey.pk_table.key_by_columns(combo_fkey_to_col_names, raise_nomatch=False) 
                     if parent_key is None:
                         print("    +key: c%s create %s %s:%s" % (flag, pk_table.name, combo_fkey_parent_key_name, combo_fkey_to_col_names))
+                        write_message('new.log', 'NEW KEY {}:{} {}'.format(pk_table.name, combo_fkey_parent_key_name, combo_fkey_to_col_names))
                         # TODO: create a new key
                         #Key.define(combo_fkey_to_col_names, constraint_names = [[pk_table.schema.name, combo_fkey_parent_key_name]])
                     else:
@@ -588,6 +589,7 @@ def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, co
                             
                     # 5.3 create a new fkey
                     print("    +c%s:  Add fkey(len=%d) %s -> %s : %s : %s -> %s" % (flag, fkey_length, table.name, fkey.pk_table.name, combo_fkey_constraint_name, combo_fkey_from_col_names, combo_fkey_to_col_names))
+                    write_message('new.log', 'NEW FKEY {}:{} TO TABLE {} {} {}'.format(table.name, combo_fkey_constraint_name, fkey.pk_table.name, combo_fkey_from_col_names, combo_fkey_to_col_names))
                     # TODO: create fkey
                     #ForeignKey.define(combo_fkey_from_col_names, table.schema.name, table.name, combo_fkey_to_col_names,
                     #                  constraint_names = [[table.schema.name, combo_fkey_constraint_name]],
