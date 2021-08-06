@@ -42,9 +42,6 @@ class MyKey:
     self.table_name = table_name
     self.columns = columns
 
-  def display(self):
-    return {'table_name': self.table_name, 'columns': self.columns}
-
 my_keys = {}
 
 def get_my_key(table_name, columns):
@@ -200,16 +197,16 @@ FKEY_NAME_DICT = {
     #
     # multiple keys to the same parent tables: 4-column with RID
     # Note: - The RID column names should be Capitalized e.g. Entity_Poly_Seq_RID_1
-    ('ihm_cross_link_list', 'entity_poly_seq', ('Entity_poly_seq_1_RID', 'comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : "ihm_cross_link_list_entity_poly_seq_1_combo1_fkey",
-    ('ihm_cross_link_list', 'entity_poly_seq', ('Entity_poly_seq_2_RID', 'comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : "ihm_cross_link_list_entity_poly_seq_2_combo1_fkey",
-    ('ihm_cross_link_restraint', 'entity_poly_seq', ('Entity_poly_seq_1_RID', 'comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : "ihm_cross_link_restraint_entity_poly_seq_1_combo1_fkey",
-    ('ihm_cross_link_restraint', 'entity_poly_seq', ('Entity_poly_seq_2_RID', 'comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : "ihm_cross_link_restraint_entity_poly_seq_2_combo1_fkey",
-    ('ihm_poly_residue_feature', 'entity_poly_seq', ('Entity_poly_seq_begin_RID', 'comp_id_begin', 'entity_id', 'seq_id_begin', 'structure_id')) : "ihm_poly_residue_feature_entity_poly_seq_begin_combo1_fkey",
-    ('ihm_poly_residue_feature', 'entity_poly_seq', ('Entity_poly_seq_end_RID', 'comp_id_end', 'entity_id', 'seq_id_end', 'structure_id')) : "ihm_poly_residue_feature_entity_poly_seq_end_combo1_fkey",
-    ('ihm_predicted_contact_restraint', 'entity_poly_seq', ('Entity_poly_seq_1_RID', 'comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : "ihm_predicted_contact_restraint_entity_poly_seq_1_combo1_fkey",
-    ('ihm_predicted_contact_restraint', 'entity_poly_seq', ('Entity_poly_seq_2_RID', 'comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : "ihm_predicted_contact_restraint_entity_poly_seq_2_combo1_fkey",
-    ('ihm_residues_not_modeled', 'entity_poly_seq', ('Entity_poly_seq_begin_RID', 'comp_id_begin', 'entity_id', 'seq_id_begin', 'structure_id')) : "ihm_residues_not_modeled_entity_poly_seq_begin_combo1_fkey",    
-    ('ihm_residues_not_modeled', 'entity_poly_seq', ('Entity_poly_seq_end_RID', 'comp_id_end', 'entity_id', 'seq_id_end', 'structure_id')) : "ihm_residues_not_modeled_entity_poly_seq_end_combo1_fkey",
+    ('ihm_cross_link_list', 'entity_poly_seq', ('Entity_Poly_Seq_RID_1', 'comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : "ihm_cross_link_list_entity_poly_seq_1_combo1_fkey",
+    ('ihm_cross_link_list', 'entity_poly_seq', ('Entity_Poly_Seq_RID_2', 'comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : "ihm_cross_link_list_entity_poly_seq_2_combo1_fkey",
+    ('ihm_cross_link_restraint', 'entity_poly_seq', ('Entity_Poly_Seq_RID_1', 'comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : "ihm_cross_link_restraint_entity_poly_seq_1_combo1_fkey",
+    ('ihm_cross_link_restraint', 'entity_poly_seq', ('Entity_Poly_Seq_RID_2', 'comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : "ihm_cross_link_restraint_entity_poly_seq_2_combo1_fkey",
+    ('ihm_poly_residue_feature', 'entity_poly_seq', ('Entity_Poly_Seq_RID_Begin', 'comp_id_begin', 'entity_id', 'seq_id_begin', 'structure_id')) : "ihm_poly_residue_feature_entity_poly_seq_begin_combo1_fkey",
+    ('ihm_poly_residue_feature', 'entity_poly_seq', ('Entity_Poly_Seq_RID_End', 'comp_id_end', 'entity_id', 'seq_id_end', 'structure_id')) : "ihm_poly_residue_feature_entity_poly_seq_end_combo1_fkey",
+    ('ihm_predicted_contact_restraint', 'entity_poly_seq', ('Entity_Poly_Seq_RID_1', 'comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : "ihm_predicted_contact_restraint_entity_poly_seq_1_combo1_fkey",
+    ('ihm_predicted_contact_restraint', 'entity_poly_seq', ('Entity_Poly_Seq_RID_2', 'comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : "ihm_predicted_contact_restraint_entity_poly_seq_2_combo1_fkey",
+    ('ihm_residues_not_modeled', 'entity_poly_seq', ('Entity_Poly_Seq_RID_Begin', 'comp_id_begin', 'entity_id', 'seq_id_begin', 'structure_id')) : "ihm_residues_not_modeled_entity_poly_seq_begin_combo1_fkey",    
+    ('ihm_residues_not_modeled', 'entity_poly_seq', ('Entity_Poly_Seq_RID_End', 'comp_id_end', 'entity_id', 'seq_id_end', 'structure_id')) : "ihm_residues_not_modeled_entity_poly_seq_end_combo1_fkey",
 }
 
 # ----------------------------------------------
@@ -662,6 +659,7 @@ def main(server_name, catalog_id, credentials):
     #refactor_fkeys(model, 2, combo1_included=True, combo2_included=False, primary_types=("COMBO1"))
     #refactor_fkeys(model, 2, combo1_included=True, combo2_included=True, primary_types=())
     refactor_fkeys(model, 2, combo1_included=True, combo2_included=True)
+    refactor_fkeys(model, 4, combo1_included=True, combo2_included=True)
     
     """
     Check that the new columns are not among the renamed columns
