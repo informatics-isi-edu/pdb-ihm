@@ -36,6 +36,26 @@ import re
 # The purpose is to refactor the keys and forieng keys of the PDB table to conform to the naming convention.
 #
 
+class MyKey:
+  def __init__(self, constraint_name, table_name, columns):
+    self.constraint_name = constraint_name
+    self.table_name = table_name
+    self.columns = columns
+
+  def display(self):
+    return {'table_name': self.table_name, 'columns': self.columns}
+
+my_keys = {}
+
+def get_my_key(table_name, columns):
+    for k,v in my_keys.items():
+        if v.table_name == table_name and set(columns) == set(v.columns):
+            return v
+    return None
+
+renamed_columns = {}
+new_columns = {}
+
 messages = []
 
 def write_message(log_file, message):
@@ -163,20 +183,20 @@ FKEY_NAME_DICT = {
     # Note: - When remove _ihm_ replace, with _ to easily identify the table.
     #       - All RID column names in this group should follow naming convention above e.g. Struct_asym_1_RID should be Asym_RID_1
     #       - if needed, shorten reactive to react
-    ('ihm_cross_link_restraint', 'struct_asym', ('Struct_asym_1_RID', 'asym_id_1', 'structure_id')) : "ihm_cross_link_restraint_struct_asym_1_combo1_fkey",
-    ('ihm_cross_link_restraint', 'struct_asym', ('Struct_asym_2_RID', 'asym_id_2', 'structure_id')) : "ihm_cross_link_restraint_struct_asym_2_combo1_fkey",
-    ('ihm_derived_distance_restraint', 'ihm_feature_list', ('Ihm_feature_list_1_RID', 'feature_id_1', 'structure_id')) : "ihm_derived_distance_restraint__feature_list_1_combo1_fkey",
-    ('ihm_derived_distance_restraint', 'ihm_feature_list', ('Ihm_feature_list_2_RID', 'feature_id_2', 'structure_id')) : "ihm_derived_distance_restraint__feature_list_2_combo1_fkey",
-    ('ihm_ordered_ensemble', 'ihm_model_group', ('Ihm_model_group_begin_RID', 'model_group_id_begin', 'structure_id')) : "ihm_ordered_ensemble__model_group_begin_combo1_fkey",
-    ('ihm_ordered_ensemble', 'ihm_model_group', ('Ihm_model_group_end_RID', 'model_group_id_end', 'structure_id')) : "ihm_ordered_ensemble__model_group_end_combo1_fkey",
-    ('ihm_predicted_contact_restraint', 'struct_asym', ('Struct_asym_1_RID', 'asym_id_1', 'structure_id')) : "ihm_predicted_contact_restraint_struct_asym_1_combo1_fkey",
-    ('ihm_predicted_contact_restraint', 'struct_asym', ('Struct_asym_2_RID', 'asym_id_2', 'structure_id')) : "ihm_predicted_contact_restraint_struct_asym_2_combo1_fkey",
+    ('ihm_cross_link_restraint', 'struct_asym', ('Asym_RID_1', 'asym_id_1', 'structure_id')) : "ihm_cross_link_restraint_struct_asym_1_combo1_fkey",
+    ('ihm_cross_link_restraint', 'struct_asym', ('Asym_RID_2', 'asym_id_2', 'structure_id')) : "ihm_cross_link_restraint_struct_asym_2_combo1_fkey",
+    ('ihm_derived_distance_restraint', 'ihm_feature_list', ('Feature_RID_1', 'feature_id_1', 'structure_id')) : "ihm_derived_distance_restraint__feature_list_1_combo1_fkey",
+    ('ihm_derived_distance_restraint', 'ihm_feature_list', ('Feature_RID_2', 'feature_id_2', 'structure_id')) : "ihm_derived_distance_restraint__feature_list_2_combo1_fkey",
+    ('ihm_ordered_ensemble', 'ihm_model_group', ('Model_Group_RID_Begin', 'model_group_id_begin', 'structure_id')) : "ihm_ordered_ensemble__model_group_begin_combo1_fkey",
+    ('ihm_ordered_ensemble', 'ihm_model_group', ('Model_Group_RID_End', 'model_group_id_end', 'structure_id')) : "ihm_ordered_ensemble__model_group_end_combo1_fkey",
+    ('ihm_predicted_contact_restraint', 'struct_asym', ('Asym_RID_1', 'asym_id_1', 'structure_id')) : "ihm_predicted_contact_restraint_struct_asym_1_combo1_fkey",
+    ('ihm_predicted_contact_restraint', 'struct_asym', ('Asym_RID_2', 'asym_id_2', 'structure_id')) : "ihm_predicted_contact_restraint_struct_asym_2_combo1_fkey",
     ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('Reactive_Probe_Chem_Comp_Descriptor_RID', 'reactive_probe_chem_comp_descriptor_id')) : "ihm_probe_list__chem_comp_descriptor_reactive_probe_combo2_fkey",
     ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('Probe_Chem_Comp_Descriptor_RID', 'probe_chem_comp_descriptor_id')) : "ihm_probe_list__chem_comp_descriptor_probe_combo2_fkey", 
-    ('ihm_related_datasets', 'ihm_dataset_list', ('Ihm_dataset_list_derived_RID', 'dataset_list_id_derived', 'structure_id')) : "ihm_related_datasets__dataset_list_derived_combo1_fkey",
-    ('ihm_related_datasets', 'ihm_dataset_list', ('Ihm_dataset_list_primary_RID', 'dataset_list_id_primary', 'structure_id')) : "ihm_related_datasets__dataset_list_primary_combo1_fkey",
-    ('ihm_struct_assembly_details', 'ihm_struct_assembly', ('Ihm_struct_assembly_parent_RID', 'parent_assembly_id', 'structure_id')) : "ihm_struct_assembly_details__struct_assembly_parent_combo1_fkey",
-    ('ihm_struct_assembly_details', 'ihm_struct_assembly', ('Ihm_struct_assembly_RID', 'assembly_id', 'structure_id')) : "ihm_struct_assembly_details__struct_assembly_combo1_fkey", 
+    ('ihm_related_datasets', 'ihm_dataset_list', ('Dataset_List_RID_Derived', 'dataset_list_id_derived', 'structure_id')) : "ihm_related_datasets__dataset_list_derived_combo1_fkey",
+    ('ihm_related_datasets', 'ihm_dataset_list', ('Dataset_List_RID_Primary', 'dataset_list_id_primary', 'structure_id')) : "ihm_related_datasets__dataset_list_primary_combo1_fkey",
+    ('ihm_struct_assembly_details', 'ihm_struct_assembly', ('Parent_Assembly_RID', 'parent_assembly_id', 'structure_id')) : "ihm_struct_assembly_details__struct_assembly_parent_combo1_fkey",
+    ('ihm_struct_assembly_details', 'ihm_struct_assembly', ('Assembly_RID', 'assembly_id', 'structure_id')) : "ihm_struct_assembly_details__struct_assembly_combo1_fkey", 
     #
     # multiple keys to the same parent tables: 4-column with RID
     # Note: - The RID column names should be Capitalized e.g. Entity_Poly_Seq_RID_1
@@ -411,6 +431,12 @@ def get_equivalent_fkey_by_type(fkey, fkey_type="MMCIF"):
             # TODO: RENAME RID column to be consistent
             print("WARNING: RID COLUMN NAME MISMATCHED: %s should be %s" % (parent_rid_col_name_alt, parent_rid_col_name))
             write_message('rename.log', 'RENAME COLUMN {}:{} TO {}'.format(fkey.table.name, parent_rid_col_name_alt, parent_rid_col_name))
+            if fkey.table.name not in renamed_columns.keys():
+                renamed_columns[fkey.table.name] = {}
+            if parent_rid_col_name_alt not in renamed_columns[fkey.table.name].keys():
+                renamed_columns[fkey.table.name][parent_rid_col_name_alt] = parent_rid_col_name
+            elif renamed_columns[fkey.table.name][parent_rid_col_name_alt] != parent_rid_col_name:
+                print('WARNING: {}:{} was previous renamed to {}'.format(fkey.table.name, parent_rid_col_name_alt, renamed_columns[fkey.table.name][parent_rid_col_name_alt]))
             #fkey.pk_table.columns[parent_rid_col_name_alt].alter(name=parent_rid_col_name)
         parent_rid_col_name = parent_rid_col_name_alt
         
@@ -565,6 +591,12 @@ def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, co
                     # 5.1 check parent column in the table
                     if parent_rid_column_name not in table.columns.elements:
                         # TODO: create parent RID column. Can't set nullok to False. Need to set after all rows have RID filled in. 
+                        if table.name not in new_columns.keys():
+                            new_columns[table.name] = []
+                            if parent_rid_column_name not in new_columns[table.name]:
+                                new_columns[table.name].append(parent_rid_column_name)
+                            else:
+                                print('WARNING: {}:{} was previous defined'.format(table.name, parent_rid_column_name))
                         print("    +col: Add new column: %s : %s for fkey %s:%s" % (table.name, parent_rid_column_name, fkey.constraint_name, fkey_col_names))
                         write_message('new.log', 'NEW COLUMN {}:{}'.format(table.name, parent_rid_column_name))
                         #table.create_column(Column.define(
@@ -576,7 +608,15 @@ def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, co
                     # 5.2 check whether expected key exist in the parent table
                     parent_key = fkey.pk_table.key_by_columns(combo_fkey_to_col_names, raise_nomatch=False) 
                     if parent_key is None:
+                        parent_key = get_my_key(pk_table.name, combo_fkey_to_col_names)
+                    if parent_key is None:
                         print("    +key: c%s create %s %s:%s" % (flag, pk_table.name, combo_fkey_parent_key_name, combo_fkey_to_col_names))
+                        
+                        if combo_fkey_parent_key_name in my_keys.keys():
+                            print('WARNING: DUPLICATE NEW KEY: {}:{} {}'.format(pk_table.name, combo_fkey_parent_key_name, combo_fkey_to_col_names))
+                        else:
+                            my_keys[combo_fkey_parent_key_name] = MyKey(combo_fkey_parent_key_name, pk_table.name, combo_fkey_to_col_names)
+                            
                         write_message('new.log', 'NEW KEY {}:{} {}'.format(pk_table.name, combo_fkey_parent_key_name, combo_fkey_to_col_names))
                         # TODO: create a new key
                         #Key.define(combo_fkey_to_col_names, constraint_names = [[pk_table.schema.name, combo_fkey_parent_key_name]])
@@ -622,8 +662,18 @@ def main(server_name, catalog_id, credentials):
     #refactor_fkeys(model, 2, combo1_included=True, combo2_included=False, primary_types=("COMBO1"))
     #refactor_fkeys(model, 2, combo1_included=True, combo2_included=True, primary_types=())
     refactor_fkeys(model, 2, combo1_included=True, combo2_included=True)
- 
-        
+    
+    """
+    Check that the new columns are not among the renamed columns
+    """
+    for new_column_table, new_column_values in new_columns.items():
+        if new_column_table in renamed_columns.keys():
+            renamed_values = renamed_columns[new_column_table]
+            for new_column in new_column_values:
+                for old_column, renamed_column in renamed_values.items():
+                    if new_column == renamed_column:
+                        print('WARNING: New column {}:{} is also a renamed column'.format(new_column_table, new_column))
+            
 
 if __name__ == '__main__':
     args = BaseCLI("ad-hoc table creation tool", None, 1).parse_cli()
