@@ -36,6 +36,33 @@ import re
 # The purpose is to refactor the keys and forieng keys of the PDB table to conform to the naming convention.
 #
 
+class MyKey:
+  def __init__(self, constraint_name, table_name, columns):
+    self.constraint_name = constraint_name
+    self.table_name = table_name
+    self.columns = columns
+
+my_keys = {}
+
+def get_my_key(table_name, columns):
+    for k,v in my_keys.items():
+        if v.table_name == table_name and set(columns) == set(v.columns):
+            return v
+    return None
+
+renamed_columns = {}
+new_columns = {}
+
+messages = []
+
+def write_message(log_file, message):
+    if message in messages:
+        return
+    messages.append(message)
+    fw = open(log_file, 'a')
+    fw.write('{}\n'.format(message))
+    fw.close()
+
 MAX_NAME_LENGTH = 63
 
 KEY_TYPE_SUFFIX_DICT = {
@@ -78,6 +105,7 @@ STRING_REPLACEMENT_DICT = OrderedDict([
     ("_class_", "_cla_"),
     ("_group_", "_grp_"),
     ("_state_", "_sta_"),
+    ("_reactive_", "_react_"),    
 ])
 
 TABLE_NAME_DICT = {
@@ -89,21 +117,21 @@ KEY_NAME_DICT = {
 
 # multiple keys to the same parent tables: 2-column with RID
 PARENT_RID_COLUMN_NAME_DICT = {
-    # -- no need for this group of dict. Use hueristics
-    #('ihm_cross_link_restraint', 'struct_asym', ('asym_id_1', 'structure_id')) : 'Asym_1_RID',
-    #('ihm_cross_link_restraint', 'struct_asym', ('asym_id_2', 'structure_id')) : 'Asym_2_RID', 
-    #('ihm_derived_distance_restraint', 'ihm_feature_list', ('feature_id_1', 'structure_id')) : 'Feature_List_RID_1', 
-    #('ihm_derived_distance_restraint', 'ihm_feature_list', ('feature_id_2', 'structure_id')) : 'Feature_List_RID_2', 
-    #('ihm_ordered_ensemble', 'ihm_model_group', ('model_group_id_begin', 'structure_id')) : 'Model_Group_RID_Begin', 
-    #('ihm_ordered_ensemble', 'ihm_model_group', ('model_group_id_end', 'structure_id')) : 'Model_Group_End_RID',  
-    #('ihm_predicted_contact_restraint', 'struct_asym', ('asym_id_1', 'structure_id')) : 'Asym_RID_1', 
-    #('ihm_predicted_contact_restraint', 'struct_asym', ('asym_id_2', 'structure_id')) : 'Asym_RID_2', 
-    #('ihm_probe_list', 'ihm_chemical_component_descriptor', ('reactive_probe_chem_comp_descriptor_id')) : 'Reactive_Probe_Chem_Comp_Descriptor_RID', # single fkey
-    #('ihm_probe_list', 'ihm_chemical_component_descriptor', ('probe_chem_comp_descriptor_id')) : 'Probe_Chem_Comp_Descriptor_RID', 
-    #('ihm_related_datasets', 'ihm_dataset_list', ('dataset_list_id_derived', 'structure_id')) : 'Dataset_List_RID_Derived', 
-    #('ihm_related_datasets', 'ihm_dataset_list', ('dataset_list_id_primary', 'structure_id')) : 'Dataset_List_RID_Primary', 
-    #('ihm_struct_assembly_details', 'ihm_struct_assembly', ('parent_assembly_id', 'structure_id')) : 'Parent_Assembly_RID', 
-    #('ihm_struct_assembly_details', 'ihm_struct_assembly', ('assembly_id', 'structure_id')) : 'Assembly_RID',
+    # -- May not need for this group of dict. Might be able to use hueristics. But this is fine too.
+    ('ihm_cross_link_restraint', 'struct_asym', ('asym_id_1', 'structure_id')) : 'Asym_RID_1',  # Struct_Asym_RID_1
+    ('ihm_cross_link_restraint', 'struct_asym', ('asym_id_2', 'structure_id')) : 'Asym_RID_2', 
+    ('ihm_derived_distance_restraint', 'ihm_feature_list', ('feature_id_1', 'structure_id')) : 'Feature_RID_1', # Ihm_Feature_List_RID_1 (without Ihm?)
+    ('ihm_derived_distance_restraint', 'ihm_feature_list', ('feature_id_2', 'structure_id')) : 'Feature_RID_2', 
+    ('ihm_ordered_ensemble', 'ihm_model_group', ('model_group_id_begin', 'structure_id')) : 'Model_Group_RID_Begin',  
+    ('ihm_ordered_ensemble', 'ihm_model_group', ('model_group_id_end', 'structure_id')) : 'Model_Group_RID_End',  
+    ('ihm_predicted_contact_restraint', 'struct_asym', ('asym_id_1', 'structure_id')) : 'Asym_RID_1',  # Struct_Asym_RID_1
+    ('ihm_predicted_contact_restraint', 'struct_asym', ('asym_id_2', 'structure_id')) : 'Asym_RID_2', 
+    ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('reactive_probe_chem_comp_descriptor_id')) : 'Reactive_Probe_Chem_Comp_Descriptor_RID', ##! single col 
+    ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('probe_chem_comp_descriptor_id')) : 'Probe_Chem_Comp_Descriptor_RID', ##! single column
+    ('ihm_related_datasets', 'ihm_dataset_list', ('dataset_list_id_derived', 'structure_id')) : 'Dataset_List_RID_Derived',  
+    ('ihm_related_datasets', 'ihm_dataset_list', ('dataset_list_id_primary', 'structure_id')) : 'Dataset_List_RID_Primary',  
+    ('ihm_struct_assembly_details', 'ihm_struct_assembly', ('parent_assembly_id', 'structure_id')) : 'Parent_Assembly_RID',  # Ihm_Parent_Struct_Assemboy_RID
+    ('ihm_struct_assembly_details', 'ihm_struct_assembly', ('assembly_id', 'structure_id')) : 'Assembly_RID',                # Ihm_Struct_Assembly_RID
     #
     # -- TODO: out of place RID column name. Replace with "Script_File_RID"
     ('ihm_starting_computational_models', 'ihm_external_files', ('script_file_id', 'structure_id')) : 'External_Files_RID',
@@ -126,7 +154,7 @@ PARENT_RID_COLUMN_NAME_DICT = {
     The names in the dict should not exceed the maximum name length.
 '''
 FKEY_NAME_DICT = {
-    # names too long
+    # Names too long. Use hueristics for this group.
     #('ihm_2dem_class_average_fitting', 'ihm_2dem_class_average_restraint', ('Ihm_2dem_class_average_restraint_RID', 'restraint_id', 'structure_id')): "ihm_2dem_class_average_fitting_ihm_2dem_class_average_restraint_combo1_fkey",  # 75
     #('ihm_cross_link_result_parameters', 'ihm_cross_link_restraint', ('Ihm_cross_link_restraint_RID', 'restraint_id', 'structure_id')): "ihm_cross_link_result_parameters_ihm_cross_link_restraint_combo1_fkey",  # 69
     #('ihm_geometric_object_axis', 'ihm_geometric_object_transformation', ('Ihm_geometric_object_transformation_RID', 'transformation_id')): "ihm_geometric_object_axis_ihm_geometric_object_transformation_combo2_fkey",  # 73
@@ -147,34 +175,38 @@ FKEY_NAME_DICT = {
     #('ihm_starting_comparative_models', 'ihm_starting_model_details', ('Ihm_starting_model_details_RID', 'starting_model_id', 'structure_id')): "ihm_starting_comparative_models_ihm_starting_model_details_combo1_fkey",  # 70
     #('ihm_starting_computational_models', 'ihm_starting_model_details', ('Ihm_starting_model_details_RID', 'starting_model_id', 'structure_id')): "ihm_starting_computational_models_ihm_starting_model_details_combo1_fkey",  # 72
     #('ihm_struct_assembly_class_link', 'ihm_struct_assembly_class', ('Ihm_struct_assembly_class_RID', 'class_id', 'structure_id')): "ihm_struct_assembly_class_link_ihm_struct_assembly_class_combo1_fkey",  # 68
-    
-    # multiple keys to the same parent tables: 2-column with RID
-    ('ihm_cross_link_restraint', 'struct_asym', ('Struct_asym_1_RID', 'asym_id_1', 'structure_id')) : "ihm_cross_link_restraint__struct_asym_1_combo1_fkey",
-    ('ihm_cross_link_restraint', 'struct_asym', ('Struct_asym_2_RID', 'asym_id_2', 'structure_id')) : "ihm_cross_link_restraint__struct_asym_2_combo1_fkey",
-    ('ihm_derived_distance_restraint', 'ihm_feature_list', ('Ihm_feature_list_1_RID', 'feature_id_1', 'structure_id')) : "ihm_derived_distance_restraint__feature_list_1_combo1_fkey",
-    ('ihm_derived_distance_restraint', 'ihm_feature_list', ('Ihm_feature_list_2_RID', 'feature_id_2', 'structure_id')) : "ihm_derived_distance_restraint__feature_list_2_combo1_fkey",
-    ('ihm_ordered_ensemble', 'ihm_model_group', ('Ihm_model_group_begin_RID', 'model_group_id_begin', 'structure_id')) : "ihm_ordered_ensemble__model_group_begin_combo1_fkey",
-    ('ihm_ordered_ensemble', 'ihm_model_group', ('Ihm_model_group_end_RID', 'model_group_id_end', 'structure_id')) : "ihm_ordered_ensemble__model_group_end_combo1_fkey",
-    ('ihm_predicted_contact_restraint', 'struct_asym', ('Struct_asym_1_RID', 'asym_id_1', 'structure_id')) : "ihm_predicted_contact_restraint__struct_asym_1_combo1_fkey",
-    ('ihm_predicted_contact_restraint', 'struct_asym', ('Struct_asym_2_RID', 'asym_id_2', 'structure_id')) : "ihm_predicted_contact_restraint__struct_asym_2_combo1_fkey",
-    ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('Ihm_chemical_component_descriptor_reactive_RID', 'reactive_probe_chem_comp_descriptor_id')) : "ihm_probe_list__chem_comp_descriptor_reactive_combo2_fkey",
-    ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('Ihm_chemical_component_descriptor_probe_RID', 'probe_chem_comp_descriptor_id')) : "ihm_probe_list__chem_comp_descriptor_probe_combo2_fkey", #??
-    ('ihm_related_datasets', 'ihm_dataset_list', ('Ihm_dataset_list_derived_RID', 'dataset_list_id_derived', 'structure_id')) : "ihm_related_datasets__dataset_list_derived_combo1_fkey",
-    ('ihm_related_datasets', 'ihm_dataset_list', ('Ihm_dataset_list_primary_RID', 'dataset_list_id_primary', 'structure_id')) : "ihm_related_datasets__dataset_list_primary_combo1_fkey",
-    ('ihm_struct_assembly_details', 'ihm_struct_assembly', ('Ihm_struct_assembly_parent_RID', 'parent_assembly_id', 'structure_id')) : "ihm_struct_assembly_details__struct_assembly_parent_combo1_fkey",
-    ('ihm_struct_assembly_details', 'ihm_struct_assembly', ('Ihm_struct_assembly_RID', 'assembly_id', 'structure_id')) : "ihm_struct_assembly_details__struct_assembly_self_combo1_fkey", #??
-
+    #
+    # multiple keys to the same parent tables: 2-column with RID.
+    # Note: - When remove _ihm_ replace, with _ to easily identify the table.
+    #       - All RID column names in this group should follow naming convention above e.g. Struct_asym_1_RID should be Asym_RID_1
+    #       - if needed, shorten reactive to react
+    ('ihm_cross_link_restraint', 'struct_asym', ('Asym_RID_1', 'asym_id_1', 'structure_id')) : "ihm_cross_link_restraint_struct_asym_1_combo1_fkey",
+    ('ihm_cross_link_restraint', 'struct_asym', ('Asym_RID_2', 'asym_id_2', 'structure_id')) : "ihm_cross_link_restraint_struct_asym_2_combo1_fkey",
+    ('ihm_derived_distance_restraint', 'ihm_feature_list', ('Feature_RID_1', 'feature_id_1', 'structure_id')) : "ihm_derived_distance_restraint__feature_list_1_combo1_fkey",
+    ('ihm_derived_distance_restraint', 'ihm_feature_list', ('Feature_RID_2', 'feature_id_2', 'structure_id')) : "ihm_derived_distance_restraint__feature_list_2_combo1_fkey",
+    ('ihm_ordered_ensemble', 'ihm_model_group', ('Model_Group_RID_Begin', 'model_group_id_begin', 'structure_id')) : "ihm_ordered_ensemble__model_group_begin_combo1_fkey",
+    ('ihm_ordered_ensemble', 'ihm_model_group', ('Model_Group_RID_End', 'model_group_id_end', 'structure_id')) : "ihm_ordered_ensemble__model_group_end_combo1_fkey",
+    ('ihm_predicted_contact_restraint', 'struct_asym', ('Asym_RID_1', 'asym_id_1', 'structure_id')) : "ihm_predicted_contact_restraint_struct_asym_1_combo1_fkey",
+    ('ihm_predicted_contact_restraint', 'struct_asym', ('Asym_RID_2', 'asym_id_2', 'structure_id')) : "ihm_predicted_contact_restraint_struct_asym_2_combo1_fkey",
+    ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('Reactive_Probe_Chem_Comp_Descriptor_RID', 'reactive_probe_chem_comp_descriptor_id')) : "ihm_probe_list__chem_comp_descriptor_reactive_probe_combo2_fkey",
+    ('ihm_probe_list', 'ihm_chemical_component_descriptor', ('Probe_Chem_Comp_Descriptor_RID', 'probe_chem_comp_descriptor_id')) : "ihm_probe_list__chem_comp_descriptor_probe_combo2_fkey", 
+    ('ihm_related_datasets', 'ihm_dataset_list', ('Dataset_List_RID_Derived', 'dataset_list_id_derived', 'structure_id')) : "ihm_related_datasets__dataset_list_derived_combo1_fkey",
+    ('ihm_related_datasets', 'ihm_dataset_list', ('Dataset_List_RID_Primary', 'dataset_list_id_primary', 'structure_id')) : "ihm_related_datasets__dataset_list_primary_combo1_fkey",
+    ('ihm_struct_assembly_details', 'ihm_struct_assembly', ('Parent_Assembly_RID', 'parent_assembly_id', 'structure_id')) : "ihm_struct_assembly_details__struct_assembly_parent_combo1_fkey",
+    ('ihm_struct_assembly_details', 'ihm_struct_assembly', ('Assembly_RID', 'assembly_id', 'structure_id')) : "ihm_struct_assembly_details__struct_assembly_combo1_fkey", 
+    #
     # multiple keys to the same parent tables: 4-column with RID
-    ('ihm_cross_link_list', 'entity_poly_seq', ('Entity_poly_seq_1_RID', 'comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : "ihm_cross_link_list__mm_poly_res_label_1_combo1_fkey",
-    ('ihm_cross_link_list', 'entity_poly_seq', ('Entity_poly_seq_2_RID', 'comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : "ihm_cross_link_list__mm_poly_res_label_2_combo1_fkey",
-    ('ihm_cross_link_restraint', 'entity_poly_seq', ('Entity_poly_seq_1_RID', 'comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : "ihm_cross_link_restraint__mm_poly_res_label_1_combo1_fkey",
-    ('ihm_cross_link_restraint', 'entity_poly_seq', ('Entity_poly_seq_2_RID', 'comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : "ihm_cross_link_restraint__mm_poly_res_label_2_combo1_fkey",
-    ('ihm_poly_residue_feature', 'entity_poly_seq', ('Entity_poly_seq_begin_RID', 'comp_id_begin', 'entity_id', 'seq_id_begin', 'structure_id')) : "ihm_poly_residue_feature__mm_poly_res_label_begin_combo1_fkey",
-    ('ihm_poly_residue_feature', 'entity_poly_seq', ('Entity_poly_seq_end_RID', 'comp_id_end', 'entity_id', 'seq_id_end', 'structure_id')) : "ihm_poly_residue_feature__mm_poly_res_label_end_combo1_fkey",
-    ('ihm_predicted_contact_restraint', 'entity_poly_seq', ('Entity_poly_seq_1_RID', 'comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : "ihm_predicted_contact_restraint__mm_poly_res_label_1_combo1_fkey",
-    ('ihm_predicted_contact_restraint', 'entity_poly_seq', ('Entity_poly_seq_2_RID', 'comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : "ihm_predicted_contact_restraint__mm_poly_res_label_2_combo1_fkey",
-    ('ihm_residues_not_modeled', 'entity_poly_seq', ('Entity_poly_seq_begin_RID', 'comp_id_begin', 'entity_id', 'seq_id_begin', 'structure_id')) : "ihm_residues_not_modeled__mm_poly_res_label_begin_combo1_fkey",    
-    ('ihm_residues_not_modeled', 'entity_poly_seq', ('Entity_poly_seq_end_RID', 'comp_id_end', 'entity_id', 'seq_id_end', 'structure_id')) : "ihm_residues_not_modeled__mm_poly_res_label_end_combo1_fkey",
+    # Note: - The RID column names should be Capitalized e.g. Entity_Poly_Seq_RID_1
+    ('ihm_cross_link_list', 'entity_poly_seq', ('Entity_Poly_Seq_RID_1', 'comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : "ihm_cross_link_list_entity_poly_seq_1_combo1_fkey",
+    ('ihm_cross_link_list', 'entity_poly_seq', ('Entity_Poly_Seq_RID_2', 'comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : "ihm_cross_link_list_entity_poly_seq_2_combo1_fkey",
+    ('ihm_cross_link_restraint', 'entity_poly_seq', ('Entity_Poly_Seq_RID_1', 'comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : "ihm_cross_link_restraint_entity_poly_seq_1_combo1_fkey",
+    ('ihm_cross_link_restraint', 'entity_poly_seq', ('Entity_Poly_Seq_RID_2', 'comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : "ihm_cross_link_restraint_entity_poly_seq_2_combo1_fkey",
+    ('ihm_poly_residue_feature', 'entity_poly_seq', ('Entity_Poly_Seq_RID_Begin', 'comp_id_begin', 'entity_id', 'seq_id_begin', 'structure_id')) : "ihm_poly_residue_feature_entity_poly_seq_begin_combo1_fkey",
+    ('ihm_poly_residue_feature', 'entity_poly_seq', ('Entity_Poly_Seq_RID_End', 'comp_id_end', 'entity_id', 'seq_id_end', 'structure_id')) : "ihm_poly_residue_feature_entity_poly_seq_end_combo1_fkey",
+    ('ihm_predicted_contact_restraint', 'entity_poly_seq', ('Entity_Poly_Seq_RID_1', 'comp_id_1', 'entity_id_1', 'seq_id_1', 'structure_id')) : "ihm_predicted_contact_restraint_entity_poly_seq_1_combo1_fkey",
+    ('ihm_predicted_contact_restraint', 'entity_poly_seq', ('Entity_Poly_Seq_RID_2', 'comp_id_2', 'entity_id_2', 'seq_id_2', 'structure_id')) : "ihm_predicted_contact_restraint_entity_poly_seq_2_combo1_fkey",
+    ('ihm_residues_not_modeled', 'entity_poly_seq', ('Entity_Poly_Seq_RID_Begin', 'comp_id_begin', 'entity_id', 'seq_id_begin', 'structure_id')) : "ihm_residues_not_modeled_entity_poly_seq_begin_combo1_fkey",    
+    ('ihm_residues_not_modeled', 'entity_poly_seq', ('Entity_Poly_Seq_RID_End', 'comp_id_end', 'entity_id', 'seq_id_end', 'structure_id')) : "ihm_residues_not_modeled_entity_poly_seq_end_combo1_fkey",
 }
 
 # ----------------------------------------------
@@ -248,6 +280,7 @@ def get_key_name_by_column_names(table, key_column_names):
         key_name = None
     elif key_name != expected_key_name:
         print('WARNING: RENAME KEY in table %s: "%s[%d] v.s. %s[%d]"  # ' % ( table.name, expected_key_name, len(expected_key_name), key_name, len(key_name)))
+        write_message('rename.log', 'RENAME KEY {}:{} TO {}'.format(table.name, expected_key_name, key_name))
 
     return(key_name)
 
@@ -262,7 +295,7 @@ def get_fkey_constraint_name(fkey, expected_fkey_from_col_names, expected_fkey_t
     fkey_dict_key = (fkey.table.name, fkey.pk_table.name, tuple(sorted(expected_fkey_from_col_names)))
     rid_included = True if "RID" in expected_fkey_to_col_names else False
     struct_id_included = True if "structure_id" in expected_fkey_to_col_names else False
-    fkey_len = len(expected_fkey_to_col_names)
+    fkey_length = len(expected_fkey_to_col_names)
     
     if rid_included and struct_id_included:
         suffix = '_combo1_fkey'
@@ -279,7 +312,7 @@ def get_fkey_constraint_name(fkey, expected_fkey_from_col_names, expected_fkey_t
     if fkey_dict_key in FKEY_NAME_DICT.keys():
         expected_fkey_constraint_name = FKEY_NAME_DICT[fkey_dict_key]
     else:
-        expected_fkey_constraint_name = '_'.join([fkey.table.name, fkey.pk_table.name, suffix])                            
+        expected_fkey_constraint_name = '_'.join([fkey.table.name, fkey.pk_table.name, suffix[1:]])                            
     
     constraint_name = expected_fkey_constraint_name
     contraint_name_length = len(expected_fkey_constraint_name)
@@ -394,6 +427,13 @@ def get_equivalent_fkey_by_type(fkey, fkey_type="MMCIF"):
         if rid_column_exist:
             # TODO: RENAME RID column to be consistent
             print("WARNING: RID COLUMN NAME MISMATCHED: %s should be %s" % (parent_rid_col_name_alt, parent_rid_col_name))
+            write_message('rename.log', 'RENAME COLUMN {}:{} TO {}'.format(fkey.table.name, parent_rid_col_name_alt, parent_rid_col_name))
+            if fkey.table.name not in renamed_columns.keys():
+                renamed_columns[fkey.table.name] = {}
+            if parent_rid_col_name_alt not in renamed_columns[fkey.table.name].keys():
+                renamed_columns[fkey.table.name][parent_rid_col_name_alt] = parent_rid_col_name
+            elif renamed_columns[fkey.table.name][parent_rid_col_name_alt] != parent_rid_col_name:
+                print('WARNING: {}:{} was previous renamed to {}'.format(fkey.table.name, parent_rid_col_name_alt, renamed_columns[fkey.table.name][parent_rid_col_name_alt]))
             #fkey.pk_table.columns[parent_rid_col_name_alt].alter(name=parent_rid_col_name)
         parent_rid_col_name = parent_rid_col_name_alt
         
@@ -434,7 +474,7 @@ def get_equivalent_fkey_by_type(fkey, fkey_type="MMCIF"):
    combo2_included: whether to include COMBO2 fkeys in the logic
    primary_types: the types of primary fkeys to be included e.g. ("COMBO1"). If empty, no primary fkeys will be included. 
 '''
-def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, combo2_included=True, primary_types=('combo1', 'combo2')):
+def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, combo2_included=True, primary_types=('COMBO1', 'COMBO2')):
     schema = model.schemas["PDB"]
     deriva_tables = {'Catalog_Group', 'ERMrest_Client', 'Entry_Related_File'}
     combo1_count = 1
@@ -538,6 +578,7 @@ def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, co
                         # TODO: rename fkey if the name are not consistent
                         #combo_fk.alter(constraint_name=combo_fkey_constraint_name)
                         print("       RENAME COMBO_FKEY: from %s[%d] to %s[%d]" % (combo_fk.constraint_name, len(combo_fk.constraint_name), combo_fkey_constraint_name, len(combo_fkey_constraint_name)))
+                        write_message('rename.log', 'RENAME FKEY {}:{} TO {}'.format(fkey.table.name, combo_fk.constraint_name, combo_fkey_constraint_name))
                         pass
 
                 else:
@@ -547,7 +588,14 @@ def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, co
                     # 5.1 check parent column in the table
                     if parent_rid_column_name not in table.columns.elements:
                         # TODO: create parent RID column. Can't set nullok to False. Need to set after all rows have RID filled in. 
+                        if table.name not in new_columns.keys():
+                            new_columns[table.name] = []
+                            if parent_rid_column_name not in new_columns[table.name]:
+                                new_columns[table.name].append(parent_rid_column_name)
+                            else:
+                                print('WARNING: {}:{} was previous defined'.format(table.name, parent_rid_column_name))
                         print("    +col: Add new column: %s : %s for fkey %s:%s" % (table.name, parent_rid_column_name, fkey.constraint_name, fkey_col_names))
+                        write_message('new.log', 'NEW COLUMN {}:{}'.format(table.name, parent_rid_column_name))
                         #table.create_column(Column.define(
                         #    parent_rid_column_name,
                         #    builtin_types.text,
@@ -557,17 +605,28 @@ def refactor_fkeys(model, ncols, deriva_included=False, combo1_included=True, co
                     # 5.2 check whether expected key exist in the parent table
                     parent_key = fkey.pk_table.key_by_columns(combo_fkey_to_col_names, raise_nomatch=False) 
                     if parent_key is None:
+                        parent_key = get_my_key(pk_table.name, combo_fkey_to_col_names)
+                    if parent_key is None:
                         print("    +key: c%s create %s %s:%s" % (flag, pk_table.name, combo_fkey_parent_key_name, combo_fkey_to_col_names))
+                        
+                        if combo_fkey_parent_key_name in my_keys.keys():
+                            print('WARNING: DUPLICATE NEW KEY: {}:{} {}'.format(pk_table.name, combo_fkey_parent_key_name, combo_fkey_to_col_names))
+                        else:
+                            my_keys[combo_fkey_parent_key_name] = MyKey(combo_fkey_parent_key_name, pk_table.name, combo_fkey_to_col_names)
+                            
+                        write_message('new.log', 'NEW KEY {}:{} {}'.format(pk_table.name, combo_fkey_parent_key_name, combo_fkey_to_col_names))
                         # TODO: create a new key
                         #Key.define(combo_fkey_to_col_names, constraint_names = [[pk_table.schema.name, combo_fkey_parent_key_name]])
                     else:
                         # TODO: rename incorrect key names
                         if (parent_key.constraint_name != combo_fkey_parent_key_name):
                             print("    *key exists: rename %s from %s to %s" % (combo_fkey_to_col_names, parent_key.constraint_name, combo_fkey_parent_key_name))
+                            write_message('rename.log', 'RENAME FKEY {}:{} TO {}'.format(fkey.table.name, fkey.constraint_name, combo_fkey_parent_key_name))
                             #parent_key.alter(name=combo_fkey_parent_key_name)
                             
                     # 5.3 create a new fkey
                     print("    +c%s:  Add fkey(len=%d) %s -> %s : %s : %s -> %s" % (flag, fkey_length, table.name, fkey.pk_table.name, combo_fkey_constraint_name, combo_fkey_from_col_names, combo_fkey_to_col_names))
+                    write_message('new.log', 'NEW FKEY {}:{} TO TABLE {} {} {}'.format(table.name, combo_fkey_constraint_name, fkey.pk_table.name, combo_fkey_from_col_names, combo_fkey_to_col_names))
                     # TODO: create fkey
                     #ForeignKey.define(combo_fkey_from_col_names, table.schema.name, table.name, combo_fkey_to_col_names,
                     #                  constraint_names = [[table.schema.name, combo_fkey_constraint_name]],
@@ -598,9 +657,21 @@ def main(server_name, catalog_id, credentials):
     model = catalog.getCatalogModel()
 
     #refactor_fkeys(model, 2, combo1_included=True, combo2_included=False, primary_types=("COMBO1"))
-    refactor_fkeys(model, 2, combo1_included=True, combo2_included=True, primary_types=())
- 
-        
+    #refactor_fkeys(model, 2, combo1_included=True, combo2_included=True, primary_types=())
+    refactor_fkeys(model, 2, combo1_included=True, combo2_included=True)
+    refactor_fkeys(model, 4, combo1_included=True, combo2_included=True)
+    
+    """
+    Check that the new columns are not among the renamed columns
+    """
+    for new_column_table, new_column_values in new_columns.items():
+        if new_column_table in renamed_columns.keys():
+            renamed_values = renamed_columns[new_column_table]
+            for new_column in new_column_values:
+                for old_column, renamed_column in renamed_values.items():
+                    if new_column == renamed_column:
+                        print('WARNING: New column {}:{} is also a renamed column'.format(new_column_table, new_column))
+            
 
 if __name__ == '__main__':
     args = BaseCLI("ad-hoc table creation tool", None, 1).parse_cli()
