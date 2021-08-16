@@ -1,0 +1,257 @@
+NEW COLUMN chem_comp_atom:Comp_RID
+NEW KEY chem_comp:chem_comp_combo1_key ['RID', 'id', 'structure_id']
+NEW FKEY chem_comp_atom:chem_comp_atom_chem_comp_combo1_fkey TO TABLE chem_comp ['Comp_RID', 'comp_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN citation_author:Citation_RID
+NEW KEY citation:citation_combo1_key ['RID', 'structure_id', 'id']
+NEW FKEY citation_author:citation_author_citation_combo1_fkey TO TABLE citation ['Citation_RID', 'structure_id', 'citation_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN entity_name_com:Entity_RID
+NEW FKEY entity_name_com:entity_name_com_entity_combo1_fkey TO TABLE entity ['Entity_RID', 'structure_id', 'entity_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN entity_name_sys:Entity_RID
+NEW FKEY entity_name_sys:entity_name_sys_entity_combo1_fkey TO TABLE entity ['Entity_RID', 'entity_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN entity_poly:Entity_RID
+NEW FKEY entity_poly:entity_poly_entity_combo1_fkey TO TABLE entity ['Entity_RID', 'entity_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN entity_poly_seq:Entity_RID
+NEW KEY entity_poly:entity_poly_combo1_key ['RID', 'structure_id', 'entity_id']
+NEW FKEY entity_poly_seq:entity_poly_seq_entity_poly_combo1_fkey TO TABLE entity_poly ['Entity_RID', 'structure_id', 'entity_id'] ['RID', 'structure_id', 'entity_id']
+NEW COLUMN entity_poly_seq:Mon_RID
+NEW FKEY entity_poly_seq:entity_poly_seq_chem_comp_combo1_fkey TO TABLE chem_comp ['Mon_RID', 'structure_id', 'mon_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN entity_src_gen:Entity_RID
+NEW FKEY entity_src_gen:entity_src_gen_entity_combo1_fkey TO TABLE entity ['Entity_RID', 'entity_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN ihm_2dem_class_average_fitting:Model_RID
+NEW KEY ihm_model_list:ihm_model_list_combo1_key ['RID', 'model_id', 'structure_id']
+NEW FKEY ihm_2dem_class_average_fitting:ihm_2dem_class_average_fitting_ihm_model_list_combo1_fkey TO TABLE ihm_model_list ['Model_RID', 'model_id', 'structure_id'] ['RID', 'model_id', 'structure_id']
+NEW COLUMN ihm_2dem_class_average_fitting:Restraint_RID
+NEW KEY ihm_2dem_class_average_restraint:ihm_2dem_class_average_restraint_combo1_key ['RID', 'structure_id', 'id']
+NEW FKEY ihm_2dem_class_average_fitting:ihm_2dem_class_avg_fitting__2dem_class_avg_rest_combo1_fkey TO TABLE ihm_2dem_class_average_restraint ['Restraint_RID', 'structure_id', 'restraint_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_2dem_class_average_restraint:Dataset_List_RID
+NEW FKEY ihm_2dem_class_average_restraint:ihm_2dem_class_average_restraint_ihm_dataset_list_combo1_fkey TO TABLE ihm_dataset_list ['Dataset_List_RID', 'structure_id', 'dataset_list_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_2dem_class_average_restraint:Struct_Assembly_RID
+NEW KEY ihm_struct_assembly:ihm_struct_assembly_combo1_key ['RID', 'id', 'structure_id']
+NEW FKEY ihm_2dem_class_average_restraint:ihm_2dem_class_average_restraint__struct_assembly_combo1_fkey TO TABLE ihm_struct_assembly ['Struct_Assembly_RID', 'struct_assembly_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN ihm_3dem_restraint:Struct_Assembly_RID
+NEW FKEY ihm_3dem_restraint:ihm_3dem_restraint_ihm_struct_assembly_combo1_fkey TO TABLE ihm_struct_assembly ['Struct_Assembly_RID', 'structure_id', 'struct_assembly_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_3dem_restraint:Dataset_List_RID
+NEW FKEY ihm_3dem_restraint:ihm_3dem_restraint_ihm_dataset_list_combo1_fkey TO TABLE ihm_dataset_list ['Dataset_List_RID', 'structure_id', 'dataset_list_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_3dem_restraint:Model_RID
+NEW FKEY ihm_3dem_restraint:ihm_3dem_restraint_ihm_model_list_combo1_fkey TO TABLE ihm_model_list ['Model_RID', 'structure_id', 'model_id'] ['RID', 'structure_id', 'model_id']
+NEW COLUMN ihm_cross_link_list:Dataset_List_RID
+NEW FKEY ihm_cross_link_list:ihm_cross_link_list_ihm_dataset_list_combo1_fkey TO TABLE ihm_dataset_list ['Dataset_List_RID', 'structure_id', 'dataset_list_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_cross_link_restraint:Asym_RID_2
+NEW KEY struct_asym:struct_asym_combo1_key ['RID', 'structure_id', 'id']
+NEW FKEY ihm_cross_link_restraint:ihm_cross_link_restraint_struct_asym_2_combo1_fkey TO TABLE struct_asym ['Asym_RID_2', 'structure_id', 'asym_id_2'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_cross_link_restraint:Group_RID
+NEW KEY ihm_cross_link_list:ihm_cross_link_list_combo1_key ['RID', 'structure_id', 'id']
+NEW FKEY ihm_cross_link_restraint:ihm_cross_link_restraint_ihm_cross_link_list_combo1_fkey TO TABLE ihm_cross_link_list ['Group_RID', 'structure_id', 'group_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_cross_link_restraint:Asym_RID_1
+NEW FKEY ihm_cross_link_restraint:ihm_cross_link_restraint_struct_asym_1_combo1_fkey TO TABLE struct_asym ['Asym_RID_1', 'structure_id', 'asym_id_1'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_cross_link_result:Ensemble_RID
+NEW FKEY ihm_cross_link_result:ihm_cross_link_result_ihm_ensemble_info_combo1_fkey TO TABLE ihm_ensemble_info ['Ensemble_RID', 'structure_id', 'ensemble_id'] ['RID', 'structure_id', 'ensemble_id']
+NEW COLUMN ihm_cross_link_result:Restraint_RID
+NEW FKEY ihm_cross_link_result:ihm_cross_link_result_ihm_cross_link_restraint_combo1_fkey TO TABLE ihm_cross_link_restraint ['Restraint_RID', 'restraint_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN ihm_cross_link_result_parameters:Model_RID
+NEW FKEY ihm_cross_link_result_parameters:ihm_cross_link_result_parameters_ihm_model_list_combo1_fkey TO TABLE ihm_model_list ['Model_RID', 'structure_id', 'model_id'] ['RID', 'structure_id', 'model_id']
+NEW COLUMN ihm_cross_link_result_parameters:Restraint_RID
+NEW FKEY ihm_cross_link_result_parameters:ihm_cross_link_result_param__cross_link_restraint_combo1_fkey TO TABLE ihm_cross_link_restraint ['Restraint_RID', 'structure_id', 'restraint_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_dataset_external_reference:Dataset_List_RID
+NEW FKEY ihm_dataset_external_reference:ihm_dataset_external_reference_ihm_dataset_list_combo1_fkey TO TABLE ihm_dataset_list ['Dataset_List_RID', 'dataset_list_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN ihm_dataset_external_reference:File_RID
+NEW KEY ihm_external_files:ihm_external_files_combo1_key ['RID', 'structure_id', 'id']
+NEW FKEY ihm_dataset_external_reference:ihm_dataset_external_reference_ihm_external_files_combo1_fkey TO TABLE ihm_external_files ['File_RID', 'structure_id', 'file_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_dataset_group_link:Dataset_List_RID
+NEW FKEY ihm_dataset_group_link:ihm_dataset_group_link_ihm_dataset_list_combo1_fkey TO TABLE ihm_dataset_list ['Dataset_List_RID', 'structure_id', 'dataset_list_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_dataset_group_link:Group_RID
+NEW KEY ihm_dataset_group:ihm_dataset_group_combo1_key ['RID', 'structure_id', 'id']
+NEW FKEY ihm_dataset_group_link:ihm_dataset_group_link_ihm_dataset_group_combo1_fkey TO TABLE ihm_dataset_group ['Group_RID', 'structure_id', 'group_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_dataset_related_db_reference:Dataset_List_RID
+NEW FKEY ihm_dataset_related_db_reference:ihm_dataset_related_db_reference_ihm_dataset_list_combo1_fkey TO TABLE ihm_dataset_list ['Dataset_List_RID', 'structure_id', 'dataset_list_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_derived_distance_restraint:Feature_RID_2
+NEW FKEY ihm_derived_distance_restraint:ihm_derived_distance_restraint__feature_list_2_combo1_fkey TO TABLE ihm_feature_list ['Feature_RID_2', 'feature_id_2', 'structure_id'] ['RID', 'feature_id', 'structure_id']
+NEW COLUMN ihm_derived_distance_restraint:Feature_RID_1
+NEW FKEY ihm_derived_distance_restraint:ihm_derived_distance_restraint__feature_list_1_combo1_fkey TO TABLE ihm_feature_list ['Feature_RID_1', 'structure_id', 'feature_id_1'] ['RID', 'structure_id', 'feature_id']
+NEW COLUMN ihm_epr_restraint:Dataset_List_RID
+NEW FKEY ihm_epr_restraint:ihm_epr_restraint_ihm_dataset_list_combo1_fkey TO TABLE ihm_dataset_list ['Dataset_List_RID', 'dataset_list_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN ihm_epr_restraint:Model_RID
+NEW FKEY ihm_epr_restraint:ihm_epr_restraint_ihm_model_list_combo1_fkey TO TABLE ihm_model_list ['Model_RID', 'structure_id', 'model_id'] ['RID', 'structure_id', 'model_id']
+NEW COLUMN ihm_epr_restraint:Fitting_Software_RID
+NEW KEY software:software_combo1_key ['RID', 'pdbx_ordinal', 'structure_id']
+NEW FKEY ihm_epr_restraint:ihm_epr_restraint_software_combo1_fkey TO TABLE software ['Fitting_Software_RID', 'fitting_software_id', 'structure_id'] ['RID', 'pdbx_ordinal', 'structure_id']
+NEW COLUMN ihm_external_files:Reference_RID
+NEW KEY ihm_external_reference_info:ihm_external_reference_info_combo1_key ['RID', 'reference_id', 'structure_id']
+NEW FKEY ihm_external_files:ihm_external_files_ihm_external_reference_info_combo1_fkey TO TABLE ihm_external_reference_info ['Reference_RID', 'reference_id', 'structure_id'] ['RID', 'reference_id', 'structure_id']
+NEW COLUMN ihm_geometric_object_axis:Object_RID
+NEW KEY ihm_geometric_object_list:ihm_geometric_object_list_combo1_key ['RID', 'structure_id', 'object_id']
+NEW FKEY ihm_geometric_object_axis:ihm_geometric_object_axis_ihm_geometric_object_list_combo1_fkey TO TABLE ihm_geometric_object_list ['Object_RID', 'structure_id', 'object_id'] ['RID', 'structure_id', 'object_id']
+NEW COLUMN ihm_geometric_object_distance_restraint:Object_RID
+NEW FKEY ihm_geometric_object_distance_restraint:ihm_geom_obj_distance_restraint__geom_obj_list_combo1_fkey TO TABLE ihm_geometric_object_list ['Object_RID', 'structure_id', 'object_id'] ['RID', 'structure_id', 'object_id']
+NEW COLUMN ihm_geometric_object_distance_restraint:Feature_RID
+NEW FKEY ihm_geometric_object_distance_restraint:ihm_geom_object_distance_restraint__feature_list_combo1_fkey TO TABLE ihm_feature_list ['Feature_RID', 'structure_id', 'feature_id'] ['RID', 'structure_id', 'feature_id']
+NEW COLUMN ihm_geometric_object_half_torus:Object_RID
+NEW KEY ihm_geometric_object_torus:ihm_geometric_object_torus_combo1_key ['RID', 'structure_id', 'object_id']
+NEW FKEY ihm_geometric_object_half_torus:ihm_geom_object_half_torus__geom_object_torus_combo1_fkey TO TABLE ihm_geometric_object_torus ['Object_RID', 'structure_id', 'object_id'] ['RID', 'structure_id', 'object_id']
+NEW COLUMN ihm_geometric_object_plane:Object_RID
+NEW FKEY ihm_geometric_object_plane:ihm_geometric_object_plane__geometric_object_list_combo1_fkey TO TABLE ihm_geometric_object_list ['Object_RID', 'object_id', 'structure_id'] ['RID', 'object_id', 'structure_id']
+NEW COLUMN ihm_geometric_object_sphere:Object_RID
+NEW FKEY ihm_geometric_object_sphere:ihm_geometric_object_sphere__geometric_object_list_combo1_fkey TO TABLE ihm_geometric_object_list ['Object_RID', 'object_id', 'structure_id'] ['RID', 'object_id', 'structure_id']
+NEW COLUMN ihm_geometric_object_sphere:Center_RID
+NEW KEY ihm_geometric_object_center:ihm_geometric_object_center_combo1_key ['RID', 'structure_id', 'id']
+NEW FKEY ihm_geometric_object_sphere:ihm_geom_object_sphere__geom_object_center_combo1_fkey TO TABLE ihm_geometric_object_center ['Center_RID', 'structure_id', 'center_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_geometric_object_torus:Object_RID
+NEW FKEY ihm_geometric_object_torus:ihm_geometric_object_torus__geometric_object_list_combo1_fkey TO TABLE ihm_geometric_object_list ['Object_RID', 'structure_id', 'object_id'] ['RID', 'structure_id', 'object_id']
+NEW COLUMN ihm_geometric_object_torus:Center_RID
+NEW FKEY ihm_geometric_object_torus:ihm_geometric_object_torus__geometric_object_center_combo1_fkey TO TABLE ihm_geometric_object_center ['Center_RID', 'center_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN ihm_hydroxyl_radical_fp_restraint:Asym_RID
+NEW FKEY ihm_hydroxyl_radical_fp_restraint:ihm_hydroxyl_radical_fp_restraint_struct_asym_combo1_fkey TO TABLE struct_asym ['Asym_RID', 'asym_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN ihm_hydroxyl_radical_fp_restraint:Dataset_List_RID
+NEW FKEY ihm_hydroxyl_radical_fp_restraint:ihm_hydroxyl_radical_fp_restraint_ihm_dataset_list_combo1_fkey TO TABLE ihm_dataset_list ['Dataset_List_RID', 'structure_id', 'dataset_list_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_interface_residue_feature:Feature_RID
+NEW FKEY ihm_interface_residue_feature:ihm_interface_residue_feature_ihm_feature_list_combo1_fkey TO TABLE ihm_feature_list ['Feature_RID', 'feature_id', 'structure_id'] ['RID', 'feature_id', 'structure_id']
+NEW COLUMN ihm_interface_residue_feature:Binding_Partner_Entity_RID
+NEW FKEY ihm_interface_residue_feature:ihm_interface_residue_feature_entity_combo1_fkey TO TABLE entity ['Binding_Partner_Entity_RID', 'structure_id', 'binding_partner_entity_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_ligand_probe:Entity_RID
+NEW FKEY ihm_ligand_probe:ihm_ligand_probe_entity_combo1_fkey TO TABLE entity ['Entity_RID', 'structure_id', 'entity_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_ligand_probe:Dataset_List_RID
+NEW FKEY ihm_ligand_probe:ihm_ligand_probe_ihm_dataset_list_combo1_fkey TO TABLE ihm_dataset_list ['Dataset_List_RID', 'dataset_list_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN ihm_ligand_probe:Probe_RID
+NEW KEY ihm_probe_list:ihm_probe_list_combo1_key ['RID', 'probe_id', 'structure_id']
+NEW FKEY ihm_ligand_probe:ihm_ligand_probe_ihm_probe_list_combo1_fkey TO TABLE ihm_probe_list ['Probe_RID', 'probe_id', 'structure_id'] ['RID', 'probe_id', 'structure_id']
+NEW COLUMN ihm_localization_density_files:File_RID
+NEW FKEY ihm_localization_density_files:ihm_localization_density_files_ihm_external_files_combo1_fkey TO TABLE ihm_external_files ['File_RID', 'file_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN ihm_localization_density_files:Ensemble_RID
+NEW FKEY ihm_localization_density_files:ihm_localization_density_files_ihm_ensemble_info_combo1_fkey TO TABLE ihm_ensemble_info ['Ensemble_RID', 'ensemble_id', 'structure_id'] ['RID', 'ensemble_id', 'structure_id']
+NEW COLUMN ihm_model_group_link:Group_RID
+NEW KEY ihm_model_group:ihm_model_group_combo1_key ['RID', 'structure_id', 'id']
+NEW FKEY ihm_model_group_link:ihm_model_group_link_ihm_model_group_combo1_fkey TO TABLE ihm_model_group ['Group_RID', 'structure_id', 'group_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_model_group_link:Model_RID
+NEW FKEY ihm_model_group_link:ihm_model_group_link_ihm_model_list_combo1_fkey TO TABLE ihm_model_list ['Model_RID', 'structure_id', 'model_id'] ['RID', 'structure_id', 'model_id']
+NEW COLUMN ihm_model_list:Protocol_RID
+NEW KEY ihm_modeling_protocol:ihm_modeling_protocol_combo1_key ['RID', 'id', 'structure_id']
+NEW FKEY ihm_model_list:ihm_model_list_ihm_modeling_protocol_combo1_fkey TO TABLE ihm_modeling_protocol ['Protocol_RID', 'protocol_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN ihm_model_list:Representation_RID
+NEW KEY ihm_model_representation:ihm_model_representation_combo1_key ['RID', 'structure_id', 'id']
+NEW FKEY ihm_model_list:ihm_model_list_ihm_model_representation_combo1_fkey TO TABLE ihm_model_representation ['Representation_RID', 'structure_id', 'representation_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_model_list:Assembly_RID
+NEW FKEY ihm_model_list:ihm_model_list_ihm_struct_assembly_combo1_fkey TO TABLE ihm_struct_assembly ['Assembly_RID', 'assembly_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN ihm_model_representation_details:Entity_RID
+NEW FKEY ihm_model_representation_details:ihm_model_representation_details_entity_combo1_fkey TO TABLE entity ['Entity_RID', 'structure_id', 'entity_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_model_representation_details:Entity_Asym_RID
+NEW FKEY ihm_model_representation_details:ihm_model_representation_details_struct_asym_combo1_fkey TO TABLE struct_asym ['Entity_Asym_RID', 'structure_id', 'entity_asym_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_model_representation_details:Representation_RID
+NEW FKEY ihm_model_representation_details:ihm_model_rep_details__model_rep_combo1_fkey TO TABLE ihm_model_representation ['Representation_RID', 'structure_id', 'representation_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_model_representative:Model_RID
+NEW FKEY ihm_model_representative:ihm_model_representative_ihm_model_list_combo1_fkey TO TABLE ihm_model_list ['Model_RID', 'model_id', 'structure_id'] ['RID', 'model_id', 'structure_id']
+NEW COLUMN ihm_model_representative:Model_Group_RID
+NEW FKEY ihm_model_representative:ihm_model_representative_ihm_model_group_combo1_fkey TO TABLE ihm_model_group ['Model_Group_RID', 'model_group_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN ihm_modeling_post_process:Protocol_RID
+NEW FKEY ihm_modeling_post_process:ihm_modeling_post_process_ihm_modeling_protocol_combo1_fkey TO TABLE ihm_modeling_protocol ['Protocol_RID', 'structure_id', 'protocol_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_modeling_protocol_details:Protocol_RID
+NEW FKEY ihm_modeling_protocol_details:ihm_modeling_protocol_details_ihm_modeling_protocol_combo1_fkey TO TABLE ihm_modeling_protocol ['Protocol_RID', 'structure_id', 'protocol_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_multi_state_model_group_link:Model_Group_RID
+NEW FKEY ihm_multi_state_model_group_link:ihm_multi_state_model_group_link_ihm_model_group_combo1_fkey TO TABLE ihm_model_group ['Model_Group_RID', 'structure_id', 'model_group_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_multi_state_model_group_link:State_RID
+NEW KEY ihm_multi_state_modeling:ihm_multi_state_modeling_combo1_key ['RID', 'state_id', 'structure_id']
+NEW FKEY ihm_multi_state_model_group_link:ihm_multi_sta_model_grp_link__multi_sta_modeling_combo1_fkey TO TABLE ihm_multi_state_modeling ['State_RID', 'state_id', 'structure_id'] ['RID', 'state_id', 'structure_id']
+NEW COLUMN ihm_non_poly_feature:Comp_RID
+NEW FKEY ihm_non_poly_feature:ihm_non_poly_feature_chem_comp_combo1_fkey TO TABLE chem_comp ['Comp_RID', 'structure_id', 'comp_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_non_poly_feature:Entity_RID
+NEW FKEY ihm_non_poly_feature:ihm_non_poly_feature_entity_combo1_fkey TO TABLE entity ['Entity_RID', 'structure_id', 'entity_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_non_poly_feature:Feature_RID
+NEW FKEY ihm_non_poly_feature:ihm_non_poly_feature_ihm_feature_list_combo1_fkey TO TABLE ihm_feature_list ['Feature_RID', 'feature_id', 'structure_id'] ['RID', 'feature_id', 'structure_id']
+NEW COLUMN ihm_ordered_ensemble:Model_Group_RID_Begin
+NEW FKEY ihm_ordered_ensemble:ihm_ordered_ensemble__model_group_begin_combo1_fkey TO TABLE ihm_model_group ['Model_Group_RID_Begin', 'model_group_id_begin', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN ihm_ordered_ensemble:Model_Group_RID_End
+NEW FKEY ihm_ordered_ensemble:ihm_ordered_ensemble__model_group_end_combo1_fkey TO TABLE ihm_model_group ['Model_Group_RID_End', 'model_group_id_end', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN ihm_poly_atom_feature:Feature_RID
+NEW FKEY ihm_poly_atom_feature:ihm_poly_atom_feature_ihm_feature_list_combo1_fkey TO TABLE ihm_feature_list ['Feature_RID', 'structure_id', 'feature_id'] ['RID', 'structure_id', 'feature_id']
+NEW COLUMN ihm_poly_probe_conjugate:Probe_RID
+NEW FKEY ihm_poly_probe_conjugate:ihm_poly_probe_conjugate_ihm_probe_list_combo1_fkey TO TABLE ihm_probe_list ['Probe_RID', 'probe_id', 'structure_id'] ['RID', 'probe_id', 'structure_id']
+NEW COLUMN ihm_poly_probe_conjugate:Position_RID
+NEW KEY ihm_poly_probe_position:ihm_poly_probe_position_combo1_key ['RID', 'structure_id', 'id']
+NEW FKEY ihm_poly_probe_conjugate:ihm_poly_probe_conjugate_ihm_poly_probe_position_combo1_fkey TO TABLE ihm_poly_probe_position ['Position_RID', 'structure_id', 'position_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_poly_probe_conjugate:Dataset_List_RID
+NEW FKEY ihm_poly_probe_conjugate:ihm_poly_probe_conjugate_ihm_dataset_list_combo1_fkey TO TABLE ihm_dataset_list ['Dataset_List_RID', 'dataset_list_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN ihm_poly_residue_feature:Feature_RID
+NEW FKEY ihm_poly_residue_feature:ihm_poly_residue_feature_ihm_feature_list_combo1_fkey TO TABLE ihm_feature_list ['Feature_RID', 'feature_id', 'structure_id'] ['RID', 'feature_id', 'structure_id']
+NEW COLUMN ihm_predicted_contact_restraint:Dataset_List_RID
+NEW FKEY ihm_predicted_contact_restraint:ihm_predicted_contact_restraint_ihm_dataset_list_combo1_fkey TO TABLE ihm_dataset_list ['Dataset_List_RID', 'dataset_list_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN ihm_predicted_contact_restraint:Asym_RID_1
+NEW FKEY ihm_predicted_contact_restraint:ihm_predicted_contact_restraint_struct_asym_1_combo1_fkey TO TABLE struct_asym ['Asym_RID_1', 'structure_id', 'asym_id_1'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_predicted_contact_restraint:Asym_RID_2
+NEW FKEY ihm_predicted_contact_restraint:ihm_predicted_contact_restraint_struct_asym_2_combo1_fkey TO TABLE struct_asym ['Asym_RID_2', 'structure_id', 'asym_id_2'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_related_datasets:Dataset_List_RID_Primary
+NEW FKEY ihm_related_datasets:ihm_related_datasets__dataset_list_primary_combo1_fkey TO TABLE ihm_dataset_list ['Dataset_List_RID_Primary', 'structure_id', 'dataset_list_id_primary'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_related_datasets:Dataset_List_RID_Derived
+NEW FKEY ihm_related_datasets:ihm_related_datasets__dataset_list_derived_combo1_fkey TO TABLE ihm_dataset_list ['Dataset_List_RID_Derived', 'structure_id', 'dataset_list_id_derived'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_residues_not_modeled:Model_RID
+NEW FKEY ihm_residues_not_modeled:ihm_residues_not_modeled_ihm_model_list_combo1_fkey TO TABLE ihm_model_list ['Model_RID', 'structure_id', 'model_id'] ['RID', 'structure_id', 'model_id']
+NEW COLUMN ihm_residues_not_modeled:Asym_RID
+NEW FKEY ihm_residues_not_modeled:ihm_residues_not_modeled_struct_asym_combo1_fkey TO TABLE struct_asym ['Asym_RID', 'structure_id', 'asym_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_sas_restraint:Dataset_List_RID
+NEW FKEY ihm_sas_restraint:ihm_sas_restraint_ihm_dataset_list_combo1_fkey TO TABLE ihm_dataset_list ['Dataset_List_RID', 'structure_id', 'dataset_list_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_sas_restraint:Model_RID
+NEW FKEY ihm_sas_restraint:ihm_sas_restraint_ihm_model_list_combo1_fkey TO TABLE ihm_model_list ['Model_RID', 'model_id', 'structure_id'] ['RID', 'model_id', 'structure_id']
+NEW COLUMN ihm_sas_restraint:Struct_Assembly_RID
+NEW FKEY ihm_sas_restraint:ihm_sas_restraint_ihm_struct_assembly_combo1_fkey TO TABLE ihm_struct_assembly ['Struct_Assembly_RID', 'struct_assembly_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN ihm_starting_comparative_models:Starting_Model_RID
+NEW KEY ihm_starting_model_details:ihm_starting_model_details_combo1_key ['RID', 'structure_id', 'starting_model_id']
+NEW FKEY ihm_starting_comparative_models:ihm_starting_compare_models__starting_model_details_combo1_fkey TO TABLE ihm_starting_model_details ['Starting_Model_RID', 'structure_id', 'starting_model_id'] ['RID', 'structure_id', 'starting_model_id']
+NEW COLUMN ihm_starting_comparative_models:Template_Dataset_List_RID
+NEW FKEY ihm_starting_comparative_models:ihm_starting_comparative_models_ihm_dataset_list_combo1_fkey TO TABLE ihm_dataset_list ['Template_Dataset_List_RID', 'template_dataset_list_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN ihm_starting_computational_models:Starting_Model_RID
+NEW FKEY ihm_starting_computational_models:ihm_starting_compute_models__starting_model_details_combo1_fkey TO TABLE ihm_starting_model_details ['Starting_Model_RID', 'starting_model_id', 'structure_id'] ['RID', 'starting_model_id', 'structure_id']
+NEW COLUMN ihm_starting_model_details:Entity_RID
+NEW FKEY ihm_starting_model_details:ihm_starting_model_details_entity_combo1_fkey TO TABLE entity ['Entity_RID', 'structure_id', 'entity_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_starting_model_details:Asym_RID
+NEW FKEY ihm_starting_model_details:ihm_starting_model_details_struct_asym_combo1_fkey TO TABLE struct_asym ['Asym_RID', 'structure_id', 'asym_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_starting_model_details:Dataset_List_RID
+NEW FKEY ihm_starting_model_details:ihm_starting_model_details_ihm_dataset_list_combo1_fkey TO TABLE ihm_dataset_list ['Dataset_List_RID', 'structure_id', 'dataset_list_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_starting_model_seq_dif:Starting_Model_RID
+NEW FKEY ihm_starting_model_seq_dif:ihm_starting_model_seq_dif__starting_model_details_combo1_fkey TO TABLE ihm_starting_model_details ['Starting_Model_RID', 'starting_model_id', 'structure_id'] ['RID', 'starting_model_id', 'structure_id']
+NEW COLUMN ihm_starting_model_seq_dif:Asym_RID
+NEW FKEY ihm_starting_model_seq_dif:ihm_starting_model_seq_dif_struct_asym_combo1_fkey TO TABLE struct_asym ['Asym_RID', 'structure_id', 'asym_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_struct_assembly_class_link:Class_RID
+NEW KEY ihm_struct_assembly_class:ihm_struct_assembly_class_combo1_key ['RID', 'structure_id', 'id']
+NEW FKEY ihm_struct_assembly_class_link:ihm_struct_assem_class_link__struct_assem_class_combo1_fkey TO TABLE ihm_struct_assembly_class ['Class_RID', 'structure_id', 'class_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_struct_assembly_class_link:Assembly_RID
+NEW FKEY ihm_struct_assembly_class_link:ihm_struct_assembly_class_link_ihm_struct_assembly_combo1_fkey TO TABLE ihm_struct_assembly ['Assembly_RID', 'assembly_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN ihm_struct_assembly_details:Asym_RID
+NEW FKEY ihm_struct_assembly_details:ihm_struct_assembly_details_struct_asym_combo1_fkey TO TABLE struct_asym ['Asym_RID', 'structure_id', 'asym_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_struct_assembly_details:Parent_Assembly_RID
+NEW FKEY ihm_struct_assembly_details:ihm_struct_assembly_details__struct_assembly_parent_combo1_fkey TO TABLE ihm_struct_assembly ['Parent_Assembly_RID', 'structure_id', 'parent_assembly_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_struct_assembly_details:Assembly_RID
+NEW FKEY ihm_struct_assembly_details:ihm_struct_assembly_details__struct_assembly_combo1_fkey TO TABLE ihm_struct_assembly ['Assembly_RID', 'assembly_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN ihm_struct_assembly_details:Entity_RID
+NEW FKEY ihm_struct_assembly_details:ihm_struct_assembly_details_entity_combo1_fkey TO TABLE entity ['Entity_RID', 'entity_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN pdbx_entity_nonpoly:Entity_RID
+NEW FKEY pdbx_entity_nonpoly:pdbx_entity_nonpoly_entity_combo1_fkey TO TABLE entity ['Entity_RID', 'entity_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN pdbx_entity_poly_na_type:Entity_RID
+NEW FKEY pdbx_entity_poly_na_type:pdbx_entity_poly_na_type_entity_combo1_fkey TO TABLE entity ['Entity_RID', 'entity_id', 'structure_id'] ['RID', 'id', 'structure_id']
+NEW COLUMN struct_asym:Entity_RID
+NEW FKEY struct_asym:struct_asym_entity_combo1_fkey TO TABLE entity ['Entity_RID', 'structure_id', 'entity_id'] ['RID', 'structure_id', 'id']
+NEW COLUMN ihm_cross_link_list:Entity_Poly_Seq_RID_2
+NEW FKEY ihm_cross_link_list:ihm_cross_link_list_entity_poly_seq_2_combo1_fkey TO TABLE entity_poly_seq ['Entity_Poly_Seq_RID_2', 'seq_id_2', 'structure_id', 'comp_id_2', 'entity_id_2'] ['RID', 'num', 'structure_id', 'mon_id', 'entity_id']
+NEW COLUMN ihm_cross_link_list:Entity_Poly_Seq_RID_1
+NEW FKEY ihm_cross_link_list:ihm_cross_link_list_entity_poly_seq_1_combo1_fkey TO TABLE entity_poly_seq ['Entity_Poly_Seq_RID_1', 'seq_id_1', 'entity_id_1', 'structure_id', 'comp_id_1'] ['RID', 'num', 'entity_id', 'structure_id', 'mon_id']
+NEW COLUMN ihm_cross_link_restraint:Entity_Poly_Seq_RID_2
+NEW FKEY ihm_cross_link_restraint:ihm_cross_link_restraint_entity_poly_seq_2_combo1_fkey TO TABLE entity_poly_seq ['Entity_Poly_Seq_RID_2', 'entity_id_2', 'structure_id', 'seq_id_2', 'comp_id_2'] ['RID', 'entity_id', 'structure_id', 'num', 'mon_id']
+NEW COLUMN ihm_cross_link_restraint:Entity_Poly_Seq_RID_1
+NEW FKEY ihm_cross_link_restraint:ihm_cross_link_restraint_entity_poly_seq_1_combo1_fkey TO TABLE entity_poly_seq ['Entity_Poly_Seq_RID_1', 'seq_id_1', 'entity_id_1', 'structure_id', 'comp_id_1'] ['RID', 'num', 'entity_id', 'structure_id', 'mon_id']
+NEW COLUMN ihm_hydroxyl_radical_fp_restraint:Comp_RID
+NEW FKEY ihm_hydroxyl_radical_fp_restraint:ihm_hydroxyl_radical_fp_restraint_entity_poly_seq_combo1_fkey TO TABLE entity_poly_seq ['Comp_RID', 'entity_id', 'seq_id', 'structure_id', 'comp_id'] ['RID', 'entity_id', 'num', 'structure_id', 'mon_id']
+NEW COLUMN ihm_poly_atom_feature:Comp_RID
+NEW FKEY ihm_poly_atom_feature:ihm_poly_atom_feature_entity_poly_seq_combo1_fkey TO TABLE entity_poly_seq ['Comp_RID', 'comp_id', 'entity_id', 'seq_id', 'structure_id'] ['RID', 'mon_id', 'entity_id', 'num', 'structure_id']
+NEW COLUMN ihm_poly_probe_position:Comp_RID
+NEW FKEY ihm_poly_probe_position:ihm_poly_probe_position_entity_poly_seq_combo1_fkey TO TABLE entity_poly_seq ['Comp_RID', 'comp_id', 'structure_id', 'entity_id', 'seq_id'] ['RID', 'mon_id', 'structure_id', 'entity_id', 'num']
+NEW COLUMN ihm_poly_residue_feature:Entity_Poly_Seq_RID_Begin
+NEW FKEY ihm_poly_residue_feature:ihm_poly_residue_feature_entity_poly_seq_begin_combo1_fkey TO TABLE entity_poly_seq ['Entity_Poly_Seq_RID_Begin', 'comp_id_begin', 'structure_id', 'seq_id_begin', 'entity_id'] ['RID', 'mon_id', 'structure_id', 'num', 'entity_id']
+NEW COLUMN ihm_poly_residue_feature:Entity_Poly_Seq_RID_End
+NEW FKEY ihm_poly_residue_feature:ihm_poly_residue_feature_entity_poly_seq_end_combo1_fkey TO TABLE entity_poly_seq ['Entity_Poly_Seq_RID_End', 'structure_id', 'seq_id_end', 'comp_id_end', 'entity_id'] ['RID', 'structure_id', 'num', 'mon_id', 'entity_id']
+NEW COLUMN ihm_predicted_contact_restraint:Entity_Poly_Seq_RID_2
+NEW FKEY ihm_predicted_contact_restraint:ihm_predicted_contact_restraint_entity_poly_seq_2_combo1_fkey TO TABLE entity_poly_seq ['Entity_Poly_Seq_RID_2', 'structure_id', 'entity_id_2', 'comp_id_2', 'seq_id_2'] ['RID', 'structure_id', 'entity_id', 'mon_id', 'num']
+NEW COLUMN ihm_predicted_contact_restraint:Entity_Poly_Seq_RID_1
+NEW FKEY ihm_predicted_contact_restraint:ihm_predicted_contact_restraint_entity_poly_seq_1_combo1_fkey TO TABLE entity_poly_seq ['Entity_Poly_Seq_RID_1', 'structure_id', 'comp_id_1', 'entity_id_1', 'seq_id_1'] ['RID', 'structure_id', 'mon_id', 'entity_id', 'num']
+NEW COLUMN ihm_residues_not_modeled:Entity_Poly_Seq_RID_Begin
+NEW FKEY ihm_residues_not_modeled:ihm_residues_not_modeled_entity_poly_seq_begin_combo1_fkey TO TABLE entity_poly_seq ['Entity_Poly_Seq_RID_Begin', 'seq_id_begin', 'structure_id', 'comp_id_begin', 'entity_id'] ['RID', 'num', 'structure_id', 'mon_id', 'entity_id']
+NEW COLUMN ihm_residues_not_modeled:Entity_Poly_Seq_RID_End
+NEW FKEY ihm_residues_not_modeled:ihm_residues_not_modeled_entity_poly_seq_end_combo1_fkey TO TABLE entity_poly_seq ['Entity_Poly_Seq_RID_End', 'comp_id_end', 'structure_id', 'seq_id_end', 'entity_id'] ['RID', 'mon_id', 'structure_id', 'num', 'entity_id']
+NEW COLUMN ihm_starting_model_seq_dif:Comp_RID
+NEW FKEY ihm_starting_model_seq_dif:ihm_starting_model_seq_dif_entity_poly_seq_combo1_fkey TO TABLE entity_poly_seq ['Comp_RID', 'structure_id', 'entity_id', 'comp_id', 'seq_id'] ['RID', 'structure_id', 'entity_id', 'mon_id', 'num']
