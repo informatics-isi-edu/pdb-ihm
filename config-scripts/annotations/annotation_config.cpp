@@ -9639,7 +9639,8 @@
             "table": "struct_ref",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Reference sequence information",
+                //"name": "Reference sequence information",
+                "markdown_name": "Reference sequence information^*^",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -9809,7 +9810,8 @@
             "table": "struct_ref_seq",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Alignment information with the reference sequence",
+                //"name": "Alignment information with the reference sequence",
+                "markdown_name": "Alignment information with the reference sequence^*^",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
