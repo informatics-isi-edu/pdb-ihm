@@ -9,34 +9,34 @@ TABLE chem_comp
 TABLE citation_author
 	NEW COLUMN Citation_RID
 
-	NEW FOREIGN KEY citation_author_citation_combo1_fkey [Citation_RID, structure_id, citation_id] TO TABLE citation [RID, structure_id, id]
+	NEW FOREIGN KEY citation_author_citation_combo1_fkey [Citation_RID, citation_id, structure_id] TO TABLE citation [RID, id, structure_id]
 
 TABLE citation
-	NEW KEY citation_combo1_key [RID, structure_id, id]
+	NEW KEY citation_combo1_key [RID, id, structure_id]
 
 TABLE entity_name_com
 	NEW COLUMN Entity_RID
 
-	NEW FOREIGN KEY entity_name_com_entity_combo1_fkey [Entity_RID, structure_id, entity_id] TO TABLE entity [RID, structure_id, id]
+	NEW FOREIGN KEY entity_name_com_entity_combo1_fkey [Entity_RID, entity_id, structure_id] TO TABLE entity [RID, id, structure_id]
 
 TABLE entity_name_sys
 	NEW COLUMN Entity_RID
 
-	NEW FOREIGN KEY entity_name_sys_entity_combo1_fkey [Entity_RID, entity_id, structure_id] TO TABLE entity [RID, id, structure_id]
+	NEW FOREIGN KEY entity_name_sys_entity_combo1_fkey [Entity_RID, structure_id, entity_id] TO TABLE entity [RID, structure_id, id]
 
 TABLE entity_poly
 	NEW COLUMN Entity_RID
 
 	NEW KEY entity_poly_combo1_key [RID, structure_id, entity_id]
 
-	NEW FOREIGN KEY entity_poly_entity_combo1_fkey [Entity_RID, entity_id, structure_id] TO TABLE entity [RID, id, structure_id]
+	NEW FOREIGN KEY entity_poly_entity_combo1_fkey [Entity_RID, structure_id, entity_id] TO TABLE entity [RID, structure_id, id]
 
 TABLE entity_poly_seq
 	NEW COLUMN Entity_RID
 	NEW COLUMN Mon_RID
 
 	NEW FOREIGN KEY entity_poly_seq_entity_poly_combo1_fkey [Entity_RID, structure_id, entity_id] TO TABLE entity_poly [RID, structure_id, entity_id]
-	NEW FOREIGN KEY entity_poly_seq_chem_comp_combo1_fkey [Mon_RID, structure_id, mon_id] TO TABLE chem_comp [RID, structure_id, id]
+	NEW FOREIGN KEY entity_poly_seq_chem_comp_combo1_fkey [Mon_RID, mon_id, structure_id] TO TABLE chem_comp [RID, id, structure_id]
 
 TABLE entity_src_gen
 	NEW COLUMN Entity_RID
@@ -48,7 +48,7 @@ TABLE ihm_2dem_class_average_fitting
 	NEW COLUMN Restraint_RID
 
 	NEW FOREIGN KEY ihm_2dem_class_average_fitting_ihm_model_list_combo1_fkey [Model_RID, model_id, structure_id] TO TABLE ihm_model_list [RID, model_id, structure_id]
-	NEW FOREIGN KEY ihm_2dem_class_avg_fitting__2dem_class_avg_rest_combo1_fkey [Restraint_RID, structure_id, restraint_id] TO TABLE ihm_2dem_class_average_restraint [RID, structure_id, id]
+	NEW FOREIGN KEY ihm_2dem_class_avg_fitting__2dem_class_avg_rest_combo1_fkey [Restraint_RID, restraint_id, structure_id] TO TABLE ihm_2dem_class_average_restraint [RID, id, structure_id]
 
 TABLE ihm_model_list
 	NEW COLUMN Protocol_RID
@@ -58,29 +58,29 @@ TABLE ihm_model_list
 	NEW KEY ihm_model_list_combo1_key [RID, model_id, structure_id]
 
 	NEW FOREIGN KEY ihm_model_list_ihm_modeling_protocol_combo1_fkey [Protocol_RID, protocol_id, structure_id] TO TABLE ihm_modeling_protocol [RID, id, structure_id]
-	NEW FOREIGN KEY ihm_model_list_ihm_model_representation_combo1_fkey [Representation_RID, structure_id, representation_id] TO TABLE ihm_model_representation [RID, structure_id, id]
+	NEW FOREIGN KEY ihm_model_list_ihm_model_representation_combo1_fkey [Representation_RID, representation_id, structure_id] TO TABLE ihm_model_representation [RID, id, structure_id]
 	NEW FOREIGN KEY ihm_model_list_ihm_struct_assembly_combo1_fkey [Assembly_RID, assembly_id, structure_id] TO TABLE ihm_struct_assembly [RID, id, structure_id]
 
 TABLE ihm_2dem_class_average_restraint
 	NEW COLUMN Dataset_List_RID
 	NEW COLUMN Struct_Assembly_RID
 
-	NEW KEY ihm_2dem_class_average_restraint_combo1_key [RID, structure_id, id]
+	NEW KEY ihm_2dem_class_average_restraint_combo1_key [RID, id, structure_id]
 
-	NEW FOREIGN KEY ihm_2dem_class_average_restraint_ihm_dataset_list_combo1_fkey [Dataset_List_RID, structure_id, dataset_list_id] TO TABLE ihm_dataset_list [RID, structure_id, id]
-	NEW FOREIGN KEY ihm_2dem_class_average_restraint__struct_assembly_combo1_fkey [Struct_Assembly_RID, struct_assembly_id, structure_id] TO TABLE ihm_struct_assembly [RID, id, structure_id]
+	NEW FOREIGN KEY ihm_2dem_class_average_restraint_ihm_dataset_list_combo1_fkey [Dataset_List_RID, dataset_list_id, structure_id] TO TABLE ihm_dataset_list [RID, id, structure_id]
+	NEW FOREIGN KEY ihm_2dem_class_average_restraint__struct_assembly_combo1_fkey [Struct_Assembly_RID, structure_id, struct_assembly_id] TO TABLE ihm_struct_assembly [RID, structure_id, id]
 
 TABLE ihm_struct_assembly
-	NEW KEY ihm_struct_assembly_combo1_key [RID, id, structure_id]
+	NEW KEY ihm_struct_assembly_combo1_key [RID, structure_id, id]
 
 TABLE ihm_3dem_restraint
 	NEW COLUMN Struct_Assembly_RID
 	NEW COLUMN Dataset_List_RID
 	NEW COLUMN Model_RID
 
-	NEW FOREIGN KEY ihm_3dem_restraint_ihm_struct_assembly_combo1_fkey [Struct_Assembly_RID, structure_id, struct_assembly_id] TO TABLE ihm_struct_assembly [RID, structure_id, id]
-	NEW FOREIGN KEY ihm_3dem_restraint_ihm_dataset_list_combo1_fkey [Dataset_List_RID, structure_id, dataset_list_id] TO TABLE ihm_dataset_list [RID, structure_id, id]
-	NEW FOREIGN KEY ihm_3dem_restraint_ihm_model_list_combo1_fkey [Model_RID, structure_id, model_id] TO TABLE ihm_model_list [RID, structure_id, model_id]
+	NEW FOREIGN KEY ihm_3dem_restraint_ihm_struct_assembly_combo1_fkey [Struct_Assembly_RID, struct_assembly_id, structure_id] TO TABLE ihm_struct_assembly [RID, id, structure_id]
+	NEW FOREIGN KEY ihm_3dem_restraint_ihm_dataset_list_combo1_fkey [Dataset_List_RID, dataset_list_id, structure_id] TO TABLE ihm_dataset_list [RID, id, structure_id]
+	NEW FOREIGN KEY ihm_3dem_restraint_ihm_model_list_combo1_fkey [Model_RID, model_id, structure_id] TO TABLE ihm_model_list [RID, model_id, structure_id]
 
 TABLE ihm_cross_link_list
 	NEW COLUMN Dataset_List_RID
@@ -90,8 +90,8 @@ TABLE ihm_cross_link_list
 	NEW KEY ihm_cross_link_list_combo1_key [RID, structure_id, id]
 
 	NEW FOREIGN KEY ihm_cross_link_list_ihm_dataset_list_combo1_fkey [Dataset_List_RID, structure_id, dataset_list_id] TO TABLE ihm_dataset_list [RID, structure_id, id]
-	NEW FOREIGN KEY ihm_cross_link_list_entity_poly_seq_2_combo1_fkey [Entity_Poly_Seq_RID_2, seq_id_2, structure_id, comp_id_2, entity_id_2] TO TABLE entity_poly_seq [RID, num, structure_id, mon_id, entity_id]
-	NEW FOREIGN KEY ihm_cross_link_list_entity_poly_seq_1_combo1_fkey [Entity_Poly_Seq_RID_1, seq_id_1, entity_id_1, structure_id, comp_id_1] TO TABLE entity_poly_seq [RID, num, entity_id, structure_id, mon_id]
+	NEW FOREIGN KEY ihm_cross_link_list_entity_poly_seq_2_combo1_fkey [Entity_Poly_Seq_RID_2, comp_id_2, seq_id_2, entity_id_2, structure_id] TO TABLE entity_poly_seq [RID, mon_id, num, entity_id, structure_id]
+	NEW FOREIGN KEY ihm_cross_link_list_entity_poly_seq_1_combo1_fkey [Entity_Poly_Seq_RID_1, seq_id_1, structure_id, entity_id_1, comp_id_1] TO TABLE entity_poly_seq [RID, num, structure_id, entity_id, mon_id]
 
 TABLE ihm_cross_link_restraint
 	NEW COLUMN Asym_RID_2
@@ -102,23 +102,23 @@ TABLE ihm_cross_link_restraint
 
 	NEW FOREIGN KEY ihm_cross_link_restraint_struct_asym_2_combo1_fkey [Asym_RID_2, structure_id, asym_id_2] TO TABLE struct_asym [RID, structure_id, id]
 	NEW FOREIGN KEY ihm_cross_link_restraint_ihm_cross_link_list_combo1_fkey [Group_RID, structure_id, group_id] TO TABLE ihm_cross_link_list [RID, structure_id, id]
-	NEW FOREIGN KEY ihm_cross_link_restraint_struct_asym_1_combo1_fkey [Asym_RID_1, structure_id, asym_id_1] TO TABLE struct_asym [RID, structure_id, id]
-	NEW FOREIGN KEY ihm_cross_link_restraint_entity_poly_seq_2_combo1_fkey [Entity_Poly_Seq_RID_2, entity_id_2, structure_id, seq_id_2, comp_id_2] TO TABLE entity_poly_seq [RID, entity_id, structure_id, num, mon_id]
-	NEW FOREIGN KEY ihm_cross_link_restraint_entity_poly_seq_1_combo1_fkey [Entity_Poly_Seq_RID_1, seq_id_1, entity_id_1, structure_id, comp_id_1] TO TABLE entity_poly_seq [RID, num, entity_id, structure_id, mon_id]
+	NEW FOREIGN KEY ihm_cross_link_restraint_struct_asym_1_combo1_fkey [Asym_RID_1, asym_id_1, structure_id] TO TABLE struct_asym [RID, id, structure_id]
+	NEW FOREIGN KEY ihm_cross_link_restraint_entity_poly_seq_2_combo1_fkey [Entity_Poly_Seq_RID_2, structure_id, seq_id_2, comp_id_2, entity_id_2] TO TABLE entity_poly_seq [RID, structure_id, num, mon_id, entity_id]
+	NEW FOREIGN KEY ihm_cross_link_restraint_entity_poly_seq_1_combo1_fkey [Entity_Poly_Seq_RID_1, comp_id_1, structure_id, seq_id_1, entity_id_1] TO TABLE entity_poly_seq [RID, mon_id, structure_id, num, entity_id]
 
 TABLE struct_asym
 	NEW COLUMN Entity_RID
 
 	NEW KEY struct_asym_combo1_key [RID, structure_id, id]
 
-	NEW FOREIGN KEY struct_asym_entity_combo1_fkey [Entity_RID, structure_id, entity_id] TO TABLE entity [RID, structure_id, id]
+	NEW FOREIGN KEY struct_asym_entity_combo1_fkey [Entity_RID, entity_id, structure_id] TO TABLE entity [RID, id, structure_id]
 
 TABLE ihm_cross_link_result
 	NEW COLUMN Ensemble_RID
 	NEW COLUMN Restraint_RID
 
 	NEW FOREIGN KEY ihm_cross_link_result_ihm_ensemble_info_combo1_fkey [Ensemble_RID, structure_id, ensemble_id] TO TABLE ihm_ensemble_info [RID, structure_id, ensemble_id]
-	NEW FOREIGN KEY ihm_cross_link_result_ihm_cross_link_restraint_combo1_fkey [Restraint_RID, restraint_id, structure_id] TO TABLE ihm_cross_link_restraint [RID, id, structure_id]
+	NEW FOREIGN KEY ihm_cross_link_result_ihm_cross_link_restraint_combo1_fkey [Restraint_RID, structure_id, restraint_id] TO TABLE ihm_cross_link_restraint [RID, structure_id, id]
 
 TABLE ihm_cross_link_result_parameters
 	NEW COLUMN Model_RID
@@ -132,51 +132,51 @@ TABLE ihm_dataset_external_reference
 	NEW COLUMN File_RID
 
 	NEW FOREIGN KEY ihm_dataset_external_reference_ihm_dataset_list_combo1_fkey [Dataset_List_RID, dataset_list_id, structure_id] TO TABLE ihm_dataset_list [RID, id, structure_id]
-	NEW FOREIGN KEY ihm_dataset_external_reference_ihm_external_files_combo1_fkey [File_RID, structure_id, file_id] TO TABLE ihm_external_files [RID, structure_id, id]
+	NEW FOREIGN KEY ihm_dataset_external_reference_ihm_external_files_combo1_fkey [File_RID, file_id, structure_id] TO TABLE ihm_external_files [RID, id, structure_id]
 
 TABLE ihm_external_files
 	NEW COLUMN Reference_RID
 
-	NEW KEY ihm_external_files_combo1_key [RID, structure_id, id]
+	NEW KEY ihm_external_files_combo1_key [RID, id, structure_id]
 
-	NEW FOREIGN KEY ihm_external_files_ihm_external_reference_info_combo1_fkey [Reference_RID, reference_id, structure_id] TO TABLE ihm_external_reference_info [RID, reference_id, structure_id]
+	NEW FOREIGN KEY ihm_external_files_ihm_external_reference_info_combo1_fkey [Reference_RID, structure_id, reference_id] TO TABLE ihm_external_reference_info [RID, structure_id, reference_id]
 
 TABLE ihm_dataset_group_link
 	NEW COLUMN Dataset_List_RID
 	NEW COLUMN Group_RID
 
 	NEW FOREIGN KEY ihm_dataset_group_link_ihm_dataset_list_combo1_fkey [Dataset_List_RID, structure_id, dataset_list_id] TO TABLE ihm_dataset_list [RID, structure_id, id]
-	NEW FOREIGN KEY ihm_dataset_group_link_ihm_dataset_group_combo1_fkey [Group_RID, structure_id, group_id] TO TABLE ihm_dataset_group [RID, structure_id, id]
+	NEW FOREIGN KEY ihm_dataset_group_link_ihm_dataset_group_combo1_fkey [Group_RID, group_id, structure_id] TO TABLE ihm_dataset_group [RID, id, structure_id]
 
 TABLE ihm_dataset_group
-	NEW KEY ihm_dataset_group_combo1_key [RID, structure_id, id]
+	NEW KEY ihm_dataset_group_combo1_key [RID, id, structure_id]
 
 TABLE ihm_dataset_related_db_reference
 	NEW COLUMN Dataset_List_RID
 
-	NEW FOREIGN KEY ihm_dataset_related_db_reference_ihm_dataset_list_combo1_fkey [Dataset_List_RID, structure_id, dataset_list_id] TO TABLE ihm_dataset_list [RID, structure_id, id]
+	NEW FOREIGN KEY ihm_dataset_related_db_reference_ihm_dataset_list_combo1_fkey [Dataset_List_RID, dataset_list_id, structure_id] TO TABLE ihm_dataset_list [RID, id, structure_id]
 
 TABLE ihm_derived_distance_restraint
 	NEW COLUMN Feature_RID_2
 	NEW COLUMN Feature_RID_1
 
 	NEW FOREIGN KEY ihm_derived_distance_restraint__feature_list_2_combo1_fkey [Feature_RID_2, feature_id_2, structure_id] TO TABLE ihm_feature_list [RID, feature_id, structure_id]
-	NEW FOREIGN KEY ihm_derived_distance_restraint__feature_list_1_combo1_fkey [Feature_RID_1, structure_id, feature_id_1] TO TABLE ihm_feature_list [RID, structure_id, feature_id]
+	NEW FOREIGN KEY ihm_derived_distance_restraint__feature_list_1_combo1_fkey [Feature_RID_1, feature_id_1, structure_id] TO TABLE ihm_feature_list [RID, feature_id, structure_id]
 
 TABLE ihm_epr_restraint
 	NEW COLUMN Dataset_List_RID
 	NEW COLUMN Model_RID
 	NEW COLUMN Fitting_Software_RID
 
-	NEW FOREIGN KEY ihm_epr_restraint_ihm_dataset_list_combo1_fkey [Dataset_List_RID, dataset_list_id, structure_id] TO TABLE ihm_dataset_list [RID, id, structure_id]
-	NEW FOREIGN KEY ihm_epr_restraint_ihm_model_list_combo1_fkey [Model_RID, structure_id, model_id] TO TABLE ihm_model_list [RID, structure_id, model_id]
+	NEW FOREIGN KEY ihm_epr_restraint_ihm_dataset_list_combo1_fkey [Dataset_List_RID, structure_id, dataset_list_id] TO TABLE ihm_dataset_list [RID, structure_id, id]
+	NEW FOREIGN KEY ihm_epr_restraint_ihm_model_list_combo1_fkey [Model_RID, model_id, structure_id] TO TABLE ihm_model_list [RID, model_id, structure_id]
 	NEW FOREIGN KEY ihm_epr_restraint_software_combo1_fkey [Fitting_Software_RID, fitting_software_id, structure_id] TO TABLE software [RID, pdbx_ordinal, structure_id]
 
 TABLE software
 	NEW KEY software_combo1_key [RID, pdbx_ordinal, structure_id]
 
 TABLE ihm_external_reference_info
-	NEW KEY ihm_external_reference_info_combo1_key [RID, reference_id, structure_id]
+	NEW KEY ihm_external_reference_info_combo1_key [RID, structure_id, reference_id]
 
 TABLE ihm_geometric_object_axis
 	NEW COLUMN Object_RID
@@ -190,95 +190,95 @@ TABLE ihm_geometric_object_distance_restraint
 	NEW COLUMN Object_RID
 	NEW COLUMN Feature_RID
 
-	NEW FOREIGN KEY ihm_geom_obj_distance_restraint__geom_obj_list_combo1_fkey [Object_RID, structure_id, object_id] TO TABLE ihm_geometric_object_list [RID, structure_id, object_id]
-	NEW FOREIGN KEY ihm_geom_object_distance_restraint__feature_list_combo1_fkey [Feature_RID, structure_id, feature_id] TO TABLE ihm_feature_list [RID, structure_id, feature_id]
+	NEW FOREIGN KEY ihm_geom_obj_distance_restraint__geom_obj_list_combo1_fkey [Object_RID, object_id, structure_id] TO TABLE ihm_geometric_object_list [RID, object_id, structure_id]
+	NEW FOREIGN KEY ihm_geom_object_distance_restraint__feature_list_combo1_fkey [Feature_RID, feature_id, structure_id] TO TABLE ihm_feature_list [RID, feature_id, structure_id]
 
 TABLE ihm_geometric_object_half_torus
 	NEW COLUMN Object_RID
 
-	NEW FOREIGN KEY ihm_geom_object_half_torus__geom_object_torus_combo1_fkey [Object_RID, structure_id, object_id] TO TABLE ihm_geometric_object_torus [RID, structure_id, object_id]
+	NEW FOREIGN KEY ihm_geom_object_half_torus__geom_object_torus_combo1_fkey [Object_RID, object_id, structure_id] TO TABLE ihm_geometric_object_torus [RID, object_id, structure_id]
 
 TABLE ihm_geometric_object_torus
 	NEW COLUMN Object_RID
 	NEW COLUMN Center_RID
 
-	NEW KEY ihm_geometric_object_torus_combo1_key [RID, structure_id, object_id]
+	NEW KEY ihm_geometric_object_torus_combo1_key [RID, object_id, structure_id]
 
-	NEW FOREIGN KEY ihm_geometric_object_torus__geometric_object_list_combo1_fkey [Object_RID, structure_id, object_id] TO TABLE ihm_geometric_object_list [RID, structure_id, object_id]
+	NEW FOREIGN KEY ihm_geometric_object_torus__geometric_object_list_combo1_fkey [Object_RID, object_id, structure_id] TO TABLE ihm_geometric_object_list [RID, object_id, structure_id]
 	NEW FOREIGN KEY ihm_geometric_object_torus__geometric_object_center_combo1_fkey [Center_RID, center_id, structure_id] TO TABLE ihm_geometric_object_center [RID, id, structure_id]
 
 TABLE ihm_geometric_object_plane
 	NEW COLUMN Object_RID
 
-	NEW FOREIGN KEY ihm_geometric_object_plane__geometric_object_list_combo1_fkey [Object_RID, object_id, structure_id] TO TABLE ihm_geometric_object_list [RID, object_id, structure_id]
+	NEW FOREIGN KEY ihm_geometric_object_plane__geometric_object_list_combo1_fkey [Object_RID, structure_id, object_id] TO TABLE ihm_geometric_object_list [RID, structure_id, object_id]
 
 TABLE ihm_geometric_object_sphere
 	NEW COLUMN Object_RID
 	NEW COLUMN Center_RID
 
-	NEW FOREIGN KEY ihm_geometric_object_sphere__geometric_object_list_combo1_fkey [Object_RID, object_id, structure_id] TO TABLE ihm_geometric_object_list [RID, object_id, structure_id]
-	NEW FOREIGN KEY ihm_geom_object_sphere__geom_object_center_combo1_fkey [Center_RID, structure_id, center_id] TO TABLE ihm_geometric_object_center [RID, structure_id, id]
+	NEW FOREIGN KEY ihm_geometric_object_sphere__geometric_object_list_combo1_fkey [Object_RID, structure_id, object_id] TO TABLE ihm_geometric_object_list [RID, structure_id, object_id]
+	NEW FOREIGN KEY ihm_geom_object_sphere__geom_object_center_combo1_fkey [Center_RID, center_id, structure_id] TO TABLE ihm_geometric_object_center [RID, id, structure_id]
 
 TABLE ihm_geometric_object_center
-	NEW KEY ihm_geometric_object_center_combo1_key [RID, structure_id, id]
+	NEW KEY ihm_geometric_object_center_combo1_key [RID, id, structure_id]
 
 TABLE ihm_hydroxyl_radical_fp_restraint
 	NEW COLUMN Asym_RID
 	NEW COLUMN Dataset_List_RID
 	NEW COLUMN Comp_RID
 
-	NEW FOREIGN KEY ihm_hydroxyl_radical_fp_restraint_struct_asym_combo1_fkey [Asym_RID, asym_id, structure_id] TO TABLE struct_asym [RID, id, structure_id]
+	NEW FOREIGN KEY ihm_hydroxyl_radical_fp_restraint_struct_asym_combo1_fkey [Asym_RID, structure_id, asym_id] TO TABLE struct_asym [RID, structure_id, id]
 	NEW FOREIGN KEY ihm_hydroxyl_radical_fp_restraint_ihm_dataset_list_combo1_fkey [Dataset_List_RID, structure_id, dataset_list_id] TO TABLE ihm_dataset_list [RID, structure_id, id]
-	NEW FOREIGN KEY ihm_hydroxyl_radical_fp_restraint_entity_poly_seq_combo1_fkey [Comp_RID, entity_id, seq_id, structure_id, comp_id] TO TABLE entity_poly_seq [RID, entity_id, num, structure_id, mon_id]
+	NEW FOREIGN KEY ihm_hydroxyl_radical_fp_restraint_entity_poly_seq_combo1_fkey [Comp_RID, comp_id, seq_id, structure_id, entity_id] TO TABLE entity_poly_seq [RID, mon_id, num, structure_id, entity_id]
 
 TABLE ihm_interface_residue_feature
 	NEW COLUMN Feature_RID
 	NEW COLUMN Binding_Partner_Entity_RID
 
-	NEW FOREIGN KEY ihm_interface_residue_feature_ihm_feature_list_combo1_fkey [Feature_RID, feature_id, structure_id] TO TABLE ihm_feature_list [RID, feature_id, structure_id]
-	NEW FOREIGN KEY ihm_interface_residue_feature_entity_combo1_fkey [Binding_Partner_Entity_RID, structure_id, binding_partner_entity_id] TO TABLE entity [RID, structure_id, id]
+	NEW FOREIGN KEY ihm_interface_residue_feature_ihm_feature_list_combo1_fkey [Feature_RID, structure_id, feature_id] TO TABLE ihm_feature_list [RID, structure_id, feature_id]
+	NEW FOREIGN KEY ihm_interface_residue_feature_entity_combo1_fkey [Binding_Partner_Entity_RID, binding_partner_entity_id, structure_id] TO TABLE entity [RID, id, structure_id]
 
 TABLE ihm_ligand_probe
 	NEW COLUMN Entity_RID
 	NEW COLUMN Dataset_List_RID
 	NEW COLUMN Probe_RID
 
-	NEW FOREIGN KEY ihm_ligand_probe_entity_combo1_fkey [Entity_RID, structure_id, entity_id] TO TABLE entity [RID, structure_id, id]
-	NEW FOREIGN KEY ihm_ligand_probe_ihm_dataset_list_combo1_fkey [Dataset_List_RID, dataset_list_id, structure_id] TO TABLE ihm_dataset_list [RID, id, structure_id]
-	NEW FOREIGN KEY ihm_ligand_probe_ihm_probe_list_combo1_fkey [Probe_RID, probe_id, structure_id] TO TABLE ihm_probe_list [RID, probe_id, structure_id]
+	NEW FOREIGN KEY ihm_ligand_probe_entity_combo1_fkey [Entity_RID, entity_id, structure_id] TO TABLE entity [RID, id, structure_id]
+	NEW FOREIGN KEY ihm_ligand_probe_ihm_dataset_list_combo1_fkey [Dataset_List_RID, structure_id, dataset_list_id] TO TABLE ihm_dataset_list [RID, structure_id, id]
+	NEW FOREIGN KEY ihm_ligand_probe_ihm_probe_list_combo1_fkey [Probe_RID, structure_id, probe_id] TO TABLE ihm_probe_list [RID, structure_id, probe_id]
 
 TABLE ihm_probe_list
-	NEW KEY ihm_probe_list_combo1_key [RID, probe_id, structure_id]
+	NEW KEY ihm_probe_list_combo1_key [RID, structure_id, probe_id]
 
 TABLE ihm_localization_density_files
 	NEW COLUMN File_RID
 	NEW COLUMN Ensemble_RID
 
-	NEW FOREIGN KEY ihm_localization_density_files_ihm_external_files_combo1_fkey [File_RID, file_id, structure_id] TO TABLE ihm_external_files [RID, id, structure_id]
-	NEW FOREIGN KEY ihm_localization_density_files_ihm_ensemble_info_combo1_fkey [Ensemble_RID, ensemble_id, structure_id] TO TABLE ihm_ensemble_info [RID, ensemble_id, structure_id]
+	NEW FOREIGN KEY ihm_localization_density_files_ihm_external_files_combo1_fkey [File_RID, structure_id, file_id] TO TABLE ihm_external_files [RID, structure_id, id]
+	NEW FOREIGN KEY ihm_localization_density_files_ihm_ensemble_info_combo1_fkey [Ensemble_RID, structure_id, ensemble_id] TO TABLE ihm_ensemble_info [RID, structure_id, ensemble_id]
 
 TABLE ihm_model_group_link
 	NEW COLUMN Group_RID
 	NEW COLUMN Model_RID
 
-	NEW FOREIGN KEY ihm_model_group_link_ihm_model_group_combo1_fkey [Group_RID, structure_id, group_id] TO TABLE ihm_model_group [RID, structure_id, id]
-	NEW FOREIGN KEY ihm_model_group_link_ihm_model_list_combo1_fkey [Model_RID, structure_id, model_id] TO TABLE ihm_model_list [RID, structure_id, model_id]
+	NEW FOREIGN KEY ihm_model_group_link_ihm_model_group_combo1_fkey [Group_RID, group_id, structure_id] TO TABLE ihm_model_group [RID, id, structure_id]
+	NEW FOREIGN KEY ihm_model_group_link_ihm_model_list_combo1_fkey [Model_RID, model_id, structure_id] TO TABLE ihm_model_list [RID, model_id, structure_id]
 
 TABLE ihm_model_group
-	NEW KEY ihm_model_group_combo1_key [RID, structure_id, id]
+	NEW KEY ihm_model_group_combo1_key [RID, id, structure_id]
 
 TABLE ihm_modeling_protocol
 	NEW KEY ihm_modeling_protocol_combo1_key [RID, id, structure_id]
 
 TABLE ihm_model_representation
-	NEW KEY ihm_model_representation_combo1_key [RID, structure_id, id]
+	NEW KEY ihm_model_representation_combo1_key [RID, id, structure_id]
 
 TABLE ihm_model_representation_details
 	NEW COLUMN Entity_RID
 	NEW COLUMN Entity_Asym_RID
 	NEW COLUMN Representation_RID
 
-	NEW FOREIGN KEY ihm_model_representation_details_entity_combo1_fkey [Entity_RID, structure_id, entity_id] TO TABLE entity [RID, structure_id, id]
+	NEW FOREIGN KEY ihm_model_representation_details_entity_combo1_fkey [Entity_RID, entity_id, structure_id] TO TABLE entity [RID, id, structure_id]
 	NEW FOREIGN KEY ihm_model_representation_details_struct_asym_combo1_fkey [Entity_Asym_RID, structure_id, entity_asym_id] TO TABLE struct_asym [RID, structure_id, id]
 	NEW FOREIGN KEY ihm_model_rep_details__model_rep_combo1_fkey [Representation_RID, structure_id, representation_id] TO TABLE ihm_model_representation [RID, structure_id, id]
 
@@ -286,7 +286,7 @@ TABLE ihm_model_representative
 	NEW COLUMN Model_RID
 	NEW COLUMN Model_Group_RID
 
-	NEW FOREIGN KEY ihm_model_representative_ihm_model_list_combo1_fkey [Model_RID, model_id, structure_id] TO TABLE ihm_model_list [RID, model_id, structure_id]
+	NEW FOREIGN KEY ihm_model_representative_ihm_model_list_combo1_fkey [Model_RID, structure_id, model_id] TO TABLE ihm_model_list [RID, structure_id, model_id]
 	NEW FOREIGN KEY ihm_model_representative_ihm_model_group_combo1_fkey [Model_Group_RID, model_group_id, structure_id] TO TABLE ihm_model_group [RID, id, structure_id]
 
 TABLE ihm_modeling_post_process
@@ -297,13 +297,13 @@ TABLE ihm_modeling_post_process
 TABLE ihm_modeling_protocol_details
 	NEW COLUMN Protocol_RID
 
-	NEW FOREIGN KEY ihm_modeling_protocol_details_ihm_modeling_protocol_combo1_fkey [Protocol_RID, structure_id, protocol_id] TO TABLE ihm_modeling_protocol [RID, structure_id, id]
+	NEW FOREIGN KEY ihm_modeling_protocol_details_ihm_modeling_protocol_combo1_fkey [Protocol_RID, protocol_id, structure_id] TO TABLE ihm_modeling_protocol [RID, id, structure_id]
 
 TABLE ihm_multi_state_model_group_link
 	NEW COLUMN Model_Group_RID
 	NEW COLUMN State_RID
 
-	NEW FOREIGN KEY ihm_multi_state_model_group_link_ihm_model_group_combo1_fkey [Model_Group_RID, structure_id, model_group_id] TO TABLE ihm_model_group [RID, structure_id, id]
+	NEW FOREIGN KEY ihm_multi_state_model_group_link_ihm_model_group_combo1_fkey [Model_Group_RID, model_group_id, structure_id] TO TABLE ihm_model_group [RID, id, structure_id]
 	NEW FOREIGN KEY ihm_multi_sta_model_grp_link__multi_sta_modeling_combo1_fkey [State_RID, state_id, structure_id] TO TABLE ihm_multi_state_modeling [RID, state_id, structure_id]
 
 TABLE ihm_multi_state_modeling
@@ -314,39 +314,39 @@ TABLE ihm_non_poly_feature
 	NEW COLUMN Entity_RID
 	NEW COLUMN Feature_RID
 
-	NEW FOREIGN KEY ihm_non_poly_feature_chem_comp_combo1_fkey [Comp_RID, structure_id, comp_id] TO TABLE chem_comp [RID, structure_id, id]
-	NEW FOREIGN KEY ihm_non_poly_feature_entity_combo1_fkey [Entity_RID, structure_id, entity_id] TO TABLE entity [RID, structure_id, id]
-	NEW FOREIGN KEY ihm_non_poly_feature_ihm_feature_list_combo1_fkey [Feature_RID, feature_id, structure_id] TO TABLE ihm_feature_list [RID, feature_id, structure_id]
+	NEW FOREIGN KEY ihm_non_poly_feature_chem_comp_combo1_fkey [Comp_RID, comp_id, structure_id] TO TABLE chem_comp [RID, id, structure_id]
+	NEW FOREIGN KEY ihm_non_poly_feature_entity_combo1_fkey [Entity_RID, entity_id, structure_id] TO TABLE entity [RID, id, structure_id]
+	NEW FOREIGN KEY ihm_non_poly_feature_ihm_feature_list_combo1_fkey [Feature_RID, structure_id, feature_id] TO TABLE ihm_feature_list [RID, structure_id, feature_id]
 
 TABLE ihm_ordered_ensemble
 	NEW COLUMN Model_Group_RID_Begin
 	NEW COLUMN Model_Group_RID_End
 
-	NEW FOREIGN KEY ihm_ordered_ensemble__model_group_begin_combo1_fkey [Model_Group_RID_Begin, model_group_id_begin, structure_id] TO TABLE ihm_model_group [RID, id, structure_id]
+	NEW FOREIGN KEY ihm_ordered_ensemble__model_group_begin_combo1_fkey [Model_Group_RID_Begin, structure_id, model_group_id_begin] TO TABLE ihm_model_group [RID, structure_id, id]
 	NEW FOREIGN KEY ihm_ordered_ensemble__model_group_end_combo1_fkey [Model_Group_RID_End, model_group_id_end, structure_id] TO TABLE ihm_model_group [RID, id, structure_id]
 
 TABLE ihm_poly_atom_feature
 	NEW COLUMN Feature_RID
 	NEW COLUMN Comp_RID
 
-	NEW FOREIGN KEY ihm_poly_atom_feature_ihm_feature_list_combo1_fkey [Feature_RID, structure_id, feature_id] TO TABLE ihm_feature_list [RID, structure_id, feature_id]
-	NEW FOREIGN KEY ihm_poly_atom_feature_entity_poly_seq_combo1_fkey [Comp_RID, comp_id, entity_id, seq_id, structure_id] TO TABLE entity_poly_seq [RID, mon_id, entity_id, num, structure_id]
+	NEW FOREIGN KEY ihm_poly_atom_feature_ihm_feature_list_combo1_fkey [Feature_RID, feature_id, structure_id] TO TABLE ihm_feature_list [RID, feature_id, structure_id]
+	NEW FOREIGN KEY ihm_poly_atom_feature_entity_poly_seq_combo1_fkey [Comp_RID, seq_id, structure_id, entity_id, comp_id] TO TABLE entity_poly_seq [RID, num, structure_id, entity_id, mon_id]
 
 TABLE ihm_poly_probe_conjugate
 	NEW COLUMN Probe_RID
 	NEW COLUMN Position_RID
 	NEW COLUMN Dataset_List_RID
 
-	NEW FOREIGN KEY ihm_poly_probe_conjugate_ihm_probe_list_combo1_fkey [Probe_RID, probe_id, structure_id] TO TABLE ihm_probe_list [RID, probe_id, structure_id]
-	NEW FOREIGN KEY ihm_poly_probe_conjugate_ihm_poly_probe_position_combo1_fkey [Position_RID, structure_id, position_id] TO TABLE ihm_poly_probe_position [RID, structure_id, id]
+	NEW FOREIGN KEY ihm_poly_probe_conjugate_ihm_probe_list_combo1_fkey [Probe_RID, structure_id, probe_id] TO TABLE ihm_probe_list [RID, structure_id, probe_id]
+	NEW FOREIGN KEY ihm_poly_probe_conjugate_ihm_poly_probe_position_combo1_fkey [Position_RID, position_id, structure_id] TO TABLE ihm_poly_probe_position [RID, id, structure_id]
 	NEW FOREIGN KEY ihm_poly_probe_conjugate_ihm_dataset_list_combo1_fkey [Dataset_List_RID, dataset_list_id, structure_id] TO TABLE ihm_dataset_list [RID, id, structure_id]
 
 TABLE ihm_poly_probe_position
 	NEW COLUMN Comp_RID
 
-	NEW KEY ihm_poly_probe_position_combo1_key [RID, structure_id, id]
+	NEW KEY ihm_poly_probe_position_combo1_key [RID, id, structure_id]
 
-	NEW FOREIGN KEY ihm_poly_probe_position_entity_poly_seq_combo1_fkey [Comp_RID, comp_id, structure_id, entity_id, seq_id] TO TABLE entity_poly_seq [RID, mon_id, structure_id, entity_id, num]
+	NEW FOREIGN KEY ihm_poly_probe_position_entity_poly_seq_combo1_fkey [Comp_RID, comp_id, structure_id, seq_id, entity_id] TO TABLE entity_poly_seq [RID, mon_id, structure_id, num, entity_id]
 
 TABLE ihm_poly_residue_feature
 	NEW COLUMN Feature_RID
@@ -354,8 +354,8 @@ TABLE ihm_poly_residue_feature
 	NEW COLUMN Entity_Poly_Seq_RID_End
 
 	NEW FOREIGN KEY ihm_poly_residue_feature_ihm_feature_list_combo1_fkey [Feature_RID, feature_id, structure_id] TO TABLE ihm_feature_list [RID, feature_id, structure_id]
-	NEW FOREIGN KEY ihm_poly_residue_feature_entity_poly_seq_begin_combo1_fkey [Entity_Poly_Seq_RID_Begin, comp_id_begin, structure_id, seq_id_begin, entity_id] TO TABLE entity_poly_seq [RID, mon_id, structure_id, num, entity_id]
-	NEW FOREIGN KEY ihm_poly_residue_feature_entity_poly_seq_end_combo1_fkey [Entity_Poly_Seq_RID_End, structure_id, seq_id_end, comp_id_end, entity_id] TO TABLE entity_poly_seq [RID, structure_id, num, mon_id, entity_id]
+	NEW FOREIGN KEY ihm_poly_residue_feature_entity_poly_seq_begin_combo1_fkey [Entity_Poly_Seq_RID_Begin, comp_id_begin, seq_id_begin, entity_id, structure_id] TO TABLE entity_poly_seq [RID, mon_id, num, entity_id, structure_id]
+	NEW FOREIGN KEY ihm_poly_residue_feature_entity_poly_seq_end_combo1_fkey [Entity_Poly_Seq_RID_End, seq_id_end, entity_id, comp_id_end, structure_id] TO TABLE entity_poly_seq [RID, num, entity_id, mon_id, structure_id]
 
 TABLE ihm_predicted_contact_restraint
 	NEW COLUMN Dataset_List_RID
@@ -365,17 +365,17 @@ TABLE ihm_predicted_contact_restraint
 	NEW COLUMN Entity_Poly_Seq_RID_1
 
 	NEW FOREIGN KEY ihm_predicted_contact_restraint_ihm_dataset_list_combo1_fkey [Dataset_List_RID, dataset_list_id, structure_id] TO TABLE ihm_dataset_list [RID, id, structure_id]
-	NEW FOREIGN KEY ihm_predicted_contact_restraint_struct_asym_1_combo1_fkey [Asym_RID_1, structure_id, asym_id_1] TO TABLE struct_asym [RID, structure_id, id]
-	NEW FOREIGN KEY ihm_predicted_contact_restraint_struct_asym_2_combo1_fkey [Asym_RID_2, structure_id, asym_id_2] TO TABLE struct_asym [RID, structure_id, id]
-	NEW FOREIGN KEY ihm_predicted_contact_restraint_entity_poly_seq_2_combo1_fkey [Entity_Poly_Seq_RID_2, structure_id, entity_id_2, comp_id_2, seq_id_2] TO TABLE entity_poly_seq [RID, structure_id, entity_id, mon_id, num]
-	NEW FOREIGN KEY ihm_predicted_contact_restraint_entity_poly_seq_1_combo1_fkey [Entity_Poly_Seq_RID_1, structure_id, comp_id_1, entity_id_1, seq_id_1] TO TABLE entity_poly_seq [RID, structure_id, mon_id, entity_id, num]
+	NEW FOREIGN KEY ihm_predicted_contact_restraint_struct_asym_1_combo1_fkey [Asym_RID_1, asym_id_1, structure_id] TO TABLE struct_asym [RID, id, structure_id]
+	NEW FOREIGN KEY ihm_predicted_contact_restraint_struct_asym_2_combo1_fkey [Asym_RID_2, asym_id_2, structure_id] TO TABLE struct_asym [RID, id, structure_id]
+	NEW FOREIGN KEY ihm_predicted_contact_restraint_entity_poly_seq_2_combo1_fkey [Entity_Poly_Seq_RID_2, seq_id_2, structure_id, comp_id_2, entity_id_2] TO TABLE entity_poly_seq [RID, num, structure_id, mon_id, entity_id]
+	NEW FOREIGN KEY ihm_predicted_contact_restraint_entity_poly_seq_1_combo1_fkey [Entity_Poly_Seq_RID_1, comp_id_1, entity_id_1, structure_id, seq_id_1] TO TABLE entity_poly_seq [RID, mon_id, entity_id, structure_id, num]
 
 TABLE ihm_related_datasets
 	NEW COLUMN Dataset_List_RID_Primary
 	NEW COLUMN Dataset_List_RID_Derived
 
-	NEW FOREIGN KEY ihm_related_datasets__dataset_list_primary_combo1_fkey [Dataset_List_RID_Primary, structure_id, dataset_list_id_primary] TO TABLE ihm_dataset_list [RID, structure_id, id]
-	NEW FOREIGN KEY ihm_related_datasets__dataset_list_derived_combo1_fkey [Dataset_List_RID_Derived, structure_id, dataset_list_id_derived] TO TABLE ihm_dataset_list [RID, structure_id, id]
+	NEW FOREIGN KEY ihm_related_datasets__dataset_list_primary_combo1_fkey [Dataset_List_RID_Primary, dataset_list_id_primary, structure_id] TO TABLE ihm_dataset_list [RID, id, structure_id]
+	NEW FOREIGN KEY ihm_related_datasets__dataset_list_derived_combo1_fkey [Dataset_List_RID_Derived, dataset_list_id_derived, structure_id] TO TABLE ihm_dataset_list [RID, id, structure_id]
 
 TABLE ihm_residues_not_modeled
 	NEW COLUMN Model_RID
@@ -384,16 +384,16 @@ TABLE ihm_residues_not_modeled
 	NEW COLUMN Entity_Poly_Seq_RID_End
 
 	NEW FOREIGN KEY ihm_residues_not_modeled_ihm_model_list_combo1_fkey [Model_RID, structure_id, model_id] TO TABLE ihm_model_list [RID, structure_id, model_id]
-	NEW FOREIGN KEY ihm_residues_not_modeled_struct_asym_combo1_fkey [Asym_RID, structure_id, asym_id] TO TABLE struct_asym [RID, structure_id, id]
-	NEW FOREIGN KEY ihm_residues_not_modeled_entity_poly_seq_begin_combo1_fkey [Entity_Poly_Seq_RID_Begin, seq_id_begin, structure_id, comp_id_begin, entity_id] TO TABLE entity_poly_seq [RID, num, structure_id, mon_id, entity_id]
-	NEW FOREIGN KEY ihm_residues_not_modeled_entity_poly_seq_end_combo1_fkey [Entity_Poly_Seq_RID_End, comp_id_end, structure_id, seq_id_end, entity_id] TO TABLE entity_poly_seq [RID, mon_id, structure_id, num, entity_id]
+	NEW FOREIGN KEY ihm_residues_not_modeled_struct_asym_combo1_fkey [Asym_RID, asym_id, structure_id] TO TABLE struct_asym [RID, id, structure_id]
+	NEW FOREIGN KEY ihm_residues_not_modeled_entity_poly_seq_begin_combo1_fkey [Entity_Poly_Seq_RID_Begin, entity_id, comp_id_begin, structure_id, seq_id_begin] TO TABLE entity_poly_seq [RID, entity_id, mon_id, structure_id, num]
+	NEW FOREIGN KEY ihm_residues_not_modeled_entity_poly_seq_end_combo1_fkey [Entity_Poly_Seq_RID_End, comp_id_end, entity_id, structure_id, seq_id_end] TO TABLE entity_poly_seq [RID, mon_id, entity_id, structure_id, num]
 
 TABLE ihm_sas_restraint
 	NEW COLUMN Dataset_List_RID
 	NEW COLUMN Model_RID
 	NEW COLUMN Struct_Assembly_RID
 
-	NEW FOREIGN KEY ihm_sas_restraint_ihm_dataset_list_combo1_fkey [Dataset_List_RID, structure_id, dataset_list_id] TO TABLE ihm_dataset_list [RID, structure_id, id]
+	NEW FOREIGN KEY ihm_sas_restraint_ihm_dataset_list_combo1_fkey [Dataset_List_RID, dataset_list_id, structure_id] TO TABLE ihm_dataset_list [RID, id, structure_id]
 	NEW FOREIGN KEY ihm_sas_restraint_ihm_model_list_combo1_fkey [Model_RID, model_id, structure_id] TO TABLE ihm_model_list [RID, model_id, structure_id]
 	NEW FOREIGN KEY ihm_sas_restraint_ihm_struct_assembly_combo1_fkey [Struct_Assembly_RID, struct_assembly_id, structure_id] TO TABLE ihm_struct_assembly [RID, id, structure_id]
 
@@ -402,7 +402,7 @@ TABLE ihm_starting_comparative_models
 	NEW COLUMN Template_Dataset_List_RID
 
 	NEW FOREIGN KEY ihm_starting_compare_models__starting_model_details_combo1_fkey [Starting_Model_RID, structure_id, starting_model_id] TO TABLE ihm_starting_model_details [RID, structure_id, starting_model_id]
-	NEW FOREIGN KEY ihm_starting_comparative_models_ihm_dataset_list_combo1_fkey [Template_Dataset_List_RID, template_dataset_list_id, structure_id] TO TABLE ihm_dataset_list [RID, id, structure_id]
+	NEW FOREIGN KEY ihm_starting_comparative_models_ihm_dataset_list_combo1_fkey [Template_Dataset_List_RID, structure_id, template_dataset_list_id] TO TABLE ihm_dataset_list [RID, structure_id, id]
 
 TABLE ihm_starting_model_details
 	NEW COLUMN Entity_RID
@@ -412,32 +412,32 @@ TABLE ihm_starting_model_details
 	NEW KEY ihm_starting_model_details_combo1_key [RID, structure_id, starting_model_id]
 
 	NEW FOREIGN KEY ihm_starting_model_details_entity_combo1_fkey [Entity_RID, structure_id, entity_id] TO TABLE entity [RID, structure_id, id]
-	NEW FOREIGN KEY ihm_starting_model_details_struct_asym_combo1_fkey [Asym_RID, structure_id, asym_id] TO TABLE struct_asym [RID, structure_id, id]
+	NEW FOREIGN KEY ihm_starting_model_details_struct_asym_combo1_fkey [Asym_RID, asym_id, structure_id] TO TABLE struct_asym [RID, id, structure_id]
 	NEW FOREIGN KEY ihm_starting_model_details_ihm_dataset_list_combo1_fkey [Dataset_List_RID, structure_id, dataset_list_id] TO TABLE ihm_dataset_list [RID, structure_id, id]
 
 TABLE ihm_starting_computational_models
 	NEW COLUMN Starting_Model_RID
 
-	NEW FOREIGN KEY ihm_starting_compute_models__starting_model_details_combo1_fkey [Starting_Model_RID, starting_model_id, structure_id] TO TABLE ihm_starting_model_details [RID, starting_model_id, structure_id]
+	NEW FOREIGN KEY ihm_starting_compute_models__starting_model_details_combo1_fkey [Starting_Model_RID, structure_id, starting_model_id] TO TABLE ihm_starting_model_details [RID, structure_id, starting_model_id]
 
 TABLE ihm_starting_model_seq_dif
 	NEW COLUMN Starting_Model_RID
 	NEW COLUMN Asym_RID
 	NEW COLUMN Comp_RID
 
-	NEW FOREIGN KEY ihm_starting_model_seq_dif__starting_model_details_combo1_fkey [Starting_Model_RID, starting_model_id, structure_id] TO TABLE ihm_starting_model_details [RID, starting_model_id, structure_id]
-	NEW FOREIGN KEY ihm_starting_model_seq_dif_struct_asym_combo1_fkey [Asym_RID, structure_id, asym_id] TO TABLE struct_asym [RID, structure_id, id]
-	NEW FOREIGN KEY ihm_starting_model_seq_dif_entity_poly_seq_combo1_fkey [Comp_RID, structure_id, entity_id, comp_id, seq_id] TO TABLE entity_poly_seq [RID, structure_id, entity_id, mon_id, num]
+	NEW FOREIGN KEY ihm_starting_model_seq_dif__starting_model_details_combo1_fkey [Starting_Model_RID, structure_id, starting_model_id] TO TABLE ihm_starting_model_details [RID, structure_id, starting_model_id]
+	NEW FOREIGN KEY ihm_starting_model_seq_dif_struct_asym_combo1_fkey [Asym_RID, asym_id, structure_id] TO TABLE struct_asym [RID, id, structure_id]
+	NEW FOREIGN KEY ihm_starting_model_seq_dif_entity_poly_seq_combo1_fkey [Comp_RID, comp_id, seq_id, structure_id, entity_id] TO TABLE entity_poly_seq [RID, mon_id, num, structure_id, entity_id]
 
 TABLE ihm_struct_assembly_class_link
 	NEW COLUMN Class_RID
 	NEW COLUMN Assembly_RID
 
-	NEW FOREIGN KEY ihm_struct_assem_class_link__struct_assem_class_combo1_fkey [Class_RID, structure_id, class_id] TO TABLE ihm_struct_assembly_class [RID, structure_id, id]
+	NEW FOREIGN KEY ihm_struct_assem_class_link__struct_assem_class_combo1_fkey [Class_RID, class_id, structure_id] TO TABLE ihm_struct_assembly_class [RID, id, structure_id]
 	NEW FOREIGN KEY ihm_struct_assembly_class_link_ihm_struct_assembly_combo1_fkey [Assembly_RID, assembly_id, structure_id] TO TABLE ihm_struct_assembly [RID, id, structure_id]
 
 TABLE ihm_struct_assembly_class
-	NEW KEY ihm_struct_assembly_class_combo1_key [RID, structure_id, id]
+	NEW KEY ihm_struct_assembly_class_combo1_key [RID, id, structure_id]
 
 TABLE ihm_struct_assembly_details
 	NEW COLUMN Asym_RID
@@ -448,15 +448,15 @@ TABLE ihm_struct_assembly_details
 	NEW FOREIGN KEY ihm_struct_assembly_details_struct_asym_combo1_fkey [Asym_RID, structure_id, asym_id] TO TABLE struct_asym [RID, structure_id, id]
 	NEW FOREIGN KEY ihm_struct_assembly_details__struct_assembly_parent_combo1_fkey [Parent_Assembly_RID, structure_id, parent_assembly_id] TO TABLE ihm_struct_assembly [RID, structure_id, id]
 	NEW FOREIGN KEY ihm_struct_assembly_details__struct_assembly_combo1_fkey [Assembly_RID, assembly_id, structure_id] TO TABLE ihm_struct_assembly [RID, id, structure_id]
-	NEW FOREIGN KEY ihm_struct_assembly_details_entity_combo1_fkey [Entity_RID, entity_id, structure_id] TO TABLE entity [RID, id, structure_id]
+	NEW FOREIGN KEY ihm_struct_assembly_details_entity_combo1_fkey [Entity_RID, structure_id, entity_id] TO TABLE entity [RID, structure_id, id]
 
 TABLE pdbx_entity_nonpoly
 	NEW COLUMN Entity_RID
 
-	NEW FOREIGN KEY pdbx_entity_nonpoly_entity_combo1_fkey [Entity_RID, entity_id, structure_id] TO TABLE entity [RID, id, structure_id]
+	NEW FOREIGN KEY pdbx_entity_nonpoly_entity_combo1_fkey [Entity_RID, structure_id, entity_id] TO TABLE entity [RID, structure_id, id]
 
 TABLE pdbx_entity_poly_na_type
 	NEW COLUMN Entity_RID
 
-	NEW FOREIGN KEY pdbx_entity_poly_na_type_entity_combo1_fkey [Entity_RID, entity_id, structure_id] TO TABLE entity [RID, id, structure_id]
+	NEW FOREIGN KEY pdbx_entity_poly_na_type_entity_combo1_fkey [Entity_RID, structure_id, entity_id] TO TABLE entity [RID, structure_id, id]
 
