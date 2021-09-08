@@ -397,7 +397,7 @@ def get_fkey_parent_rid_column_name(fkey):
                 rid_col_name = (id_col.name.title()).replace("_Id", "_RID")
                 #print("---2 Found id_col %s:[%s]->%s:[%s] will use %s for RID col name" % (fkey.table.name, {c.name for c in fkey.column_map.keys()}, fkey.pk_table.name, {c.name for c in fkey.column_map.values()}, rid_col_name))                
             else: # look for _id column for hint
-                for col_name in (primary_col_names - {"structure_id"}):
+                for col_name in sorted(primary_col_names - {"structure_id"}):
                     if re.match(".*_id", col_name) or re.match(".*_id_(1|2|begin|end|primary|derived)", col_name):
                         rid_col_name = (col_name.title()).replace("_Id", "_RID")
                         #print("---3 id column in %s:[%s]->%s:[%s] not found. Will use %s for RID col name" % (fkey.table.name, {c.name for c in fkey.column_map.keys()}, fkey.pk_table.name, {c.name for c in fkey.column_map.values()}, rid_col_name))
@@ -658,6 +658,10 @@ def main(server_name, catalog_id, credentials):
 
     #refactor_fkeys(model, 2, combo1_included=True, combo2_included=False, primary_types=("COMBO1"))
     #refactor_fkeys(model, 2, combo1_included=True, combo2_included=True, primary_types=())
+    fw = open('rename.log', 'w')
+    fw.close()
+    fw = open('new.log', 'w')
+    fw.close()
     refactor_fkeys(model, 2, combo1_included=True, combo2_included=True)
     refactor_fkeys(model, 4, combo1_included=True, combo2_included=True)
     
