@@ -920,7 +920,9 @@ class PDBClient (object):
             "ihm_modeling_protocol",
             "ihm_model_list",
             "ihm_model_group",
-            "ihm_model_group_link"
+            "ihm_model_group_link",
+            "ihm_starting_model_details",
+            "ihm_dataset_list"
         ]
 
         """
