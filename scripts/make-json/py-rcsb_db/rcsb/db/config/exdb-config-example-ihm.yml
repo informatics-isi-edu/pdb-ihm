@@ -547,6 +547,9 @@ content_info_helper_configuration:
         ?       - GENERATED_CONTENT
                 - ihm_dev_full
         :       - CATEGORY_NAME: chem_comp_atom
+                - CATEGORY_NAME: struct_ref
+                - CATEGORY_NAME: struct_ref_seq
+                - CATEGORY_NAME: struct_ref_dif
                 - CATEGORY_NAME: ihm_entity_poly_segment
                 - CATEGORY_NAME: ihm_starting_model_details
                 - CATEGORY_NAME: ihm_starting_comparative_models
@@ -618,6 +621,9 @@ content_info_helper_configuration:
         ?       - GENERATED_CONTENT
                 - ihm_dev
         :       - CATEGORY_NAME: chem_comp_atom
+                - CATEGORY_NAME: struct_ref
+                - CATEGORY_NAME: struct_ref_seq
+                - CATEGORY_NAME: struct_ref_dif
                 - CATEGORY_NAME: ihm_entity_poly_segment
                 - CATEGORY_NAME: ihm_starting_model_details
                 - CATEGORY_NAME: ihm_starting_comparative_models
