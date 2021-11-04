@@ -61,6 +61,8 @@ class PDBClient (object):
             self.port = host_port[1]
         self.catalog_number = int(self.path.split('/')[-1])
         self.is_catalog_dev = (int(self.path.split('/')[-1]) in catalog_dev_number)
+        self.mmCIF_defaults = kwargs.get("mmCIF_defaults")
+        self.vocab_ucode = kwargs.get("vocab_ucode")
         self.make_mmCIF = kwargs.get("make_mmCIF")
         self.mmCIF_Schema_Version = kwargs.get("mmCIF_Schema_Version")
         self.py_rcsb_db = kwargs.get("py_rcsb_db")
@@ -72,6 +74,7 @@ class PDBClient (object):
         self.scratch = kwargs.get("scratch")
         self.cif_tables = kwargs.get("cif_tables")
         self.export_order_by = kwargs.get("export_order_by")
+        self.combo1_columns = kwargs.get("combo1_columns")
         self.entry = kwargs.get("entry")
         self.credentials = kwargs.get("credentials")
         self.store = HatracStore(
@@ -324,9 +327,9 @@ class PDBClient (object):
                     return None
                 if '\n' in column_value:
                     return '\n;{}\n;\n'.format(column_value)
-                if '"' not in column_value and "'" not in column_value and ' ' not in column_value and not column_value.startswith('_'):
+                if '"' not in column_value and "“" not in column_value and "”" not in column_value and "'" not in column_value and ' ' not in column_value and not column_value.startswith('_'):
                     return column_value
-                if '"' not in column_value:
+                if '"' not in column_value and "“" not in column_value and "”" not in column_value:
                     return '"{}"'.format(column_value)
                 if "'" not in column_value:
                     return "'{}'".format(column_value)
@@ -819,6 +822,7 @@ class PDBClient (object):
                 error_message = '{}'.format(stderrdata)
                 return (returncode,error_message)
             
+            shutil.copy2('{}/rcsb/db/tests-validate/test-output/ihm-files/output.cif'.format(self.py_rcsb_db), '/home/pdbihm/temp')
             os.remove('{}/rcsb/db/tests-validate/test-output/ihm-files/output.cif'.format(self.py_rcsb_db))
             self.logger.debug('File {}/{} was removed'.format(self.py_rcsb_db, 'rcsb/db/tests-validate/test-output/ihm-files/output.cif')) 
             
@@ -903,26 +907,8 @@ class PDBClient (object):
     Sort the tables to be loaded based on the FK dependencies.
     """
     def sortTable(self, fpath):
-        mmCIF_tables = [
-            "struct",
-            "entity",
-            "entity_poly",
-            "entity_poly_seq",
-            "pdbx_poly_seq_scheme",
-            "chem_comp",
-            "atom_type",
-            "struct_asym",
-            "ihm_entity_poly_segment",
-            "ihm_struct_assembly",
-            "ihm_struct_assembly_details",
-            "ihm_model_representation",
-            "ihm_model_representation_details",
-            "ihm_modeling_protocol",
-            "ihm_model_list",
-            "ihm_model_group",
-            "ihm_model_group_link",
-            "ihm_starting_model_details",
-            "ihm_dataset_list"
+        excluded_mmCIF_tables = [
+            "entry"
         ]
 
         """
@@ -942,9 +928,19 @@ class PDBClient (object):
             while group_no < len(table_groups):
                 group_str = str(group_no)
                 for k,v in pdb.items():
-                    if k in table_groups[group_str] and k in mmCIF_tables:
+                    if k in table_groups[group_str] and k not in excluded_mmCIF_tables:
                         tables.append(k)
                 group_no +=1
+        """
+        Check that all the tables are in the database
+        """
+        with open(fpath, 'r') as f:
+            pdb = json.load(f)
+            pdb = pdb[0]
+            for k,v in pdb.items():
+                if k not in (tables + excluded_mmCIF_tables):
+                    raise RuntimeError('Table "{}" from mmCIF is not present in the DERIVA database. Possible mismatch versions.'.format(k))
+        
         return tables
         
     """
@@ -983,6 +979,16 @@ class PDBClient (object):
     Load data into the tables from the JSON file.
     """
     def loadTablesFromJSON(self, fpath, entry_id):
+        shutil.copy2(fpath, '/home/pdbihm/temp')
+        
+        """
+        Tables that have a NOT NULL *_RID column
+        """
+        fk_tables = []
+        for fk_table in self.combo1_columns.keys():
+            if fk_table not in fk_tables:
+                fk_tables.append(fk_table)
+        
         schema_name = 'PDB'
         pb = self.catalog.getPathBuilder()
         returncode = 0
@@ -1004,13 +1010,23 @@ class PDBClient (object):
         """
         Sort the tables based on the FK dependencies
         """
-        tables = self.sortTable(fpath)
+        try:
+            tables = self.sortTable(fpath)
+        except:
+            et, ev, tb = sys.exc_info()
+            self.logger.error('got exception "%s"' % str(ev))
+            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+            self.sendMail('FAILURE PDB: loadTablesFromJSON ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+            returncode = 1
+            error_message = ''.join(traceback.format_exception(et, ev, tb))
+            return (returncode,error_message)
         
         """
         Keep track of the inserted rows in case of rollback
         """
         inserted_records = []
         
+        model_root = self.catalog.getCatalogModel()
         for tname in tables:
             records = pdb[tname]
             if type(records) is dict:
@@ -1022,13 +1038,14 @@ class PDBClient (object):
                 """
                 Replace the FK references to the entry table
                 """
-                r = self.getUpdatedRecord(tname, r, entry_id)
+                r = self.getUpdatedRecord(tname, r, entry_id, model_root.schemas['PDB'].tables[tname], inserted_records, fk_tables)
                 if self.is_catalog_dev == True:
                     if tname == 'ihm_entity_poly_segment':
                         r = self.getUpdatedEntityPolySegment(r)
                 self.getUpdatedOptional(optional_fks, tname, r, entry_id)
                 entities.append(r)
             
+            self.logger.debug('Table {}, inserting {} rows'.format(tname, len(entities)))
             """
             Insert the data
             """
@@ -1187,7 +1204,7 @@ class PDBClient (object):
     """
     Get the record with the foreign key updated to the entry id.
     """
-    def getUpdatedRecord(self, tname, row, entry_id):
+    def getUpdatedRecord(self, tname, row, entry_id, table, inserted_records, fk_tables):
         with open('{}'.format(self.entry), 'r') as f:
             pdb = json.load(f)
         referenced_by = pdb['Catalog {}'.format(self.catalog_number)]['schemas']['PDB']['tables']['entry']['referenced_by']
@@ -1201,6 +1218,52 @@ class PDBClient (object):
                 continue
             if col in row.keys():
                 row[col] = entry_id
+        
+        """
+        Set the missing defaults
+        """
+        if tname in self.mmCIF_defaults.keys():
+            for col in self.mmCIF_defaults[tname]:
+                if col not in row.keys():
+                    row[col] = '.'
+        """
+        Set the Vocab ucode
+        """
+        keys = table.foreign_keys
+        for key in keys:
+            if key.pk_table.name in self.vocab_ucode.keys() and key.pk_table.schema.name == 'Vocab':
+                foreign_key_columns = key.foreign_key_columns
+                if len(foreign_key_columns) == 1:
+                    for col in key.foreign_key_columns:
+                        if col.name in row.keys():
+                            values = self.vocab_ucode[key.pk_table.name]
+                            row[col.name] = values[0] if values[0].upper() == row[col.name].upper() else values[0]
+        
+        """
+        Set the values for the *_RID columns
+        """
+        if tname in fk_tables:
+            entry = self.combo1_columns[tname]
+            for col,value in entry.items():
+                for pk_table,mappings in value.items():
+                    rid_found = False
+                    for inserted_record in inserted_records:
+                        if inserted_record['name'] == pk_table:
+                            for pk_row in inserted_record['rows']:
+                                found = True
+                                for fk_col, pk_col in mappings.items():
+                                    if row[fk_col] != pk_row[pk_col]:
+                                        found = False
+                                        break
+                                if found == True:
+                                    row[col] = pk_row['RID']
+                                    rid_found = True
+                                    break
+                            if rid_found == False:
+                                self.logger.debug('Could not find a RID value for {} column in the {} table'.format(col, tname))
+                                break
+                    if rid_found == False:
+                        break
         return row
 
     """

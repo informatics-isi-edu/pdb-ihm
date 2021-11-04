@@ -138,6 +138,24 @@ def load(config_filename):
         return None
     export_order_by = json.load(open(export_order_by_file))
     
+    combo1_columns_file = cfg.get('combo1_columns', None)
+    if not combo1_columns_file or not os.path.isfile(combo1_columns_file):
+        logger.error('combo1_columns file must be provided and exist.')
+        return None
+    combo1_columns = json.load(open(combo1_columns_file))
+    
+    mmCIF_defaults = cfg.get('mmCIF_defaults', None)
+    if not mmCIF_defaults or not os.path.isfile(mmCIF_defaults):
+        logger.error('mmCIF_defaults file must be provided and exist.')
+        return None
+    mmCIF_defaults = json.load(open(mmCIF_defaults))
+    
+    vocab_ucode = cfg.get('vocab_ucode', None)
+    if not vocab_ucode or not os.path.isfile(vocab_ucode):
+        logger.error('vocab_ucode file must be provided and exist.')
+        return None
+    vocab_ucode = json.load(open(vocab_ucode))
+    
     mmCIF_Schema_Version = cfg.get('mmCIF_Schema_Version', '1.0')
     
     mail_server = cfg.get('mail_server', None)
@@ -150,6 +168,8 @@ def load(config_filename):
                                credentials=credentials, \
                                mmCIF_Schema_Version=mmCIF_Schema_Version, \
                                make_mmCIF=make_mmCIF, \
+                               mmCIF_defaults=mmCIF_defaults, \
+                               vocab_ucode=vocab_ucode, \
                                scratch=scratch, \
                                py_rcsb_db=py_rcsb_db, \
                                python_bin=python_bin, \
@@ -159,6 +179,7 @@ def load(config_filename):
                                export_tables=export_tables, \
                                cif_tables=cif_tables, \
                                export_order_by=export_order_by, \
+                               combo1_columns=combo1_columns, \
                                entry=entry, \
                                mail_server=mail_server, \
                                mail_sender=mail_sender, \
