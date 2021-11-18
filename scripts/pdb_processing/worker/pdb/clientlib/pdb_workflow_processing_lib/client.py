@@ -946,7 +946,7 @@ class PDBClient (object):
     """
     Rollback JSON inserted rows
     """
-    def rollbackInsertedRows(self, records):
+    def rollbackInsertedRows(self, records, entry_id):
         records.reverse()
         for record in records:
             tname = record['name']
@@ -954,13 +954,18 @@ class PDBClient (object):
             for row in rows:
                 rid = row['RID']
                 try:
-                    path = '%s:%s/%s=%s' % (urlquote('PDB'), urlquote(tname), urlquote('RID'), urlquote(rid))
+                    if 'structure_id' in row.keys():
+                        path = '%s:%s/%s=%s' % (urlquote('PDB'), urlquote(tname), urlquote('structure_id'), urlquote(entry_id))
+                    else:
+                        path = '%s:%s/%s=%s' % (urlquote('PDB'), urlquote(tname), urlquote('RID'), urlquote(rid))
                     url = '/entity/%s' % (path)
                     resp = self.catalog.delete(
                         url
                     )
                     resp.raise_for_status()
                     self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
+                    if 'structure_id' in row.keys():
+                        break
                 except HTTPError as e:
                     if e.response.status_code == HTTPStatus.NOT_FOUND:
                         self.logger.debug('No rows found to delete from the URL "%s".' % (url))
@@ -1061,7 +1066,7 @@ class PDBClient (object):
                 self.sendMail('FAILURE PDB: loadTablesFromJSON:\n{}\n{}'.format(e.response.text, e))
                 returncode = 1
                 error_message = '{}\n{}'.format(e.response.text, e)
-                self.rollbackInsertedRows(inserted_records)
+                self.rollbackInsertedRows(inserted_records, entry_id)
                 break
             except:
                 et, ev, tb = sys.exc_info()
@@ -1070,7 +1075,7 @@ class PDBClient (object):
                 self.sendMail('FAILURE PDB: loadTablesFromJSON ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
                 returncode = 1
                 error_message = ''.join(traceback.format_exception(et, ev, tb))
-                self.rollbackInsertedRows(inserted_records)
+                self.rollbackInsertedRows(inserted_records, entry_id)
                 break
         
         return (returncode,error_message)
