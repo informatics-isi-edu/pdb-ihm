@@ -63,6 +63,17 @@
     ],
     "column_annotations": [
         {
+            "column": "Location",
+            "schema": "PDB",
+            "table": "Data_Dictionary",
+            "uri": "tag:isrd.isi.edu,2016:column-display",
+            "value": {
+                "*": {
+                    "markdown_pattern": "[{{{Name}}} (v {{{Version}}})]({{{Location}}})"
+                }
+            }
+        },
+        {
             "column": "id",
             "schema_pattern": "Vocab",
             "table_pattern": ".*",
@@ -232,6 +243,48 @@
             }
         },
         {
+            "column": "Data_Dictionary_RID",
+            "schema": "PDB",
+            "table": "Supported_Dictionary",
+            "uri": "tag:isrd.isi.edu,2018:required",
+            "value": {}
+        },
+        {
+            "column": "Data_Dictionary_Category",
+            "schema": "PDB",
+            "table": "Supported_Dictionary",
+            "uri": "tag:isrd.isi.edu,2018:required",
+            "value": {}
+        },
+        {
+            "column": "Name",
+            "schema": "PDB",
+            "table": "Data_Dictionary",
+            "uri": "tag:isrd.isi.edu,2018:required",
+            "value": {}
+        },
+        {
+            "column": "Category",
+            "schema": "PDB",
+            "table": "Data_Dictionary",
+            "uri": "tag:isrd.isi.edu,2018:required",
+            "value": {}
+        },
+        {
+            "column": "Version",
+            "schema": "PDB",
+            "table": "Data_Dictionary",
+            "uri": "tag:isrd.isi.edu,2018:required",
+            "value": {}
+        },
+        {
+            "column": "Location",
+            "schema": "PDB",
+            "table": "Data_Dictionary",
+            "uri": "tag:isrd.isi.edu,2018:required",
+            "value": {}
+        },
+        {
             "column": "File_URL",
             "schema": "PDB",
             "table": "Entry_mmCIF_File",
@@ -249,15 +302,6 @@
             "table": "Entry_mmCIF_File",
             "uri": "tag:isrd.isi.edu,2018:required",
             "value": {}
-        },
-        {
-            "column": "mmCIF_Schema_Version",
-            "schema": "PDB",
-            "table": "Entry_mmCIF_File",
-            "uri": "tag:misd.isi.edu,2015:display",
-            "value": {
-                "name": "mmCIF Schema Version"
-            }
         },
         {
             "column": "mmCIF_File_URL",
@@ -3758,6 +3802,12 @@
         {
             "schema": "PDB",
             "table": "ihm_model_list",
+            "uri": "tag:isrd.isi.edu,2016:generated",
+            "value": null
+        },
+        {
+            "schema": "PDB",
+            "table": "Conform_Dictionary",
             "uri": "tag:isrd.isi.edu,2016:generated",
             "value": null
         },
@@ -10124,6 +10174,16 @@
             "value": {
                 "row_name": {
                     "row_markdown_pattern": "{{{title}}}, {{{journal_abbrev}}}, {{{year}}}"
+                }
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "Data_Dictionary",
+            "uri": "tag:isrd.isi.edu,2016:table-display",
+            "value": {
+                "row_name": {
+                    "row_markdown_pattern": "{{{Name}}} (v {{{Version}}})"
                 }
             }
         },
@@ -18290,6 +18350,135 @@
         },
         {
             "schema": "PDB",
+            "table": "Data_Dictionary",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    [
+                        "PDB",
+                        "Data_Dictionary_Name_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "Data_Dictionary_Category_fkey"
+                    ],
+                    "Version",
+                    "Location",
+                    "RCT",
+                    "RMT"
+                ],
+                "detailed": [
+                    "RID",
+                    [
+                        "PDB",
+                        "Data_Dictionary_Name_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "Data_Dictionary_Category_fkey"
+                    ],
+                    "Version",
+                    "Location"
+                ],
+                "entry": [
+                    [
+                        "PDB",
+                        "Data_Dictionary_Name_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "Data_Dictionary_Category_fkey"
+                    ],
+                    "Version",
+                    "Location"
+                ]
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "Supported_Dictionary",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    {
+                        "comment": "A reference to table Data_Dictionary.RID.",
+                        "markdown_name": "Data Dictionary",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "Supported_Dictionary_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    {
+                        "comment": "A reference to table Data_Dictionary.Category.",
+                        "markdown_name": "Category",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "Supported_Dictionary_fkey"
+                                ]
+                            },
+                            "Category"
+                        ]
+                    },
+                    "RCT",
+                    "RMT"
+                ],
+                "detailed": [
+                    "RID",
+                    {
+                        "comment": "A reference to table Data_Dictionary.RID.",
+                        "markdown_name": "Data Dictionary",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "Supported_Dictionary_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    {
+                        "comment": "A reference to table Data_Dictionary.Category.",
+                        "markdown_name": "Category",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "Supported_Dictionary_fkey"
+                                ]
+                            },
+                            "Category"
+                        ]
+                    }
+                ],
+                "entry": [
+                    {
+                        "comment": "A reference to table Data_Dictionary.RID.",
+                        "markdown_name": "Data Dictionary",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "Supported_Dictionary_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "schema": "PDB",
             "table": "Entry_mmCIF_File",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
@@ -18315,7 +18504,22 @@
                 "*": [
                     "RID",
                     "File_URL",
-                    "mmCIF_Schema_Version",
+                    {
+                    	"source" : [
+                    		{ "inbound" : ["PDB", "Conform_Dictionary_Entry_mmCIF_File_fkey" ] },
+                    		{ "outbound" : ["PDB", "Conform_Dictionary_Data_Dictionary_fkey" ] },
+                    		"RID"
+                    	],
+                    	"entity": true,
+                    	"markdown_name": "Conform Dictionary",
+                    	"aggregate": "array_d",
+                    	"display": {
+                    		"array_ux_mode": "ulist"
+                    	},
+                    	"array_options": {
+                    		"order": [ { "column": "Name", "descending": false },  { "column": "Version", "descending": false } ]
+                    	}
+                    },
                     [
                         "PDB",
                         "Entry_mmCIF_File_Structure_Id_fkey"
@@ -18324,7 +18528,23 @@
                 "detailed": [
                     "RID",
                     "File_URL",
-                    "mmCIF_Schema_Version",
+                    {
+                    	"source" : [
+                    		{ "inbound" : ["PDB", "Conform_Dictionary_Entry_mmCIF_File_fkey" ] },
+                    		{ "outbound" : ["PDB", "Conform_Dictionary_Data_Dictionary_fkey" ] },
+                    		"RID"
+                    	],
+                    	"entity": true,
+                    	"markdown_name": "Conform Dictionary",
+                    	"aggregate": "array_d",
+                    	"display": {
+                    		"array_ux_mode": "ulist"
+                    	},
+                    	"array_options": {
+                    		"order": [ { "column": "Name", "descending": false },  { "column": "Version", "descending": false } ]
+                    	}
+                    	
+                    },
                     [
                         "PDB",
                         "Entry_mmCIF_File_Structure_Id_fkey"
@@ -18334,7 +18554,6 @@
                 ],
                 "entry": [
                     "File_URL",
-                    "mmCIF_Schema_Version",
                     [
                         "PDB",
                         "Entry_mmCIF_File_Structure_Id_fkey"
@@ -22708,6 +22927,62 @@
         },
         {
             "schema": "Vocab",
+            "table": "Data_Dictionary_Name",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "Data_Dictionary_Name_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "Data_Dictionary_Name_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "Data_Dictionary_Name_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "Data_Dictionary_Category",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                    [
+                        "Vocab",
+                        "Data_Dictionary_Category_RCB_fkey"
+                    ],
+                    [
+                        "Vocab",
+                        "Data_Dictionary_Category_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "Data_Dictionary_Category_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
             "table": "ihm_geometric_object_plane_plane_type",
             "uri": "tag:isrd.isi.edu,2016:visible-columns",
             "value": {
@@ -24856,6 +25131,19 @@
                                 {
                                     "children": [
                                         {
+                                            "name": "Data Dictionary",
+                                            "url": "/chaise/recordset/catalog_number/PDB:Data_Dictionary"
+                                        },
+                                        {
+                                            "name": "Supported Dictionary",
+                                            "url": "/chaise/recordset/catalog_number/PDB:Supported_Dictionary"
+                                        }
+                                    ],
+                                    "name": "Dictionaries"
+                                },
+                                {
+                                    "children": [
+                                        {
                                             "name": "Entry",
                                             "url": "/chaise/recordset/catalog_number/PDB:entry"
                                         },
@@ -25285,6 +25573,19 @@
                                         }
                                     ],
                                     "name": "Chem Comp"
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "name": "Names",
+                                            "url": "/chaise/recordset/catalog_number/Vocab:Data_Dictionary_Name"
+                                        },
+                                        {
+                                            "name": "Categories",
+                                            "url": "/chaise/recordset/catalog_number/Vocab:Data_Dictionary_Category"
+                                        }
+                                    ],
+                                    "name": "Data Dictionaries"
                                 },
                                 {
                                     "children": [
