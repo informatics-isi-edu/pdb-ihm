@@ -64,6 +64,17 @@
     "column_annotations": [
         {
             "column": "Location",
+            "schema": "Vocab",
+            "table": "Data_Dictionary_Name",
+            "uri": "tag:isrd.isi.edu,2016:column-display",
+            "value": {
+                "*": {
+                    "markdown_pattern": "[{{{Name}}}]({{{Location}}})"
+                }
+            }
+        },
+        {
+            "column": "Location",
             "schema": "PDB",
             "table": "Data_Dictionary",
             "uri": "tag:isrd.isi.edu,2016:column-display",
@@ -22933,6 +22944,7 @@
                 "*": [
                     "RID",
                     "Name",
+                    "Location",
                     "Description",
                     "ID",
                     "URI",
