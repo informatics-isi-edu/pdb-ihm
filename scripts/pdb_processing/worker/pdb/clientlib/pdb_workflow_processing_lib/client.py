@@ -375,21 +375,32 @@ class PDBClient (object):
                         structure_id = table.column_definitions['structure_id']
                         path.filter(structure_id == entry_id)
                     #self.logger.debug('Query Export Data URL: {}'.format(path.uri))
-                    results = path.entities()
-                    if len(pk) == 1:
-                        #self.logger.debug('Sorting results based on: {}'.format(table.column_definitions[pk[0]]))
-                        results.sort(table.column_definitions[pk[0]])
+                    if table_name != 'audit_conform':
+                        results = path.entities()
+                        if len(pk) == 1:
+                            #self.logger.debug('Sorting results based on: {}'.format(table.column_definitions[pk[0]]))
+                            results.sort(table.column_definitions[pk[0]])
+                        else:
+                            pk = pks_map[table_name]
+                            #self.logger.debug('Sorting results based on: ({}, {})'.format(table.column_definitions[pk[0]], table.column_definitions[pk[1]]))
+                            results.sort(table.column_definitions[pk[0]], table.column_definitions[pk[1]])
+                        results.fetch()
+                        if len(results) == 0:
+                            continue
                     else:
-                        pk = pks_map[table_name]
-                        #self.logger.debug('Sorting results based on: ({}, {})'.format(table.column_definitions[pk[0]], table.column_definitions[pk[1]]))
-                        results.sort(table.column_definitions[pk[0]], table.column_definitions[pk[1]])
-                    results.fetch()
-                    if len(results) == 0:
-                        continue
+                        url = '/attribute/PDB:Supported_Dictionary/A:=PDB:Data_Dictionary/B:=Vocab:Data_Dictionary_Name/dict_location:=B:Location,dict_name:=B:Name,dict_version:=A:Version@sort(dict_name,dict_version)'
+                        self.logger.debug('Query URL: "%s"' % url) 
+                        resp = self.catalog.get(url)
+                        resp.raise_for_status()
+                        results = resp.json()
+                        if len(results) == 0:
+                            continue
                     deriva_tables.append(table_name)
                     fw.write('loop_\n')
                     for column in table_body['columns']:
                         if column['name'] == 'structure_id':
+                            continue
+                        if column['name'] not in table.column_definitions.keys():
                             continue
                         fw.write('_{}.{}\n'.format(table_name,column['name']))
                     for row in results:
@@ -398,6 +409,8 @@ class PDBClient (object):
                             column_name = column['name']
                             column_type = column['type']
                             if column_name == 'structure_id':
+                                continue
+                            if column_name not in table.column_definitions.keys():
                                 continue
                             column_value = row[column_name]
                             value = getColumnValue(table_name, column_name, column_type, column_value)
@@ -619,6 +632,78 @@ class PDBClient (object):
                                       })
                 return
                     
+        """
+        Add the Conform_Dictionary entries
+        """
+        
+        """
+        Get the RID of Entry_mmCIF_File
+        """
+        url = '/attribute/PDB:Entry_mmCIF_File/Structure_Id={}/RID'.format(urlquote(entry_id))
+        self.logger.debug('Query URL: "%s"' % url) 
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        mmCIF_rows = resp.json()
+        if len(mmCIF_rows) != 1:
+            self.logger.debug('Entry_mmCIF_File is not unique')
+            self.updateAttributes(schema_pdb,
+                                  table_entry,
+                                  rid,
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
+                                  {'RID': rid,
+                                  'Process_Status': 'ERROR',
+                                  'Record_Status_Detail': 'Entry_mmCIF_File is not unique',
+                                  'Workflow_Status': 'ERROR',
+                                  'Generated_mmCIF_Processing_Status': 'ERROR'
+                                  })
+            return
+
+        mmCIF_row = mmCIF_rows[0]
+        
+        """
+        Delete entries from Conform_Dictionary if any
+        """
+        url = '/entity/PDB:Conform_Dictionary/Exported_mmCIF_RID={}'.format(urlquote(mmCIF_row['RID']))
+        self.logger.debug('Query URL: "%s"' % url) 
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        conform_rows = resp.json()
+        if len(conform_rows) > 0:
+            url = '/entity/PDB:Conform_Dictionary/Exported_mmCIF_RID={}'.format(urlquote(mmCIF_row['RID']))
+            resp = self.catalog.delete(
+                url
+            )
+            resp.raise_for_status()
+            self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
+
+        """
+        Get the supported entries
+        """
+        url = '/attribute/PDB:Supported_Dictionary/Data_Dictionary_RID'
+        self.logger.debug('Query URL: "%s"' % url) 
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        supported_rows = resp.json()
+        
+        """
+        Insert rows into Conform_Dictionary
+        """
+        for supported_row in supported_rows:
+            row = {'Data_Dictionary_RID': supported_row['Data_Dictionary_RID'], 'Exported_mmCIF_RID': mmCIF_row['RID']}
+        
+            if self.createEntity('PDB:Conform_Dictionary', row, rid) == None:
+                self.updateAttributes(schema_pdb,
+                                      table_entry,
+                                      rid,
+                                      ["Process_Status", "Record_Status_Detail", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
+                                      {'RID': rid,
+                                      'Process_Status': 'ERROR',
+                                      'Record_Status_Detail': 'Update error in createEntity():\n{}'.format(self.export_error_message),
+                                      'Workflow_Status': 'ERROR',
+                                      'Generated_mmCIF_Processing_Status': 'ERROR'
+                                      })
+                return
+
         self.logger.debug('Update success in export_mmCIF()')
         self.updateAttributes(schema_pdb,
                               table_entry,

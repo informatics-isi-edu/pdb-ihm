@@ -1,0 +1,103 @@
+{
+    "Vocab": {
+        "ihm_poly_residue_feature_interface_residue_flag": [
+            "NO",
+            "YES"
+        ],
+        "ihm_modeling_protocol_details_ensemble_flag": [
+            "NO",
+            "YES"
+        ],
+        "pseudo_site_flag": [
+            "Yes",
+            "No"
+        ],
+        "ihm_modeling_protocol_details_multi_state_flag": [
+            "NO",
+            "YES"
+        ],
+        "ihm_probe_list_reactive_probe_flag": [
+            "no",
+            "yes"
+        ],
+        "ihm_3dem_restraint_map_segment_flag": [
+            "NO",
+            "YES"
+        ],
+        "ihm_dataset_list_database_hosted": [
+            "NO",
+            "YES"
+        ],
+        "ihm_modeling_protocol_details_ordered_flag": [
+            "NO",
+            "YES"
+        ],
+        "ihm_2dem_class_average_restraint_image_segment_flag": [
+            "NO",
+            "YES"
+        ],
+        "ihm_modeling_protocol_details_multi_scale_flag": [
+            "NO",
+            "YES"
+        ],
+        "ihm_poly_probe_position_modification_flag": [
+            "no",
+            "yes"
+        ],
+        "ihm_poly_probe_position_mutation_flag": [
+            "no",
+            "yes"
+        ],
+        "sub_sample_flag": [
+            "Yes",
+            "No"
+        ],
+        "ihm_sas_restraint_profile_segment_flag": [
+            "NO",
+            "YES"
+        ],
+        "ihm_poly_probe_conjugate_ambiguous_stoichiometry_flag": [
+            "no",
+            "yes"
+        ]
+    },
+    "PDB": {
+        "ihm_poly_residue_feature": {
+            "interface_residue_flag": "ihm_poly_residue_feature_interface_residue_flag"
+        },
+        "ihm_modeling_protocol_details": {
+            "ensemble_flag": "ihm_modeling_protocol_details_ensemble_flag",
+            "multi_state_flag": "ihm_modeling_protocol_details_multi_state_flag",
+            "ordered_flag": "ihm_modeling_protocol_details_ordered_flag",
+            "multi_scale_flag": "ihm_modeling_protocol_details_multi_scale_flag"
+        },
+        "ihm_cross_link_restraint": {
+            "pseudo_site_flag": "pseudo_site_flag"
+        },
+        "ihm_probe_list": {
+            "reactive_probe_flag": "ihm_probe_list_reactive_probe_flag"
+        },
+        "ihm_3dem_restraint": {
+            "map_segment_flag": "ihm_3dem_restraint_map_segment_flag"
+        },
+        "ihm_dataset_list": {
+            "database_hosted": "ihm_dataset_list_database_hosted"
+        },
+        "ihm_2dem_class_average_restraint": {
+            "image_segment_flag": "ihm_2dem_class_average_restraint_image_segment_flag"
+        },
+        "ihm_poly_probe_position": {
+            "modification_flag": "ihm_poly_probe_position_modification_flag",
+            "mutation_flag": "ihm_poly_probe_position_mutation_flag"
+        },
+        "ihm_ensemble_info": {
+            "sub_sample_flag": "sub_sample_flag"
+        },
+        "ihm_sas_restraint": {
+            "profile_segment_flag": "ihm_sas_restraint_profile_segment_flag"
+        },
+        "ihm_poly_probe_conjugate": {
+            "ambiguous_stoichiometry_flag": "ihm_poly_probe_conjugate_ambiguous_stoichiometry_flag"
+        }
+    }
+}

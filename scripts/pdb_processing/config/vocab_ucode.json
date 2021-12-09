@@ -1,0 +1,62 @@
+{
+    "ihm_poly_residue_feature_interface_residue_flag": [
+        "NO",
+        "YES"
+    ],
+    "ihm_modeling_protocol_details_ensemble_flag": [
+        "NO",
+        "YES"
+    ],
+    "pseudo_site_flag": [
+        "YES",
+        "NO"
+    ],
+    "ihm_modeling_protocol_details_multi_state_flag": [
+        "NO",
+        "YES"
+    ],
+    "ihm_probe_list_reactive_probe_flag": [
+        "NO",
+        "YES"
+    ],
+    "ihm_3dem_restraint_map_segment_flag": [
+        "NO",
+        "YES"
+    ],
+    "ihm_dataset_list_database_hosted": [
+        "NO",
+        "YES"
+    ],
+    "ihm_modeling_protocol_details_ordered_flag": [
+        "NO",
+        "YES"
+    ],
+    "ihm_2dem_class_average_restraint_image_segment_flag": [
+        "NO",
+        "YES"
+    ],
+    "ihm_modeling_protocol_details_multi_scale_flag": [
+        "NO",
+        "YES"
+    ],
+    "ihm_poly_probe_position_modification_flag": [
+        "NO",
+        "YES"
+    ],
+    "ihm_poly_probe_position_mutation_flag": [
+        "NO",
+        "YES"
+    ],
+    "sub_sample_flag": [
+        "YES",
+        "NO"
+    ],
+    "ihm_sas_restraint_profile_segment_flag": [
+        "NO",
+        "YES"
+    ],
+    "ihm_poly_probe_conjugate_ambiguous_stoichiometry_flag": [
+        "NO",
+        "YES"
+    ]
+}
