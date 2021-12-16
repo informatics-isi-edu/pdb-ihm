@@ -1184,91 +1184,99 @@ class PDBClient (object):
         column_definitions = table.column_definitions
         counter = 0
         
-        """
-        Read the JSON FK optional file
-        """
-        with open(self.optional_fk_file, 'r') as f:
-            optional_fks = json.load(f)
-
-        """
-        Read the rows of the csv/tsv file as dictionaries
-        """
-        csvfile = open(fpath, 'r')
-        reader = csv.DictReader(csvfile, delimiter=delimiter)
-        j=0
-        done = False
-        missing_columns = []
-        while not done:
-            done = True
-            i = 0
-            entities = []
-            for row in reader:
-                j=j+1
-                entity = dict(row)
-                for column in list(entity.keys()):
+        try:
+            """
+            Read the JSON FK optional file
+            """
+            with open(self.optional_fk_file, 'r') as f:
+                optional_fks = json.load(f)
+    
+            """
+            Read the rows of the csv/tsv file as dictionaries
+            """
+            csvfile = open(fpath, 'r')
+            reader = csv.DictReader(csvfile, delimiter=delimiter)
+            j=0
+            done = False
+            missing_columns = []
+            while not done:
+                done = True
+                i = 0
+                entities = []
+                for row in reader:
+                    j=j+1
+                    entity = dict(row)
+                    for column in list(entity.keys()):
+                        try:
+                            column_definitions[column]
+                        except:
+                            if column not in missing_columns:
+                                missing_columns.append(column)
+                                self.logger.debug('Table "%s" has not the column "%s".' % (tname, column))
+                            entity[column] = ''
+                            
+                        """
+                        Columns types:
+                            ermrest_rid
+                            ermrest_rct
+                            ermrest_rmt
+                            ermrest_rcb
+                            ermrest_rmb
+                            ermrest_curie
+                            ermrest_uri
+                            text
+                            markdown
+                            text[]
+                            int4
+                            float4
+                            int8
+                        """
+                        if entity[column] == '':
+                            """
+                            Any empty value will be treated as NULL
+                            """
+                            del entity[column]
+                        elif column_definitions[column]._wrapped_column.type.typename == 'jsonb':
+                            entity[column] = json.loads(entity[column])
+                        elif column_definitions[column]._wrapped_column.type.typename.endswith('[]'):
+                            entity[column] = entity[column][1:-1].split(',')
+                    
+                    """
+                    Replace the FK references to the entry table
+                    """
+                    entity = self.getRecordUpdatedWithFK(tname, entity, entry_id)
+                    entity = self.getUpdatedOptional(optional_fks, tname, entity, entry_id)
+                    entity['Entry_Related_File'] = rid
+                    
+                    entities.append(entity)
+                    i = i+1
+                    if i >= chunk_size:
+                        """
+                        Insert the chunk
+                        """
+                        done = False
+                        break
+                if len(entities) > 0:
                     try:
-                        column_definitions[column]
+                        table.insert(entities).fetch()
+                        counter = counter + len(entities)
+                        time.sleep(sleep_time)
                     except:
-                        if column not in missing_columns:
-                            missing_columns.append(column)
-                            self.logger.debug('Table "%s" has not the column "%s".' % (tname, column))
-                        entity[column] = ''
-                        
-                    """
-                    Columns types:
-                        ermrest_rid
-                        ermrest_rct
-                        ermrest_rmt
-                        ermrest_rcb
-                        ermrest_rmb
-                        ermrest_curie
-                        ermrest_uri
-                        text
-                        markdown
-                        text[]
-                        int4
-                        float4
-                        int8
-                    """
-                    if entity[column] == '':
-                        """
-                        Any empty value will be treated as NULL
-                        """
-                        del entity[column]
-                    elif column_definitions[column]._wrapped_column.type.typename == 'jsonb':
-                        entity[column] = json.loads(entity[column])
-                    elif column_definitions[column]._wrapped_column.type.typename.endswith('[]'):
-                        entity[column] = entity[column][1:-1].split(',')
-                
-                """
-                Replace the FK references to the entry table
-                """
-                entity = self.getRecordUpdatedWithFK(tname, entity, entry_id)
-                entity = self.getUpdatedOptional(optional_fks, tname, entity, entry_id)
-                entity['Entry_Related_File'] = rid
-                
-                entities.append(entity)
-                i = i+1
-                if i >= chunk_size:
-                    """
-                    Insert the chunk
-                    """
-                    done = False
-                    break
-            if len(entities) > 0:
-                try:
-                    table.insert(entities).fetch()
-                    counter = counter + len(entities)
-                    time.sleep(sleep_time)
-                except:
-                    et, ev, tb = sys.exc_info()
-                    self.logger.error('got exception "%s"' % str(ev))
-                    self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-                    self.sendMail('FAILURE PDB: loadTableFromCVS ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
-                    error_message = ''.join(traceback.format_exception(et, ev, tb))
-                    returncode = 1
-                    break
-        self.logger.debug('File {}: inserted {} rows into table {}'.format(fpath, counter, tname))
+                        et, ev, tb = sys.exc_info()
+                        self.logger.error('got exception "%s"' % str(ev))
+                        self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+                        self.sendMail('FAILURE PDB: loadTableFromCVS ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+                        error_message = ''.join(traceback.format_exception(et, ev, tb))
+                        returncode = 1
+                        break
+            self.logger.debug('File {}: inserted {} rows into table {}'.format(fpath, counter, tname))
+        except:
+            et, ev, tb = sys.exc_info()
+            self.logger.error('got exception "%s"' % str(ev))
+            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+            self.sendMail('FAILURE PDB: loadTableFromCVS ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+            error_message = ''.join(traceback.format_exception(et, ev, tb))
+            returncode = 1
         return (returncode, error_message)
              
     """
