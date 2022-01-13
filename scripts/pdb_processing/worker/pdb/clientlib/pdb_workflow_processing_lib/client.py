@@ -1325,17 +1325,12 @@ class PDBClient (object):
                 if col not in row.keys():
                     row[col] = '.'
         """
-        Set the Vocab ucode
+        Set the ucode values
         """
-        keys = table.foreign_keys
-        for key in keys:
-            if key.pk_table.name in self.vocab_ucode.keys() and key.pk_table.schema.name == 'Vocab':
-                foreign_key_columns = key.foreign_key_columns
-                if len(foreign_key_columns) == 1:
-                    for col in key.foreign_key_columns:
-                        if col.name in row.keys():
-                            values = self.vocab_ucode[key.pk_table.name]
-                            row[col.name] = values[0] if values[0].upper() == row[col.name].upper() else values[0]
+        if tname in self.vocab_ucode.keys():
+            for col in self.vocab_ucode[tname]:
+                if col in row.keys():
+                    row[col] = row[col].upper()
         
         """
         Set the values for the *_RID columns
