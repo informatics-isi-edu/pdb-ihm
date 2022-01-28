@@ -180,7 +180,7 @@
                 "byte_count_column": "Image_File_Bytes",
                 "filename_column": "Image_File_Name",
                 "md5": "Image_File_MD5",
-                "url_pattern": "/hatrac/pdb/image/{{$moment.year}}/{{{Image_File_MD5}}}"
+                "url_pattern": "/hatrac/pdb/entry/submitted/image/{{$moment.year}}/{{{Image_File_Name}}}"
             }
         },
         {
@@ -208,7 +208,7 @@
                 "byte_count_column": "mmCIF_File_Bytes",
                 "filename_column": "mmCIF_File_Name",
                 "md5": "mmCIF_File_MD5",
-                "url_pattern": "/hatrac/pdb/mmCIF/{{$moment.year}}/{{{mmCIF_File_MD5}}}"
+                "url_pattern": "/hatrac/pdb/entry/submitted/mmCIF/{{$moment.year}}/{{{mmCIF_File_Name}}}"
             }
         },
         {
@@ -304,13 +304,32 @@
                 "byte_count_column": "File_Bytes",
                 "filename_column": "File_Name",
                 "md5": "File_MD5",
-                "url_pattern": "/hatrac/pdb/entry_mmCIF/{{$moment.year}}/{{{File_MD5}}}"
+                "url_pattern": "/hatrac/pdb/entry/{{$moment.year}}/{{{Structure_Id}}}/final_mmCIF/{{{File_Name}}}"
             }
         },
         {
             "column": "File_URL",
             "schema": "PDB",
             "table": "Entry_mmCIF_File",
+            "uri": "tag:isrd.isi.edu,2018:required",
+            "value": {}
+        },
+        {
+            "column": "File_URL",
+            "schema": "PDB",
+            "table": "Entry_Error_File",
+            "uri": "tag:isrd.isi.edu,2017:asset",
+            "value": {
+                "byte_count_column": "File_Bytes",
+                "filename_column": "File_Name",
+                "md5": "File_MD5",
+                "url_pattern": "/hatrac/pdb/entry/{{$moment.year}}/{{{Entry_RID}}}/validation_error/{{{File_Name}}}"
+            }
+        },
+        {
+            "column": "File_URL",
+            "schema": "PDB",
+            "table": "Entry_Error_File",
             "uri": "tag:isrd.isi.edu,2018:required",
             "value": {}
         },
@@ -323,7 +342,7 @@
                 "byte_count_column": "mmCIF_File_Bytes",
                 "filename_column": "mmCIF_File_Name",
                 "md5": "mmCIF_File_MD5",
-                "url_pattern": "/hatrac/pdb/mmCIF/{{$moment.year}}/{{{mmCIF_File_MD5}}}"
+                "url_pattern": "/hatrac/pdb/entry/{{$moment.year}}/{{{structure_id}}}/submitted_starting_model/{{{mmCIF_File_Name}}}"
             }
         },
         {
@@ -335,7 +354,7 @@
                 "byte_count_column": "File_Bytes",
                 "filename_column": "File_Name",
                 "md5": "File_MD5",
-                "url_pattern": "/hatrac/pdb/entry_files/{{$moment.year}}/{{{File_MD5}}}"
+                "url_pattern": "/hatrac/pdb/entry/{{$moment.year}}/{{{structure_id}}}/submitted_related_file/{{{File_Name}}}"
             }
         },
         {
@@ -434,6 +453,15 @@
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
                 "name": "System Generated mmCIF File"
+            }
+        },
+        {
+            "column": "File_URL",
+            "schema": "PDB",
+            "table": "Entry_Error_File",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "System Generated mmCIF Validation Error Files"
             }
         },
         {
@@ -6332,6 +6360,10 @@
                     [
                         "PDB",
                         "Entry_mmCIF_File_Structure_Id_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "Entry_Error_File_Entry_RID_fkey"
                     ],
                     [
                         "PDB",
@@ -18574,6 +18606,71 @@
         },
         {
             "schema": "PDB",
+            "table": "Entry_Error_File",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "System Generated mmCIF Validation Error Files",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "Entry_Error_File",
+            "uri": "tag:isrd.isi.edu,2016:generated",
+            "value": null
+        },
+        {
+            "schema": "PDB",
+            "table": "Entry_Error_File",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    [
+                        "PDB",
+                        "Entry_Error_File_Entry_RID_fkey"
+                    ],
+                    "File_Name",
+                    "File_URL",
+                    [
+                        "PDB",
+                        "Entry_Error_File_File_Type_fkey"
+                    ]
+                ],
+                "detailed": [
+                    "RID",
+                    [
+                        "PDB",
+                        "Entry_Error_File_Entry_RID_fkey"
+                    ],
+                    "File_Name",
+                    "File_Bytes",
+                    "File_MD5",
+                    "File_URL",
+                    [
+                        "PDB",
+                        "Entry_Error_File_File_Type_fkey"
+                    ]
+                ],
+                "entry": [
+                    "File_URL",
+                    [
+                        "PDB",
+                        "Entry_Error_File_Entry_RID_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "Entry_Error_File_File_Type_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "PDB",
             "table": "ihm_multi_state_model_group_link",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
@@ -22948,14 +23045,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "Data_Dictionary_Name_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "Data_Dictionary_Name_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "Data_Dictionary_Name_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "Data_Dictionary_Name_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -22976,14 +23089,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "Data_Dictionary_Category_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "Data_Dictionary_Category_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "Data_Dictionary_Category_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "Data_Dictionary_Category_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23004,14 +23133,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_geometric_object_plane_plane_type_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_geometric_object_plane_plane_type_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_geometric_object_plane_plane_type_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_geometric_object_plane_plane_type_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23056,14 +23201,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "rived_distance_restraint_group_conditionality_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "rived_distance_restraint_group_conditionality_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "rived_distance_restraint_group_conditionality_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "rived_distance_restraint_group_conditionality_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23084,14 +23245,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_sas_restraint_profile_segment_flag_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_sas_restraint_profile_segment_flag_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_sas_restraint_profile_segment_flag_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_sas_restraint_profile_segment_flag_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23112,14 +23289,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_probe_list_probe_link_type_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_probe_list_probe_link_type_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_probe_list_probe_link_type_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_probe_list_probe_link_type_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23140,14 +23333,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_dataset_related_db_reference_db_name_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_dataset_related_db_reference_db_name_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_dataset_related_db_reference_db_name_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_dataset_related_db_reference_db_name_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23180,14 +23389,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_feature_list_entity_type_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_feature_list_entity_type_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_feature_list_entity_type_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_feature_list_entity_type_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23220,14 +23445,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_cross_link_restraint_restraint_type_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_cross_link_restraint_restraint_type_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_cross_link_restraint_restraint_type_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_cross_link_restraint_restraint_type_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23248,14 +23489,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_sas_restraint_fitting_state_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_sas_restraint_fitting_state_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_sas_restraint_fitting_state_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_sas_restraint_fitting_state_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23276,14 +23533,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_predicted_contact_restraint_rep_atom_2_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_predicted_contact_restraint_rep_atom_2_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_predicted_contact_restraint_rep_atom_2_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_predicted_contact_restraint_rep_atom_2_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23316,14 +23589,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "predicted_contact_restraint_model_granularity_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "predicted_contact_restraint_model_granularity_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "predicted_contact_restraint_model_granularity_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "predicted_contact_restraint_model_granularity_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23344,14 +23633,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "File_Format_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "File_Format_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "File_Format_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "File_Format_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23372,14 +23677,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_probe_list_probe_origin_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_probe_list_probe_origin_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_probe_list_probe_origin_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_probe_list_probe_origin_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23400,14 +23721,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_poly_residue_feature_rep_atom_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_poly_residue_feature_rep_atom_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_poly_residue_feature_rep_atom_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_poly_residue_feature_rep_atom_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23428,14 +23765,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ject_distance_restraint_object_characteristic_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ject_distance_restraint_object_characteristic_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ject_distance_restraint_object_characteristic_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ject_distance_restraint_object_characteristic_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23456,14 +23809,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_ensemble_info_ensemble_clustering_feature_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_ensemble_info_ensemble_clustering_feature_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_ensemble_info_ensemble_clustering_feature_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_ensemble_info_ensemble_clustering_feature_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23484,14 +23853,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_cross_link_list_linker_type_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_cross_link_list_linker_type_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_cross_link_list_linker_type_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_cross_link_list_linker_type_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23512,14 +23897,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "hm_modeling_protocol_details_multi_state_flag_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "hm_modeling_protocol_details_multi_state_flag_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "hm_modeling_protocol_details_multi_state_flag_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "hm_modeling_protocol_details_multi_state_flag_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23540,14 +23941,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_epr_restraint_fitting_state_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_epr_restraint_fitting_state_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_epr_restraint_fitting_state_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_epr_restraint_fitting_state_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23568,14 +23985,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_cross_link_restraint_model_granularity_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_cross_link_restraint_model_granularity_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_cross_link_restraint_model_granularity_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_cross_link_restraint_model_granularity_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23596,14 +24029,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_3dem_restraint_map_segment_flag_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_3dem_restraint_map_segment_flag_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_3dem_restraint_map_segment_flag_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_3dem_restraint_map_segment_flag_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23636,14 +24085,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "bject_distance_restraint_group_conditionality_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "bject_distance_restraint_group_conditionality_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "bject_distance_restraint_group_conditionality_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "bject_distance_restraint_group_conditionality_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23676,14 +24141,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_external_files_content_type_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_external_files_content_type_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_external_files_content_type_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_external_files_content_type_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23704,14 +24185,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_modeling_post_process_feature_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_modeling_post_process_feature_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_modeling_post_process_feature_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_modeling_post_process_feature_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23744,14 +24241,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_modeling_protocol_details_ensemble_flag_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_modeling_protocol_details_ensemble_flag_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_modeling_protocol_details_ensemble_flag_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_modeling_protocol_details_ensemble_flag_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23796,14 +24309,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "_probe_conjugate_ambiguous_stoichiometry_flag_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "_probe_conjugate_ambiguous_stoichiometry_flag_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "_probe_conjugate_ambiguous_stoichiometry_flag_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "_probe_conjugate_ambiguous_stoichiometry_flag_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23836,14 +24365,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_derived_distance_restraint_restraint_type_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_derived_distance_restraint_restraint_type_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_derived_distance_restraint_restraint_type_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_derived_distance_restraint_restraint_type_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23864,14 +24409,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_geometric_object_list_object_type_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_geometric_object_list_object_type_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_geometric_object_list_object_type_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_geometric_object_list_object_type_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23892,14 +24453,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_residues_not_modeled_reason_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_residues_not_modeled_reason_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_residues_not_modeled_reason_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_residues_not_modeled_reason_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23920,14 +24497,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "odel_representation_details_model_granularity_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "odel_representation_details_model_granularity_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "odel_representation_details_model_granularity_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "odel_representation_details_model_granularity_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23948,14 +24541,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "hm_modeling_protocol_details_multi_scale_flag_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "hm_modeling_protocol_details_multi_scale_flag_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "hm_modeling_protocol_details_multi_scale_flag_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "hm_modeling_protocol_details_multi_scale_flag_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -23976,14 +24585,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "hm_predicted_contact_restraint_restraint_type_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "hm_predicted_contact_restraint_restraint_type_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "hm_predicted_contact_restraint_restraint_type_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "hm_predicted_contact_restraint_restraint_type_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24005,14 +24630,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "File_Type_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "File_Type_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "File_Type_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "File_Type_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24033,14 +24674,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_model_representation_details_model_mode_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_model_representation_details_model_mode_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_model_representation_details_model_mode_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_model_representation_details_model_mode_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24061,14 +24718,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_poly_probe_position_mutation_flag_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_poly_probe_position_mutation_flag_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_poly_probe_position_mutation_flag_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_poly_probe_position_mutation_flag_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24089,14 +24762,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_modeling_post_process_type_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_modeling_post_process_type_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_modeling_post_process_type_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_modeling_post_process_type_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24117,14 +24806,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "_starting_model_details_starting_model_source_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "_starting_model_details_starting_model_source_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "_starting_model_details_starting_model_source_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "_starting_model_details_starting_model_source_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24145,14 +24850,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "oly_residue_feature_residue_range_granularity_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "oly_residue_feature_residue_range_granularity_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "oly_residue_feature_residue_range_granularity_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "oly_residue_feature_residue_range_granularity_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24173,14 +24894,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_external_reference_info_reference_type_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_external_reference_info_reference_type_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_external_reference_info_reference_type_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_external_reference_info_reference_type_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24201,19 +24938,79 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "workflow_status_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "workflow_status_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "workflow_status_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "workflow_status_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
                         "Vocab",
                         "workflow_status_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "Validation_File_Type",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "Validation_File_Type_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "Validation_File_Type_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "Validation_File_Type_Owner_fkey"
                     ]
                 ]
             }
@@ -24229,14 +25026,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_dataset_list_data_type_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_dataset_list_data_type_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_dataset_list_data_type_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_dataset_list_data_type_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24257,14 +25070,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_probe_list_reactive_probe_flag_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_probe_list_reactive_probe_flag_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_probe_list_reactive_probe_flag_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_probe_list_reactive_probe_flag_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24285,14 +25114,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_feature_list_feature_type_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_feature_list_feature_type_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_feature_list_feature_type_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_feature_list_feature_type_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24313,14 +25158,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "oss_link_restraint_conditional_crosslink_flag_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "oss_link_restraint_conditional_crosslink_flag_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "oss_link_restraint_conditional_crosslink_flag_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "oss_link_restraint_conditional_crosslink_flag_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24341,14 +25202,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_external_files_file_format_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_external_files_file_format_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_external_files_file_format_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_external_files_file_format_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24369,14 +25246,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_geometric_object_axis_axis_type_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_geometric_object_axis_axis_type_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_geometric_object_axis_axis_type_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_geometric_object_axis_axis_type_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24397,14 +25290,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_external_reference_info_refers_to_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_external_reference_info_refers_to_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_external_reference_info_refers_to_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_external_reference_info_refers_to_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24449,14 +25358,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_modeling_protocol_details_ordered_flag_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_modeling_protocol_details_ordered_flag_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_modeling_protocol_details_ordered_flag_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_modeling_protocol_details_ordered_flag_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24489,14 +25414,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "m_poly_residue_feature_interface_residue_flag_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "m_poly_residue_feature_interface_residue_flag_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "m_poly_residue_feature_interface_residue_flag_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "m_poly_residue_feature_interface_residue_flag_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24517,14 +25458,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "em_class_average_restraint_image_segment_flag_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "em_class_average_restraint_image_segment_flag_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "em_class_average_restraint_image_segment_flag_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "em_class_average_restraint_image_segment_flag_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24545,14 +25502,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_ensemble_info_ensemble_clustering_method_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_ensemble_info_ensemble_clustering_method_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_ensemble_info_ensemble_clustering_method_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_ensemble_info_ensemble_clustering_method_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24573,14 +25546,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "models_template_sequence_identity_denominator_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "models_template_sequence_identity_denominator_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "models_template_sequence_identity_denominator_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "models_template_sequence_identity_denominator_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24625,14 +25614,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_multi_state_modeling_experiment_type_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_multi_state_modeling_experiment_type_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_multi_state_modeling_experiment_type_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_multi_state_modeling_experiment_type_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24653,14 +25658,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_geometric_object_half_torus_section_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_geometric_object_half_torus_section_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_geometric_object_half_torus_section_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_geometric_object_half_torus_section_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24693,14 +25714,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "tric_object_distance_restraint_restraint_type_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "tric_object_distance_restraint_restraint_type_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "tric_object_distance_restraint_restraint_type_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "tric_object_distance_restraint_restraint_type_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24721,14 +25758,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_poly_probe_position_modification_flag_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_poly_probe_position_modification_flag_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_poly_probe_position_modification_flag_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_poly_probe_position_modification_flag_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24761,14 +25814,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_model_representative_selection_criteria_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_model_representative_selection_criteria_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_model_representative_selection_criteria_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_model_representative_selection_criteria_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24789,14 +25858,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_struct_assembly_class_type_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_struct_assembly_class_type_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_struct_assembly_class_type_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_struct_assembly_class_type_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24817,14 +25902,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_dataset_list_database_hosted_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_dataset_list_database_hosted_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_dataset_list_database_hosted_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_dataset_list_database_hosted_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24845,14 +25946,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "representation_details_model_object_primitive_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "representation_details_model_object_primitive_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "representation_details_model_object_primitive_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "representation_details_model_object_primitive_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24885,14 +26002,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_predicted_contact_restraint_rep_atom_1_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_predicted_contact_restraint_rep_atom_1_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_predicted_contact_restraint_rep_atom_1_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_predicted_contact_restraint_rep_atom_1_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24925,14 +26058,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "ihm_dataset_group_application_term_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "ihm_dataset_group_application_term_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_dataset_group_application_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_dataset_group_application_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -24965,14 +26114,30 @@
                     "Description",
                     "ID",
                     "URI",
-                    [
-                        "Vocab",
-                        "process_status_RCB_fkey"
-                    ],
-                    [
-                        "Vocab",
-                        "process_status_RMB_fkey"
-                    ],
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "process_status_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "process_status_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
                     "RCT",
                     "RMT",
                     [
@@ -25538,12 +26703,16 @@
                                 {
                                     "children": [
                                         {
-                                            "name": "Entry Related File",
-                                            "url": "/chaise/recordset/catalog_number/PDB:Entry_Related_File"
+                                            "name": "Entry Error File",
+                                            "url": "/chaise/recordset/catalog_number/PDB:Entry_Error_File"
                                         },
                                         {
                                             "name": "Entry mmCIF File",
                                             "url": "/chaise/recordset/catalog_number/PDB:Entry_mmCIF_File"
+                                        },
+                                        {
+                                            "name": "Entry Related File",
+                                            "url": "/chaise/recordset/catalog_number/PDB:Entry_Related_File"
                                         }
                                     ],
                                     "name": "Workflow"
@@ -26015,6 +27184,10 @@
                                         {
                                             "name": "Process Status",
                                             "url": "/chaise/recordset/catalog_number/Vocab:process_status"
+                                        },
+                                        {
+                                            "name": "Validation File Type",
+                                            "url": "/chaise/recordset/catalog_number/Vocab:Validation_File_Type"
                                         },
                                         {
                                             "name": "Workflow Status",
