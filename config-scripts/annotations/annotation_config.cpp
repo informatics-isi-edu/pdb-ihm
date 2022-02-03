@@ -24930,12 +24930,28 @@
         {
             "schema": "Vocab",
             "table": "workflow_status",
+            "uri": "tag:isrd.isi.edu,2016:table-display",
+            "value": {
+            	"*" : {
+            		"row_order" : [
+		                  {
+		                     "column" : "Rank",
+		                     "descending" : false
+		                  }
+	                  ]
+                  }
+              }
+          },
+        {
+            "schema": "Vocab",
+            "table": "workflow_status",
             "uri": "tag:isrd.isi.edu,2016:visible-columns",
             "value": {
                 "*": [
                     "RID",
                     "Name",
                     "Description",
+                    "Rank",
                     "ID",
                     "URI",
                   {
