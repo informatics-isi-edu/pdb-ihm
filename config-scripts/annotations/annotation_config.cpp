@@ -330,6 +330,17 @@
             "column": "File_URL",
             "schema": "PDB",
             "table": "Entry_Error_File",
+            "uri": "tag:isrd.isi.edu,2016:column-display",
+            "value": {
+                "*": {
+                    "markdown_pattern": "[{{{File_Name}}}]({{{File_URL}}})"
+                }
+            }
+        },
+        {
+            "column": "File_URL",
+            "schema": "PDB",
+            "table": "Entry_Error_File",
             "uri": "tag:isrd.isi.edu,2018:required",
             "value": {}
         },
@@ -6220,7 +6231,19 @@
                     ],
                     "accession_code",
                     "Generated_mmCIF_Processing_Status",
-                    "Record_Status_Detail",
+                    {
+                    	"source" : [
+                    		{ "inbound" : ["PDB", "Entry_Error_File_Entry_RID_fkey" ] },
+                    		"RID"
+                    	],
+                    	"entity": true,
+                    	"markdown_name": "Record_Status_Detail",
+                    	"aggregate": "array_d",
+                    	"display": {
+						  "markdown_pattern": "{{#if _Record_Status_Detail}}{{{Record_Status_Detail}}}\n{{#each $self}}- [{{{this.rowName}}}]({{{this.uri.detailed}}}) \n{{/each}}{{/if}}",
+						  "template_engine": "handlebars"
+                    	}
+                    },
                   {
                      "markdown_name" : "RCB",
                      "source" : [
@@ -6334,7 +6357,19 @@
                     ],
                     "accession_code",
                     "Generated_mmCIF_Processing_Status",
-                    "Record_Status_Detail",
+                    {
+                    	"source" : [
+                    		{ "inbound" : ["PDB", "Entry_Error_File_Entry_RID_fkey" ] },
+                    		"RID"
+                    	],
+                    	"entity": true,
+                    	"markdown_name": "Record_Status_Detail",
+                    	"aggregate": "array_d",
+                    	"display": {
+						  "markdown_pattern": "{{#if _Record_Status_Detail}}{{{Record_Status_Detail}}}\n{{#each $self}}- [{{{this.rowName}}}]({{{this.uri.detailed}}}) \n{{/each}}{{/if}}",
+						  "template_engine": "handlebars"
+                    	}
+                    },
                     [
                         "PDB",
                         "entry_Owner_fkey"
@@ -6360,10 +6395,6 @@
                     [
                         "PDB",
                         "Entry_mmCIF_File_Structure_Id_fkey"
-                    ],
-                    [
-                        "PDB",
-                        "Entry_Error_File_Entry_RID_fkey"
                     ],
                     [
                         "PDB",
@@ -18614,6 +18645,16 @@
                     "*": {
                         "table_comment_display" : "inline"
                     }
+                }
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "Entry_Error_File",
+            "uri": "tag:isrd.isi.edu,2016:table-display",
+            "value": {
+                "row_name": {
+                    "row_markdown_pattern": "{{{File_Name}}}"
                 }
             }
         },
