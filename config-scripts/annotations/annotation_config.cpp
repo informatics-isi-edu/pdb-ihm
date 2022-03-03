@@ -3857,6 +3857,12 @@
         },
         {
             "schema": "PDB",
+            "table": "audit_conform",
+            "uri": "tag:isrd.isi.edu,2016:generated",
+            "value": null
+        },
+        {
+            "schema": "PDB",
             "table": "Conform_Dictionary",
             "uri": "tag:isrd.isi.edu,2016:generated",
             "value": null
