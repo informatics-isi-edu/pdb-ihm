@@ -6227,7 +6227,7 @@
                     "Image_File_URL",
                     [
                         "PDB",
-                        "entry_workflow_status_fkey"
+                        "entry_Workflow_Status_fkey"
                     ],
                     "accession_code",
                     "Generated_mmCIF_Processing_Status",
@@ -6290,7 +6290,7 @@
                         {
                            "outbound" : [
                               "PDB",
-                              "entry_workflow_status_fkey"
+                              "entry_Workflow_Status_fkey"
                            ]
                         },
                         "RID"
@@ -6353,7 +6353,7 @@
                     },
                     [
                         "PDB",
-                        "entry_workflow_status_fkey"
+                        "entry_Workflow_Status_fkey"
                     ],
                     "accession_code",
                     "Generated_mmCIF_Processing_Status",
@@ -6380,7 +6380,7 @@
                     "Image_File_URL",
                     [
                         "PDB",
-                        "entry_workflow_status_fkey"
+                        "entry_Workflow_Status_fkey"
                     ],
                     "accession_code"
                 ]
@@ -22522,7 +22522,7 @@
                     "Description",
                     [
                         "PDB",
-                        "Entry_Related_File_workflow_status_fkey"
+                        "Entry_Related_File_Workflow_Status_fkey"
                     ],
                     "Record_Status_Detail"
                 ],
@@ -22546,7 +22546,7 @@
                     "Description",
                     [
                         "PDB",
-                        "Entry_Related_File_workflow_status_fkey"
+                        "Entry_Related_File_Workflow_Status_fkey"
                     ],
                     "Record_Status_Detail",
                     [
@@ -22584,7 +22584,7 @@
                     "Description",
                     [
                         "PDB",
-                        "Entry_Related_File_workflow_status_fkey"
+                        "Entry_Related_File_Workflow_Status_fkey"
                     ]
                 ]
             }
@@ -24970,7 +24970,7 @@
         },
         {
             "schema": "Vocab",
-            "table": "workflow_status",
+            "table": "Workflow_Status",
             "uri": "tag:isrd.isi.edu,2016:table-display",
             "value": {
             	"*" : {
@@ -24985,7 +24985,7 @@
           },
         {
             "schema": "Vocab",
-            "table": "workflow_status",
+            "table": "Workflow_Status",
             "uri": "tag:isrd.isi.edu,2016:visible-columns",
             "value": {
                 "*": [
@@ -26162,7 +26162,7 @@
         },
         {
             "schema": "Vocab",
-            "table": "process_status",
+            "table": "Process_Status",
             "uri": "tag:isrd.isi.edu,2016:visible-columns",
             "value": {
                 "*": [
@@ -27240,7 +27240,7 @@
                                         },
                                         {
                                             "name": "Process Status",
-                                            "url": "/chaise/recordset/catalog_number/Vocab:process_status"
+                                            "url": "/chaise/recordset/catalog_number/Vocab:Process_Status"
                                         },
                                         {
                                             "name": "Validation File Type",
@@ -27248,7 +27248,7 @@
                                         },
                                         {
                                             "name": "Workflow Status",
-                                            "url": "/chaise/recordset/catalog_number/Vocab:workflow_status"
+                                            "url": "/chaise/recordset/catalog_number/Vocab:Workflow_Status"
                                         }
                                     ],
                                     "name": "Workflow"
