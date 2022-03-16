@@ -4,10 +4,11 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-        <link rel="icon" href="/images/favicon.jpg" type="image/x-icon">
-        <!--<link rel="shortcut icon" href="/images/faviconmol.jpg" >--> 
+        <!--<link rel="icon" href="images/favicon.jpg" type="image/x-icon">-->
+        <!--<link rel="shortcut icon" href="images/faviconmol.jpg" >--> 
        <title>View3d</title>
-        <!--#include virtual="includes.html"-->
+        <!--include virtual="includes.html"-->
+        
         <style>
             #app {
                 position: float;
@@ -15,9 +16,9 @@
             }
 
         </style>
-        <link rel="shortcut icon" href="/images/favicon.jpg">
+        <!--<link rel="shortcut icon" href="images/favicon.jpg">-->
         <link rel="stylesheet" type="text/css" href="molstar.css" />
-        <script src="/js/view3d.js  " type="text/javascript"></script>
+        <!--<script src="js/view3d.js  " type="text/javascript"></script> -->
     </head>
     <body style="background-color:#669966;">
         <div class="container-fluid">
@@ -27,19 +28,20 @@
         <div class="row">
 
               <div class="col-md-6">
-                  <div class="float-left" style="margin-left: 0px;"><a href="/index.html">
-                  <img src="/images/logon.png" class="float-left" alt="PDBDEV.org" height="100"  width="110"  style="margin-top: 0px; margin-bottom: 0px" />
+                  <!--<div class="float-left" style="margin-left: 0px;"><a href="index.html">-->
+                  <div class="float-left" style="margin-left: 0px;">
+                  <!--<img src="images/logon.png" class="float-left" alt="PDBDEV.org" height="100"  width="110"  style="margin-top: 0px; margin-bottom: 0px" />-->
                   <p><h1 class="float-left" style="margin-left: 0px; color: #003366;">PDB-Dev</h1><h5 class="float-left" style="color: #003366;">Prototype Archiving System for Integrative Structures</h5></p></a></div>
               </div>
    
-              <div class="col-md-6">
-                  <div class="input-group mb-3">
+              <!--<div class="col-md-6">
+                  <div class="input-group mb-3"> -->
                      <!--input hidden element: value assigned via url -->
-                     <div class='input-group-prepend d-none'><span class='input-group-text'>PDBDEV_</span></div>
+                     <!--<div class='input-group-prepend d-none'><span class='input-group-text'>PDBDEV_</span></div>
                      <input id="query" type="number" min=00000001 max=999999999 class="form-control d-none"  placeholder="enter #" autocomplete="off"/>
 
                   </div>
-             </div>
+             </div> -->
          </div><!--end row-->
         </div><!--end card-header-->
         <div id="results"></div>
@@ -61,21 +63,21 @@
         <script type="text/javascript" src="molstar.js"></script>
         <script type="text/javascript">
             
-            function url_id() {
+            //function url_id() {
             //var expr = "[?][0-9]{4,}";
-            var expr = "[?/_][0-9]{8,}";  //clean url, used in conjunction with .htaccess rewrite function
-            var regex = new RegExp( expr );
-            var results = regex.exec( window.location.href );
-            if ( results !== null ) {
-                 return results[0].slice(1);
-            } else {
-                return false;
-                   }
-            }
-            var url_param = url_id();        
-            var element = document.getElementById("query");
-             if( url_param ) { element.value = url_param; }
-                $(document).ready(on_ready); 
+            //var expr = "[?/_][0-9]{8,}";  //clean url, used in conjunction with .htaccess rewrite function
+            //var regex = new RegExp( expr );
+            //var results = regex.exec( window.location.href );
+            //if ( results !== null ) {
+            //     return results[0].slice(1);
+            //} else {
+            //    return false;
+            //       }
+            //}
+            //var url_param = url_id();        
+            //var element = document.getElementById("query");
+            // if( url_param ) { element.value = url_param; }
+            //    $(document).ready(on_ready); 
             var viewer = new molstar.Viewer('app', {
                 extensions: [],
 
@@ -94,8 +96,8 @@
                 emdbProvider: 'rcsb',
             });
             //viewer.loadPdb('PDBDEV_00000001');
-            //viewer.loadPdbDev(url_param);
-            viewer.loadStructureFromUrl("url of your choice", "mmcif", false);
+            //viewer.loadPdbDev('PDBDEV_00000001');
+            viewer.loadStructureFromUrl('https://pdb-dev.wwpdb.org/cif/PDBDEV_00000018.cif', "mmcif", false);
 
             // TODO add Volume.customProperty and load suggested isoValue via custom property
             var sub = viewer.plugin.managers.volume.hierarchy.behaviors.selection.subscribe(function (value) {
