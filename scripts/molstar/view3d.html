@@ -97,7 +97,17 @@
             });
             //viewer.loadPdb('PDBDEV_00000001');
             //viewer.loadPdbDev('PDBDEV_00000001');
-            viewer.loadStructureFromUrl('https://pdb-dev.wwpdb.org/cif/PDBDEV_00000018.cif', "mmcif", false);
+            
+            queryString = window.location.search;
+            urlParams = new URLSearchParams(queryString);
+            mmCIF_url = urlParams.get('url');
+            isBinary = false;
+            if (urlParams.has('type') && urlParams.get('type') == 'binary') {
+            	isBinary = true;
+            }
+            
+            viewer.loadStructureFromUrl(mmCIF_url, "mmcif", isBinary);
+            //viewer.loadStructureFromUrl('https://pdb-dev.wwpdb.org/cif/PDBDEV_00000018.cif', "mmcif", false);
 
             // TODO add Volume.customProperty and load suggested isoValue via custom property
             var sub = viewer.plugin.managers.volume.hierarchy.behaviors.selection.subscribe(function (value) {
