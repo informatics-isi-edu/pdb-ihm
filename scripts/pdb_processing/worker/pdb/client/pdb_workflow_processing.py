@@ -115,6 +115,16 @@ def load(config_filename):
         logger.error('optional_fk_file file must be provided and exist.')
         return None
 
+    CifCheck = cfg.get('CifCheck', None)
+    if not CifCheck or not os.path.isfile(CifCheck):
+        logger.error('CifCheck file must be provided and exist.')
+        return None
+
+    dictSdb = cfg.get('dictSdb', None)
+    if not dictSdb or not os.path.isfile(dictSdb):
+        logger.error('dictSdb file must be provided and exist.')
+        return None
+
     entry = cfg.get('entry', None)
     if not entry or not os.path.isfile(entry):
         logger.error('entry file must be provided and exist.')
@@ -157,6 +167,11 @@ def load(config_filename):
     vocab_ucode = json.load(open(vocab_ucode))
     
     mmCIF_Schema_Version = cfg.get('mmCIF_Schema_Version', '1.0')
+    hatrac_namespace = cfg.get('hatrac_namespace', None)
+    if hatrac_namespace == None:
+        hatrac_namespace = 'hatrac/pdb'
+    else:
+        hatrac_namespace = 'hatrac/{}/pdb'.format(hatrac_namespace)
     
     mail_server = cfg.get('mail_server', None)
     mail_sender = cfg.get('mail_sender', None)
@@ -180,6 +195,9 @@ def load(config_filename):
                                cif_tables=cif_tables, \
                                export_order_by=export_order_by, \
                                combo1_columns=combo1_columns, \
+                               dictSdb=dictSdb, \
+                               CifCheck=CifCheck, \
+                               hatrac_namespace=hatrac_namespace, \
                                entry=entry, \
                                mail_server=mail_server, \
                                mail_sender=mail_sender, \

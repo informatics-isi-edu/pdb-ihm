@@ -60,11 +60,17 @@ def entry_export_job(handler):
     """
     pdb_row_job(handler, 'export')
     
-def ihm_starting_model_details_row_job(handler):
+def submission_complete_row_job(handler):
     """
-    Process mmCIF the PDB:ihm_starting_model_details table.
+    Process set the accession_code in the PDB:entry table.
     """
-    pdb_row_job(handler, 'ihm_starting_model_details')
+    pdb_row_job(handler, 'accession_code')
+    
+def release_ready_row_job(handler):
+    """
+    Include in the mmCIF file the records for release.
+    """
+    pdb_row_job(handler, 'release_mmCIF')
     
 def Entry_Related_File_row_job(handler):
     """
@@ -100,7 +106,7 @@ def pdb_row_job(handler, action):
 
 _work_units.append(
     WorkUnit(
-        '/entity/A:=PDB:entry/Process_Status=New;Process_Status=Renew/Vocab:workflow_status/Name=DEPO/$A?limit=1',
+        '/entity/A:=PDB:entry/Process_Status=New;Process_Status=Renew/Vocab:Workflow_Status/Name=DEPO/$A?limit=1',
         '/attributegroup/PDB:entry/RID;Process_Status',
         '/attributegroup/PDB:entry/RID',
         entry_row_job
@@ -109,27 +115,34 @@ _work_units.append(
 
 _work_units.append(
     WorkUnit(
-        '/entity/A:=PDB:entry/Process_Status=New;Process_Status=Renew/Vocab:workflow_status/Name=SUBMIT/$A?limit=1',
+        '/entity/A:=PDB:entry/Process_Status=New;Process_Status=Renew/Vocab:Workflow_Status/Name=SUBMIT/$A?limit=1',
         '/attributegroup/PDB:entry/RID;Process_Status',
         '/attributegroup/PDB:entry/RID',
         entry_export_job
     )
 )
 
-"""
 _work_units.append(
     WorkUnit(
-        '/entity/A:=PDB:ihm_starting_model_details/Process_Status=New;Process_Status=Renew/Vocab:workflow_status/Name=DEPO/$A?limit=1',
-        '/attributegroup/PDB:ihm_starting_model_details/RID;Process_Status',
-        '/attributegroup/PDB:ihm_starting_model_details/RID',
-        ihm_starting_model_details_row_job
+        '/entity/A:=PDB:entry/Process_Status=success/Vocab:Workflow_Status/Name=SUBMISSION%20COMPLETE/$A?limit=1',
+        '/attributegroup/PDB:entry/RID;Process_Status',
+        '/attributegroup/PDB:entry/RID',
+        submission_complete_row_job
     )
 )
-"""
 
 _work_units.append(
     WorkUnit(
-        '/entity/A:=PDB:Entry_Related_File/Process_Status=New;Process_Status=Renew/Vocab:workflow_status/Name=DEPO/$A/PDB:entry/Process_Status=success/$A?limit=1',
+        '/entity/A:=PDB:entry/Process_Status=success/Vocab:Workflow_Status/Name=RELEASE%20READY/$A?limit=1',
+        '/attributegroup/PDB:entry/RID;Process_Status',
+        '/attributegroup/PDB:entry/RID',
+        release_ready_row_job
+    )
+)
+
+_work_units.append(
+    WorkUnit(
+        '/entity/A:=PDB:Entry_Related_File/Process_Status=New;Process_Status=Renew/Vocab:Workflow_Status/Name=DEPO/$A/PDB:entry/Process_Status=success/$A?limit=1',
         '/attributegroup/PDB:Entry_Related_File/RID;Process_Status',
         '/attributegroup/PDB:Entry_Related_File/RID',
         Entry_Related_File_row_job
