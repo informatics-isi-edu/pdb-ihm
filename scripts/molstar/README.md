@@ -26,7 +26,8 @@ molstar.js
 ### Visualization
 
 Supposing the installation was done on the `dev.pdb-dev.org` VM, and that the `mmCIF` file location is:
-```/hatrac/dev/pdb/entry/2022/D_1-VSA6/final_mmCIF/PDBDEV_00000128.cif:3RAYRI5CC5GPMLCGEW34BFGKVY
+```
+/hatrac/dev/pdb/entry/2022/D_1-VSA6/final_mmCIF/PDBDEV_00000128.cif:3RAYRI5CC5GPMLCGEW34BFGKVY
 ```
 on a browser, enter the following URL:
 ```
