@@ -18573,12 +18573,6 @@
         {
             "schema": "PDB",
             "table": "Entry_mmCIF_File",
-            "uri": "tag:isrd.isi.edu,2016:generated",
-            "value": null
-        },
-        {
-            "schema": "PDB",
-            "table": "Entry_mmCIF_File",
             "uri": "tag:isrd.isi.edu,2016:visible-columns",
             "value": {
                 "*": [
@@ -18632,12 +18626,10 @@
                     "File_Bytes",
                     "File_MD5"
                 ],
+                "entry/edit": [
+                    "File_URL"
+                ],
                 "entry": [
-                    "File_URL",
-                    [
-                        "PDB",
-                        "Entry_mmCIF_File_Structure_Id_fkey"
-                    ]
                 ]
             }
         },
