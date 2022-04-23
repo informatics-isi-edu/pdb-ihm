@@ -6206,6 +6206,29 @@
         {
             "schema": "PDB",
             "table": "entry",
+            "uri": "tag:isrd.isi.edu,2019:source-definitions",
+            "value": {
+			    "fkeys": [],
+			    "columns": true,
+			    "sources": {
+			      "molstar_image": {
+			        "entity": true,
+			        "source": [
+			          {
+			            "inbound": [
+			              "PDB",
+			              "Entry_mmCIF_File_Structure_Id_fkey"
+			            ]
+			          },
+			          "RID"
+			        ]
+			      }
+			    }
+			 }
+        },
+        {
+            "schema": "PDB",
+            "table": "entry",
             "uri": "tag:isrd.isi.edu,2016:table-display",
             "value": {
 	            "compact" : {
@@ -6379,7 +6402,17 @@
                     [
                         "PDB",
                         "entry_Owner_fkey"
-                    ]
+                    ],
+			      {
+			        "display": {
+			          "wait_for": [
+			            "molstar_image"
+			          ],
+			          "template_engine": "handlebars",
+			          "markdown_pattern": "{{#if (eq Workflow_Status \"REL\")}} {{#each molstar_image}}::: iframe [](/molstar/embedded.html?url={{this.values.File_URL}}){.chaise-autofill height=1000} \n{{/each}}{{/if}}"
+			        },
+			        "markdown_name": "Visualization"
+			      }
                 ],
                 "entry": [
                     "mmCIF_File_URL",
