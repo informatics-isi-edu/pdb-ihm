@@ -194,7 +194,7 @@
                     "template_engine": "handlebars"
                 },
                 "detailed": {
-                    "markdown_pattern": "{{#if Image_File_URL }}[![{{Image_File_Name}}]({{{Image_File_URL}}}){width=auto height=300}]({{{Image_File_URL}}}){target=_blank}{{/if}}",
+                    "markdown_pattern": "{{#if Image_File_URL }}[![{{Image_File_Name}}]({{{Image_File_URL}}}){width=auto height=200}]({{{Image_File_URL}}}){target=_blank}{{/if}}",
                     "template_engine": "handlebars"
                 }
             }
@@ -6376,11 +6376,21 @@
                         "source": "mmCIF_File_Bytes"
                     },
                     "Image_File_URL",
-                    {
+			      {
+			        "display": {
+			          "wait_for": [
+			            "molstar_image"
+			          ],
+			          "template_engine": "handlebars",
+			          "markdown_pattern": "{{#if (eq Workflow_Status \"REL\")}} {{#each molstar_image}}::: iframe [](/molstar/embedded.html?url={{this.values.File_URL}}){style=\"min-width:1000px; min-height:700px; height:70vh;\" class=chaise-autofill  } \n :::{{/each}}{{/if}}"
+			        },
+			        "markdown_name": "3D Visualization"
+			      },
+                     {
                         "markdown_name": "Image File Size (Bytes)",
                         "source": "Image_File_Bytes"
                     },
-                    [
+                   [
                         "PDB",
                         "entry_Workflow_Status_fkey"
                     ],
@@ -6402,17 +6412,7 @@
                     [
                         "PDB",
                         "entry_Owner_fkey"
-                    ],
-			      {
-			        "display": {
-			          "wait_for": [
-			            "molstar_image"
-			          ],
-			          "template_engine": "handlebars",
-			          "markdown_pattern": "{{#if (eq Workflow_Status \"REL\")}} {{#each molstar_image}}::: iframe [](/molstar/embedded.html?url={{this.values.File_URL}}){.chaise-autofill height=1000} \n{{/each}}{{/if}}"
-			        },
-			        "markdown_name": "Visualization"
-			      }
+                    ]
                 ],
                 "entry": [
                     "mmCIF_File_URL",
