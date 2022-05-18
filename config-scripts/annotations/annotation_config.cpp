@@ -6382,7 +6382,7 @@
 			            "molstar_image"
 			          ],
 			          "template_engine": "handlebars",
-			          "markdown_pattern": "{{#if (eq Workflow_Status \"REL\")}} {{#each molstar_image}}::: iframe [](/molstar/embedded.html?url={{this.values.File_URL}}){style=\"min-width:1000px; min-height:700px; height:70vh;\" class=chaise-autofill  } \n :::{{/each}}{{/if}}"
+			          "markdown_pattern": "{{#if (or (eq Workflow_Status \"mmCIF CREATED\") (eq Workflow_Status \"SUBMISSION COMPLETE\") (eq Workflow_Status \"HOLD\") (eq Workflow_Status \"REL\") (eq Workflow_Status \"REL\"))}} {{#each molstar_image}}::: iframe [](/molstar/embedded.html?url={{this.values.File_URL}}){style=\"min-width:800px; min-height:700px; height:70vh;\" class=chaise-autofill  } \n :::{{/each}}{{else}}Not Available{{/if}}"
 			        },
 			        "markdown_name": "3D Visualization"
 			      },
@@ -6395,6 +6395,9 @@
                         "entry_Workflow_Status_fkey"
                     ],
                     "accession_code",
+                    "Accession_Serial",
+                    "Release_Date",
+                    "Notes",
                     "Generated_mmCIF_Processing_Status",
                     {
                     	"source" : [
@@ -6421,7 +6424,10 @@
                         "PDB",
                         "entry_Workflow_Status_fkey"
                     ],
-                    "accession_code"
+                    "accession_code",
+                    "Accession_Serial",
+                    "Release_Date",
+                    "Notes"
                 ]
             }
         },
