@@ -680,6 +680,7 @@ class PDBClient (object):
                                       })
             return
         else:
+            self.sendMail('FAILURE PDB: Validation Export mmCIF Failed', error_message)
             return
             
     """
@@ -797,8 +798,9 @@ class PDBClient (object):
         obj['Process_Status'] = 'success'
         obj['mmCIF_File_MD5'] = md5
         obj['Record_Status_Detail'] = None
-        columns = ['Workflow_Status', 'Process_Status', 'mmCIF_File_MD5', 'Record_Status_Detail', 'Last_mmCIF_File_MD5']
         obj['Last_mmCIF_File_MD5'] = md5
+        obj['Generated_mmCIF_Processing_Status'] = None
+        columns = ['Workflow_Status', 'Process_Status', 'mmCIF_File_MD5', 'Record_Status_Detail', 'Last_mmCIF_File_MD5', 'Generated_mmCIF_Processing_Status']
         self.updateAttributes(schema,
                          table,
                          rid,
@@ -1693,7 +1695,7 @@ class PDBClient (object):
                                       'Generated_mmCIF_Processing_Status': 'ERROR'
                                       })
                 self.cleanupDataScratch()
-                return (1, 'mmCIF Validation Failure. For details, see the files:')
+                return (1, 'mmCIF Validation Failure. For details, see the files at: https://data.pdb-dev.org/chaise/recordset/#1/PDB:Entry_Error_File/Entry_RID={}'.format(rid))
                 
         except:
             et, ev, tb = sys.exc_info()
