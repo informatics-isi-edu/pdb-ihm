@@ -1116,7 +1116,7 @@ class PDBClient (object):
             except HTTPError as e:
                 self.logger.error(e)
                 self.logger.error(e.response.text)
-                self.sendMail('FAILURE PDB: loadTablesFromJSON:\n{}\n{}'.format(e.response.text, e))
+                self.sendMail('FAILURE PDB: loadTablesFromJSON ERROR', '{}\n{}'.format(e.response.text, e))
                 returncode = 1
                 error_message = '{}\n{}'.format(e.response.text, e)
                 self.rollbackInsertedRows(inserted_records, entry_id)
