@@ -6367,6 +6367,19 @@
                   }
                 ]
                 },
+                "export/compact": [
+                    "RID",
+                    "id",
+                    "mmCIF_File_Name",
+                    "mmCIF_File_URL",
+                    "Image_File_Name",
+                    "Image_File_URL",
+                    "Workflow_Status",
+                    "accession_code",
+                    "Accession_Serial",
+                    "Generated_mmCIF_Processing_Status",
+                    "Record_Status_Detail"
+                ],
                 "detailed": [
                     "RID",
                     "id",
