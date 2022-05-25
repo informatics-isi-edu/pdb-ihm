@@ -120,24 +120,27 @@ class PDBClient (object):
         self.mail_server = kwargs.get("mail_server")
         self.mail_sender = kwargs.get("mail_sender")
         self.mail_receiver = kwargs.get("mail_receiver")
+        self.mail_curators = kwargs.get("mail_curators")
         self.logger = kwargs.get("logger")
         self.logger.debug('Client initialized.')
 
     """
     Send email notification
     """
-    def sendMail(self, subject, text):
-        if self.mail_server and self.mail_sender and self.mail_receiver:
+    def sendMail(self, subject, text, receivers=None):
+        if self.mail_server and self.mail_sender and (self.mail_receiver or self.mail_curators):
             retry = 0
             ready = False
+            if receivers == None:
+                receivers = self.mail_receiver
             while not ready:
                 try:
                     msg = MIMEText('%s\n\n%s' % (text, mail_footer), 'plain')
                     msg['Subject'] = subject
                     msg['From'] = self.mail_sender
-                    msg['To'] = self.mail_receiver
+                    msg['To'] = receivers
                     s = smtplib.SMTP(self.mail_server)
-                    s.sendmail(self.mail_sender, self.mail_receiver.split(','), msg.as_string())
+                    s.sendmail(self.mail_sender, receivers.split(','), msg.as_string())
                     s.quit()
                     self.logger.debug('Sent email notification.')
                     ready = True
@@ -667,6 +670,7 @@ class PDBClient (object):
                                       'Workflow_Status': 'mmCIF CREATED',
                                       'Generated_mmCIF_Processing_Status': 'success'
                                       })
+                self.sendMail('PDB mmCIF CREATED', 'The workflow status of the entry with RID={} was changed to mmCIF CREATED.'.format(rid), receivers=self.mail_curators)
             else:
                 self.updateAttributes(schema_pdb,
                                       table_entry,
@@ -744,6 +748,7 @@ class PDBClient (object):
                              columns,
                              obj)
        
+            self.sendMail('PDB RECORD READY', 'The workflow status of the entry with RID={} was changed to RECORD READY.'.format(rid), receivers=self.mail_curators)
             self.logger.debug('RID="{}", Ended PDB Processing for the {}:{} table.'.format(rid, schema, table)) 
             return
         
@@ -807,6 +812,7 @@ class PDBClient (object):
                          columns,
                          obj)
    
+        self.sendMail('PDB RECORD READY', 'The workflow status of the entry with RID={} was changed to RECORD READY.'.format(rid), receivers=self.mail_curators)
         self.logger.debug('Ended PDB Processing for the %s:%s table.' % (schema, table)) 
         
     """

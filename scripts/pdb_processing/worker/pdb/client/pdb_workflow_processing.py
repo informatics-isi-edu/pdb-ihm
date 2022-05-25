@@ -176,6 +176,7 @@ def load(config_filename):
     mail_server = cfg.get('mail_server', None)
     mail_sender = cfg.get('mail_sender', None)
     mail_receiver = cfg.get('mail_receiver', None)
+    mail_curators = cfg.get('mail_curators', None)
 
     # Establish Ermrest client connection
     try:
@@ -202,6 +203,7 @@ def load(config_filename):
                                mail_server=mail_server, \
                                mail_sender=mail_sender, \
                                mail_receiver=mail_receiver,
+                               mail_curators=mail_curators,
                                logger=logger)
     except:
         et, ev, tb = sys.exc_info()
