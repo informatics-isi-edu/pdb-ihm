@@ -6258,6 +6258,7 @@
                         "PDB",
                         "entry_Workflow_Status_fkey"
                     ],
+                    "Accession_Serial",
                     "accession_code",
                     "Generated_mmCIF_Processing_Status",
                     {
