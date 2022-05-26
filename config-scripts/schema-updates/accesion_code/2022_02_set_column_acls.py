@@ -6,18 +6,27 @@ import utils
 
 pdb_admin = "https://auth.globus.org/0b98092c-3c41-11e9-a8c8-0ee7d80087ee"
 isrd_staff = "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"
+pdb_curator = "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6"
 
 acls = {
         "insert": [
             pdb_admin,
+            pdb_curator,
             isrd_staff
         ],
         "select": [
             pdb_admin,
+            pdb_curator,
+            isrd_staff
+        ],
+        "enumerate": [
+            pdb_admin,
+            pdb_curator,
             isrd_staff
         ],
         "update": [
             pdb_admin,
+            pdb_curator,
             isrd_staff
         ]
 }
