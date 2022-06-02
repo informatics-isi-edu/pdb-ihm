@@ -6254,14 +6254,14 @@
                     "id",
                     "mmCIF_File_URL",
                     "Image_File_URL",
+                    "Accession_Serial",
+                    "accession_code",
+                    "Generated_mmCIF_Processing_Status",
                     [
                         "PDB",
                         "entry_Workflow_Status_fkey"
                     ],
                     "Process_Status",
-                    "Accession_Serial",
-                    "accession_code",
-                    "Generated_mmCIF_Processing_Status",
                     {
                     	"source" : [
                     		{ "inbound" : ["PDB", "Entry_Error_File_Entry_RID_fkey" ] },
@@ -6405,16 +6405,14 @@
                         "markdown_name": "Image File Size (Bytes)",
                         "source": "Image_File_Bytes"
                     },
+                    "accession_code",
+                    "Accession_Serial",
+                    "Generated_mmCIF_Processing_Status",
                    [
                         "PDB",
                         "entry_Workflow_Status_fkey"
                     ],
                     "Process_Status",
-                    "accession_code",
-                    "Accession_Serial",
-                    "Release_Date",
-                    "Notes",
-                    "Generated_mmCIF_Processing_Status",
                     {
                     	"source" : [
                     		{ "inbound" : ["PDB", "Entry_Error_File_Entry_RID_fkey" ] },
@@ -6428,6 +6426,8 @@
 						  "template_engine": "handlebars"
                     	}
                     },
+                    "Release_Date",
+                    "Notes",
                     [
                         "PDB",
                         "entry_Owner_fkey"
