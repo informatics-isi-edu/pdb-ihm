@@ -312,7 +312,20 @@ class PDBClient (object):
         creation_time = results[0]['RCT']
         year = parse(creation_time).strftime("%Y")
         
-        hatracFile = self.getOutputCIF(file_url, filename)
+        hatracFile = self.getOutputCIF(rid, file_url, filename)
+        if hatracFile == None:
+            self.updateAttributes(schema_pdb,
+                                  table_entry,
+                                  rid,
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
+                                  {'RID': rid,
+                                  'Process_Status': 'ERROR',
+                                  'Record_Status_Detail': 'Update error in exportData():\n{}'.format(self.export_error_message),
+                                  'Workflow_Status': 'ERROR',
+                                  'Generated_mmCIF_Processing_Status': 'ERROR'
+                                  })
+            return
+            
         tables = self.export_tables
         output = '{}/{}.cif'.format(self.scratch, entry_id)
         fw = open(output, 'w')
@@ -852,8 +865,8 @@ class PDBClient (object):
             os.chdir(currentDirectory)
             
             if returncode != 0:
-                self.logger.error('Can not make mmCIF for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (filename, stdoutdata, stderrdata)) 
-                self.sendMail('FAILURE PDB', 'Can not make mmCIF for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (filename, stdoutdata, stderrdata))
+                self.logger.error('Can not make mmCIF for entry id = "%s" and file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (entry_id, filename, stdoutdata, stderrdata)) 
+                self.sendMail('FAILURE PDB', 'Can not make mmCIF for entry id = "%s" and file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (entry_id, filename, stdoutdata, stderrdata))
                 os.remove('{}/{}'.format(self.make_mmCIF, filename))
                 error_message = '{}'.format(stderrdata)
                 return (returncode,error_message)
@@ -1396,7 +1409,7 @@ class PDBClient (object):
     """
     Get the output.cif file
     """
-    def getOutputCIF(self, file_url, filename):
+    def getOutputCIF(self, rid, file_url, filename):
         try:
             """
             Apply make-mmcif.py
@@ -1413,9 +1426,10 @@ class PDBClient (object):
             os.chdir(currentDirectory)
             
             if returncode != 0:
-                self.logger.error('Can not make mmCIF for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (filename, stdoutdata, stderrdata)) 
-                self.sendMail('FAILURE PDB', 'Can not make mmCIF for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (filename, stdoutdata, stderrdata))
+                self.logger.error('Can not make mmCIF for entry RID = "%s% and file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (rid, filename, stdoutdata, stderrdata)) 
+                self.sendMail('FAILURE PDB', 'Can not make mmCIF for entry RID = "%s% and file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (rid, filename, stdoutdata, stderrdata))
                 os.remove('{}/{}'.format(self.make_mmCIF, filename))
+                self.export_error_message = 'Can not make mmCIF.\nstdoutdata: %s\nstderrdata: %s\n' % (stdoutdata, stderrdata)
                 return None
             
             os.remove('{}/{}'.format(self.make_mmCIF, filename))
@@ -1431,6 +1445,8 @@ class PDBClient (object):
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
             self.sendMail('FAILURE PDB: Export make-mmcif.py', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
             os.chdir(currentDirectory)
+            self.export_error_message = 'Can not make mmCIF.\n%s\n' % ''.join(traceback.format_exception(et, ev, tb))
+            return None
             
         return '{}/output.cif'.format(self.scratch)
             
@@ -1884,4 +1900,66 @@ class PDBClient (object):
                                   'Workflow_Status': 'ERROR'
                                   })
         
+    def clear_entry(self, rid, id):
+        try:
+            """
+            Get the references of the "entry" table 
+            """
+            references = []
+            delete_tables = []
+            cols = []
+            model_root = self.catalog.getCatalogModel()
+            schema = model_root.schemas['PDB']
+            table = schema.tables['entry']
+            for referenced_by in table.referenced_by:
+                pk_table_name = referenced_by.table.name
+                for foreign_column in referenced_by.foreign_key_columns:
+                    col = foreign_column.name
+                    references.append({pk_table_name: col})
+                    if col not in cols:
+                        cols.append(col)
+            
+            self.logger.debug('References columns of the PDB:entry table:\n{}"'.format(json.dumps(cols, indent=4))) 
+            
+            """
+            Get the referenced that need to be deleted
+            """
+            for reference in references:
+                for k,v in reference.items():
+                    if v == 'Entry_RID':
+                        val = RID
+                    else:
+                        val = id
+                    url = '/entity/PDB:{}/{}={}'.format(k, v, val)
+                    resp = catalog_ermrest.get(url)
+                    resp.raise_for_status()
+                    if len(resp.json()) > 0:
+                        delete_tables.append(url)
+            
+            """
+            Delete the records referenced by the entry table
+            """
+            for url in delete_tables:
+                resp = self.catalog.delete(
+                    url
+                )
+                resp.raise_for_status()
+                self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
+            return 0
+        except:
+            et, ev, tb = sys.exc_info()
+            self.logger.error('got unexpected exception "%s"' % str(ev))
+            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+            self.sendMail('FAILURE PDB: deleting all the uploaded data when a new mmCIF file is uploaded', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+            error_message = ''.join(traceback.format_exception(et, ev, tb))
+            self.updateAttributes('PDB',
+                                  entry,
+                                  rid,
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
+                                  {'RID': rid,
+                                  'Process_Status': 'ERROR',
+                                  'Record_Status_Detail': error_message,
+                                  'Workflow_Status': 'ERROR'
+                                  })
+            return 1
         
