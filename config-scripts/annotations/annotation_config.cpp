@@ -22577,6 +22577,7 @@
                         "PDB",
                         "Entry_Related_File_Workflow_Status_fkey"
                     ],
+                    "Process_Status",
                     "Record_Status_Detail"
                 ],
                 "detailed": [
@@ -22601,6 +22602,7 @@
                         "PDB",
                         "Entry_Related_File_Workflow_Status_fkey"
                     ],
+                    "Process_Status",
                     "Record_Status_Detail",
                     [
                         "PDB",
