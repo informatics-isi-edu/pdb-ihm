@@ -221,6 +221,24 @@
             }
         },
         {
+            "column": "Workflow_Status",
+            "schema": "PDB",
+            "table": "Entry_Related_File",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Uploaded Restraints Workflow Status"
+            }
+        },
+        {
+            "column": "Process_Status",
+            "schema": "PDB",
+            "table": "Entry_Related_File",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Uploaded Restraints Process Status"
+            }
+        },
+        {
             "column": "pdbx_database_id_DOI",
             "schema": "PDB",
             "table": "citation",
