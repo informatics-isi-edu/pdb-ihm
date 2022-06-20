@@ -27381,6 +27381,16 @@
     ],
     "foreign_key_annotations": [
         {
+            "foreign_key": "Entry_Related_File_Workflow_Status_fkey",
+            "foreign_key_schema": "PDB",
+            "schema": "PDB",
+            "table": "Entry_Related_File",
+            "uri": "tag:isrd.isi.edu,2016:foreign-key",
+            "value": {
+                "domain_filter_pattern": "Restraint=True"
+            }
+        },
+        {
             "foreign_key": "ihm_localization_density_files_ensemble_id_fkey",
             "foreign_key_schema": "PDB",
             "schema": "PDB",
