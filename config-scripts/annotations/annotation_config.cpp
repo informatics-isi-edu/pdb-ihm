@@ -27387,7 +27387,7 @@
             "table": "Entry_Related_File",
             "uri": "tag:isrd.isi.edu,2016:foreign-key",
             "value": {
-                "domain_filter_pattern": "Restraint=True"
+                "domain_filter_pattern": "Restraint_Status=True"
             }
         },
         {
