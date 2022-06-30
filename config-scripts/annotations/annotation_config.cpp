@@ -212,33 +212,6 @@
             }
         },
         {
-            "column": "Generated_mmCIF_Processing_Status",
-            "schema": "PDB",
-            "table": "entry",
-            "uri": "tag:misd.isi.edu,2015:display",
-            "value": {
-                "name": "Generated mmCIF Processing Status"
-            }
-        },
-        {
-            "column": "Workflow_Status",
-            "schema": "PDB",
-            "table": "Entry_Related_File",
-            "uri": "tag:misd.isi.edu,2015:display",
-            "value": {
-                "name": "Uploaded Restraints Workflow Status"
-            }
-        },
-        {
-            "column": "Process_Status",
-            "schema": "PDB",
-            "table": "Entry_Related_File",
-            "uri": "tag:misd.isi.edu,2015:display",
-            "value": {
-                "name": "Uploaded Restraints Process Status"
-            }
-        },
-        {
             "column": "pdbx_database_id_DOI",
             "schema": "PDB",
             "table": "citation",
@@ -6274,7 +6247,6 @@
                     "Image_File_URL",
                     "Accession_Serial",
                     "accession_code",
-                    "Generated_mmCIF_Processing_Status",
                     [
                         "PDB",
                         "entry_Workflow_Status_fkey"
@@ -6293,6 +6265,7 @@
 						  "template_engine": "handlebars"
                     	}
                     },
+                     "Release_Date",
                   {
                      "markdown_name" : "RCB",
                      "source" : [
@@ -6332,6 +6305,10 @@
                      "source" : "accession_code"
                   },
                   {
+                     "markdown_name" : "Release Date",
+                     "source" : "Release_Date"
+                  },
+                  {
                      "markdown_name" : "Workflow Status",
 					  "hide_null_choice": true, 
 					  "hide_not_null_choice": true,
@@ -6344,10 +6321,6 @@
                         },
                         "RID"
                      ]
-                  },
-                  {
-                     "markdown_name" : "Generated mmCIF Processing Status",
-                     "source" : "Generated_mmCIF_Processing_Status"
                   },
                   {
                      "markdown_name" : "Authors",
@@ -6397,7 +6370,7 @@
                     "Workflow_Status",
                     "accession_code",
                     "Accession_Serial",
-                    "Generated_mmCIF_Processing_Status",
+                    "Release_Date",
                     "Record_Status_Detail"
                 ],
                 "detailed": [
@@ -6425,7 +6398,6 @@
                     },
                     "accession_code",
                     "Accession_Serial",
-                    "Generated_mmCIF_Processing_Status",
                    [
                         "PDB",
                         "entry_Workflow_Status_fkey"
@@ -22593,9 +22565,9 @@
                     "Description",
                     [
                         "PDB",
-                        "Entry_Related_File_Workflow_Status_fkey"
+                        "Entry_Related_File_Restraint_Workflow_Status_fkey"
                     ],
-                    "Process_Status",
+                    "Restraint_Process_Status",
                     "Record_Status_Detail"
                 ],
                 "detailed": [
@@ -22618,9 +22590,9 @@
                     "Description",
                     [
                         "PDB",
-                        "Entry_Related_File_Workflow_Status_fkey"
+                        "Entry_Related_File_Restraint_Workflow_Status_fkey"
                     ],
-                    "Process_Status",
+                    "Restraint_Process_Status",
                     "Record_Status_Detail",
                     [
                         "PDB",
@@ -22657,7 +22629,7 @@
                     "Description",
                     [
                         "PDB",
-                        "Entry_Related_File_Workflow_Status_fkey"
+                        "Entry_Related_File_Restraint_Workflow_Status_fkey"
                     ]
                 ]
             }
@@ -27381,7 +27353,7 @@
     ],
     "foreign_key_annotations": [
         {
-            "foreign_key": "Entry_Related_File_Workflow_Status_fkey",
+            "foreign_key": "Entry_Related_File_Restraint_Workflow_Status_fkey",
             "foreign_key_schema": "PDB",
             "schema": "PDB",
             "table": "Entry_Related_File",
