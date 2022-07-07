@@ -6376,6 +6376,30 @@
                 "detailed": [
                     "RID",
                     "id",
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "entry_RCB_fkey"
+                           ]
+                        },
+                        "Email"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "entry_RMB_fkey"
+                           ]
+                        },
+                        "Email"
+                     ]
+                  },
                     "mmCIF_File_URL",
                     {
                         "markdown_name": "mmCIF File Size (Bytes)",
