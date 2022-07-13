@@ -6213,6 +6213,40 @@
 			          },
 			          "RID"
 			        ]
+			      },
+			      "entry_RCB": {
+			        "entity": true,
+			        "source": [
+			          {
+			            "outbound": [
+			              "PDB",
+			              "entry_RCB_fkey"
+			            ]
+			          },
+			          "RID"
+			        ],
+			      "markdown_name" : "RCB",		      
+			      "display" : {
+				  "template_engine": "handlebars",
+				  "markdown_pattern": "{{{$self.values.Full_Name}}} ({{{$self.values.Email}}})"		   			  
+			      	}
+			      },
+			      "entry_RMB": {
+			        "entity": true,
+			        "source": [
+			          {
+			            "outbound": [
+			              "PDB",
+			              "entry_RMB_fkey"
+			            ]
+			          },
+			          "RID"
+			        ],
+			      "markdown_name" : "RMB",		      
+			      "display" : {
+				  "template_engine": "handlebars",
+				  "markdown_pattern": "{{{$self.values.Full_Name}}} ({{{$self.values.Email}}})"		   			  
+			      	}
 			      }
 			    }
 			 }
@@ -6376,30 +6410,12 @@
                 "detailed": [
                     "RID",
                     "id",
-                  {
-                     "markdown_name" : "RCB",
-                     "source" : [
-                        {
-                           "outbound" : [
-                              "PDB",
-                              "entry_RCB_fkey"
-                           ]
-                        },
-                        "Email"
-                     ]
-                  },
-                  {
-                     "markdown_name" : "RMB",
-                     "source" : [
-                        {
-                           "outbound" : [
-                              "PDB",
-                              "entry_RMB_fkey"
-                           ]
-                        },
-                        "Email"
-                     ]
-                  },
+				  {
+				      "sourcekey": "entry_RCB"
+				  },
+				  {
+				      "sourcekey": "entry_RMB"
+				  },
                     "mmCIF_File_URL",
                     {
                         "markdown_name": "mmCIF File Size (Bytes)",
