@@ -16257,12 +16257,6 @@
         {
             "schema": "PDB",
             "table": "chem_comp",
-            "uri": "tag:isrd.isi.edu,2016:generated",
-            "value": null
-        },
-        {
-            "schema": "PDB",
-            "table": "chem_comp",
             "uri": "tag:isrd.isi.edu,2016:table-display",
             "value": {
                 "row_name": {
