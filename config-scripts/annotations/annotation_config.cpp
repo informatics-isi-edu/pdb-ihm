@@ -6299,6 +6299,7 @@
 						  "template_engine": "handlebars"
                     	}
                     },
+                     "Deposit_Date",
                      "Release_Date",
                   {
                      "markdown_name" : "RCB",
@@ -6337,6 +6338,10 @@
                   {
                      "markdown_name" : "Accession Code",
                      "source" : "accession_code"
+                  },
+                  {
+                     "markdown_name" : "Deposit Date",
+                     "source" : "Deposit_Date"
                   },
                   {
                      "markdown_name" : "Release Date",
@@ -6404,6 +6409,7 @@
                     "Workflow_Status",
                     "accession_code",
                     "Accession_Serial",
+                    "Deposit_Date",
                     "Release_Date",
                     "Record_Status_Detail"
                 ],
@@ -6456,6 +6462,7 @@
 						  "template_engine": "handlebars"
                     	}
                     },
+                    "Deposit_Date",
                     "Release_Date",
                     "Notes",
                     [
@@ -6472,6 +6479,7 @@
                     ],
                     "accession_code",
                     "Accession_Serial",
+                    "Deposit_Date",
                     "Release_Date",
                     "Notes"
                 ]
