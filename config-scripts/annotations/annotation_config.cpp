@@ -6286,7 +6286,7 @@
                     		"RID"
                     	],
                     	"entity": true,
-                    	"markdown_name": "Record_Status_Detail",
+                    	"markdown_name": "Record Status Detail",
                     	"aggregate": "array_d",
                     	"display": {
 						  "markdown_pattern": "{{#if _Record_Status_Detail}}{{{Record_Status_Detail}}}\n{{#each $self}}- [{{{this.rowName}}}]({{{this.uri.detailed}}}) \n{{/each}}{{/if}}",
@@ -6449,7 +6449,7 @@
                     		"RID"
                     	],
                     	"entity": true,
-                    	"markdown_name": "Record_Status_Detail",
+                    	"markdown_name": "Record Status Detail",
                     	"aggregate": "array_d",
                     	"display": {
 						  "markdown_pattern": "{{#if _Record_Status_Detail}}{{{Record_Status_Detail}}}\n{{#each $self}}- [{{{this.rowName}}}]({{{this.uri.detailed}}}) \n{{/each}}{{/if}}",
@@ -6464,7 +6464,7 @@
                         "entry_Owner_fkey"
                     ]
                 ],
-                "entry": [
+                "entry/edit": [
                     "mmCIF_File_URL",
                     "Image_File_URL",
                     [
@@ -6475,6 +6475,17 @@
                     "Accession_Serial",
                     "Deposit_Date",
                     "Release_Date",
+                    "Notes"
+                ],
+                "entry": [
+                    "mmCIF_File_URL",
+                    "Image_File_URL",
+                    [
+                        "PDB",
+                        "entry_Workflow_Status_fkey"
+                    ],
+                    "accession_code",
+                    "Accession_Serial",
                     "Notes"
                 ]
             }
