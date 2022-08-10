@@ -6413,10 +6413,19 @@
 				  {
 				      "sourcekey": "entry_RCB"
 				  },
-				  {
-				      "sourcekey": "entry_RMB"
-				  },
-                    "mmCIF_File_URL",
+                {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "entry_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                      "mmCIF_File_URL",
                     {
                         "markdown_name": "mmCIF File Size (Bytes)",
                         "source": "mmCIF_File_Bytes"
