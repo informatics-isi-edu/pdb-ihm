@@ -2,7 +2,7 @@
 
 import os
 import json
-from deriva.core import PollingErmrestCatalog, init_logging
+from deriva.core import PollingErmrestCatalog, init_logging, urlquote
 import subprocess
 import logging
 import sys
@@ -21,6 +21,23 @@ loglevel = os.getenv('LOGLEVEL', 'info')
 loglevel =__LOGLEVEL.get(loglevel)
 logfile = os.getenv('PDB_LOG', '/home/pdbihm/pdb/log/pdb.log')
 init_logging(level=loglevel, log_format=FORMAT, file_path=logfile)
+
+Process_Status_Terms = {
+    'NEW': 'New (trigger backend process)',
+    'REPROCESS': 'Reprocess (trigger backend process after Error)',
+    'IN_PROGRESS_UPLOADING_mmCIF_FILE': 'In progress: processing uploaded mmCIF file',
+    'IN_PROGRESS_GENERATING_mmCIF_FILE': 'In progress: generating mmCIF file',
+    'IN_PROGRESS_GENERATING_ACCESSION_CODE': 'In progress: generating accession code',
+    'IN_PROGRESS_RELEASING_ENTRY': 'In progress: releasing entry',
+    'SUCCESS': 'Success',
+    'RESUME': 'Resume (trigger backend process)',
+    'ERROR_PROCESSING_UPLOADED_mmCIF_FILE': 'Error: processing uploaded mmCIF file',
+    'ERROR_GENERATING_mmCIF_FILE': 'Error: generating mmCIF file',
+    'ERROR_GENERATING_ACCESSION_CODE': 'Error: generating accession code',
+    'ERROR_RELEASING_ENTRY': 'Error: releasing entry',
+    'IN_PROGRESS_PROCESSING_UPLOADED_RESTRAINT_FILES': 'In progress: processing uploaded restraint files',
+    'ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES': 'Error: processing uploaded restraint files'
+    }
 
 class WorkerRuntimeError (RuntimeError):
     pass
@@ -106,46 +123,56 @@ def pdb_row_job(handler, action):
 
 _work_units.append(
     WorkUnit(
-        '/entity/A:=PDB:entry/Process_Status=New;Process_Status=Renew/Vocab:Workflow_Status/Name=DEPO/$A?limit=1',
+        '/entity/A:=PDB:entry/Process_Status={};Process_Status={};Process_Status={}/Vocab:Workflow_Status/Name=DEPO/$A?limit=1'.format(urlquote(Process_Status_Terms['NEW']), urlquote(Process_Status_Terms['RESUME']), urlquote(Process_Status_Terms['REPROCESS'])),
         '/attributegroup/PDB:entry/RID;Process_Status',
         '/attributegroup/PDB:entry/RID',
-        entry_row_job
+        entry_row_job,
+        claim_input_data=lambda row: {'RID': row['RID'], 'Process_Status': Process_Status_Terms['IN_PROGRESS_UPLOADING_mmCIF_FILE']},
+        failure_input_data=lambda row, e: {'RID': row['RID'], 'Process_Status': Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE']}
     )
 )
 
 _work_units.append(
     WorkUnit(
-        '/entity/A:=PDB:entry/Process_Status=New;Process_Status=Renew/Vocab:Workflow_Status/Name=SUBMIT/$A?limit=1',
+        '/entity/A:=PDB:entry/Process_Status={};Process_Status={};Process_Status={}/Vocab:Workflow_Status/Name=SUBMIT/$A?limit=1'.format(urlquote(Process_Status_Terms['NEW']), urlquote(Process_Status_Terms['RESUME']), urlquote(Process_Status_Terms['REPROCESS'])),
         '/attributegroup/PDB:entry/RID;Process_Status',
         '/attributegroup/PDB:entry/RID',
-        entry_export_job
+        entry_export_job,
+        claim_input_data=lambda row: {'RID': row['RID'], 'Process_Status': Process_Status_Terms['IN_PROGRESS_GENERATING_mmCIF_FILE']},
+        failure_input_data=lambda row, e: {'RID': row['RID'], 'Process_Status': Process_Status_Terms['ERROR_GENERATING_mmCIF_FILE']}
     )
 )
 
 _work_units.append(
     WorkUnit(
-        '/entity/A:=PDB:entry/Process_Status=success/Vocab:Workflow_Status/Name=SUBMISSION%20COMPLETE/$A?limit=1',
+        '/entity/A:=PDB:entry/Process_Status={};Process_Status={}/Vocab:Workflow_Status/Name=SUBMISSION%20COMPLETE/$A?limit=1'.format(urlquote(Process_Status_Terms['RESUME']), urlquote(Process_Status_Terms['REPROCESS'])),
         '/attributegroup/PDB:entry/RID;Process_Status',
         '/attributegroup/PDB:entry/RID',
-        submission_complete_row_job
+        submission_complete_row_job,
+        claim_input_data=lambda row: {'RID': row['RID'], 'Process_Status': Process_Status_Terms['IN_PROGRESS_GENERATING_ACCESSION_CODE']},
+        failure_input_data=lambda row, e: {'RID': row['RID'], 'Process_Status': Process_Status_Terms['ERROR_GENERATING_ACCESSION_CODE']}
     )
 )
 
 _work_units.append(
     WorkUnit(
-        '/entity/A:=PDB:entry/Process_Status=success/Vocab:Workflow_Status/Name=RELEASE%20READY/$A?limit=1',
+        '/entity/A:=PDB:entry/Process_Status={};Process_Status={}/Vocab:Workflow_Status/Name=RELEASE%20READY/$A?limit=1'.format(urlquote(Process_Status_Terms['RESUME']), urlquote(Process_Status_Terms['REPROCESS'])),
         '/attributegroup/PDB:entry/RID;Process_Status',
         '/attributegroup/PDB:entry/RID',
-        release_ready_row_job
+        release_ready_row_job,
+        claim_input_data=lambda row: {'RID': row['RID'], 'Process_Status': Process_Status_Terms['IN_PROGRESS_RELEASING_ENTRY']},
+        failure_input_data=lambda row, e: {'RID': row['RID'], 'Process_Status': Process_Status_Terms[ERROR_RELEASING_ENTRY]}
     )
 )
 
 _work_units.append(
     WorkUnit(
-        '/entity/A:=PDB:Entry_Related_File/Process_Status=New;Process_Status=Renew/Vocab:Workflow_Status/Name=DEPO/$A/PDB:entry/Process_Status=success/$A?limit=1',
-        '/attributegroup/PDB:Entry_Related_File/RID;Process_Status',
+        '/entity/A:=PDB:Entry_Related_File/Restraint_Process_Status={};Restraint_Process_Status={};Restraint_Process_Status={}/Vocab:Workflow_Status/Name=DEPO/$A/PDB:entry/Process_Status={}/$A?limit=1'.format(urlquote(Process_Status_Terms['NEW']), urlquote(Process_Status_Terms['RESUME']), urlquote(Process_Status_Terms['REPROCESS']), urlquote(Process_Status_Terms['SUCCESS'])),
+        '/attributegroup/PDB:Entry_Related_File/RID;Restraint_Process_Status',
         '/attributegroup/PDB:Entry_Related_File/RID',
-        Entry_Related_File_row_job
+        Entry_Related_File_row_job,
+        claim_input_data=lambda row: {'RID': row['RID'], 'Restraint_Process_Status': Process_Status_Terms['IN_PROGRESS_PROCESSING_UPLOADED_RESTRAINT_FILES']},
+        failure_input_data=lambda row, e: {'RID': row['RID'], 'Restraint_Process_Status': Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES']}
     )
 )
 
@@ -155,7 +182,7 @@ class Worker (object):
     servername = os.getenv('PDB_SERVER', 'data.pdb-dev.org')
 
     # catalog number
-    catalog_number = os.getenv('CATALOG', '1')
+    catalog_number = os.getenv('CATALOG', '50')
 
     # secret session cookie
     credfile = os.getenv('PDB_CREDENTIALS', '/home/secrets/pdbihm/credentials.json')

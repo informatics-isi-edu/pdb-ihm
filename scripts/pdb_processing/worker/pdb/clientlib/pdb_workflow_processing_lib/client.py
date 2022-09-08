@@ -38,6 +38,7 @@ import pickle
 import csv
 import filecmp
 import mimetypes
+import tempfile
 
 from deriva.core import PollingErmrestCatalog, HatracStore, urlquote
 from deriva.core.utils import hash_utils as hu
@@ -68,7 +69,23 @@ _pdbx_audit_revision_details.type                'Initial release'
 _pdbx_audit_revision_details.description         ?
 #
 """
-
+Process_Status_Terms = {
+    'NEW': 'New (trigger backend process)',
+    'REPROCESS': 'Reprocess (trigger backend process after Error)',
+    'IN_PROGRESS_UPLOADING_mmCIF_FILE': 'In progress: processing uploaded mmCIF file',
+    'IN_PROGRESS_GENERATING_mmCIF_FILE': 'In progress: generating mmCIF file',
+    'IN_PROGRESS_GENERATING_ACCESSION_CODE': 'In progress: generating accession code',
+    'IN_PROGRESS_RELEASING_ENTRY': 'In progress: releasing entry',
+    'SUCCESS': 'Success',
+    'RESUME': 'Resume (trigger backend process)',
+    'ERROR_PROCESSING_UPLOADED_mmCIF_FILE': 'Error: processing uploaded mmCIF file',
+    'ERROR_GENERATING_mmCIF_FILE': 'Error: generating mmCIF file',
+    'ERROR_GENERATING_ACCESSION_CODE': 'Error: generating accession code',
+    'ERROR_RELEASING_ENTRY': 'Error: releasing entry',
+    'IN_PROGRESS_PROCESSING_UPLOADED_RESTRAINT_FILES': 'In progress: processing uploaded restraint files',
+    'ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES': 'Error: processing uploaded restraint files'
+    }
+ 
 class PDBClient (object):
     """Network client for PDB workflow processing.
     """
@@ -125,10 +142,66 @@ class PDBClient (object):
         self.logger.debug('Client initialized.')
 
     """
+    Get the user email or full name
+    """
+    def getUser(self, schema, table, rid):
+        try:
+            """
+            Query for detecting the user email
+            """
+            url = '/attribute/A:={}:{}/RID={}/B:=(A:RCB)=(public:ERMrest_Client:ID)/B:Email,B:Full_Name'.format(urlquote(schema), urlquote(table), urlquote(rid))
+            self.logger.debug('Query Email URL: "{}"'.format(url)) 
+            
+            resp = self.catalog.get(url)
+            resp.raise_for_status()
+            rows = resp.json()
+            if len(rows) == 1:
+                row = resp.json()[0]
+                if row['Email'] != None:
+                    return row['Email']
+                else:
+                    return row['Full_Name']
+            else:
+                return None
+        except:
+            et, ev, tb = sys.exc_info()
+            self.logger.error('got exception "%s"' % str(ev))
+            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+            return None
+
+    """
+    Send Linux email notification
+    """
+    def sendLinuxMail(self, subject, text, receivers):
+        if receivers == None:
+            receivers = self.mail_receiver
+        temp_name = '/tmp/{}.txt'.format(next(tempfile._get_candidate_names()))
+        fw = open(temp_name, 'w')
+        fw.write('{}\n\n{}'.format(text, mail_footer))
+        fw.close()
+        fr = open(temp_name, 'r')
+        args = ['/usr/bin/mail', '-r', self.mail_sender, '-s', 'DEV {}'.format(subject), receivers]
+        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=fr)
+        stdoutdata, stderrdata = p.communicate()
+        returncode = p.returncode
+        
+        if returncode != 0:
+            self.logger.debug('Can not send Linux email for file {}.\nstdoutdata: {}\nstderrdata: {}\n'.format(temp_name, stdoutdata, stderrdata)) 
+        else:
+            self.logger.debug('Sent Linux email for file {}.\n'.format(temp_name)) 
+        
+        fr.close()
+        os.remove(temp_name)
+
+    """
     Send email notification
     """
     def sendMail(self, subject, text, receivers=None):
         if self.mail_server and self.mail_sender and (self.mail_receiver or self.mail_curators):
+            if self.host == 'dev.pdb-dev.org':
+                subject = 'DEV {}'.format(subject)
+                #self.sendLinuxMail(subject, text, receivers)
+                #return
             retry = 0
             ready = False
             if receivers == None:
@@ -189,20 +262,32 @@ class PDBClient (object):
             else:
                 self.logger.error('Unknown action: "%s".' % action)
         except:
+            rid = os.getenv('RID', None)
+            if action == 'Entry_Related_File':
+                table = 'Entry_Related_File'
+            else:
+                table = 'entry'
+            user = self.getUser('PDB', table, rid)
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            self.sendMail('FAILURE PDB: unexpected exception', '%s\nThe process might have been stopped\n' % ''.join(traceback.format_exception(et, ev, tb)))
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'unexpected exception', 'Error', user)
+            self.sendMail(subject, '%s\nThe process might have been stopped\n' % ''.join(traceback.format_exception(et, ev, tb)))
             raise
         
     """
     Process the csv/tsv file of the Entry_Related_File table
     """
-    def process_Entry_Related_File(self, schema, table, rid, status='in progress'):
+    def process_Entry_Related_File(self, schema, table, rid):
+        """
+        Get the RCB user
+        """
+        user = self.getUser(schema, table, rid)
+        
         """
         Query for detecting the record to be processed
         """
-        url = '/entity/%s:%s/RID=%s/Process_Status=%s' % (urlquote(schema), urlquote(table), urlquote(rid), urlquote(status))
+        url = '/entity/%s:%s/RID=%s' % (urlquote(schema), urlquote(table), urlquote(rid))
         self.logger.debug('Query URL: "%s"' % url) 
         
         resp = self.catalog.get(url)
@@ -214,21 +299,26 @@ class PDBClient (object):
         structure_id = row['structure_id']
         creation_time = row['RCT']
         
+        if self.is_catalog_dev == True:
+            subject = 'PDB-Dev {}: {} ({})'.format(rid, row['Restraint_Process_Status'], user)
+            self.sendMail(subject, 'The Restraint Process Status of the Entry Related File with RID={} was changed to "{}".'.format(row['RID'], row['Restraint_Process_Status']), receivers=self.mail_curators)
+
         """
         Extract the file from hatrac
         """
-        f,error_message = self.getHatracFile(filename, file_url, self.make_mmCIF)
+        f,error_message = self.getHatracFile(filename, file_url, self.make_mmCIF, rid, user)
         
         if f == None:
             self.updateAttributes(schema,
                                   table,
                                   rid,
-                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
+                                  ["Restraint_Process_Status", "Record_Status_Detail", "Restraint_Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': 'ERROR',
+                                  'Restraint_Process_Status': Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'],
                                   'Record_Status_Detail': error_message,
-                                  'Workflow_Status': 'ERROR'
-                                  })
+                                  'Restraint_Workflow_Status': 'ERROR'
+                                  },
+                                  user)
             return
         
         if md5 == None:
@@ -251,7 +341,7 @@ class PDBClient (object):
         
         # see where the csv/tsv file is
         # suppose it is fpath
-        returncode,error_message = self.loadTableFromCVS(f, delimiter, tname, structure_id, rid)
+        returncode,error_message = self.loadTableFromCVS(f, delimiter, tname, structure_id, rid, user)
 
         if returncode != 0:
             """
@@ -260,33 +350,45 @@ class PDBClient (object):
             self.updateAttributes(schema,
                                   table,
                                   rid,
-                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
+                                  ["Restraint_Process_Status", "Record_Status_Detail", "Restraint_Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': 'ERROR',
+                                  'Restraint_Process_Status': Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'],
                                   'Record_Status_Detail': error_message,
-                                  'Workflow_Status': 'ERROR'
-                                  })
+                                  'Restraint_Workflow_Status': 'ERROR'
+                                  },
+                                  user)
             return
                         
         obj = {}
         obj['RID'] = rid
-        obj['Workflow_Status'] = 'RECORD READY'
-        obj['Process_Status'] = 'success'
+        obj['Restraint_Workflow_Status'] = 'RECORD READY'
+        obj['Restraint_Process_Status'] = Process_Status_Terms['SUCCESS']
         obj['File_MD5'] = md5
         obj['Record_Status_Detail'] = None
-        columns = ['Workflow_Status', 'Process_Status', 'File_MD5', 'Record_Status_Detail']
+        columns = ['Restraint_Workflow_Status', 'Restraint_Process_Status', 'File_MD5', 'Record_Status_Detail']
         self.updateAttributes(schema,
                          table,
                          rid,
                          columns,
-                         obj)
+                         obj,
+                         user)
    
         self.logger.debug('Ended PDB Processing for the %s:%s table.' % (schema, table)) 
         
     """
     Export the mmCIF file of the entry table
     """
-    def export_mmCIF(self, schema_pdb, table_entry, rid, status='in progress'):
+    def export_mmCIF(self, schema_pdb, table_entry, rid, release=False):
+        """
+        Get the RCB user
+        """
+        user = self.getUser(schema_pdb, table_entry, rid)
+        
+        if release == True:
+            process_status_error = Process_Status_Terms['ERROR_RELEASING_ENTRY']
+        else:
+            process_status_error = Process_Status_Terms['ERROR_GENERATING_mmCIF_FILE']
+        
         deriva_tables = ['entry']
         mmCIF_tables = []
         mmCIF_ignored = []
@@ -299,9 +401,8 @@ class PDBClient (object):
         schema = pb.PDB
         entry = schema.entry
         RID = entry.RID
-        Process_Status = entry.Process_Status
         path = entry.path
-        path.filter((RID == rid) & (Process_Status == status))
+        path.filter(RID == rid)
         self.logger.debug('Query Export URL: {}'.format(path.uri))
 
         results = path.entities()
@@ -312,19 +413,23 @@ class PDBClient (object):
         creation_time = results[0]['RCT']
         year = parse(creation_time).strftime("%Y")
         
-        hatracFile = self.getOutputCIF(rid, file_url, filename)
+        if self.is_catalog_dev == True:
+            subject = 'PDB-Dev {}: {} ({})'.format(rid, results[0]['Process_Status'], user)
+            self.sendMail(subject, 'The Process Status of the Entry with RID={} was changed to "{}".'.format(rid, results[0]['Process_Status']), receivers=self.mail_curators)
+
+        hatracFile = self.getOutputCIF(rid, file_url, filename, user)
         if hatracFile == None:
             self.updateAttributes(schema_pdb,
                                   table_entry,
                                   rid,
-                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': 'ERROR',
+                                  'Process_Status': process_status_error,
                                   'Record_Status_Detail': 'Update error in exportData():\n{}'.format(self.export_error_message),
-                                  'Workflow_Status': 'ERROR',
-                                  'Generated_mmCIF_Processing_Status': 'ERROR'
-                                  })
-            return
+                                  'Workflow_Status': 'ERROR'
+                                  },
+                                  user)
+            return 1
             
         tables = self.export_tables
         output = '{}/{}.cif'.format(self.scratch, entry_id)
@@ -370,7 +475,7 @@ class PDBClient (object):
             if column_type == 'text':
                 if '\t' in column_value:
                     self.logger.debug('tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
-                    self.export_error_message = 'tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value)
+                    self.export_error_message = 'ERROR getColumnValue: tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value)
                     return None
                 if '\n' in column_value:
                     return '\n;{}\n;\n'.format(column_value)
@@ -383,14 +488,14 @@ class PDBClient (object):
                 else:
                     self.logger.debug('Both " and \' are in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
                     return '\n;{}\n;\n'.format(column_value)
-                self.export_error_message = 'Unhandled value in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value)
+                self.export_error_message = 'ERROR getColumnValue: Unhandled value in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value)
                 return None
             else:
                 self.logger.debug('unknown type: {}, table: {}, column: {}'.format(column_type, table_name, column_name))
-                self.export_error_message = 'unknown type: {}, table: {}, column: {}'.format(column_type, table_name, column_name)
+                self.export_error_message = 'ERROR getColumnValue: unknown type: {}, table: {}, column: {}'.format(column_type, table_name, column_name)
                 return None
 
-        def exportData():
+        def exportData(rid, user):
             try:
                 for table_name, table_body in tables.items():
                     pk = table_body['pkey_columns']
@@ -464,8 +569,9 @@ class PDBClient (object):
                                 value = getColumnValue(table_name, column_name, column_type, column_value)
                                 if value == None:
                                     self.logger.debug('Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
-                                    self.sendMail('FAILURE PDB: Could not find column value', 'Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
-                                    self.export_error_message = 'Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value)
+                                    subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', process_status_error, user)
+                                    self.sendMail(subject, 'Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
+                                    self.export_error_message = 'ERROR exportData: Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value)
                                     return 1
                                 line.append(value)
                             fw.write('{}\n'.format('\t'.join(line)))
@@ -482,8 +588,9 @@ class PDBClient (object):
                             value = getColumnValue(table_name, column_name, column_type, column_value)
                             if value == None:
                                 self.logger.debug('Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
-                                self.sendMail('FAILURE PDB: Could not find column value', 'Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
-                                self.export_error_message = 'Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value)
+                                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', process_status_error, user)
+                                self.sendMail(subject, 'Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
+                                self.export_error_message = 'ERROR exportData: Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value)
                                 return 1
                             fw.write('_{}.{}\t{}\n'.format(table_name, column['name'], value))
                         
@@ -494,11 +601,12 @@ class PDBClient (object):
                 et, ev, tb = sys.exc_info()
                 self.logger.debug('exportData got exception "%s"' % str(ev))
                 self.logger.debug('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-                self.sendMail('FAILURE PDB: exportData got exception', '%s\nThe process might have been stopped\n' % ''.join(traceback.format_exception(et, ev, tb)))
-                self.export_error_message = ''.join(traceback.format_exception(et, ev, tb))
+                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', process_status_error, user)
+                self.sendMail(subject, '%s\nThe process might have been stopped\n' % ''.join(traceback.format_exception(et, ev, tb)))
+                self.export_error_message = 'ERROR exportData: "%s"' % str(ev)
                 return 1
 
-        def exportCIF():
+        def exportCIF(rid, user):
             fr = open(hatracFile, 'r')
             lines = fr.readlines()
             status = 'skip'
@@ -520,8 +628,9 @@ class PDBClient (object):
                     else:
                         self.logger.debug('Unexpected line after loop_:\n{}'.format(line))
                         fr.close()
-                        self.sendMail('FAILURE PDB: Unknown status', 'status = {}\nThe process might have been stopped\n'.format(status))
-                        self.export_error_message = 'Unknown status', 'status = {}'.format(status)
+                        subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', process_status_error, user)
+                        self.sendMail(subject, 'status = {}\nThe process might have been stopped\n'.format(status))
+                        self.export_error_message = 'ERROR exportCIF: Unknown status', 'status = {}'.format(status)
                         return 1
             
                 elif status == 'columns':
@@ -546,8 +655,9 @@ class PDBClient (object):
                         fw.write('{}'.format(line))
                 else:
                     self.logger.debug('Unknown status: {}'.format(status))
-                    self.sendMail('FAILURE PDB: Unknown status', 'status = {}\nThe process might have been stopped\n'.format(status))
-                    self.export_error_message = 'Unknown status', 'status = {}'.format(status)
+                    subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', process_status_error, user)
+                    self.sendMail(subject, 'status = {}\nThe process might have been stopped\n'.format(status))
+                    self.export_error_message = 'ERROR exportCIF: Unknown status', 'status = {}'.format(status)
                     return 1
         
             fr.close()
@@ -557,36 +667,36 @@ class PDBClient (object):
         value = getColumnValue('entry', 'id', 'text', '{}'.format(entry_id))
         fw.write('#\n_entry.id  {}\n#\n'.format(value))
 
-        if exportData() != 0:
+        if exportData(rid, user) != 0:
             self.logger.debug('Update error in exportData()')
             fw.close()
             os.remove(hatracFile)
             self.updateAttributes(schema_pdb,
                                   table_entry,
                                   rid,
-                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': 'ERROR',
+                                  'Process_Status': process_status_error,
                                   'Record_Status_Detail': 'Update error in exportData():\n{}'.format(self.export_error_message),
-                                  'Workflow_Status': 'ERROR',
-                                  'Generated_mmCIF_Processing_Status': 'ERROR'
-                                  })
-            return
-        if exportCIF() != 0:
+                                  'Workflow_Status': 'ERROR'
+                                  },
+                                  user)
+            return 1
+        if exportCIF(rid, user) != 0:
             self.logger.debug('Update error in exportCIF()')
             fw.close()
             os.remove(hatracFile)
             self.updateAttributes(schema_pdb,
                                   table_entry,
                                   rid,
-                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': 'ERROR',
+                                  'Process_Status': process_status_error,
                                   'Record_Status_Detail': 'Update error in exportCIF():\n{}'.format(self.export_error_message),
-                                  'Workflow_Status': 'ERROR',
-                                  'Generated_mmCIF_Processing_Status': 'ERROR'
-                                  })
-            return
+                                  'Workflow_Status': 'ERROR'
+                                  },
+                                  user)
+            return 1
         fw.close()
         os.remove(hatracFile)
         
@@ -596,10 +706,9 @@ class PDBClient (object):
                 self.logger.debug('\t{}'.format(table_name))
                 
         file_name = '{}.cif'.format(entry_id)
-        returncode,error_message = self.validateExportmmCIF(self.scratch, file_name, year, entry_id, rid)
+        returncode,error_message = self.validateExportmmCIF(self.scratch, file_name, year, entry_id, rid, user, process_status_error)
 
         if returncode == 0:
-                        
             """
             Add the Conform_Dictionary entries
             """
@@ -617,14 +726,14 @@ class PDBClient (object):
                 self.updateAttributes(schema_pdb,
                                       table_entry,
                                       rid,
-                                      ["Process_Status", "Record_Status_Detail", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
+                                      ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                       {'RID': rid,
-                                      'Process_Status': 'ERROR',
+                                      'Process_Status': process_status_error,
                                       'Record_Status_Detail': 'Entry_mmCIF_File is not unique',
-                                      'Workflow_Status': 'ERROR',
-                                      'Generated_mmCIF_Processing_Status': 'ERROR'
-                                      })
-                return
+                                      'Workflow_Status': 'ERROR'
+                                      },
+                                      user)
+                return 1
     
             mmCIF_row = mmCIF_rows[0]
             
@@ -659,51 +768,55 @@ class PDBClient (object):
             for supported_row in supported_rows:
                 row = {'Data_Dictionary_RID': supported_row['Data_Dictionary_RID'], 'Exported_mmCIF_RID': mmCIF_row['RID']}
             
-                if self.createEntity('PDB:Conform_Dictionary', row, rid) == None:
+                if self.createEntity('PDB:Conform_Dictionary', row, rid, user) == None:
                     self.updateAttributes(schema_pdb,
                                           table_entry,
                                           rid,
-                                          ["Process_Status", "Record_Status_Detail", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
+                                          ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                           {'RID': rid,
-                                          'Process_Status': 'ERROR',
+                                          'Process_Status': process_status_error,
                                           'Record_Status_Detail': 'Update error in createEntity():\n{}'.format(self.export_error_message),
-                                          'Workflow_Status': 'ERROR',
-                                          'Generated_mmCIF_Processing_Status': 'ERROR'
-                                          })
-                    return
+                                          'Workflow_Status': 'ERROR'
+                                          },
+                                          user)
+                    return 1
     
             if returncode == 0:
                 self.logger.debug('Update success in export_mmCIF()')
                 self.updateAttributes(schema_pdb,
                                       table_entry,
                                       rid,
-                                      ["Process_Status", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
+                                      ["Process_Status", "Workflow_Status"],
                                       {'RID': rid,
-                                      'Process_Status': 'success',
-                                      'Workflow_Status': 'mmCIF CREATED',
-                                      'Generated_mmCIF_Processing_Status': 'success'
-                                      })
-                self.sendMail('PDB mmCIF CREATED', 'The workflow status of the entry with RID={} was changed to mmCIF CREATED.'.format(rid), receivers=self.mail_curators)
+                                      'Process_Status': Process_Status_Terms['SUCCESS'],
+                                      'Workflow_Status': 'mmCIF CREATED'
+                                      },
+                                      user)
+                if release == False:
+                    subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'mmCIF CREATED', Process_Status_Terms['SUCCESS'], user)
+                    self.sendMail(subject, 'The workflow status of the entry with RID={} was changed to mmCIF CREATED.'.format(rid), receivers=self.mail_curators)
             else:
                 self.updateAttributes(schema_pdb,
                                       table_entry,
                                       rid,
-                                      ["Process_Status", "Record_Status_Detail", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
+                                      ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                       {'RID': rid,
-                                      'Process_Status': 'ERROR',
-                                      'Record_Status_Detail': 'ERROR in mmCIF validation:\n{}'.format(error_message),
-                                      'Workflow_Status': 'ERROR',
-                                      'Generated_mmCIF_Processing_Status': 'ERROR'
-                                      })
-            return
+                                      'Process_Status': process_status_error,
+                                      'Record_Status_Detail': 'ERROR in validateExportmmCIF:\n{}'.format(error_message),
+                                      'Workflow_Status': 'ERROR'
+                                      },
+                                      user)
+                return 1
+            return 0
         else:
-            self.sendMail('FAILURE PDB: Validation Export mmCIF Failed', error_message)
-            return
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', process_status_error, user)
+            self.sendMail(subject, error_message)
+            return 1
             
     """
     Insert a row in a table
     """
-    def createEntity (self, path, row, rid):
+    def createEntity (self, path, row, rid, user):
         """
         Insert the row in the table.
         """
@@ -721,18 +834,24 @@ class PDBClient (object):
             et, ev, tb = sys.exc_info()
             self.logger.error('got exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            self.export_error_message = '%s' % ''.join(traceback.format_exception(et, ev, tb))
-            self.sendMail('FAILURE IMAGE PROCESSING: CREATE ENTITY ERROR', 'RID: %s\n%s\n' % (rid, ''.join(traceback.format_exception(et, ev, tb))))
+            self.export_error_message = 'ERROR createEntity: "%s"' % str(ev)
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', Process_Status_Terms['ERROR_GENERATING_mmCIF_FILE'], user)
+            self.sendMail(subject, 'RID: %s\n%s\n' % (rid, ''.join(traceback.format_exception(et, ev, tb))))
             return None
 
     """
     Process the mmCIF file of the entry table
     """
-    def process_mmCIF(self, schema, table, rid, status='in progress'):
+    def process_mmCIF(self, schema, table, rid):
+        """
+        Get the RCB user
+        """
+        user = self.getUser(schema, table, rid)
+        
         """
         Query for detecting the record to be processed
         """
-        url = '/entity/%s:%s/RID=%s/Process_Status=%s' % (urlquote(schema), urlquote(table), urlquote(rid), urlquote(status))
+        url = '/entity/%s:%s/RID=%s' % (urlquote(schema), urlquote(table), urlquote(rid))
         self.logger.debug('Query URL: "%s"' % url) 
         
         resp = self.catalog.get(url)
@@ -745,6 +864,10 @@ class PDBClient (object):
         id = row['id']
         creation_time = row['RCT']
         
+        if self.is_catalog_dev == True:
+            subject = 'PDB-Dev {}: {} ({})'.format(rid, row['Process_Status'], user)
+            self.sendMail(subject, 'The Process Status of the Entry with RID={} was changed to "{}".'.format(rid, row['Process_Status']), receivers=self.mail_curators)
+
         """
         Check if we have a new mmCIF file
         """
@@ -753,22 +876,24 @@ class PDBClient (object):
             obj = {}
             obj['RID'] = rid
             obj['Workflow_Status'] = 'RECORD READY'
-            obj['Process_Status'] = 'success'
+            obj['Process_Status'] = Process_Status_Terms['SUCCESS']
             columns = ['Workflow_Status', 'Process_Status']
             self.updateAttributes(schema,
                              table,
                              rid,
                              columns,
-                             obj)
+                             obj,
+                             user)
        
-            self.sendMail('PDB RECORD READY', 'The workflow status of the entry with RID={} was changed to RECORD READY.'.format(rid), receivers=self.mail_curators)
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'RECORD READY', Process_Status_Terms['SUCCESS'], user)
+            self.sendMail(subject, 'The workflow status of the entry with RID={} was changed to RECORD READY.'.format(rid), receivers=self.mail_curators)
             self.logger.debug('RID="{}", Ended PDB Processing for the {}:{} table.'.format(rid, schema, table)) 
             return
         
         """
         Extract the file from hatrac
         """
-        f,error_message = self.getHatracFile(filename, file_url, self.make_mmCIF)
+        f,error_message = self.getHatracFile(filename, file_url, self.make_mmCIF, rid, user)
         
         if f == None:
             self.updateAttributes(schema,
@@ -776,10 +901,11 @@ class PDBClient (object):
                                   rid,
                                   ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': 'ERROR',
+                                  'Process_Status': Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'],
                                   'Record_Status_Detail': error_message,
                                   'Workflow_Status': 'ERROR'
-                                  })
+                                  },
+                                  user)
             return
         
         """
@@ -792,7 +918,7 @@ class PDBClient (object):
         """
         Convert the file to JSON and load the data into the tables
         """
-        returncode,error_message = self.convert2json(filename, id)
+        returncode,error_message = self.convert2json(filename, id, rid, user)
         
         if returncode != 0:
             """
@@ -803,35 +929,37 @@ class PDBClient (object):
                                   rid,
                                   ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': 'ERROR',
+                                  'Process_Status': Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'],
                                   'Record_Status_Detail': error_message,
                                   'Workflow_Status': 'ERROR'
-                                  })
+                                  },
+                                  user)
             return
                         
                             
         obj = {}
         obj['RID'] = rid
         obj['Workflow_Status'] = 'RECORD READY'
-        obj['Process_Status'] = 'success'
+        obj['Process_Status'] = Process_Status_Terms['SUCCESS']
         obj['mmCIF_File_MD5'] = md5
         obj['Record_Status_Detail'] = None
         obj['Last_mmCIF_File_MD5'] = md5
-        obj['Generated_mmCIF_Processing_Status'] = None
-        columns = ['Workflow_Status', 'Process_Status', 'mmCIF_File_MD5', 'Record_Status_Detail', 'Last_mmCIF_File_MD5', 'Generated_mmCIF_Processing_Status']
+        columns = ['Workflow_Status', 'Process_Status', 'mmCIF_File_MD5', 'Record_Status_Detail', 'Last_mmCIF_File_MD5']
         self.updateAttributes(schema,
                          table,
                          rid,
                          columns,
-                         obj)
+                         obj,
+                         user)
    
-        self.sendMail('PDB RECORD READY', 'The workflow status of the entry with RID={} was changed to RECORD READY.'.format(rid), receivers=self.mail_curators)
+        subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'RECORD READY', Process_Status_Terms['SUCCESS'], user)
+        self.sendMail(subject, 'The workflow status of the entry with RID={} was changed to RECORD READY.'.format(rid), receivers=self.mail_curators)
         self.logger.debug('Ended PDB Processing for the %s:%s table.' % (schema, table)) 
         
     """
     Extract the file from hatrac
     """
-    def getHatracFile(self, filename, file_url, input_dir):
+    def getHatracFile(self, filename, file_url, input_dir, rid, user):
         error_message = None
         try:
             hatracFile = '{}/{}'.format(input_dir, filename)
@@ -842,14 +970,15 @@ class PDBClient (object):
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            self.sendMail('FAILURE PDB: get file from hatrac ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
-            error_message = ''.join(traceback.format_exception(et, ev, tb))
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', Process_Status_Terms['ERROR_GENERATING_mmCIF_FILE'], user)
+            self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+            error_message = 'ERROR getHatracFile: "%s"' % str(ev)
             return (None,error_message)
             
     """
     Convert the input file to JSON
     """
-    def convert2json(self, filename, entry_id):
+    def convert2json(self, filename, entry_id, rid, user):
         try:
             """
             Apply make-mmcif.py
@@ -866,9 +995,10 @@ class PDBClient (object):
             
             if returncode != 0:
                 self.logger.error('Can not make mmCIF for entry id = "%s" and file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (entry_id, filename, stdoutdata, stderrdata)) 
-                self.sendMail('FAILURE PDB', 'Can not make mmCIF for entry id = "%s" and file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (entry_id, filename, stdoutdata, stderrdata))
+                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], user)
+                self.sendMail(subject, 'Can not make mmCIF for entry id = "%s" and file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (entry_id, filename, stdoutdata, stderrdata))
                 os.remove('{}/{}'.format(self.make_mmCIF, filename))
-                error_message = '{}'.format(stderrdata)
+                error_message = 'ERROR convert2json: {}'.format(stderrdata)
                 return (returncode,error_message)
             
             os.remove('{}/{}'.format(self.make_mmCIF, filename))
@@ -889,9 +1019,10 @@ class PDBClient (object):
             
             if returncode != 0:
                 self.logger.error('Can not validate testSchemaDataPrepValidate-ihm for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % ('output.cif', stdoutdata, stderrdata)) 
-                self.sendMail('FAILURE PDB', 'Can not make testSchemaDataPrepValidate-ihm for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % ('output.cif', stdoutdata, stderrdata))
+                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], user)
+                self.sendMail(subject, 'Can not make testSchemaDataPrepValidate-ihm for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % ('output.cif', stdoutdata, stderrdata))
                 os.remove('{}/rcsb/db/tests-validate/test-output/ihm-files/output.cif'.format(self.py_rcsb_db))
-                error_message = '{}'.format(stderrdata)
+                error_message = 'ERROR convert2json: {}'.format(stderrdata)
                 return (returncode,error_message)
             
             shutil.copy2('{}/rcsb/db/tests-validate/test-output/ihm-files/output.cif'.format(self.py_rcsb_db), '/home/pdbihm/temp')
@@ -911,7 +1042,7 @@ class PDBClient (object):
 
             for entry in os.scandir(fpath):
                     if entry.is_file() and entry.path.endswith('.json'):
-                        returncode,error_message = self.loadTablesFromJSON(entry.path, entry_id)
+                        returncode,error_message = self.loadTablesFromJSON(entry.path, entry_id, rid, user)
                         if returncode != 0:
                             break
             
@@ -926,10 +1057,11 @@ class PDBClient (object):
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            self.sendMail('FAILURE PDB: convert to JSON ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], user)
+            self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
             os.chdir(currentDirectory)
             returncode = 1
-            error_message = '{}'.format(''.join(traceback.format_exception(et, ev, tb)))
+            error_message = 'ERROR convert2json: "%s"' % str(ev) 
             
         return (returncode,error_message)
             
@@ -937,7 +1069,7 @@ class PDBClient (object):
     """
     Update the ermrest attributes
     """
-    def updateAttributes (self, schema, table, rid, columns, row):
+    def updateAttributes (self, schema, table, rid, columns, row, user):
         """
         Update the ermrest attributes with the row values.
         """
@@ -954,9 +1086,10 @@ class PDBClient (object):
             et, ev, tb = sys.exc_info()
             self.logger.error('got exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            self.sendMail('FAILURE PDB: reportFailure ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'ERROR', row['Process_Status'], user)
+            self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
             
-            
+
     """
     Get the hexa md5 checksum of the file.
     """
@@ -1018,7 +1151,7 @@ class PDBClient (object):
     """
     Rollback JSON inserted rows
     """
-    def rollbackInsertedRows(self, records, entry_id):
+    def rollbackInsertedRows(self, records, entry_id, user):
         records.reverse()
         for record in records:
             tname = record['name']
@@ -1045,17 +1178,19 @@ class PDBClient (object):
                         et, ev, tb = sys.exc_info()
                         self.logger.error('got exception "%s"' % str(ev))
                         self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-                        self.sendMail('FAILURE PDB: DELETE ERROR', 'URL: %s\n%s\n' % (url, ''.join(traceback.format_exception(et, ev, tb))))
+                        subject = 'PDB-Dev {} {}: {} ({})'.format(entry_id, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
+                        self.sendMail(subject, 'URL: %s\n%s\n' % (url, ''.join(traceback.format_exception(et, ev, tb))))
                 except:
                     et, ev, tb = sys.exc_info()
                     self.logger.error('got exception "%s"' % str(ev))
                     self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-                    self.sendMail('FAILURE PDB: DELETE ERROR', 'URL: %s\n%s\n' % (url, ''.join(traceback.format_exception(et, ev, tb))))
+                    subject = 'PDB-Dev {} {}: {} ({})'.format(entry_id, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
+                    self.sendMail(subject, 'URL: %s\n%s\n' % (url, ''.join(traceback.format_exception(et, ev, tb))))
                 
     """
     Load data into the tables from the JSON file.
     """
-    def loadTablesFromJSON(self, fpath, entry_id):
+    def loadTablesFromJSON(self, fpath, entry_id, rid, user):
         shutil.copy2(fpath, '/home/pdbihm/temp')
         
         """
@@ -1093,7 +1228,8 @@ class PDBClient (object):
             et, ev, tb = sys.exc_info()
             self.logger.error('got exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            self.sendMail('FAILURE PDB: loadTablesFromJSON ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], user)
+            self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
             returncode = 1
             error_message = ''.join(traceback.format_exception(et, ev, tb))
             return (returncode,error_message)
@@ -1135,19 +1271,21 @@ class PDBClient (object):
             except HTTPError as e:
                 self.logger.error(e)
                 self.logger.error(e.response.text)
-                self.sendMail('FAILURE PDB: loadTablesFromJSON ERROR', '{}\n{}'.format(e.response.text, e))
+                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], user)
+                self.sendMail(subject, '{}\n{}'.format(e.response.text, e))
                 returncode = 1
                 error_message = '{}\n{}'.format(e.response.text, e)
-                self.rollbackInsertedRows(inserted_records, entry_id)
+                self.rollbackInsertedRows(inserted_records, entry_id, user)
                 break
             except:
                 et, ev, tb = sys.exc_info()
                 self.logger.error('got exception "%s"' % str(ev))
                 self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-                self.sendMail('FAILURE PDB: loadTablesFromJSON ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], user)
+                self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
                 returncode = 1
                 error_message = ''.join(traceback.format_exception(et, ev, tb))
-                self.rollbackInsertedRows(inserted_records, entry_id)
+                self.rollbackInsertedRows(inserted_records, entry_id, user)
                 break
         
         return (returncode,error_message)
@@ -1155,8 +1293,29 @@ class PDBClient (object):
     """
     Load data into the tables from a csv/tsv file.
     """
-    def loadTableFromCVS(self, fpath, delimiter, tname, entry_id, rid):
+    def loadTableFromCVS(self, fpath, delimiter, tname, entry_id, rid, user):
         
+        """
+        Empty first the tname table
+        """
+        self.logger.debug('Checking if PDB:{}/structure_id={} is empty'.format(tname, entry_id))
+        url = '/entity/PDB:{}/structure_id={}'.format(tname, entry_id)
+        resp = self.catalog.get(
+            url
+        )
+        resp.raise_for_status()
+        deleted_rows = resp.json()
+        if len(deleted_rows) > 0:
+            """
+            The table is not empty
+            """
+            url = '/entity/PDB:{}/structure_id={}'.format(tname, entry_id)
+            resp = self.catalog.delete(
+                url
+            )
+            resp.raise_for_status()
+            self.logger.debug('Deleted rows from PDB:{}/structure_id={}'.format(tname, entry_id))
+
         """
         Read in chunks of 1000 rows
         Make a temporization of 10 seconds between chunks readings
@@ -1252,8 +1411,9 @@ class PDBClient (object):
                         et, ev, tb = sys.exc_info()
                         self.logger.error('got exception "%s"' % str(ev))
                         self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-                        self.sendMail('FAILURE PDB: loadTableFromCVS ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
-                        error_message = ''.join(traceback.format_exception(et, ev, tb))
+                        subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
+                        self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+                        error_message = 'ERROR loadTableFromCVS: "%s"' % str(ev)
                         returncode = 1
                         break
             self.logger.debug('File {}: inserted {} rows into table {}'.format(fpath, counter, tname))
@@ -1261,8 +1421,9 @@ class PDBClient (object):
             et, ev, tb = sys.exc_info()
             self.logger.error('got exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            self.sendMail('FAILURE PDB: loadTableFromCVS ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
-            error_message = ''.join(traceback.format_exception(et, ev, tb))
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
+            self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+            error_message = 'ERROR loadTableFromCVS: "%s"' % str(ev)
             returncode = 1
         return (returncode, error_message)
              
@@ -1409,7 +1570,7 @@ class PDBClient (object):
     """
     Get the output.cif file
     """
-    def getOutputCIF(self, rid, file_url, filename):
+    def getOutputCIF(self, rid, file_url, filename, user):
         try:
             """
             Apply make-mmcif.py
@@ -1426,10 +1587,11 @@ class PDBClient (object):
             os.chdir(currentDirectory)
             
             if returncode != 0:
-                self.logger.error('Can not make mmCIF for entry RID = "%s% and file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (rid, filename, stdoutdata, stderrdata)) 
-                self.sendMail('FAILURE PDB', 'Can not make mmCIF for entry RID = "%s% and file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (rid, filename, stdoutdata, stderrdata))
+                self.logger.error('Can not make mmCIF for entry RID = "%s" and file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (rid, filename, stdoutdata, stderrdata)) 
+                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', Process_Status_Terms['ERROR_GENERATING_mmCIF_FILE'], user)
+                self.sendMail(subject, 'Can not make mmCIF for entry RID = "%s" and file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (rid, filename, stdoutdata, stderrdata))
                 os.remove('{}/{}'.format(self.make_mmCIF, filename))
-                self.export_error_message = 'Can not make mmCIF.\nstdoutdata: %s\nstderrdata: %s\n' % (stdoutdata, stderrdata)
+                self.export_error_message = 'ERROR getOutputCIF: Can not make mmCIF.\nstdoutdata: %s\nstderrdata: %s\n' % (stdoutdata, stderrdata)
                 return None
             
             os.remove('{}/{}'.format(self.make_mmCIF, filename))
@@ -1443,9 +1605,10 @@ class PDBClient (object):
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            self.sendMail('FAILURE PDB: Export make-mmcif.py', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', Process_Status_Terms['ERROR_GENERATING_mmCIF_FILE'], user)
+            self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
             os.chdir(currentDirectory)
-            self.export_error_message = 'Can not make mmCIF.\n%s\n' % ''.join(traceback.format_exception(et, ev, tb))
+            self.export_error_message = 'ERROR getOutputCIF: "%s"' % str(ev)
             return None
             
         return '{}/output.cif'.format(self.scratch)
@@ -1453,7 +1616,7 @@ class PDBClient (object):
     """
     Get the accession code value
     """
-    def getAccessionCode(self, row):
+    def getAccessionCode(self, row, user):
         try:
             value = 'PDBDEV_' + ('00000000' + str(row['Accession_Serial']))[-8:]
             self.logger.debug('Accession Code = {}'.format(value))
@@ -1461,14 +1624,15 @@ class PDBClient (object):
             et, ev, tb = sys.exc_info()
             self.logger.error('got exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            self.sendMail('FAILURE PDB: GETTING ACCESSION CODE', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+            subject = 'PDB-Dev {} {}: {} ({})'.format(row['RID'], 'SUBMISSION COMPLETE', Process_Status_Terms['ERROR_GENERATING_ACCESSION_CODE'], user)
+            self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
             
         return value
         
     """
     Store the validation error file into hatrac
     """
-    def storeFileInHatrac(self, hatrac_namespace, file_name, file_path, rid):
+    def storeFileInHatrac(self, hatrac_namespace, file_name, file_path, rid, user):
         try:
             newFile = '{}/{}'.format(file_path, file_name)
             file_size = os.path.getsize(newFile)
@@ -1515,7 +1679,8 @@ class PDBClient (object):
                     et, ev, tb = sys.exc_info()
                     self.logger.error('Can not upload file "%s" in hatrac "%s". Error: "%s"' % (file_name, new_uri, str(ev)))
                     self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-                    self.sendMail('FAILURE PDB: VALIDATING mmCIF FILE', 'RID={}, Can not upload file "{}" in hatrac at location "{"}:\n{}\n'.format(rid, file_name, new_uri, ''.join(traceback.format_exception(et, ev, tb))))
+                    subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', Process_Status_Terms['ERROR_GENERATING_mmCIF_FILE'], user)
+                    self.sendMail(subject, 'RID={}, Can not upload file "{}" in hatrac at location "{"}:\n{}\n'.format(rid, file_name, new_uri, ''.join(traceback.format_exception(et, ev, tb))))
                     return (None, None, None, None)
             return (hatrac_URI, file_name, file_size, hexa_md5)
 
@@ -1523,13 +1688,14 @@ class PDBClient (object):
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            self.sendMail('FAILURE PDB: VALIDATING mmCIF FILE', 'RID={}, Can not upload file "{}" in hatrac at location "{"}:\n{}\n'.format(rid, file_name, new_uri, ''.join(traceback.format_exception(et, ev, tb))))
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', Process_Status_Terms['ERROR_GENERATING_mmCIF_FILE'], user)
+            self.sendMail(subject, 'RID={}, Can not upload file "{}" in hatrac at location "{"}:\n{}\n'.format(rid, file_name, new_uri, ''.join(traceback.format_exception(et, ev, tb))))
             return (None, None, None, None)
 
     """
     Cleanup the entry file tables
     """
-    def cleanupEntryFileTables(self, entry_id, rid):
+    def cleanupEntryFileTables(self, entry_id, rid, user):
         try:
             url = '/entity/PDB:Entry_mmCIF_File/Structure_Id={}/mmCIF_Schema_Version={}'.format(urlquote(entry_id), urlquote(self.mmCIF_Schema_Version))
             self.logger.debug('Query URL: "%s"' % url) 
@@ -1559,15 +1725,16 @@ class PDBClient (object):
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            self.sendMail('FAILURE PDB: VALIDATING mmCIF FILE', 'RID={}, Can not cleanup the entry file tables:\n{}'.format(rid, ''.join(traceback.format_exception(et, ev, tb))))
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', Process_Status_Terms['ERROR_GENERATING_mmCIF_FILE'], user)
+            self.sendMail(subject, 'RID={}, Can not cleanup the entry file tables:\n{}'.format(rid, ''.join(traceback.format_exception(et, ev, tb))))
             return 1
             
     """
     Validate the exported mmCIF file
     """
-    def validateExportmmCIF(self, input_dir, filename, year, entry_id, rid):
+    def validateExportmmCIF(self, input_dir, filename, year, entry_id, rid, user, process_status_error):
         try:
-            if self.cleanupEntryFileTables(entry_id, rid) != 0:
+            if self.cleanupEntryFileTables(entry_id, rid, user) != 0:
                 self.cleanupDataScratch()
                 return (1, 'Can not cleanup the entry file tables')
 
@@ -1582,7 +1749,8 @@ class PDBClient (object):
             
             if returncode != 0:
                 self.logger.debug('Can not CifCheck for file "{}".\nstdoutdata: {}\nstderrdata: {}\n'.format(filename, stdoutdata.decode('utf-8'), stderrdata.decode('utf-8')))
-                self.sendMail('FAILURE PDB: VALIDATING mmCIF FILE', 'RID={}, Can not execute CifCheck for file "{}".\nstdoutdata: {}\nstderrdata: {}\n'.format(rid, filename, stdoutdata.decode('utf-8'), stderrdata.decode('utf-8')))
+                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', process_status_error, user)
+                self.sendMail(subject, 'RID={}, Can not execute CifCheck for file "{}".\nstdoutdata: {}\nstderrdata: {}\n'.format(rid, filename, stdoutdata.decode('utf-8'), stderrdata.decode('utf-8')))
                 self.cleanupDataScratch()
                 return (1, stderrdata.decode('utf-8'))
             has_errors = False
@@ -1593,7 +1761,7 @@ class PDBClient (object):
                 fr = open(log_file_path, 'r')
                 has_errors = True
                 fr.close()
-                hatrac_URI, file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, log_file_name, input_dir, rid)
+                hatrac_URI, file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, log_file_name, input_dir, rid, user)
                 if hatrac_URI == None:
                     self.cleanupDataScratch()
                     return (1, 'Can not store file {} in hatrac'.format(file_name))
@@ -1605,17 +1773,17 @@ class PDBClient (object):
                        'File_Type': 'validation_diag_log',
                        'Entry_RID': rid,
                        }
-                if self.createEntity('PDB:Entry_Error_File', row, rid) == None:
+                if self.createEntity('PDB:Entry_Error_File', row, rid, user) == None:
                     self.updateAttributes('PDB',
                                           'entry',
                                           rid,
-                                          ["Process_Status", "Record_Status_Detail", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
+                                          ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                           {'RID': rid,
-                                          'Process_Status': 'ERROR',
+                                          'Process_Status': process_status_error,
                                           'Record_Status_Detail': 'Error in createEntity(Entry_Error_File)',
-                                          'Workflow_Status': 'ERROR',
-                                          'Generated_mmCIF_Processing_Status': 'ERROR'
-                                          })
+                                          'Workflow_Status': 'ERROR'
+                                          },
+                                          user)
                     self.cleanupDataScratch()
                     return (1, 'Error in createEntity(Entry_Error_File)')
             except:
@@ -1626,7 +1794,7 @@ class PDBClient (object):
                 fr = open(log_file_path, 'r')
                 has_errors = True
                 fr.close()
-                hatrac_URI, file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, log_file_name, input_dir, rid)
+                hatrac_URI, file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, log_file_name, input_dir, rid, user)
                 self.logger.debug('Insert a row in the Entry_Error_File table')
                 row = {'File_URL' : hatrac_URI,
                        'File_Name': file_name,
@@ -1635,17 +1803,17 @@ class PDBClient (object):
                        'File_Type': 'validation_parser_log',
                        'Entry_RID': rid,
                        }
-                if self.createEntity('PDB:Entry_Error_File', row, rid) == None:
+                if self.createEntity('PDB:Entry_Error_File', row, rid, user) == None:
                     self.updateAttributes('PDB',
                                           'entry',
                                           rid,
-                                          ["Process_Status", "Record_Status_Detail", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
+                                          ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                           {'RID': rid,
-                                          'Process_Status': 'ERROR',
+                                          'Process_Status': process_status_error,
                                           'Record_Status_Detail': 'Error in createEntity(Entry_Error_File)',
-                                          'Workflow_Status': 'ERROR',
-                                          'Generated_mmCIF_Processing_Status': 'ERROR'
-                                          })
+                                          'Workflow_Status': 'ERROR'
+                                          },
+                                          user)
                     self.cleanupDataScratch()
                     return (1, 'Error in createEntity(Entry_Error_File)')
             except:
@@ -1658,7 +1826,7 @@ class PDBClient (object):
                 shutil.move('{}/{}'.format(self.scratch, filename), '{}/{}_error.cif'.format(self.scratch, entry_id))
                 filename = '{}_error.cif'.format(entry_id)
 
-            hatrac_URI, file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, filename, input_dir, rid)
+            hatrac_URI, file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, filename, input_dir, rid, user)
             if has_errors == False:
                 self.logger.debug('Insert a row in the Entry_mmCIF_File table')
                 row = {'File_URL' : hatrac_URI,
@@ -1668,17 +1836,17 @@ class PDBClient (object):
                        'Structure_Id': entry_id,
                        'mmCIF_Schema_Version': urlquote(self.mmCIF_Schema_Version)
                        }
-                if self.createEntity('PDB:Entry_mmCIF_File', row, rid) == None:
+                if self.createEntity('PDB:Entry_mmCIF_File', row, rid, user) == None:
                     self.updateAttributes('PDB',
                                           'entry',
                                           rid,
-                                          ["Process_Status", "Record_Status_Detail", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
+                                          ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                           {'RID': rid,
-                                          'Process_Status': 'ERROR',
+                                          'Process_Status': process_status_error,
                                           'Record_Status_Detail': 'Error in createEntity(Entry_mmCIF_File)',
-                                          'Workflow_Status': 'ERROR',
-                                          'Generated_mmCIF_Processing_Status': 'ERROR'
-                                          })
+                                          'Workflow_Status': 'ERROR'
+                                          },
+                                          user)
                     self.cleanupDataScratch()
                     return (1, 'Error in createEntity(Entry_mmCIF_File)')
                 self.cleanupDataScratch()
@@ -1692,30 +1860,30 @@ class PDBClient (object):
                        'File_Type': 'mmCIF',
                        'Entry_RID': rid,
                        }
-                if self.createEntity('PDB:Entry_Error_File', row, rid) == None:
+                if self.createEntity('PDB:Entry_Error_File', row, rid, user) == None:
                     self.updateAttributes('PDB',
                                           'entry',
                                           rid,
-                                          ["Process_Status", "Record_Status_Detail", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
+                                          ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                           {'RID': rid,
-                                          'Process_Status': 'ERROR',
+                                          'Process_Status': process_status_error,
                                           'Record_Status_Detail': 'Error in createEntity(Entry_Error_File)',
                                           'Workflow_Status': 'ERROR',
-                                          'Generated_mmCIF_Processing_Status': 'ERROR'
-                                          })
+                                          },
+                                          user)
                     self.cleanupDataScratch()
                     return (1, 'Error in createEntity(Entry_Error_File)')
                 self.logger.debug('Update error in export_mmCIF()')
                 self.updateAttributes('PDB',
                                       'entry',
                                       rid,
-                                      ["Process_Status", "Record_Status_Detail", "Workflow_Status", "Generated_mmCIF_Processing_Status"],
+                                      ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                       {'RID': rid,
-                                      'Process_Status': 'ERROR',
+                                      'Process_Status': process_status_error,
                                       'Workflow_Status': 'ERROR',
-                                      'Record_Status_Detail': 'mmCIF Validation Failure. For details, see the files:',
-                                      'Generated_mmCIF_Processing_Status': 'ERROR'
-                                      })
+                                      'Record_Status_Detail': 'mmCIF Validation Failure. For details, see the files:'
+                                      },
+                                      user)
                 self.cleanupDataScratch()
                 return (1, 'mmCIF Validation Failure. For details, see the files at: https://data.pdb-dev.org/chaise/recordset/#1/PDB:Entry_Error_File/Entry_RID={}'.format(rid))
                 
@@ -1723,9 +1891,10 @@ class PDBClient (object):
             et, ev, tb = sys.exc_info()
             self.logger.error('got exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            self.sendMail('FAILURE PDB: VALIDATING mmCIF FILE', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', process_status_error, user)
+            self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
             self.cleanupDataScratch()
-            return (1, '%s' % ''.join(traceback.format_exception(et, ev, tb)))
+            return (1, 'ERROR mmCIF Validation: "%s"' % str(ev))
         
     """
     Cleanup the scratch directory.
@@ -1740,12 +1909,22 @@ class PDBClient (object):
                 self.logger.debug('Removing directory "{}"\n'.format(file_path))
                 shutil.rmtree(file_path)
         
-    def addReleaseRecords(self, rid, status='in progress'):
+    def addReleaseRecords(self, rid):
+        """
+        Get the RCB user
+        """
+        user = self.getUser('PDB', 'entry', rid)
+        
         try:
+            if self.export_mmCIF('PDB', 'entry', rid, release=True) != 0:
+                """
+                We can not recreate the mmCIF exported file
+                """
+                return
             """
             Query for detecting the mmCIF file
             """
-            url = '/entity/PDB:entry/RID={}/Process_Status={}/PDB:Entry_mmCIF_File'.format(urlquote(rid), urlquote(status))
+            url = '/entity/PDB:entry/RID={}/PDB:Entry_mmCIF_File'.format(urlquote(rid))
             self.logger.debug('Query URL: "%s"' % url) 
             
             resp = self.catalog.get(url)
@@ -1757,33 +1936,36 @@ class PDBClient (object):
                                       rid,
                                       ["Process_Status", "Workflow_Status"],
                                       {'RID': rid,
-                                      'Record_Status_Detail': 'Invalid number of mmCIF files: {}'.format(len(rows)),
-                                      'Process_Status': 'ERROR',
+                                      'Record_Status_Detail': 'ERROR addReleaseRecords: Invalid number of mmCIF files: {}'.format(len(rows)),
+                                      'Process_Status': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
                                       'Workflow_Status': 'ERROR'
-                                      })
+                                      },
+                                      user)
                 self.logger.debug('Invalid number of mmCIF files: {}'.format(len(rows))) 
-                self.sendMail('FAILURE PDB: VALIDATING mmCIF FILE', 'Invalid number of mmCIF files: {}'.format(len(rows)))
+                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'RELEASE READY', Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
+                self.sendMail(subject, 'Invalid number of mmCIF files: {}'.format(len(rows)))
                 return
             row = rows[0]
             file_url = row['File_URL']
             filename = row['File_Name']
             mmCIF_File_rid = row['RID']
-            f,error_message = self.getHatracFile(filename, file_url, self.scratch)
+            f,error_message = self.getHatracFile(filename, file_url, self.scratch, rid, user)
             if f == None:
                 self.updateAttributes(schema,
                                       table,
                                       rid,
                                       ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                       {'RID': rid,
-                                      'Process_Status': 'ERROR',
+                                      'Process_Status': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
                                       'Record_Status_Detail': error_message,
                                       'Workflow_Status': 'ERROR'
-                                      })
+                                      },
+                                      user)
                 return
             """
             Query for detecting the mmCIF file
             """
-            url = '/entity/PDB:entry/RID={}/Process_Status={}'.format(urlquote(rid), urlquote(status))
+            url = '/entity/PDB:entry/RID={}'.format(urlquote(rid))
             self.logger.debug('Query URL: "%s"' % url) 
             
             resp = self.catalog.get(url)
@@ -1792,8 +1974,20 @@ class PDBClient (object):
             creation_time = row['RCT']
             year = parse(creation_time).strftime("%Y")
             input_dir = self.scratch
-            deposition_date = parse(row['RCT']).strftime("%Y-%m-%d")
-            revision_date = parse(str(datetime.now())).strftime("%Y-%m-%d")
+            deposition_date = row['Deposit_Date']
+            #deposition_date = parse(row['RCT']).strftime("%Y-%m-%d")
+            revision_date = row['Release_Date']
+            if revision_date == None:
+                revision_date = parse(str(datetime.now())).strftime("%Y-%m-%d")
+                self.updateAttributes('PDB',
+                                      'entry',
+                                      rid,
+                                      ["Release_Date"],
+                                      {'RID': rid,
+                                      'Release_Date': revision_date
+                                      },
+                                      user)
+                
             entry_id = row['id']
             record_status = 'REL'
             records_release = mmCIF_release_records.replace('<status_code>', record_status).replace('<entry_id>', row['accession_code']).replace('<deposition_date>', deposition_date).replace('<revision_date>', revision_date)
@@ -1827,7 +2021,7 @@ class PDBClient (object):
             fr.close()
             fw.close()
             hatrac_namespace = '/{}/entry/{}/{}/final_mmCIF'.format(self.hatrac_namespace, year, entry_id)
-            hatrac_URI, file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, file_name, input_dir, rid)
+            hatrac_URI, file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, file_name, input_dir, rid, user)
             self.updateAttributes('PDB',
                                   'Entry_mmCIF_File',
                                   mmCIF_File_rid,
@@ -1837,70 +2031,87 @@ class PDBClient (object):
                                   'File_Name': file_name,
                                   'File_MD5': hexa_md5,
                                   'File_Bytes': file_size
-                                  })
+                                  },
+                                  user)
             self.updateAttributes('PDB',
                                   'entry',
                                   rid,
                                   ["Process_Status", "Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': 'success',
+                                  'Process_Status': Process_Status_Terms['SUCCESS'],
                                   'Workflow_Status': 'REL'
-                                  })
+                                  },
+                                  user)
         except:
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            self.sendMail('FAILURE PDB: set accession code ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
-            error_message = ''.join(traceback.format_exception(et, ev, tb))
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'RELEASE READY', Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
+            self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+            error_message = 'ERROR addReleaseRecords: "%s"' % str(ev)
             self.updateAttributes('PDB',
-                                  entry,
+                                  'entry',
                                   rid,
                                   ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': 'ERROR',
+                                  'Process_Status': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
                                   'Record_Status_Detail': error_message,
                                   'Workflow_Status': 'ERROR'
-                                  })
+                                  },
+                                  user)
             
-    def set_accession_code(self, rid, status='in progress'):
+    def set_accession_code(self, rid):
+        """
+        Get the RCB user
+        """
+        user = self.getUser('PDB', 'entry', rid)
+        
         try:
             """
             Query for detecting the record to be processed
             """
-            url = '/entity/PDB:entry/RID={}/Process_Status={}'.format(urlquote(rid), urlquote(status))
+            url = '/entity/PDB:entry/RID={}'.format(urlquote(rid))
             self.logger.debug('Query URL: "%s"' % url) 
             
             resp = self.catalog.get(url)
             resp.raise_for_status()
             row = resp.json()[0]
-            accession_code = self.getAccessionCode(row)
+            accession_code = self.getAccessionCode(row, user)
+            
+            if self.is_catalog_dev == True:
+                subject = 'PDB-Dev {}: {} ({})'.format(rid, row['Process_Status'], user)
+                self.sendMail(subject, 'The Process Status of the entry with RID={} was changed to "{}".'.format(rid, row['Process_Status']), receivers=self.mail_curators)
+
             self.updateAttributes('PDB',
                                   'entry',
                                   rid,
                                   ["Process_Status", "accession_code", "Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': 'success',
+                                  'Process_Status': Process_Status_Terms['SUCCESS'],
                                   'accession_code': accession_code,
                                   'Workflow_Status': 'HOLD'
-                                  })
+                                  },
+                                  user)
             self.logger.debug('Ended PDB Processing to set the accession code for the PDB:entry table with RID="{}".'.format(rid)) 
         except:
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            self.sendMail('FAILURE PDB: set accession code ERROR', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
-            error_message = ''.join(traceback.format_exception(et, ev, tb))
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'RELEASE READY', Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
+            self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+            error_message = 'ERROR set_accession_code: "%s"' % str(ev)
             self.updateAttributes('PDB',
                                   entry,
                                   rid,
                                   ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': 'ERROR',
+                                  'Process_Status': Process_Status_Terms['ERROR_GENERATING_ACCESSION_CODE'],
                                   'Record_Status_Detail': error_message,
                                   'Workflow_Status': 'ERROR'
-                                  })
+                                  },
+                                  user)
         
-    def clear_entry(self, rid, id):
+    def clear_entry(self, rid, id, user):
         try:
             """
             Get the references of the "entry" table 
@@ -1927,7 +2138,7 @@ class PDBClient (object):
             for reference in references:
                 for k,v in reference.items():
                     if v == 'Entry_RID':
-                        val = RID
+                        val = rid
                     else:
                         val = id
                     url = '/entity/PDB:{}/{}={}'.format(k, v, val)
@@ -1940,26 +2151,31 @@ class PDBClient (object):
             Delete the records referenced by the entry table
             """
             for url in delete_tables:
-                resp = self.catalog.delete(
-                    url
-                )
+                resp = catalog.get(url)
                 resp.raise_for_status()
-                self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
+                if len(resp.json()) > 0:
+                    resp = self.catalog.delete(
+                        url
+                    )
+                    resp.raise_for_status()
+                    self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
             return 0
         except:
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            self.sendMail('FAILURE PDB: deleting all the uploaded data when a new mmCIF file is uploaded', '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
-            error_message = ''.join(traceback.format_exception(et, ev, tb))
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], user)
+            self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+            error_message = 'ERROR clear_entry: "%s"' % str(ev)
             self.updateAttributes('PDB',
                                   entry,
                                   rid,
                                   ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': 'ERROR',
+                                  'Process_Status': Process_Status_Terms['ERROR_GENERATING_mmCIF_FILE'],
                                   'Record_Status_Detail': error_message,
                                   'Workflow_Status': 'ERROR'
-                                  })
+                                  },
+                                  user)
             return 1
         
