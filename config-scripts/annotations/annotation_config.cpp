@@ -1565,7 +1565,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "Entity Poly Segment Id",
                         "source": [
                             {
                                 "outbound": [
@@ -1647,7 +1647,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "Entity Poly Segment Id",
                         "source": [
                             {
                                 "outbound": [
@@ -1742,7 +1742,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "Entity Poly Segment Id",
                         "source": [
                             {
                                 "outbound": [
@@ -16552,7 +16552,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "Entity Poly Segment Id",
                         "source": [
                             {
                                 "outbound": [
@@ -16635,7 +16635,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "Entity Poly Segment Id",
                         "source": [
                             {
                                 "outbound": [
@@ -16731,7 +16731,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "Entity Poly Segment Id",
                         "source": [
                             {
                                 "outbound": [
@@ -17529,7 +17529,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "Entity Poly Segment Id",
                         "source": [
                             {
                                 "outbound": [
@@ -17626,7 +17626,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "Entity Poly Segment Id",
                         "source": [
                             {
                                 "outbound": [
@@ -17736,7 +17736,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "Entity Poly Segment Id",
                         "source": [
                             {
                                 "outbound": [
@@ -22337,7 +22337,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "Entity Poly Segment Id",
                         "source": [
                             {
                                 "outbound": [
@@ -22415,7 +22415,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "Entity Poly Segment Id",
                         "source": [
                             {
                                 "outbound": [
@@ -22510,7 +22510,7 @@
                     },
                     {
                         "comment": "A reference to table ihm_entity_poly_segment.id.",
-                        "markdown_name": "Entity Poly Segement Id",
+                        "markdown_name": "Entity Poly Segment Id",
                         "source": [
                             {
                                 "outbound": [
