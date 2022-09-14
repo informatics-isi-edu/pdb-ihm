@@ -1680,7 +1680,7 @@ class PDBClient (object):
                     self.logger.error('Can not upload file "%s" in hatrac "%s". Error: "%s"' % (file_name, new_uri, str(ev)))
                     self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
                     subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', Process_Status_Terms['ERROR_GENERATING_mmCIF_FILE'], user)
-                    self.sendMail(subject, 'RID={}, Can not upload file "{}" in hatrac at location "{"}:\n{}\n'.format(rid, file_name, new_uri, ''.join(traceback.format_exception(et, ev, tb))))
+                    self.sendMail(subject, 'RID={}, Can not upload file "{}" in hatrac at location "{}":\n{}\n'.format(rid, file_name, new_uri, ''.join(traceback.format_exception(et, ev, tb))))
                     return (None, None, None, None)
             return (hatrac_URI, file_name, file_size, hexa_md5)
 
@@ -1689,7 +1689,7 @@ class PDBClient (object):
             self.logger.error('got unexpected exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
             subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', Process_Status_Terms['ERROR_GENERATING_mmCIF_FILE'], user)
-            self.sendMail(subject, 'RID={}, Can not upload file "{}" in hatrac at location "{"}:\n{}\n'.format(rid, file_name, new_uri, ''.join(traceback.format_exception(et, ev, tb))))
+            self.sendMail(subject, 'RID={}, Can not upload file "{}" in hatrac at location "{}":\n{}\n'.format(rid, file_name, new_uri, ''.join(traceback.format_exception(et, ev, tb))))
             return (None, None, None, None)
 
     """
