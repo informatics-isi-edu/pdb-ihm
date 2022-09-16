@@ -1614,20 +1614,67 @@ class PDBClient (object):
         return '{}/output.cif'.format(self.scratch)
             
     """
+    Get the accession serial value
+    """
+    def getNextAccessionSerial(self, rid, user):
+        try:
+            accession_serial_value = None
+            row = {'Entry': rid}
+            url = '/entity/PDB:Accession_Code?defaults=Accession_Serial,Accession_Code'
+            resp = self.catalog.post(
+                url,
+                json=[row]
+            )
+            resp.raise_for_status()
+            
+            self.logger.debug('SUCCEEDED created in the table Accession_Code the row "%s".' % (json.dumps(row, indent=4))) 
+            if len(resp.json()) == 1:
+                row = resp.json()[0]
+                accession_serial_value = row['Accession_Code']
+            else:
+                self.logger.error('Error created in the table Accession_Code the row "%s".' % (json.dumps(row, indent=4)))
+                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMISSION COMPLETE', Process_Status_Terms['ERROR_GENERATING_ACCESSION_CODE'], user)
+                self.sendMail(subject, 'RID: %s\n%s\n' % (rid, Process_Status_Terms['ERROR_GENERATING_ACCESSION_CODE']))
+                return (None, 'Error in getting a new serial value')
+            return (accession_serial_value, None)
+        except:
+            et, ev, tb = sys.exc_info()
+            self.logger.error('got exception "%s"' % str(ev))
+            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+            self.export_error_message = 'ERROR getNextAccessionSerial: "%s"' % str(ev)
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', Process_Status_Terms['ERROR_GENERATING_ACCESSION_CODE'], user)
+            self.sendMail(subject, 'RID: %s\n%s\n' % (rid, ''.join(traceback.format_exception(et, ev, tb))))
+            return (None, str(ev))
+        
+    """
     Get the accession code value
     """
     def getAccessionCode(self, row, user):
         try:
-            value = 'PDBDEV_' + ('00000000' + str(row['Accession_Serial']))[-8:]
+            #value = 'PDBDEV_' + ('00000000' + str(row['Accession_Serial']))[-8:]
+            """
+            Check if we have already an Accession Code
+            """
+            url = '/entity/PDB:Accession_Code/Entry={}'.format(row['RID'])
+            resp = self.catalog.get(
+                url
+            )
+            resp.raise_for_status()
+            rows = resp.json()
+            if len(rows) == 1:
+                row = rows[0]
+                return (row['Accession_Code'], None)
+
+            value, error_message = self.getNextAccessionSerial(row['RID'], user)
             self.logger.debug('Accession Code = {}'.format(value))
+            return (value, error_message)
         except:
             et, ev, tb = sys.exc_info()
             self.logger.error('got exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
             subject = 'PDB-Dev {} {}: {} ({})'.format(row['RID'], 'SUBMISSION COMPLETE', Process_Status_Terms['ERROR_GENERATING_ACCESSION_CODE'], user)
             self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
-            
-        return value
+            return (None, str(ev))
         
     """
     Store the validation error file into hatrac
@@ -2076,7 +2123,20 @@ class PDBClient (object):
             resp = self.catalog.get(url)
             resp.raise_for_status()
             row = resp.json()[0]
-            accession_code = self.getAccessionCode(row, user)
+            accession_code, error_message = self.getAccessionCode(row, user)
+            if accession_code == None:
+                self.updateAttributes('PDB',
+                                      'entry',
+                                      rid,
+                                      ["Process_Status", "accession_code", "Workflow_Status", "Record_Status_Detail"],
+                                      {'RID': rid,
+                                      'Process_Status': Process_Status_Terms['ERROR_GENERATING_ACCESSION_CODE'],
+                                      'accession_code': None,
+                                      'Record_Status_Detail': error_message,
+                                      'Workflow_Status': 'ERROR'
+                                      },
+                                      user)
+                return
             
             if self.is_catalog_dev == True:
                 subject = 'PDB-Dev {}: {} ({})'.format(rid, row['Process_Status'], user)
