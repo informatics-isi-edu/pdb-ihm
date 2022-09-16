@@ -6225,6 +6225,23 @@
 				  "markdown_pattern": "{{{$self.values.Full_Name}}} ({{{$self.values.Email}}})"		   			  
 			      	}
 			      },
+			      "Accession_Code_RCB": {
+			        "entity": true,
+			        "source": [
+			          {
+			            "outbound": [
+			              "PDB",
+			              "Accession_Code_RCB_fkey"
+			            ]
+			          },
+			          "RID"
+			        ],
+			      "markdown_name" : "RCB",		      
+			      "display" : {
+				  "template_engine": "handlebars",
+				  "markdown_pattern": "{{{$self.values.Full_Name}}} ({{{$self.values.Email}}})"		   			  
+			      	}
+			      },
 			      "entry_RMB": {
 			        "entity": true,
 			        "source": [
@@ -6265,6 +6282,131 @@
         },
         {
             "schema": "PDB",
+            "table": "Accession_Code",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Accession_Serial",
+                    "Accession_Code",
+                  {
+                     "markdown_name" : "Entry",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Accession_Code_Entry_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Accession_Code_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Accession_Code_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                    "RCT",
+                    "RMT",
+                    [
+                        "PDB",
+                        "Accession_Code_Owner_fkey"
+                    ]
+                ],
+                "filter": {
+                	"and":
+                	[
+                  {
+                     "markdown_name" : "Accession Serial",
+                     "source" : "Accession_Serial"
+                  },
+                  {
+                     "markdown_name" : "Accession Code",
+                     "source" : "Accession_Code"
+                  }
+                ]
+                },
+                "detailed": [
+                    "RID",
+                {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Accession_Code_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Accession_Code_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                      "Accession_Serial",
+                      "Accession_Code",
+                  {
+                     "markdown_name" : "Entry",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Accession_Code_Entry_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  }
+                ],
+                "entry/edit": [
+                    "Accession_Code"
+                ],
+                "entry": [
+                  {
+                     "markdown_name" : "Entry",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Accession_Code_Entry_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  }
+                ]
+            }
+        },
+        {
+            "schema": "PDB",
             "table": "entry",
             "uri": "tag:isrd.isi.edu,2016:visible-columns",
             "value": {
@@ -6273,8 +6415,10 @@
                     "id",
                     "mmCIF_File_URL",
                     "Image_File_URL",
-                    "Accession_Serial",
-                    "accession_code",
+                    [
+                        "PDB",
+                        "entry_accession_code_fkey"
+                    ],
                     [
                         "PDB",
                         "entry_Workflow_Status_fkey"
@@ -6331,7 +6475,17 @@
                 	[
                   {
                      "markdown_name" : "Accession Code",
-                     "source" : "accession_code"
+					  "hide_null_choice": true, 
+					  "hide_not_null_choice": true,
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "entry_accession_code_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
                   },
                   {
                      "markdown_name" : "Deposit Date",
@@ -6402,7 +6556,6 @@
                     "Image_File_URL",
                     "Workflow_Status",
                     "accession_code",
-                    "Accession_Serial",
                     "Deposit_Date",
                     "Release_Date",
                     "Record_Status_Detail"
@@ -6445,8 +6598,10 @@
                         "markdown_name": "Image File Size (Bytes)",
                         "source": "Image_File_Bytes"
                     },
-                    "accession_code",
-                    "Accession_Serial",
+                    [
+                        "PDB",
+                        "entry_accession_code_fkey"
+                    ],
                    [
                         "PDB",
                         "entry_Workflow_Status_fkey"
@@ -6480,8 +6635,6 @@
                         "PDB",
                         "entry_Workflow_Status_fkey"
                     ],
-                    "accession_code",
-                    "Accession_Serial",
                     "Deposit_Date",
                     "Release_Date",
                     "Notes"
@@ -6493,8 +6646,6 @@
                         "PDB",
                         "entry_Workflow_Status_fkey"
                     ],
-                    "accession_code",
-                    "Accession_Serial",
                     "Notes"
                 ]
             }
@@ -26864,6 +27015,10 @@
                                 },
                                 {
                                     "children": [
+                                        {
+                                            "name": "Accession Code",
+                                            "url": "/chaise/recordset/catalog_number/PDB:Accession_Code"
+                                        },
                                         {
                                             "name": "Entry Error File",
                                             "url": "/chaise/recordset/catalog_number/PDB:Entry_Error_File"
