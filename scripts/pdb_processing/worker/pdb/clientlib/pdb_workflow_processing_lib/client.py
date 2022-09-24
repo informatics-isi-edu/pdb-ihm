@@ -443,9 +443,11 @@ class PDBClient (object):
             table_name = line[1:].split('.')[0]
             if table_name not in mmCIF_tables:
                 mmCIF_tables.append(table_name)
-            if table_name not in deriva_tables and table_name not in mmCIF_export and table_name not in mmCIF_ignored:
+            if table_name not in deriva_tables and table_name not in mmCIF_export and table_name not in mmCIF_ignored and not table_name.startswith('flr_'):
                 mmCIF_ignored.append(table_name)
-            if table_name not in deriva_tables and table_name in mmCIF_export:
+            if table_name not in deriva_tables and (table_name in mmCIF_export or table_name.startswith('flr_')):
+                if table_name.startswith('flr_'):
+                    return False
                 if loopLine != None:
                     fw.write('{}\n'.format(loopLine))
                 if table_name in matrix_tables:
@@ -1231,7 +1233,7 @@ class PDBClient (object):
             subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], user)
             self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
             returncode = 1
-            error_message = ''.join(traceback.format_exception(et, ev, tb))
+            error_message = str(ev)
             return (returncode,error_message)
         
         """
@@ -1284,7 +1286,7 @@ class PDBClient (object):
                 subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], user)
                 self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
                 returncode = 1
-                error_message = ''.join(traceback.format_exception(et, ev, tb))
+                error_message = str(ev)
                 self.rollbackInsertedRows(inserted_records, entry_id, user)
                 break
         
