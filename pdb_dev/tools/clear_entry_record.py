@@ -79,6 +79,8 @@ def main(server_name, catalog_id, credentials, rid, dry):
                     val = rid
                 else:
                     val = id
+                if k == 'struct':
+                    val = id
                 url = '/entity/PDB:{}/{}={}'.format(k, v, val)
                 resp = catalog.get(url)
                 resp.raise_for_status()
