@@ -3842,6 +3842,12 @@
         },
         {
             "schema": "PDB",
+            "table": "Accession_Code",
+            "uri": "tag:isrd.isi.edu,2016:generated",
+            "value": null
+        },
+        {
+            "schema": "PDB",
             "table": "audit_conform",
             "uri": "tag:isrd.isi.edu,2016:generated",
             "value": null
