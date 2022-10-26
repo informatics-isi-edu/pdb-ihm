@@ -6423,7 +6423,7 @@
                     "Image_File_URL",
                     [
                         "PDB",
-                        "entry_accession_code_fkey"
+                        "entry_Accession_Code_fkey"
                     ],
                     [
                         "PDB",
@@ -6487,7 +6487,7 @@
                         {
                            "outbound" : [
                               "PDB",
-                              "entry_accession_code_fkey"
+                              "entry_Accession_Code_fkey"
                            ]
                         },
                         "RID"
@@ -6561,7 +6561,7 @@
                     "Image_File_Name",
                     "Image_File_URL",
                     "Workflow_Status",
-                    "accession_code",
+                    "Accession_Code",
                     "Deposit_Date",
                     "Release_Date",
                     "Record_Status_Detail"
@@ -6606,7 +6606,7 @@
                     },
                     [
                         "PDB",
-                        "entry_accession_code_fkey"
+                        "entry_Accession_Code_fkey"
                     ],
                    [
                         "PDB",
