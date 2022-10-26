@@ -17391,7 +17391,7 @@
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
                 //"name": "Types of Atoms in the Structure"
-                "markdown_name": "Types of Atoms^*^",
+                "markdown_name": "Types of Atoms",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
