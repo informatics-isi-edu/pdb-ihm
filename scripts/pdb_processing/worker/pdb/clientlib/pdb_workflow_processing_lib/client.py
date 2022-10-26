@@ -2071,8 +2071,8 @@ class PDBClient (object):
                 
             entry_id = row['id']
             record_status = 'REL'
-            records_release = mmCIF_release_records.replace('<status_code>', record_status).replace('<entry_id>', row['accession_code']).replace('<deposition_date>', deposition_date).replace('<revision_date>', revision_date)
-            file_name = '{}.cif'.format(row['accession_code'])
+            records_release = mmCIF_release_records.replace('<status_code>', record_status).replace('<entry_id>', row['Accession_Code']).replace('<deposition_date>', deposition_date).replace('<revision_date>', revision_date)
+            file_name = '{}.cif'.format(row['Accession_Code'])
             fr = open('{}/{}'.format(input_dir, filename), 'r')
             fw = open('{}/{}'.format(input_dir, file_name), 'w')
             audit_conform = False
@@ -2082,12 +2082,12 @@ class PDBClient (object):
                 if not line:
                     break
                 if line.startswith('data_'):
-                    fw.write('data_{}\n'.format(row['accession_code']))
+                    fw.write('data_{}\n'.format(row['Accession_Code']))
                 elif line.startswith('_entry.id'):
-                    fw.write('_entry.id  {}\n'.format(row['accession_code']))
+                    fw.write('_entry.id  {}\n'.format(row['Accession_Code']))
                 elif line.startswith('_struct.'):
                     if line.startswith('_struct.entry_id'):
-                        line = '_struct.entry_id\t{}\n'.format(row['accession_code'])
+                        line = '_struct.entry_id\t{}\n'.format(row['Accession_Code'])
                     fw.write(line)
                 elif line.startswith('_audit_conform'):
                     audit_conform = True
@@ -2162,10 +2162,10 @@ class PDBClient (object):
                 self.updateAttributes('PDB',
                                       'entry',
                                       rid,
-                                      ["Process_Status", "accession_code", "Workflow_Status", "Record_Status_Detail"],
+                                      ["Process_Status", "Accession_Code", "Workflow_Status", "Record_Status_Detail"],
                                       {'RID': rid,
                                       'Process_Status': Process_Status_Terms['ERROR_GENERATING_ACCESSION_CODE'],
-                                      'accession_code': None,
+                                      'Accession_Code': None,
                                       'Record_Status_Detail': error_message,
                                       'Workflow_Status': 'ERROR'
                                       },
@@ -2179,10 +2179,10 @@ class PDBClient (object):
             self.updateAttributes('PDB',
                                   'entry',
                                   rid,
-                                  ["Process_Status", "accession_code", "Workflow_Status"],
+                                  ["Process_Status", "Accession_Code", "Workflow_Status"],
                                   {'RID': rid,
                                   'Process_Status': Process_Status_Terms['SUCCESS'],
-                                  'accession_code': accession_code,
+                                  'Accession_Code': accession_code,
                                   'Workflow_Status': 'HOLD'
                                   },
                                   user)
