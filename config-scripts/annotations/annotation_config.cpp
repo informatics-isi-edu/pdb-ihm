@@ -6494,6 +6494,20 @@
                      ]
                   },
                   {
+                     "markdown_name" : "Created By",
+					  "hide_null_choice": true, 
+					  "hide_not_null_choice": true,
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "entry_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
                      "markdown_name" : "Deposit Date",
                      "source" : "Deposit_Date"
                   },
