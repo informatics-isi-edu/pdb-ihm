@@ -55,6 +55,7 @@ FKEY_ACL_BINDINGS = {
 }
 
 # -- ---------------------------------------------------------------------
+# clear all the ACLs in the table and reset the fkey.acls to default
 def clear_table_acls(table):
     
     for fkey in table.foreign_keys:
@@ -78,6 +79,12 @@ def clear_table_acls(table):
         pk_table = fkey.pk_table        
         print("       S-- fk %s:%s (%s->%s:%s) acls: %s, acl_bindings: %s" % (table.name, fkey.constraint_name, from_cols, fkey.pk_table.name, to_cols, fkey.acls, fkey.acl_bindings))        
 
+# -- ---------------------------------------------------------------------
+def clear_schema_acls(schema):
+    schema.acls.clear()
+    schema.acl_bindings.clear()
+    for table in schema.tables.values():
+        clear_table_acls(table)
 
 # -- ---------------------------------------------------------------------
 def print_table_acls(table):
@@ -218,12 +225,9 @@ def set_PDB_acl(model):
 
     # inherit catalog level policy. Overwrite the tables that submitters can insert in on individual tables.
     #schema.clear(clear_comment=False, clear_annotations=False, clear_acls=True, clear_acl_bindings=True)
-    schema.acls.clear()
-    schema.acl_bindings.clear()
-    for table in schema.tables.values():
-        clear_table_acls(table)
+    clear_schema_acls(schema)
     
-    # clear up the Owner foreng keys
+    # clear up the Owner foreng keys: done through table.clear()
     
     # for tables that have fkeys to entry, set its read and edit policies based on entry
 
@@ -235,16 +239,12 @@ def set_Vocab_acl(model):
     schema = model.schemas["Vocab"]
 
     #schema.clear(clear_comment=False, clear_annotations=False, clear_acls=True, clear_acl_bindings=True)
-    schema.acls.clear()
-    schema.acl_bindings.clear()    
-    for table in schema.tables.values():
-        clear_table_acls(table)
+    clear_schema_acls(schema)
     
     # Anyone can read. The rest follows catalog policy
     schema.acls = {
         "select": g["entry_creators"],
     }
-
 
 # -- ---------------------------------------------------------------------
 def set_public_acl(model):
@@ -253,10 +253,7 @@ def set_public_acl(model):
     # -- reset policies
     # there is a bug in acl_binding.clear()
     #schema.clear(clear_comment=False, clear_annotations=False, clear_acls=True, clear_acl_bindings=True)
-    schema.acls.clear()
-    schema.acl_bindings.clear()        
-    for table in schema.tables.values():
-        clear_table_acls(table)
+    clear_schema_acls(schema)    
     
     schema.acls = {
         "select": g["entry_updaters"],
@@ -292,10 +289,7 @@ def set_WWW_acl(model):
 
     # There is a bug in schema.clear. Need to set fkey.acls to default
     #schema.clear(clear_comment=False, clear_annotations=False, clear_acls=True, clear_acl_bindings=True)
-    schema.acls.clear()
-    schema.acl_bindings.clear()            
-    for table in schema.tables.values():
-        clear_table_acls(table)
+    clear_schema_acls(schema)
 
     # -- inherit policy from catalog e.g. only entry_updaters can do anything
     # -- Page
@@ -534,7 +528,7 @@ def set_PDB_Accession_Code(model):
 def set_PDB_Data_Dictionary_Related(model):
     for table_name in ["Data_Dictionary", "Supported_Dictionary", "Conform_Dictionary"]:
         table = model.schenas["PDB"].tables[table_name]
-        clear_table_acls(table)        
+        clear_table_acls(table)
         # allow all to read
         table.acls = {
             "select": g["entry_creators"],
