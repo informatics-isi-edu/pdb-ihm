@@ -429,8 +429,9 @@ def set_PDB_entry_acl(model):
         "insert": g["entry_updaters"],
         "update": g["entry_updaters"],
     }
-    table.foreign_key[(schema, "entry_Workflow_Status_fkey")].acl_bindings = {     
-        "submitters_modify_based_on_workflow_status": {
+    table.foreign_key[(schema, "entry_Workflow_Status_fkey")].acl_bindings = {
+        # submitters can only selected workflow status that they are allowed (PDB_Submitter_Allow)
+        "submitters_select_allowed_workflow_status": {
             "types": [ "insert", "update" ],
             "scope_acl": g["pdb-submitters"],
             "projection": [
