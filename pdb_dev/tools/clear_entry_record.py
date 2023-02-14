@@ -27,6 +27,8 @@ import json
 from deriva.core import ErmrestCatalog, AttrDict, get_credential, DEFAULT_CREDENTIAL_FILE, tag, urlquote, DerivaServer, get_credential, BaseCLI
 from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key, ForeignKey, DomainType, ArrayType
 import traceback
+from .. import utils
+
 
 class ApplicationClient (BaseCLI):
     def __init__(self, description, epilog, version=None, hostname_required=False, config_file_required=False):
@@ -44,7 +46,7 @@ def main(server_name, catalog_id, credentials, rid, dry):
         print('server_name={}, catalog_id={}, rid={}, dry={}, '.format(server_name, catalog_id, rid, dry))
         server = DerivaServer('https', server_name, credentials)
         catalog = server.connect_ermrest(catalog_id)
-        catalog.dcctx['cid'] = 'oneoff/clear'
+        catalog.dcctx['cid'] = utils.DCCTX['tools']['clear_entry']
         url = '/entity/PDB:entry/RID={}'.format(rid)
         resp = catalog.get(url)
         resp.raise_for_status()
@@ -111,7 +113,10 @@ def main(server_name, catalog_id, credentials, rid, dry):
 
 
 if __name__ == '__main__':
-    args = ApplicationClient('ad-hoc clear entry record tool', None, 1).parse_cli()
+    cli = utils.PDBDEV_CLI('Clear PDB.entry record tool', None, 1, hostname_required=True, catalog_id_required=True, rid_required=True)
+    cli.parser.add_argument('--action', action='store', type=str, choices=['DRY', 'DELETE'], default='DRY', help='The action to be performed: DRY or DELETE.')
+    args = cli.parse_cli()
+    print("env is %s" % (utils.env,))        
     credentials = get_credential(args.host, args.credential_file)
     main(args.host, args.catalog_id, credentials, args.rid, args.action=='DRY')
 
