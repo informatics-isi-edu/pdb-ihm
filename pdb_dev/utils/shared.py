@@ -22,3 +22,57 @@ DCCTX = {
     },
 }
 
+class Config():
+    host = None
+    catalog_id = None
+    is_www = False
+    is_staging = False
+    is_dev = False
+    
+    def __init__(self):
+        pass
+
+    # set config variables from hostname and ctalog_id
+    def apply_hostname(self, host, catalog_id):
+        self.host = host
+        self.catalog_id = catalog_id
+        
+        if host == "data.pdb-dev.org":
+            self.is_www = True
+        elif "staging" == "dev.pdb-dev.org" and catalog_id == "50":
+            self.is_staging = True
+        else:
+            self.is_dev = True
+            
+    def print(self):
+        print("host:%s, catalog_id:%s, is_www=%s, is_staging=%s, is_dev=%s" % (self.host, self.catalog_id, self.is_www, self.is_staging, self.is_dev))
+
+cfg = Config()
+
+# -- =================================================================================
+# -- add catalog_id as an optional argument with default for SMITE
+# -- set default host to be SMITE dev server
+class PDBDEV_CLI(BaseCLI):
+    def __init__(self, description, epilog, version=None, hostname_required=False, config_file_required=False, catalog_id_required=True, rid_required=False):
+        if version:
+            super().__init__(description, epilog, version, False, config_file_required)            
+        else:
+            super().__init__(description, epilog, False, config_file_required)
+            
+        self.remove_options(['--host', '--config-file'])
+        self.parser.add_argument('--host', metavar='<host>', help="Fully qualified hostname (default=dev.pdb-dev.org)", default="dev.pdb-dev.org", required=catalog_id_required)
+        self.parser.add_argument('--catalog-id', metavar='<id>', help="Deriva catalog ID (default=99)", default=1, required=catalog_id_required)
+        self.parser.add_argument('--rid', type=str, metavar='<RID>', action='store', help='The RID of the record.', required=rid_required, )
+        #self.parser.set_defaults(host='dev.pdb-dev.org')
+        
+
+    def parse_cli(self):
+        global env
+        args = super().parse_cli()
+
+        cfg.apply_hostname(args.host, args.catalog_id)
+        
+        return args
+    
+# -- =================================================================================        
+

@@ -116,7 +116,6 @@ if __name__ == '__main__':
     cli = utils.PDBDEV_CLI('Clear PDB.entry record tool', None, 1, hostname_required=True, catalog_id_required=True, rid_required=True)
     cli.parser.add_argument('--action', action='store', type=str, choices=['DRY', 'DELETE'], default='DRY', help='The action to be performed: DRY or DELETE.')
     args = cli.parse_cli()
-    print("env is %s" % (utils.env,))        
     credentials = get_credential(args.host, args.credential_file)
     main(args.host, args.catalog_id, credentials, args.rid, args.action=='DRY')
 
