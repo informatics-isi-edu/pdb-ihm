@@ -44,6 +44,8 @@ ERMREST_CATALOG_ACLS = {
     "insert": g["entry_updaters"],
     "update": g["entry_updaters"],
     "delete": g["entry_updaters"],
+    "create": [],
+    "write": [],
 }
 
 FKEY_ACLS = {
@@ -230,7 +232,10 @@ def print_acls(model, schema_names=["PDB"]):
                     print("    fk: %s:%s (%s->%s:%s) acls: %s, acl_bindings: %s" % (table.name, fkey.constraint_name, from_cols, fkey.pk_table.name, to_cols, fkey.acls, fkey.acl_bindings))
 
         continue
-    
+
+# -- ======================================================================
+# schema policies
+#    
 # -- ---------------------------------------------------------------------
 '''
   PDB schema Inherit catalog level policy. Overwrite the tables that submitters can insert in on individual tables.
@@ -242,13 +247,15 @@ def set_PDB_acl(model):
     
     #schema.clear(clear_comment=False, clear_annotations=False, clear_acls=True, clear_acl_bindings=True)
     clear_schema_acls(schema)
-
+    
     set_PDB_entry(model)
     set_PDB_entry_related(model)      # set appropriate Entry_Related_File
+    set_PDB_entry_coordinates_related(model)
+    set_PDB_Accession_Code(model)    
     set_PDB_entry_collection_related(model)
     set_PDB_entry_related_system_generated_tables(model)
-    set_PDB_Accession_Code(model)
     set_PDB_Data_Dictionary_Related(model)
+    set_PDB_Entry_Related_File(model)
     set_PDB_Entry_Related_File_Templates(model)    
 
 # -- ---------------------------------------------------------------------
@@ -337,7 +344,10 @@ def set_WWW_acl(model):
             "scope_acl": ["*"]}
     }    
     '''
-    
+
+# -- ======================================================================
+# table policies
+#
 # -- ---------------------------------------------------------------------
 def set_PDB_entry(model):
     schema = model.schemas["PDB"]    
@@ -364,12 +374,9 @@ def set_PDB_entry(model):
     }
     
     # ==== table-level =====    
-    # Policy: Submitter can create but can only see their own entries. They can't delete entries during a certain workflow status.
+    # Policy: Submitter can create but can only see their own entries. They can't modify entries during a certain workflow status.
     table.acls = {
-        "select": g["entry_updaters"],
         "insert": g["entry_creators"],
-        "update": g["entry_updaters"],                    
-        "delete": g["entry_updaters"],          
     }
     table.acl_bindings = {
         "submitters_read_own_entries": {
@@ -422,12 +429,19 @@ def set_PDB_entry(model):
         "select": g["entry_creators"],        
         "insert": g["entry_updaters"],
     }
+    table.columns["Deposit_Date"].acl_bindings = {
+        "submitters_modify_based_on_workflow_status": False,
+    }
 
     # -- Notes: only entry updaters can create and read
     table.columns["Notes"].acls = {            
         "select": g["entry_updaters"],        
         "insert": g["entry_updaters"],
       }
+    table.columns["Notes"].acl_bindings = {
+        "submitters_read_own_entries": False,        
+        "submitters_modify_based_on_workflow_status": False,
+    }
 
     # ==== foreign keys =====
 
@@ -474,8 +488,6 @@ def set_PDB_entry_related(model):
     # the script will just clean the table policy before setting a new one. 
     for table in schema.tables.values():
         # == exclude system generated tables that linked to entry
-        if table.name in entry_related_exclusion:
-            continue
         for fkey in table.foreign_keys:
             from_cols = {c.name for c in fkey.column_map.keys()}
             to_cols = {c.name for c in fkey.column_map.values()}
@@ -490,7 +502,7 @@ def set_PDB_entry_related(model):
                 fkey.acl_bindings = {
                     # submitter can only choose their own entries with certain Workflow Status
                     "submitters_modify_based_on_entry_workflow_status": {
-                        "types": ["update", "delete"],
+                        "types": ["insert", "update"],
                         "scope_acl": g["pdb-submitters"],
                         "projection": [
                             {
@@ -508,11 +520,14 @@ def set_PDB_entry_related(model):
                 }
                 # == table policies if haven't already set. Might not need to check if there is only 1 fkey.
                 if table in entry_related_tables:
+                    print("    x existed: entry_related policies: %s" % (table.name,))                    
                     continue
-                print("  - set_entry_related: %s" % (table.name,))
+                print("  - set_entry_related policies: %s" % (table.name,))
                 entry_related_tables.append(table)
-                # set acls to be the same as entry table
-                table.acls = entry_table.acls
+                # set acls: no acl is needed. use default policy
+                table.acls = {
+                    "insert" : g["entry_creators"]
+                }
                 # submitters can reads their own entries and update according to its entry's workflow status (e.g. follow the fkey to entry table)        
                 table.acl_bindings = {
                     "submitter_read_own_entries" : {
@@ -528,28 +543,91 @@ def set_PDB_entry_related(model):
                         "projection": [
                             {"outbound": ["PDB", fkey.constraint_name]},           
                             {"or": [
-                                { "filter": "Workflow_Status", "operator": "=", "operand": "DRAFT",  },
-                                { "filter": "Workflow_Status", "operator": "=", "operand": "DEPO", },
-                                { "filter": "Workflow_Status", "operator": "=", "operand": "RECORD READY", },
-                                { "filter": "Workflow_Status", "operator": "=", "operand": "ERROR", }
+                                { "filter": "Workflow_Status", "operator": "=", "operand": "DRAFT"  },
+                                { "filter": "Workflow_Status", "operator": "=", "operand": "DEPO" },
+                                { "filter": "Workflow_Status", "operator": "=", "operand": "RECORD READY" },
+                                { "filter": "Workflow_Status", "operator": "=", "operand": "ERROR" }
                             ]},
                             "RCB",
                         ],
                         "projection_type": "acl",
                     }
                 }
+                print(table.acl_bindings)
             # -- end fkey that point to entry
         # -- end fkey
     # -- end table
 
-
+    
 # -- ---------------------------------------------------------------------
+# overwrite general entry_related policies
+# Policy: these tables rely on content stored in uploaded mmCIF files and cannot be changed through UI
+# check policy docs: https://docs.google.com/document/d/1M5NtfwvpIsw5thcBoj7KzrCkRhNlNS3pOD8L-TQrKEg/edit
+def set_PDB_entry_coordinates_related(model):
+    schema = model.schemas["PDB"]
+
+    curator_edit_exclusions = ["entity_poly_seq", "struct_asym", "audit_conform"]
+    user_edit_exclusions = ["chem_comp", "entity_poly", "entity_poly_seq", "atom_type", "ihm_model_list"]
+    
+    # exclude submitter from editing these tables
+    for tname in curator_edit_exclusions + user_edit_exclusions:
+        table = schema.tables[tname]
+        clear_table_acls(table) # clear policies
+        # -- take away curator write access. Only pdb-ihm can modify
+        if tname in curator_edit_exclusions:
+            table.acl = {
+                "insert": g["pdb-ihm"],
+                "update": g["pdb-ihm"],
+                "delete": g["pdb-ihm"],
+            }
+        
+        # -- submitters can only read their own entries, no editing
+        entry_fkey = None
+        for fkey in table.foreign_keys:
+            to_cols = {c.name for c in fkey.column_map.values()}
+            if fkey.pk_table.name == "entry" and to_cols == {"id"} :
+                entry_fkey = fkey
+                break
+        if entry_fkey:
+            table.acl_bindings = {
+                "submitter_read_own_entries" : {
+                    "types": ["select"],
+                    "scope_acl": g["pdb-submitters"],
+                    "projection": [{"outbound": ["PDB", entry_fkey.constraint_name ]}, "RCB"],
+                    "projection_type": "acl"
+                },
+            }
+        else:
+            raise Exception("ERROR: %s do not have proper foreign keys to entry table" % (tname))
+            
+    # -- for
+
+    
+# -- ---------------------------------------------------------------------    
+def set_PDB_Accession_Code(model):
+    table = model.schemas["PDB"].tables["Accession_Code"]
+    clear_table_acls(table)
+    print("  - set_PDB_Accession_Code")
+    
+    # submitters can only read their entry Accession_Code
+    table.acl_bindings = {
+        "submitters_read_own_entries": {
+            "types": ["select"],
+            "scope_acl": g["pdb-submitters"],
+            "projection": [{"outbound": ["PDB", "Accession_Code_Entry_fkey"]}, "RCB"],
+            "projection_type": "acl"
+        }
+    }
+
+# -- ---------------------------------------------------------------------    
 '''
   policy: pdb-ihm generated content, entry_updater can read, pdb_submitter can only read their own entry
 '''
 def set_PDB_entry_collection_related(model):
-    collection_table = schemas.tables["_ihm_entry_collection"]
-    mapping_table = schemas.tables["_ihm_entry_collection_mapping"]
+    schema = model.schemas["PDB"]
+    collection_table = schema.tables["ihm_entry_collection"]
+    mapping_table = schema.tables["ihm_entry_collection_mapping"]
+    entry_table = schema.tables["entry"]    
     # -- clear table policies in case they were set by entry_related logic
     clear_table_acls(collection_table)
     clear_table_acls(mapping_table)
@@ -560,17 +638,17 @@ def set_PDB_entry_collection_related(model):
     # find 2 fkeys in mapping table
     for fkey in mapping_table.foreign_keys:
         pk_table = fkey.pk_table
-        if pk_table = entry_table:
+        if pk_table == entry_table:
             entry_fkey = fkey
-        if pk_table = mapping_table:
+        if pk_table == collection_table:
             collection_fkey = fkey
 
     # this shouldn't happen
     if entry_fkey == None or collection_fkey == None:
-        raise Exception("ERROR: _ihm_entry_collection_mappings do not have proper foreign keys to entry and/or collection table")
+        raise Exception("ERROR: ihm_entry_collection_mapping do not have proper foreign keys to entry and/or collection table")
 
     # == set policy on _ihm_entry_collection table
-    # -- acl: adopt schema levevl for acls e.g. only entry_updaters can read/write
+    # -- acl: adopt schema level for acls e.g. only entry_updaters can read/write
     # -- acl_bindings: pdb_submitters can only see their entries
     collection_table.acl_bindings = {
         "submitter_read_own_entries" : {
@@ -597,14 +675,13 @@ def set_PDB_entry_collection_related(model):
         }
     }
     
-    
 # -- ---------------------------------------------------------------------
 '''
   policy: pdb-ihm generated content, entry_updater can read, pdb_submitter can only read their own entry
 '''
 def set_PDB_entry_related_system_generated_tables(model):
     schema = model.schemas["PDB"]
-    for tname in ["Entry_Error_File", "Entry_mmCIF_File"]
+    for tname in ["Entry_Error_File", "Entry_mmCIF_File"]:
         print("  - set_entry_related_system_generated_table: %s" % (tname,))        
         table = schema.tables[tname]
         clear_table_acls(table) 
@@ -621,7 +698,7 @@ def set_PDB_entry_related_system_generated_tables(model):
             from_cols = {c.name for c in fkey.column_map.keys()}
             to_cols = {c.name for c in fkey.column_map.values()}
             pk_table = fkey.pk_table
-            if pk_table.name == "entry" and to_cols == {"id"} :
+            if pk_table.name == "entry":  
                 table.acl_bindings = {
                     "submitter_read_own_entries" : {
                         "types": ["select"],
@@ -634,22 +711,6 @@ def set_PDB_entry_related_system_generated_tables(model):
         # -- end fkey
     # -- end tname
     
-# -- ---------------------------------------------------------------------    
-def set_PDB_Accession_Code(model):
-    table = model.schemas["PDB"].tables["Accession_Code"]
-    clear_table_acls(table)
-    print("  - set_PDB_Accession_Code")
-    
-    # submitters can only read their entry Accession_Code
-    table.acl_bindings = {
-        "submitters_read_own_entries": {
-            "types": ["select"],
-            "scope_acl": g["pdb-submitters"],
-            "projection": [{"outbound": ["PDB", "Accession_Code_Entry_fkey"]}, "RCB"],
-            "projection_type": "acl"
-        }
-    }
-
 # -- ---------------------------------------------------------------------
 # Data_Dictionary, Supported_Dictionary: only updater can read and do anything
 def set_PDB_Data_Dictionary_Related(model):
@@ -659,7 +720,31 @@ def set_PDB_Data_Dictionary_Related(model):
         clear_table_acls(table)                
         # use default schema ACLs (only entry_updaters can do anything to these tables)
 
+    
+# -- ---------------------------------------------------------------------
+def set_PDB_Entry_Related_File(model):
+    schema = model.schemas["PDB"]
+    table = schema.tables["Entry_Related_File"]
 
+    # -- table acl and entry_fkey are set in set_PDB_entry_related()
+
+    # -- update workflow_status fkey
+    table.foreign_keys[(schema, "Entry_Related_File_Restraint_Workflow_Status_fkey")].acl_bindings = {
+        # submitters can only selected workflow status that they are allowed (PDB_Submitter_Allow)
+        "submitters_select_allowed_workflow_status": {
+            "types": [ "insert", "update" ],
+            "scope_acl": g["pdb-submitters"],
+            "projection": [
+                {"or": [
+                    { "filter": "Name", "operator": "=", "operand": "DRAFT",  },
+                    { "filter": "Name", "operator": "=", "operand": "DEPO", },
+                ]},
+                "RID"
+            ],
+            "projection_type": "nonnull"
+        }
+    }
+    
 # -- ---------------------------------------------------------------------
 # Any group members should be able to read?
 # current acls:
@@ -678,7 +763,6 @@ def set_PDB_Entry_Related_File_Templates(model):
         table.acls = {
             "select": g["entry_creators"],            
         }
-                
 # -- ---------------------------------------------------------------------
 # 
 def set_ermrest_acl(catalog):
@@ -688,14 +772,14 @@ def set_ermrest_acl(catalog):
     #print(json.dumps(schema, indent=2))
 
     # test deriva-py clear function
-    print_table_acls(model.schemas["PDB"].tables["entry"])    
+    #print_table_acls(model.schemas["PDB"].tables["entry"])    
     if False:
         print_acls(model, ["PDB"])
         #clear_table_acls(model.schemas["PDB"].tables["Entry_Related_File_Templates"])        
         set_PDB_Entry_Related_File_Templates(model)
         print_table_acls(model.schemas["PDB"].tables["Entry_Related_File_Templates"])
 
-    '''
+
     # -- catalog
     model.acls = ERMREST_CATALOG_ACLS
     # -- schemas
@@ -705,7 +789,7 @@ def set_ermrest_acl(catalog):
     set_WWW_acl(model)
     # -- apply 
     model.apply()
-    '''
+
 # -- =================================================================================
         
 def main(server_name, catalog_id, credentials):
@@ -721,6 +805,6 @@ def main(server_name, catalog_id, credentials):
 if __name__ == "__main__":
     args = PDBDEV_CLI(DCCTX["acl"], None, 1).parse_cli()
     credentials = get_credential(args.host, args.credential_file)
-    print(credentials)
+    print("credential: %s" % (credentials))
     main(args.host, args.catalog_id, credentials)
 
