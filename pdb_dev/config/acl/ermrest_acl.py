@@ -474,9 +474,9 @@ def set_PDB_entry(model):
 
 # -- ---------------------------------------------------------------------
 '''
-  Include all tables that has a forieng key pointed to entry.id excepted those in ENTRY_RELATED_SYSTEM_GENERATED_TABLE_NAMES
-  All entry related tables have direct fkey to entry (no tables that link to entry through assocation)
-  TODO: address fkey to entry that's not through id
+  Include all entry related tables have direct fkey to entry.id (no tables that link to entry through assocation).
+  A subset of these tables with different policies will be set later in different functions.
+  This approach will allow the acl to better adapt to model changes related to mmCIF.
 '''
 # Apply the entry access control on these tables 
 def set_PDB_entry_related(model):
@@ -574,7 +574,8 @@ def set_PDB_entry_coordinates_related(model):
     for tname in curator_edit_exclusions + user_edit_exclusions:
         table = schema.tables[tname]
         clear_table_acls(table) # clear policies
-        # -- take away curator write access. Only pdb-ihm can modify
+        # -- user_edit_exclusion: uses default schema/catalog policies.  
+        # -- curator_edit_exclusion: take away curator write access. Only pdb-ihm can modify
         if tname in curator_edit_exclusions:
             table.acls.update({
                 "insert": g["pdb-ihm"],
@@ -648,7 +649,7 @@ def set_PDB_entry_collection_related(model):
     if entry_fkey == None or collection_fkey == None:
         raise Exception("ERROR: ihm_entry_collection_mapping do not have proper foreign keys to entry and/or collection table")
 
-    # == set policy on _ihm_entry_collection table
+    # == set policy on ihm_entry_collection table
     # -- acl: adopt schema level for acls e.g. only entry_updaters can read/write
     # -- acl_bindings: pdb_submitters can only see their entries
     collection_table.acl_bindings.update({
@@ -723,13 +724,15 @@ def set_PDB_Data_Dictionary_Related(model):
 
     
 # -- ---------------------------------------------------------------------
+# Added on additional fkey policies in Entry_Related_File.
+# Do not clear the table since the rest of the policies are set in set_PDB_entry_related()
 def set_PDB_Entry_Related_File(model):
     schema = model.schemas["PDB"]
     table = schema.tables["Entry_Related_File"]
 
     # -- table acl and entry_fkey are set in set_PDB_entry_related()
 
-    # -- update workflow_status fkey
+    # -- update restraint_workflow_status fkey
     fkey = table.foreign_keys[(schema, "Entry_Related_File_Restraint_Workflow_Status_fkey")]
     fkey.acls.update({
         "insert": g["entry_updaters"],
@@ -750,8 +753,8 @@ def set_PDB_Entry_Related_File(model):
             "projection_type": "nonnull"
         }
     })
+    #print("set_PDB_entry_Related_Fiie: acl:%s --- acl_bindings:%s" % (fkey.acls, fkey.acl_bindings))    
 
-    print("set_PDB_entry_Related_Fiie: acl:%s --- acl_bindings:%s" % (fkey.acls, fkey.acl_bindings))    
 # -- ---------------------------------------------------------------------
 # Any group members should be able to read?
 # current acls:
@@ -770,6 +773,7 @@ def set_PDB_Entry_Related_File_Templates(model):
         table.acls.update({
             "select": g["entry_creators"],            
         })
+
 # -- ---------------------------------------------------------------------
 # 
 def set_ermrest_acl(catalog):

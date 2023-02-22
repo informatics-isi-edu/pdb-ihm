@@ -32,7 +32,7 @@ setup(
     packages=find_packages(exclude=["tests", "tmp"]),
     entry_points={
         'console_scripts': [
-            'pdb_dev_clear_entry_record = smite.tools.clear_entry_record:main',
+            'pdb_dev_clear_entry_record = pdb_dev.tools.clear_entry_record:main',
 #            'smite-imaging-client = smite.pipelines.image_processing.client:main'
         ]
     },
