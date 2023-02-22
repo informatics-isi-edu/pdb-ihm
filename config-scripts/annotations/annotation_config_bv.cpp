@@ -9836,15 +9836,89 @@
             "table": "ihm_entry_collection_mapping",
             "uri": "tag:isrd.isi.edu,2016:visible-columns",
             "value": {
-                "*": [
+                "compact": [
                     "RID",
-                    "collection_id",
-                    "entry_id"
+                    {
+                        "comment": "Entry Collection Id",
+                        "markdown_name": "Entry Collection Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_collection_id_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {
+                        "comment": "Entry Id",
+                        "markdown_name": "Entry Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_entry_id_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {     
+                        "comment": "Entry Accession Code",
+                        "markdown_name": "Accession Code",
+                        "source": [
+                            {     
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_entry_id_fkey"
+                                ]     
+                            },    
+                            "Accession_Code"
+                        ]     
+                    }
                 ],
                 "detailed": [
                     "RID",
-                    "collection_id",
-                    "entry_id", 
+                    {
+                        "comment": "Entry Collection Id",
+                        "markdown_name": "Entry Collection Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_collection_id_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {
+                        "comment": "Entry Id",
+                        "markdown_name": "Entry Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_entry_id_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {    
+                        "comment": "Entry Accession Code",
+                        "markdown_name": "Accession Code",
+                        "source": [
+                            {     
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_entry_id_fkey"
+                                ]
+                            },
+                            "Accession_Code"
+                        ]    
+                    },
                     [
                         "PDB",
                         "ihm_entry_collection_mapping_RCB_fkey"
@@ -9861,8 +9935,32 @@
                     ]
                 ],
                 "entry": [
-                    "collection_id",
-                    "entry_id"
+                    {
+                        "comment": "Entry Collection Id",
+                        "markdown_name": "Entry Collection Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_collection_id_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {
+                        "comment": "Entry Id",
+                        "markdown_name": "Entry Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_entry_id_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    }
                 ]
             }
         },
