@@ -87,7 +87,8 @@ def clear_table_acls(table):
 
     # assign default to fkey acls
     for fkey in table.foreign_keys:
-        fkey.acls = FKEY_ACLS["default"]
+        fkey.acls.clear()
+        fkey.acls.update(FKEY_ACLS["default"])
         if False: # to debug
             from_cols = {c.name for c in fkey.column_map.keys()}
             to_cols = {c.name for c in fkey.column_map.values()}
@@ -270,9 +271,9 @@ def set_Vocab_acl(model):
     clear_schema_acls(schema)
     
     # Anyone can read. The rest follows catalog policy
-    schema.acls = {
+    schema.acls.update({
         "select": g["entry_creators"],
-    }
+    })
 
 # -- ---------------------------------------------------------------------
 '''
@@ -288,34 +289,34 @@ def set_public_acl(model):
     #schema.clear(clear_comment=False, clear_annotations=False, clear_acls=True, clear_acl_bindings=True)
     clear_schema_acls(schema)    
     
-    schema.acls = {
+    schema.acls.update({
         "select": g["entry_updaters"],
         "insert": [],
         "update": [],
         "delete": [],
-    }    
+    })
     
     # -- ERMrest_Client
     table = schema.tables["ERMrest_Client"]
-    table.acl_bindings = {
+    table.acl_bindings.update({
         "submitters_read_own_entries": {
             "types": ["select"],
             "scope_acl": g["pdb-submitters"],
             "projection": ["ID"],
             "projection_type": "acl"
         }
-    }
+    })
 
     # -- ERMrest_Group inherit default policy
 
     # -- Catalog_Group: entry_updaters can modify for now
     table = schema.tables["Catalog_Group"]
-    table.acls = {
+    table.acls.update({
         "select" : g['entry_updaters'],
         "insert" : g['entry_updaters'],  
         "update": g["entry_updaters"],
         "delete": g["entry_updaters"],
-    }
+    })
     
 
 # -- ---------------------------------------------------------------------
@@ -336,13 +337,13 @@ def set_WWW_acl(model):
     # -- Page_Asset
     table = schema.tables["Page_Asset"]
     ''' # if only entry_updaters can create, no need for acl_bindings
-    table.acl_bindings =  {
+    table.acl_bindings.update({
         "rcb_update_its_own_page": {
             "types": ["insert", "update"],
             "projection": ["RCB"],
             "projection_type": "acl",
             "scope_acl": ["*"]}
-    }    
+    })    
     '''
 
 # -- ======================================================================
@@ -375,10 +376,10 @@ def set_PDB_entry(model):
     
     # ==== table-level =====    
     # Policy: Submitter can create but can only see their own entries. They can't modify entries during a certain workflow status.
-    table.acls = {
+    table.acls.update({
         "insert": g["entry_creators"],
-    }
-    table.acl_bindings = {
+    })
+    table.acl_bindings.update({
         "submitters_read_own_entries": {
             "types": ["select"],
             "scope_acl": g["pdb-submitters"],
@@ -401,56 +402,56 @@ def set_PDB_entry(model):
             ],
             "projection_type": "acl"
         }
-    }
+    })
 
     # ==== column-level =====
     # -- Accession_Code: submitters can only see when the entry is HOLD or REL
-    table.columns["Accession_Code"].acls = {
+    table.columns["Accession_Code"].acls.update({
         "insert": g["entry_updaters"],
-    }
-    table.columns["Accession_Code"].acl_bindings = {    
+    })
+    table.columns["Accession_Code"].acl_bindings.update({    
         "submitters_read_own_entries": False,
         "submitters_modify_based_on_workflow_status": False,
         "submitters_read_based_on_workflow_status": col_acl_bindings["submitters_read_based_on_workflow_status"],
-    }
+    })
 
     # -- Release date: submitters can only see when the entry is HOLD or REL
-    table.columns["Release_Date"].acls = {
+    table.columns["Release_Date"].acls.update({
         "select": g["entry_updaters"],        
-    }
-    table.columns["Release_Date"].acl_bindings = {
+    })
+    table.columns["Release_Date"].acl_bindings.update({
         "submitters_read_own_entries": False,
         "submitters_modify_based_on_workflow_status": False,
         "submitters_read_based_on_workflow_status": col_acl_bindings["submitters_read_based_on_workflow_status"],        
-    }
+    })
     
     # -- Deposit date: entry_creator can read, but only updater can insert
-    table.columns["Deposit_Date"].acls = {    
+    table.columns["Deposit_Date"].acls.update({    
         "select": g["entry_creators"],        
         "insert": g["entry_updaters"],
-    }
-    table.columns["Deposit_Date"].acl_bindings = {
+    })
+    table.columns["Deposit_Date"].acl_bindings.update({
         "submitters_modify_based_on_workflow_status": False,
-    }
+    })
 
     # -- Notes: only entry updaters can create and read
-    table.columns["Notes"].acls = {            
+    table.columns["Notes"].acls.update({            
         "select": g["entry_updaters"],        
         "insert": g["entry_updaters"],
-      }
-    table.columns["Notes"].acl_bindings = {
+    })
+    table.columns["Notes"].acl_bindings.update({
         "submitters_read_own_entries": False,        
         "submitters_modify_based_on_workflow_status": False,
-    }
+    })
 
     # ==== foreign keys =====
 
     # -- Workflow Status: submitters can only choose Workflow_Status that they are allowed
-    table.foreign_keys[(schema, "entry_Workflow_Status_fkey")].acls = { 
+    table.foreign_keys[(schema, "entry_Workflow_Status_fkey")].acls.update({ 
         "insert": g["entry_updaters"],
         "update": g["entry_updaters"],
-    }
-    table.foreign_keys[(schema, "entry_Workflow_Status_fkey")].acl_bindings = {
+    })
+    table.foreign_keys[(schema, "entry_Workflow_Status_fkey")].acl_bindings.update({
         # submitters can only selected workflow status that they are allowed (PDB_Submitter_Allow)
         "submitters_select_allowed_workflow_status": {
             "types": [ "insert", "update" ],
@@ -461,7 +462,7 @@ def set_PDB_entry(model):
             ],
             "projection_type": "nonnull"
         }
-    }
+    })
 
     # -- Use default for the rest of fkeys
     #table.foreign_keys[(schema, "entry_Accession_Code_fkey")].acls = FKEY_ACLS["default"]
@@ -495,11 +496,11 @@ def set_PDB_entry_related(model):
             # == these are entry related tables
             if pk_table.name == "entry" and to_cols == {"id"} :
                 # == set fkey policies
-                fkey.acl = {
+                fkey.acls.update({
                     "insert": g["entry_updaters"],
                     "update": g["entry_updaters"],
-                }
-                fkey.acl_bindings = {
+                })
+                fkey.acl_bindings.update({
                     # submitter can only choose their own entries with certain Workflow Status
                     "submitters_modify_based_on_entry_workflow_status": {
                         "types": ["insert", "update"],
@@ -517,7 +518,7 @@ def set_PDB_entry_related(model):
                         ],
                         "projection_type": "acl"
                     },
-                }
+                })
                 # == table policies if haven't already set. Might not need to check if there is only 1 fkey.
                 if table in entry_related_tables:
                     print("    x existed: entry_related policies: %s" % (table.name,))                    
@@ -525,11 +526,11 @@ def set_PDB_entry_related(model):
                 print("  - set_entry_related policies: %s" % (table.name,))
                 entry_related_tables.append(table)
                 # set acls: no acl is needed. use default policy
-                table.acls = {
+                table.acls.update({
                     "insert" : g["entry_creators"]
-                }
+                })
                 # submitters can reads their own entries and update according to its entry's workflow status (e.g. follow the fkey to entry table)        
-                table.acl_bindings = {
+                table.acl_bindings.update({
                     "submitter_read_own_entries" : {
                         "types": ["select"],
                         "scope_acl": g["pdb-submitters"],
@@ -552,8 +553,8 @@ def set_PDB_entry_related(model):
                         ],
                         "projection_type": "acl",
                     }
-                }
-                print(table.acl_bindings)
+                })
+                #print(table.acl_bindings)
             # -- end fkey that point to entry
         # -- end fkey
     # -- end table
@@ -566,8 +567,8 @@ def set_PDB_entry_related(model):
 def set_PDB_entry_coordinates_related(model):
     schema = model.schemas["PDB"]
 
-    curator_edit_exclusions = ["entity_poly_seq", "struct_asym", "audit_conform"]
-    user_edit_exclusions = ["chem_comp", "entity_poly", "entity_poly_seq", "atom_type", "ihm_model_list"]
+    curator_edit_exclusions = ["entity_poly_seq", "struct_asym"]
+    user_edit_exclusions = ["chem_comp", "entity_poly", "atom_type", "ihm_model_list"]
     
     # exclude submitter from editing these tables
     for tname in curator_edit_exclusions + user_edit_exclusions:
@@ -575,11 +576,11 @@ def set_PDB_entry_coordinates_related(model):
         clear_table_acls(table) # clear policies
         # -- take away curator write access. Only pdb-ihm can modify
         if tname in curator_edit_exclusions:
-            table.acl = {
+            table.acls.update({
                 "insert": g["pdb-ihm"],
                 "update": g["pdb-ihm"],
                 "delete": g["pdb-ihm"],
-            }
+            })
         
         # -- submitters can only read their own entries, no editing
         entry_fkey = None
@@ -589,14 +590,14 @@ def set_PDB_entry_coordinates_related(model):
                 entry_fkey = fkey
                 break
         if entry_fkey:
-            table.acl_bindings = {
+            table.acl_bindings.update({
                 "submitter_read_own_entries" : {
                     "types": ["select"],
                     "scope_acl": g["pdb-submitters"],
                     "projection": [{"outbound": ["PDB", entry_fkey.constraint_name ]}, "RCB"],
                     "projection_type": "acl"
                 },
-            }
+            })
         else:
             raise Exception("ERROR: %s do not have proper foreign keys to entry table" % (tname))
             
@@ -610,14 +611,14 @@ def set_PDB_Accession_Code(model):
     print("  - set_PDB_Accession_Code")
     
     # submitters can only read their entry Accession_Code
-    table.acl_bindings = {
+    table.acl_bindings.update({
         "submitters_read_own_entries": {
             "types": ["select"],
             "scope_acl": g["pdb-submitters"],
             "projection": [{"outbound": ["PDB", "Accession_Code_Entry_fkey"]}, "RCB"],
             "projection_type": "acl"
         }
-    }
+    })
 
 # -- ---------------------------------------------------------------------    
 '''
@@ -650,7 +651,7 @@ def set_PDB_entry_collection_related(model):
     # == set policy on _ihm_entry_collection table
     # -- acl: adopt schema level for acls e.g. only entry_updaters can read/write
     # -- acl_bindings: pdb_submitters can only see their entries
-    collection_table.acl_bindings = {
+    collection_table.acl_bindings.update({
         "submitter_read_own_entries" : {
             "types": ["select"],
             "scope_acl": g["pdb-submitters"],
@@ -661,19 +662,19 @@ def set_PDB_entry_collection_related(model):
             ],
             "projection_type": "acl"
         }
-    }
+    })
         
     # == set policies for the mapping table: only curator can set up mapping table at any time
     # -- acl: adopts schema policy
     # -- acl_bindings: pdb_submitters can only see their entries
-    mapping_table.acl_bindings = {
+    mapping_table.acl_bindings.update({
         "submitter_read_own_entries" : {
             "types": ["select"],
             "scope_acl": g["pdb-submitters"],
             "projection": [ {"outbound": ["PDB", entry_fkey.constraint_name ]}, "RCB" ],
             "projection_type": "acl"
         }
-    }
+    })
     
 # -- ---------------------------------------------------------------------
 '''
@@ -688,33 +689,33 @@ def set_PDB_entry_related_system_generated_tables(model):
         
         # == table policy
         # -- acl: only pdb-ihm can manipulate, entry_updaters can read (from schema acl)
-        table.acls = {
+        table.acls.update({
             "insert": g["pdb-ihm"],
             "update": g["pdb-ihm"],
             "delete": g["pdb-ihm"],
-        }
+        })
         # -- acl_bindings: submitters can read if it is linked to their entries (need to traverse fkey to entry)
         for fkey in table.foreign_keys:
             from_cols = {c.name for c in fkey.column_map.keys()}
-            to_cols = {c.name for c in fkey.column_map.values()}
             pk_table = fkey.pk_table
             if pk_table.name == "entry":  
-                table.acl_bindings = {
+                table.acl_bindings.update({
                     "submitter_read_own_entries" : {
                         "types": ["select"],
                         "scope_acl": g["pdb-submitters"],
                         "projection": [{"outbound": ["PDB", fkey.constraint_name ]}, "RCB"],
                         "projection_type": "acl"
                     }
-                }
+                })
             # -- if the fkey to entry
         # -- end fkey
     # -- end tname
     
 # -- ---------------------------------------------------------------------
-# Data_Dictionary, Supported_Dictionary: only updater can read and do anything
+# Data_Dictionary, Supported_Dictionary: only updater can read and do anything, submmitter can't read
+#
 def set_PDB_Data_Dictionary_Related(model):
-    for table_name in ["Data_Dictionary", "Supported_Dictionary"]:
+    for table_name in ["Data_Dictionary", "Supported_Dictionary", "Conform_Dictionary", "audit_conform"]:
         print("  - set PDB_Data_Dictionary_Related: %s" % (table_name))
         table = model.schemas["PDB"].tables[table_name]
         clear_table_acls(table)                
@@ -729,9 +730,14 @@ def set_PDB_Entry_Related_File(model):
     # -- table acl and entry_fkey are set in set_PDB_entry_related()
 
     # -- update workflow_status fkey
-    table.foreign_keys[(schema, "Entry_Related_File_Restraint_Workflow_Status_fkey")].acl_bindings = {
+    fkey = table.foreign_keys[(schema, "Entry_Related_File_Restraint_Workflow_Status_fkey")]
+    fkey.acls.update({
+        "insert": g["entry_updaters"],
+        "update": g["entry_updaters"]        
+    })
+    fkey.acl_bindings.update({
         # submitters can only selected workflow status that they are allowed (PDB_Submitter_Allow)
-        "submitters_select_allowed_workflow_status": {
+        "submitters_select_allowed_restraint_workflow_status": {
             "types": [ "insert", "update" ],
             "scope_acl": g["pdb-submitters"],
             "projection": [
@@ -743,8 +749,9 @@ def set_PDB_Entry_Related_File(model):
             ],
             "projection_type": "nonnull"
         }
-    }
-    
+    })
+
+    print("set_PDB_entry_Related_Fiie: acl:%s --- acl_bindings:%s" % (fkey.acls, fkey.acl_bindings))    
 # -- ---------------------------------------------------------------------
 # Any group members should be able to read?
 # current acls:
@@ -760,9 +767,9 @@ def set_PDB_Entry_Related_File_Templates(model):
         clear_table_acls(table)
 
         # allow entry_creators to read        
-        table.acls = {
+        table.acls.update({
             "select": g["entry_creators"],            
-        }
+        })
 # -- ---------------------------------------------------------------------
 # 
 def set_ermrest_acl(catalog):
@@ -781,7 +788,7 @@ def set_ermrest_acl(catalog):
 
 
     # -- catalog
-    model.acls = ERMREST_CATALOG_ACLS
+    model.acls.update(ERMREST_CATALOG_ACLS)
     # -- schemas
     set_PDB_acl(model)
     set_Vocab_acl(model)        
