@@ -1464,6 +1464,51 @@
             "value": {
                 "name": "Database Residue Name"
             }
+        },
+        {     
+            "column": "id",
+            "schema": "PDB",
+            "table": "ihm_entry_collection",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Collection Identifier"
+            }     
+        },
+        {     
+            "column": "name",
+            "schema": "PDB",
+            "table": "ihm_entry_collection",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Collection Name"
+            }
+        },
+        {     
+            "column": "details",
+            "schema": "PDB",
+            "table": "ihm_entry_collection",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Collection Details"
+            }
+        },
+        {     
+            "column": "entry_id",
+            "schema": "PDB",
+            "table": "ihm_entry_collection_mapping",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Entry Identifier"
+            }
+        },
+        {
+            "column": "collection_id",
+            "schema": "PDB",
+            "table": "ihm_entry_collection_mapping",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Collection Identifier"
+            }
         }
     ],
     "table_annotations": [
@@ -7054,6 +7099,21 @@
                         "PDB",
                         "ihm_geometric_object_distance_restraint_structure_id_fkey"
                     ],
+#if defined(dev) 
+                    {
+                        "comment": "Collections the entry belongs to",
+                        "markdown_name": "Entry Collections",
+                        "source": [
+                            {
+                                "inbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_entry_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+#endif
                     [
                         "PDB",
                         "audit_conform_structure_id_fkey"
@@ -9701,6 +9761,237 @@
                 ]
             }
         },
+#if defined(dev)
+        {
+            "schema": "PDB",
+            "table": "ihm_entry_collection",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Entry Collections",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
+            }
+        },
+        {       
+            "schema": "PDB",
+            "table": "ihm_entry_collection",
+            "uri": "tag:isrd.isi.edu,2016:table-display",
+            "value": {
+                "row_name": {
+                    "row_markdown_pattern": "{{{id}}}"
+                }   
+            }       
+        },
+        {
+            "schema": "PDB",
+            "table": "ihm_entry_collection",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "id",
+                    "name",
+                    "details"
+                ],
+                "detailed": [
+                    "RID",
+                    "id",
+                    "name", 
+                    "details", 
+                    [
+                        "PDB",
+                        "ihm_entry_collection_RCB_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_entry_collection_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "PDB",
+                        "ihm_entry_collection_Owner_fkey"
+                    ]
+                ],
+                "entry": [
+                    "id",
+                    "name",
+                    "details"
+                ]
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "ihm_entry_collection",
+            "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+            "value": {
+                "detailed": [
+                    {
+                        "markdown_name": "Entries in the Collection",
+                        "source": [
+                            {
+                                "inbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_collection_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    }
+                ],
+                "filter": "detailed"
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "ihm_entry_collection_mapping",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Entry Collection Mappings",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "ihm_entry_collection_mapping",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "compact": [
+                    "RID",
+                    {
+                        "comment": "Entry Collection Id",
+                        "markdown_name": "Entry Collection Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_collection_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    {
+                        "comment": "Entry Id",
+                        "markdown_name": "Entry Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_entry_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    {     
+                        "comment": "Entry Accession Code",
+                        "markdown_name": "Accession Code",
+                        "source": [
+                            {     
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_entry_id_fkey"
+                                ]     
+                            },    
+                            "Accession_Code"
+                        ]     
+                    }
+                ],
+                "detailed": [
+                    "RID",
+                    {
+                        "comment": "Entry Collection Id",
+                        "markdown_name": "Entry Collection Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_collection_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    {
+                        "comment": "Entry Id",
+                        "markdown_name": "Entry Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_entry_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    {    
+                        "comment": "Entry Accession Code",
+                        "markdown_name": "Accession Code",
+                        "source": [
+                            {     
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_entry_id_fkey"
+                                ]
+                            },
+                            "Accession_Code"
+                        ]    
+                    },
+                    [
+                        "PDB",
+                        "ihm_entry_collection_mapping_RCB_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_entry_collection_mapping_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "PDB",
+                        "ihm_entry_collection_mapping_Owner_fkey"
+                    ]
+                ],
+                "entry": [
+                    {
+                        "comment": "Entry Collection Id",
+                        "markdown_name": "Entry Collection Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_collection_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    {
+                        "comment": "Entry Id",
+                        "markdown_name": "Entry Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_entry_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    }
+                ]
+            }
+        },
+#endif
         {
             "schema": "PDB",
             "table": "ihm_hdx_restraint",
