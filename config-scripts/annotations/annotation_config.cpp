@@ -7100,19 +7100,10 @@
                         "ihm_geometric_object_distance_restraint_structure_id_fkey"
                     ],
 #if defined(dev) 
-                    {
-                        "comment": "Collections the entry belongs to",
-                        "markdown_name": "Entry Collections",
-                        "source": [
-                            {
-                                "inbound": [
-                                    "PDB",
-                                    "ihm_entry_collection_mapping_entry_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    },
+                    [
+                        "PDB",
+                        "ihm_entry_collection_mapping_entry_id_fkey"
+                    ],
 #endif
                     [
                         "PDB",
@@ -9775,16 +9766,6 @@
                 }
             }
         },
-        {       
-            "schema": "PDB",
-            "table": "ihm_entry_collection",
-            "uri": "tag:isrd.isi.edu,2016:table-display",
-            "value": {
-                "row_name": {
-                    "row_markdown_pattern": "{{{id}}}"
-                }   
-            }       
-        },
         {
             "schema": "PDB",
             "table": "ihm_entry_collection",
@@ -9829,18 +9810,10 @@
             "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
             "value": {
                 "detailed": [
-                    {
-                        "markdown_name": "Entries in the Collection",
-                        "source": [
-                            {
-                                "inbound": [
-                                    "PDB",
-                                    "ihm_entry_collection_mapping_collection_id_fkey"
-                                ]
-                            },
-                            "RID"
-                        ]
-                    }
+                    [
+                        "PDB",
+                        "ihm_entry_collection_mapping_collection_id_fkey"
+                    ]
                 ],
                 "filter": "detailed"
             }
@@ -9875,7 +9848,7 @@
                                     "ihm_entry_collection_mapping_collection_id_fkey"
                                 ]
                             },
-                            "RID"
+                            "id"
                         ]
                     },
                     {
@@ -9888,7 +9861,7 @@
                                     "ihm_entry_collection_mapping_entry_id_fkey"
                                 ]
                             },
-                            "RID"
+                            "id"
                         ]
                     },
                     {     
@@ -9917,7 +9890,7 @@
                                     "ihm_entry_collection_mapping_collection_id_fkey"
                                 ]
                             },
-                            "RID"
+                            "id"
                         ]
                     },
                     {
@@ -9930,7 +9903,7 @@
                                     "ihm_entry_collection_mapping_entry_id_fkey"
                                 ]
                             },
-                            "RID"
+                            "id"
                         ]
                     },
                     {    
@@ -9972,7 +9945,7 @@
                                     "ihm_entry_collection_mapping_collection_id_fkey"
                                 ]
                             },
-                            "RID"
+                            "id"
                         ]
                     },
                     {
@@ -9985,7 +9958,7 @@
                                     "ihm_entry_collection_mapping_entry_id_fkey"
                                 ]
                             },
-                            "RID"
+                            "id"
                         ]
                     }
                 ]
