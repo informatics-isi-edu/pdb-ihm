@@ -435,7 +435,8 @@ def set_PDB_entry(model):
     })
 
     # -- Notes: only entry updaters can create and read
-    table.columns["Notes"].acls.update({            
+    table.columns["Notes"].acls.update({
+        "enumerate": {},
         "select": g["entry_updaters"],        
         "insert": g["entry_updaters"],
     })
