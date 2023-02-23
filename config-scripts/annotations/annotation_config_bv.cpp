@@ -7099,12 +7099,10 @@
                         "PDB",
                         "ihm_geometric_object_distance_restraint_structure_id_fkey"
                     ],
-#if defined(dev) 
                     [
                         "PDB",
                         "ihm_entry_collection_mapping_entry_id_fkey"
                     ],
-#endif
                     [
                         "PDB",
                         "audit_conform_structure_id_fkey"
@@ -9752,7 +9750,6 @@
                 ]
             }
         },
-#if defined(dev)
         {
             "schema": "PDB",
             "table": "ihm_entry_collection",
@@ -9964,7 +9961,6 @@
                 ]
             }
         },
-#endif
         {
             "schema": "PDB",
             "table": "ihm_hdx_restraint",
