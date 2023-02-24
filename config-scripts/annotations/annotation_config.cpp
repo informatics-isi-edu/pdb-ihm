@@ -6231,8 +6231,8 @@
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
                 //"name": "Entry"
-                "markdown_name": "Entry^*^",
-                "comment": "Entries submitted by depositor"
+                "markdown_name": "Entry^*^"
+                //"comment": "Entries submitted by depositor"
                 //"comment_display": {
                 //    "*": {
                 //        "table_comment_display" : "inline"
@@ -6493,7 +6493,7 @@
                     {
                         "source" : [
                             { "inbound" : ["PDB", "Entry_mmCIF_File_Structure_Id_fkey" ] },
-                            "RID"
+                            "File_URL"
                         ],
                         "entity": true,
                         "markdown_name": "System Generated mmCIF File",
