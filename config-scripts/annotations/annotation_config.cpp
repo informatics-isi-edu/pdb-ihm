@@ -7100,10 +7100,24 @@
                         "ihm_geometric_object_distance_restraint_structure_id_fkey"
                     ],
 #if defined(dev) 
-                    [
-                        "PDB",
-                        "ihm_entry_collection_mapping_entry_id_fkey"
-                    ],
+                    {
+                        "markdown_name": "Entry Collections",
+                        "source": [
+                            {
+                                "inbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_entry_id_fkey"
+                                ]
+                            },
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_collection_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
 #endif
                     [
                         "PDB",
@@ -9810,10 +9824,24 @@
             "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
             "value": {
                 "detailed": [
-                    [
-                        "PDB",
-                        "ihm_entry_collection_mapping_collection_id_fkey"
-                    ]
+                    {
+                        "markdown_name": "Entry",
+                        "source": [
+                            {
+                                "inbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_collection_id_fkey"
+                                ]
+                            },
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_entry_collection_mapping_entry_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    }
                 ],
                 "filter": "detailed"
             }
