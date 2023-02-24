@@ -302,6 +302,17 @@
             "column": "File_URL",
             "schema": "PDB",
             "table": "Entry_mmCIF_File",
+            "uri": "tag:isrd.isi.edu,2016:column-display",
+            "value": {
+                "*": {
+                    "markdown_pattern": "[{{{File_Name}}}]({{{File_URL}}})"
+                }   
+            }   
+        },
+        {
+            "column": "File_URL",
+            "schema": "PDB",
+            "table": "Entry_mmCIF_File",
             "uri": "tag:isrd.isi.edu,2018:required",
             "value": {}
         },
@@ -6493,7 +6504,7 @@
                     {
                         "source" : [
                             { "inbound" : ["PDB", "Entry_mmCIF_File_Structure_Id_fkey" ] },
-                            "File_URL"
+                            "RID"
                         ],
                         "entity": true,
                         "markdown_name": "System Generated mmCIF File",
