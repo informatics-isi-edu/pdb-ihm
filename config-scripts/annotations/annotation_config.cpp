@@ -298,6 +298,7 @@
                 "url_pattern": "/<hatrac>/pdb/entry/{{$moment.year}}/{{{Structure_Id}}}/final_mmCIF/{{{File_Name}}}"
             }
         },
+#if defined(dev)
         {
             "column": "File_URL",
             "schema": "PDB",
@@ -309,6 +310,7 @@
                 }   
             }   
         },
+#endif
         {
             "column": "File_URL",
             "schema": "PDB",
@@ -6504,7 +6506,7 @@
                     {
                         "source" : [
                             { "inbound" : ["PDB", "Entry_mmCIF_File_Structure_Id_fkey" ] },
-                            "File_URL"
+                            "RID"
                         ],
                         "entity": true,
                         "markdown_name": "System Generated mmCIF File",
@@ -19151,16 +19153,19 @@
                 }
             }
         },
+#if defined(dev)
         {     
             "schema": "PDB",
             "table": "Entry_mmCIF_File",
             "uri": "tag:isrd.isi.edu,2016:table-display",
             "value": {
                 "row_name": {
-                    "row_markdown_pattern": "{{{File_Name}}}"
+                    //"row_markdown_pattern": "{{{File_Name}}}"
+                    "row_markdown_pattern": "[{{{File_Name}}}]({{{File_URL}}})"
                 }     
             }     
         },
+#endif
         {
             "schema": "PDB",
             "table": "Entry_mmCIF_File",
