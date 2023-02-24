@@ -6488,6 +6488,21 @@
 						  "template_engine": "handlebars"
                     	}
                     },
+#if defined(dev)
+                    {
+                        "source" : [
+                            { "inbound" : ["PDB", "Entry_mmCIF_File_Structure_Id_fkey" ] },
+                            "id"
+                        ],
+                        "entity": true,
+                        "markdown_name": "System Generated mmCIF File",
+                        "aggregate": "array_d",
+                        "display": {
+                          "markdown_pattern": "{{#each $self}}- [{{{this.rowName}}}]({{{this.uri.detailed}}}) \n{{/each}}",
+                          "template_engine": "handlebars"
+                        }
+                    },
+#endif
                      "Deposit_Date",
                      "Release_Date",
                   {
@@ -7101,6 +7116,7 @@
                     ],
 #if defined(dev) 
                     {
+                        "comment": "Collections to which the entry belongs",
                         "markdown_name": "Entry Collections",
                         "source": [
                             {
@@ -9825,6 +9841,7 @@
             "value": {
                 "detailed": [
                     {
+                        "comment": "Entries in this collection",
                         "markdown_name": "Entry",
                         "source": [
                             {
