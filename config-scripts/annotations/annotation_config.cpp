@@ -19151,6 +19151,16 @@
                 }
             }
         },
+        {     
+            "schema": "PDB",
+            "table": "Entry_mmCIF_File",
+            "uri": "tag:isrd.isi.edu,2016:table-display",
+            "value": {
+                "row_name": {
+                    "row_markdown_pattern": "{{{File_Name}}}"
+                }     
+            }     
+        },
         {
             "schema": "PDB",
             "table": "Entry_mmCIF_File",
