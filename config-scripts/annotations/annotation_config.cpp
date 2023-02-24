@@ -6512,7 +6512,8 @@
                         "markdown_name": "System Generated mmCIF File",
                         "aggregate": "array_d",
                         "display": {
-                          "markdown_pattern": "{{#each $self}}- [{{{this.rowName}}}]({{{this.uri.detailed}}}) \n{{/each}}",
+                          //"markdown_pattern": "{{#each $self}}- [{{{this.rowName}}}]({{{this.uri.detailed}}}) \n{{/each}}",
+                          "markdown_pattern": "{{#each $self}}- {{{this.rowName}}} \n{{/each}}",
                           "template_engine": "handlebars"
                         }
                     },
