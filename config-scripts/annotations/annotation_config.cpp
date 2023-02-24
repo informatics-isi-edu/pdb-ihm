@@ -298,7 +298,7 @@
                 "url_pattern": "/<hatrac>/pdb/entry/{{$moment.year}}/{{{Structure_Id}}}/final_mmCIF/{{{File_Name}}}"
             }
         },
-#if defined(dev)
+#if 1
         {
             "column": "File_URL",
             "schema": "PDB",
@@ -6502,7 +6502,7 @@
 						  "template_engine": "handlebars"
                     	}
                     },
-#if defined(dev)
+#if 1
                     {
                         "source" : [
                             { "inbound" : ["PDB", "Entry_mmCIF_File_Structure_Id_fkey" ] },
@@ -6745,6 +6745,50 @@
                 ]
             }
         },
+#if 1
+		{
+		     "schema" : "PDB",
+		     "table" : "entry",
+		     "uri" : "tag:isrd.isi.edu,2016:export",
+		     "value" : 
+				{
+			        "templates" : 
+			        	[
+					      {
+					        "displayname":"BDBag",
+							"type":"BAG",
+							"outputs": 
+								[
+								  {
+								    "source": 
+								    	{
+									      "api": "entity",
+									      "table": "PDB:entry"
+									    },
+									    "destination": 
+									    {
+									      "name": "entry",
+									      "type": "csv"
+									    }
+									  },
+									  {
+									    "source": 
+									    {
+									      "api": "attribute",
+									      "path": "PDB:Entry_mmCIF_File/url:=File_URL"
+									    },
+									    "destination": 
+									    {
+									      "name": "Entry_mmCIF_File",
+									      "type": "download"
+									    }
+									  }
+						      		]
+								}
+							]
+					}
+		},
+#endif
         {
             "schema": "PDB",
             "table": "entry",
@@ -7129,7 +7173,7 @@
                         "PDB",
                         "ihm_geometric_object_distance_restraint_structure_id_fkey"
                     ],
-#if defined(dev) 
+#if 1 
                     {
                         "comment": "Collections to which the entry belongs",
                         "markdown_name": "Entry Collections",
@@ -9797,7 +9841,7 @@
                 ]
             }
         },
-#if defined(dev)
+#if 1
         {
             "schema": "PDB",
             "table": "ihm_entry_collection",
@@ -19154,7 +19198,7 @@
                 }
             }
         },
-#if defined(dev)
+#if 1
         {     
             "schema": "PDB",
             "table": "Entry_mmCIF_File",
