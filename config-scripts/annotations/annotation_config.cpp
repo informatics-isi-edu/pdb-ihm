@@ -6504,7 +6504,7 @@
                     {
                         "source" : [
                             { "inbound" : ["PDB", "Entry_mmCIF_File_Structure_Id_fkey" ] },
-                            "RID"
+                            "File_URL"
                         ],
                         "entity": true,
                         "markdown_name": "System Generated mmCIF File",
