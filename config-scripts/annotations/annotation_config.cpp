@@ -27390,6 +27390,19 @@
                                         }
                                     ],
                                     "name": "Workflow"
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "name": "Entry Collection",
+                                            "url": "/chaise/recordset/catalog_number/PDB:ihm_entry_collection"
+                                        },
+                                        {
+                                            "name": "Entry Collection Mapping",
+                                            "url": "/chaise/recordset/catalog_number/PDB:ihm_entry_collection_mapping"
+                                        }
+                                    ],
+                                    "name": "Entry Collection"
                                 }
                             ],
                             "name": "Data Categories"
