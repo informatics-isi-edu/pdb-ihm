@@ -65,6 +65,10 @@
             "navbarMenu" : {
                "children" : [
                   {
+                     "name" : "Entry",
+                     "url" : "/chaise/recordset/#99/PDB:entry"
+                  },
+                  {
                      "children" : [
                         {
                            "children" : [
@@ -151,6 +155,19 @@
                               }
                            ],
                            "name" : "Citation, Authors and Software"
+                        },
+                        {
+                           "children" : [
+                              {
+                                 "name" : "Data Dictionary",
+                                 "url" : "/chaise/recordset/#99/PDB:Data_Dictionary"
+                              },
+                              {
+                                 "name" : "Supported Dictionary",
+                                 "url" : "/chaise/recordset/#99/PDB:Supported_Dictionary"
+                              }
+                           ],
+                           "name" : "Dictionaries"
                         },
                         {
                            "children" : [
@@ -537,20 +554,51 @@
                         {
                            "children" : [
                               {
-                                 "name" : "Entry Related File",
-                                 "url" : "/chaise/recordset/#99/PDB:Entry_Related_File"
+                                 "name" : "Accession Code",
+                                 "url" : "/chaise/recordset/#99/PDB:Accession_Code"
+                              },
+                              {
+                                 "name" : "Entry Error File",
+                                 "url" : "/chaise/recordset/#99/PDB:Entry_Error_File"
                               },
                               {
                                  "name" : "Entry mmCIF File",
                                  "url" : "/chaise/recordset/#99/PDB:Entry_mmCIF_File"
+                              },
+                              {
+                                 "name" : "Entry Related File",
+                                 "url" : "/chaise/recordset/#99/PDB:Entry_Related_File"
                               }
                            ],
                            "name" : "Workflow"
+                        },
+                        {
+                           "children" : [
+                              {
+                                 "name" : "Entry Collection",
+                                 "url" : "/chaise/recordset/#99/PDB:ihm_entry_collection"
+                              },
+                              {
+                                 "name" : "Entry Collection Mapping",
+                                 "url" : "/chaise/recordset/#99/PDB:ihm_entry_collection_mapping"
+                              }
+                           ],
+                           "name" : "Entry Collection"
                         }
                      ],
-                     "name" : "PDB"
+                     "name" : "Data Categories"
                   },
                   {
+                     "acls" : {
+                        "enable" : [
+                           "https://auth.globus.org/0b98092c-3c41-11e9-a8c8-0ee7d80087ee",
+                           "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6"
+                        ],
+                        "show" : [
+                           "https://auth.globus.org/0b98092c-3c41-11e9-a8c8-0ee7d80087ee",
+                           "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6"
+                        ]
+                     },
                      "children" : [
                         {
                            "children" : [
@@ -584,6 +632,19 @@
                               }
                            ],
                            "name" : "Chem Comp"
+                        },
+                        {
+                           "children" : [
+                              {
+                                 "name" : "Names",
+                                 "url" : "/chaise/recordset/#99/Vocab:Data_Dictionary_Name"
+                              },
+                              {
+                                 "name" : "Categories",
+                                 "url" : "/chaise/recordset/#99/Vocab:Data_Dictionary_Category"
+                              }
+                           ],
+                           "name" : "Data Dictionaries"
                         },
                         {
                            "children" : [
@@ -1000,11 +1061,15 @@
                               },
                               {
                                  "name" : "Process Status",
-                                 "url" : "/chaise/recordset/#99/Vocab:process_status"
+                                 "url" : "/chaise/recordset/#99/Vocab:Process_Status"
+                              },
+                              {
+                                 "name" : "Validation File Type",
+                                 "url" : "/chaise/recordset/#99/Vocab:Validation_File_Type"
                               },
                               {
                                  "name" : "Workflow Status",
-                                 "url" : "/chaise/recordset/#99/Vocab:workflow_status"
+                                 "url" : "/chaise/recordset/#99/Vocab:Workflow_Status"
                               }
                            ],
                            "name" : "Workflow"
@@ -1025,6 +1090,20 @@
                         }
                      ],
                      "name" : "Templates"
+                  },
+                  {
+                     "children" : [
+                        {
+                           "children" : [
+                              {
+                                 "name" : "PDB-Dev",
+                                 "url" : "https://docs.google.com/document/d/1577tJoeXxY5MtolMHzJ5000b-dz2M8JrONAyhZRvXVc/"
+                              }
+                           ],
+                           "name" : "User Guide"
+                        }
+                     ],
+                     "name" : "Documentation"
                   }
                ],
                "newTab" : false
@@ -1045,6 +1124,28 @@
       }
    ],
    "column_annotations" : [
+      {
+         "column" : "Location",
+         "schema" : "Vocab",
+         "table" : "Data_Dictionary_Name",
+         "uri" : "tag:isrd.isi.edu,2016:column-display",
+         "value" : {
+            "*" : {
+               "markdown_pattern" : "[{{{Name}}}]({{{Location}}})"
+            }
+         }
+      },
+      {
+         "column" : "Location",
+         "schema" : "PDB",
+         "table" : "Data_Dictionary",
+         "uri" : "tag:isrd.isi.edu,2016:column-display",
+         "value" : {
+            "*" : {
+               "markdown_pattern" : "[{{{Name}}} (v {{{Version}}})]({{{Location}}})"
+            }
+         }
+      },
       {
          "column" : "id",
          "schema_pattern" : "Vocab",
@@ -1141,7 +1242,7 @@
             "byte_count_column" : "Image_File_Bytes",
             "filename_column" : "Image_File_Name",
             "md5" : "Image_File_MD5",
-            "url_pattern" : "/hatrac/pdb/image/{{$moment.year}}/{{{Image_File_MD5}}}"
+            "url_pattern" : "/hatrac/dev/pdb/entry/submitted/image/{{$moment.year}}/{{{Image_File_Name}}}"
          }
       },
       {
@@ -1151,11 +1252,11 @@
          "uri" : "tag:isrd.isi.edu,2016:column-display",
          "value" : {
             "compact" : {
-               "markdown_pattern" : "{{#if Image_File_URL }}[![{{Image_File_Name}}]({{{Image_File_URL}}}){width=200 height=auto}]({{{Image_File_URL}}}){target=_blank}{{/if}}",
+               "markdown_pattern" : "{{#if Image_File_URL }}[![{{Image_File_Name}}]({{{Image_File_URL}}}){width=auto height=200}]({{{Image_File_URL}}}){target=_blank}{{/if}}",
                "template_engine" : "handlebars"
             },
             "detailed" : {
-               "markdown_pattern" : "{{#if Image_File_URL }}![{{Image_File_Name}}]({{{Image_File_URL}}}){width=500 height=auto}{{/if}}",
+               "markdown_pattern" : "{{#if Image_File_URL }}[![{{Image_File_Name}}]({{{Image_File_URL}}}){width=auto height=200}]({{{Image_File_URL}}}){target=_blank}{{/if}}",
                "template_engine" : "handlebars"
             }
          }
@@ -1169,16 +1270,7 @@
             "byte_count_column" : "mmCIF_File_Bytes",
             "filename_column" : "mmCIF_File_Name",
             "md5" : "mmCIF_File_MD5",
-            "url_pattern" : "/hatrac/pdb/mmCIF/{{$moment.year}}/{{{mmCIF_File_MD5}}}"
-         }
-      },
-      {
-         "column" : "Generated_mmCIF_Processing_Status",
-         "schema" : "PDB",
-         "table" : "entry",
-         "uri" : "tag:misd.isi.edu,2015:display",
-         "value" : {
-            "name" : "Generated mmCIF Processing Status"
+            "url_pattern" : "/hatrac/dev/pdb/entry/submitted/mmCIF/{{$moment.year}}/{{{mmCIF_File_Name}}}"
          }
       },
       {
@@ -1215,6 +1307,48 @@
          }
       },
       {
+         "column" : "Data_Dictionary_RID",
+         "schema" : "PDB",
+         "table" : "Supported_Dictionary",
+         "uri" : "tag:isrd.isi.edu,2018:required",
+         "value" : {}
+      },
+      {
+         "column" : "Data_Dictionary_Category",
+         "schema" : "PDB",
+         "table" : "Supported_Dictionary",
+         "uri" : "tag:isrd.isi.edu,2018:required",
+         "value" : {}
+      },
+      {
+         "column" : "Name",
+         "schema" : "PDB",
+         "table" : "Data_Dictionary",
+         "uri" : "tag:isrd.isi.edu,2018:required",
+         "value" : {}
+      },
+      {
+         "column" : "Category",
+         "schema" : "PDB",
+         "table" : "Data_Dictionary",
+         "uri" : "tag:isrd.isi.edu,2018:required",
+         "value" : {}
+      },
+      {
+         "column" : "Version",
+         "schema" : "PDB",
+         "table" : "Data_Dictionary",
+         "uri" : "tag:isrd.isi.edu,2018:required",
+         "value" : {}
+      },
+      {
+         "column" : "Location",
+         "schema" : "PDB",
+         "table" : "Data_Dictionary",
+         "uri" : "tag:isrd.isi.edu,2018:required",
+         "value" : {}
+      },
+      {
          "column" : "File_URL",
          "schema" : "PDB",
          "table" : "Entry_mmCIF_File",
@@ -1223,7 +1357,18 @@
             "byte_count_column" : "File_Bytes",
             "filename_column" : "File_Name",
             "md5" : "File_MD5",
-            "url_pattern" : "/hatrac/pdb/entry_mmCIF/{{$moment.year}}/{{{File_MD5}}}"
+            "url_pattern" : "/hatrac/dev/pdb/entry/{{$moment.year}}/{{{Structure_Id}}}/final_mmCIF/{{{File_Name}}}"
+         }
+      },
+      {
+         "column" : "File_URL",
+         "schema" : "PDB",
+         "table" : "Entry_mmCIF_File",
+         "uri" : "tag:isrd.isi.edu,2016:column-display",
+         "value" : {
+            "*" : {
+               "markdown_pattern" : "[{{{File_Name}}}]({{{File_URL}}})"
+            }
          }
       },
       {
@@ -1234,13 +1379,34 @@
          "value" : {}
       },
       {
-         "column" : "mmCIF_Schema_Version",
+         "column" : "File_URL",
          "schema" : "PDB",
-         "table" : "Entry_mmCIF_File",
-         "uri" : "tag:misd.isi.edu,2015:display",
+         "table" : "Entry_Error_File",
+         "uri" : "tag:isrd.isi.edu,2017:asset",
          "value" : {
-            "name" : "mmCIF Schema Version"
+            "byte_count_column" : "File_Bytes",
+            "filename_column" : "File_Name",
+            "md5" : "File_MD5",
+            "url_pattern" : "/hatrac/dev/pdb/entry/{{$moment.year}}/{{{Entry_RID}}}/validation_error/{{{File_Name}}}"
          }
+      },
+      {
+         "column" : "File_URL",
+         "schema" : "PDB",
+         "table" : "Entry_Error_File",
+         "uri" : "tag:isrd.isi.edu,2016:column-display",
+         "value" : {
+            "*" : {
+               "markdown_pattern" : "[{{{File_Name}}}]({{{File_URL}}})"
+            }
+         }
+      },
+      {
+         "column" : "File_URL",
+         "schema" : "PDB",
+         "table" : "Entry_Error_File",
+         "uri" : "tag:isrd.isi.edu,2018:required",
+         "value" : {}
       },
       {
          "column" : "mmCIF_File_URL",
@@ -1251,7 +1417,7 @@
             "byte_count_column" : "mmCIF_File_Bytes",
             "filename_column" : "mmCIF_File_Name",
             "md5" : "mmCIF_File_MD5",
-            "url_pattern" : "/hatrac/pdb/mmCIF/{{$moment.year}}/{{{mmCIF_File_MD5}}}"
+            "url_pattern" : "/hatrac/dev/pdb/entry/{{$moment.year}}/{{{structure_id}}}/submitted_starting_model/{{{mmCIF_File_Name}}}"
          }
       },
       {
@@ -1263,7 +1429,7 @@
             "byte_count_column" : "File_Bytes",
             "filename_column" : "File_Name",
             "md5" : "File_MD5",
-            "url_pattern" : "/hatrac/pdb/entry_files/{{$moment.year}}/{{{File_MD5}}}"
+            "url_pattern" : "/hatrac/dev/pdb/entry/{{$moment.year}}/{{{structure_id}}}/submitted_related_file/{{{File_Name}}}"
          }
       },
       {
@@ -1282,7 +1448,7 @@
             "byte_count_column" : "File_Bytes",
             "filename_column" : "File_Name",
             "md5" : "File_MD5",
-            "url_pattern" : "/hatrac/pdb/templates/{{{File_Name}}}"
+            "url_pattern" : "/hatrac/dev/pdb/templates/{{{File_Name}}}"
          }
       },
       {
@@ -1362,6 +1528,15 @@
          "uri" : "tag:misd.isi.edu,2015:display",
          "value" : {
             "name" : "System Generated mmCIF File"
+         }
+      },
+      {
+         "column" : "File_URL",
+         "schema" : "PDB",
+         "table" : "Entry_Error_File",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "System Generated mmCIF Validation Error Files"
          }
       },
       {
@@ -2362,9 +2537,64 @@
          "value" : {
             "name" : "Database Residue Name"
          }
+      },
+      {
+         "column" : "id",
+         "schema" : "PDB",
+         "table" : "ihm_entry_collection",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Collection Identifier"
+         }
+      },
+      {
+         "column" : "name",
+         "schema" : "PDB",
+         "table" : "ihm_entry_collection",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Collection Name"
+         }
+      },
+      {
+         "column" : "details",
+         "schema" : "PDB",
+         "table" : "ihm_entry_collection",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Collection Details"
+         }
+      },
+      {
+         "column" : "entry_id",
+         "schema" : "PDB",
+         "table" : "ihm_entry_collection_mapping",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Entry Identifier"
+         }
+      },
+      {
+         "column" : "collection_id",
+         "schema" : "PDB",
+         "table" : "ihm_entry_collection_mapping",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "Collection Identifier"
+         }
       }
    ],
    "foreign_key_annotations" : [
+      {
+         "foreign_key" : "Entry_Related_File_Restraint_Workflow_Status_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "Entry_Related_File",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "Restraint_Status=True"
+         }
+      },
       {
          "foreign_key" : "ihm_localization_density_files_ensemble_id_fkey",
          "foreign_key_schema" : "PDB",
@@ -4842,7 +5072,7 @@
                },
                {
                   "comment" : "A reference to table ihm_entity_poly_segment.id.",
-                  "markdown_name" : "Entity Poly Segement Id",
+                  "markdown_name" : "Entity Poly Segment Id",
                   "source" : [
                      {
                         "outbound" : [
@@ -4924,7 +5154,7 @@
                },
                {
                   "comment" : "A reference to table ihm_entity_poly_segment.id.",
-                  "markdown_name" : "Entity Poly Segement Id",
+                  "markdown_name" : "Entity Poly Segment Id",
                   "source" : [
                      {
                         "outbound" : [
@@ -5019,7 +5249,7 @@
                },
                {
                   "comment" : "A reference to table ihm_entity_poly_segment.id.",
-                  "markdown_name" : "Entity Poly Segement Id",
+                  "markdown_name" : "Entity Poly Segment Id",
                   "source" : [
                      {
                         "outbound" : [
@@ -6679,18 +6909,18 @@
                   ]
                },
                "cross_correlation_coefficient",
-               "rot_matrix_1_1",
-               "rot_matrix_1_2",
-               "rot_matrix_1_3",
-               "rot_matrix_2_1",
-               "rot_matrix_2_2",
-               "rot_matrix_2_3",
-               "rot_matrix_3_1",
-               "rot_matrix_3_2",
-               "rot_matrix_3_3",
-               "tr_vector_1",
-               "tr_vector_2",
-               "tr_vector_3"
+               "rot_matrix[1][1]",
+               "rot_matrix[1][2]",
+               "rot_matrix[1][3]",
+               "rot_matrix[2][1]",
+               "rot_matrix[2][2]",
+               "rot_matrix[2][3]",
+               "rot_matrix[3][1]",
+               "rot_matrix[3][2]",
+               "rot_matrix[3][3]",
+               "tr_vector[1]",
+               "tr_vector[2]",
+               "tr_vector[3]"
             ],
             "detailed" : [
                "RID",
@@ -6735,18 +6965,18 @@
                   ]
                },
                "cross_correlation_coefficient",
-               "rot_matrix_1_1",
-               "rot_matrix_1_2",
-               "rot_matrix_1_3",
-               "rot_matrix_2_1",
-               "rot_matrix_2_2",
-               "rot_matrix_2_3",
-               "rot_matrix_3_1",
-               "rot_matrix_3_2",
-               "rot_matrix_3_3",
-               "tr_vector_1",
-               "tr_vector_2",
-               "tr_vector_3",
+               "rot_matrix[1][1]",
+               "rot_matrix[1][2]",
+               "rot_matrix[1][3]",
+               "rot_matrix[2][1]",
+               "rot_matrix[2][2]",
+               "rot_matrix[2][3]",
+               "rot_matrix[3][1]",
+               "rot_matrix[3][2]",
+               "rot_matrix[3][3]",
+               "tr_vector[1]",
+               "tr_vector[2]",
+               "tr_vector[3]",
                [
                   "PDB",
                   "ihm_2dem_class_average_fitting_RCB_fkey"
@@ -6804,18 +7034,18 @@
                   ]
                },
                "cross_correlation_coefficient",
-               "rot_matrix_1_1",
-               "rot_matrix_1_2",
-               "rot_matrix_1_3",
-               "rot_matrix_2_1",
-               "rot_matrix_2_2",
-               "rot_matrix_2_3",
-               "rot_matrix_3_1",
-               "rot_matrix_3_2",
-               "rot_matrix_3_3",
-               "tr_vector_1",
-               "tr_vector_2",
-               "tr_vector_3"
+               "rot_matrix[1][1]",
+               "rot_matrix[1][2]",
+               "rot_matrix[1][3]",
+               "rot_matrix[2][1]",
+               "rot_matrix[2][2]",
+               "rot_matrix[2][3]",
+               "rot_matrix[3][1]",
+               "rot_matrix[3][2]",
+               "rot_matrix[3][3]",
+               "tr_vector[1]",
+               "tr_vector[2]",
+               "tr_vector[3]"
             ]
          }
       },
@@ -7118,7 +7348,19 @@
       },
       {
          "schema" : "PDB",
-         "table" : "ihm_model_list",
+         "table" : "Accession_Code",
+         "uri" : "tag:isrd.isi.edu,2016:generated",
+         "value" : null
+      },
+      {
+         "schema" : "PDB",
+         "table" : "audit_conform",
+         "uri" : "tag:isrd.isi.edu,2016:generated",
+         "value" : null
+      },
+      {
+         "schema" : "PDB",
+         "table" : "Conform_Dictionary",
          "uri" : "tag:isrd.isi.edu,2016:generated",
          "value" : null
       },
@@ -9448,10 +9690,216 @@
       {
          "schema" : "PDB",
          "table" : "entry",
+         "uri" : "tag:isrd.isi.edu,2019:source-definitions",
+         "value" : {
+            "columns" : true,
+            "fkeys" : [],
+            "sources" : {
+               "Accession_Code_RCB" : {
+                  "display" : {
+                     "markdown_pattern" : "{{{$self.values.Full_Name}}} ({{{$self.values.Email}}})",
+                     "template_engine" : "handlebars"
+                  },
+                  "entity" : true,
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Accession_Code_RCB_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "entry_RCB" : {
+                  "display" : {
+                     "markdown_pattern" : "{{{$self.values.Full_Name}}} ({{{$self.values.Email}}})",
+                     "template_engine" : "handlebars"
+                  },
+                  "entity" : true,
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "entry_RCB_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "entry_RMB" : {
+                  "display" : {
+                     "markdown_pattern" : "{{{$self.values.Full_Name}}} ({{{$self.values.Email}}})",
+                     "template_engine" : "handlebars"
+                  },
+                  "entity" : true,
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "entry_RMB_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "molstar_image" : {
+                  "entity" : true,
+                  "source" : [
+                     {
+                        "inbound" : [
+                           "PDB",
+                           "Entry_mmCIF_File_Structure_Id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               }
+            }
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "entry",
          "uri" : "tag:isrd.isi.edu,2016:table-display",
          "value" : {
+            "compact" : {
+               "row_order" : [
+                  {
+                     "column" : "RCT",
+                     "descending" : true
+                  }
+               ]
+            },
             "row_name" : {
                "row_markdown_pattern" : "{{{id}}}"
+            }
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "Accession_Code",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               "Accession_Serial",
+               "Accession_Code",
+               {
+                  "markdown_name" : "Entry",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Accession_Code_Entry_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Accession_Code_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Accession_Code_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               "RCT",
+               "RMT",
+               [
+                  "PDB",
+                  "Accession_Code_Owner_fkey"
+               ]
+            ],
+            "detailed" : [
+               "RID",
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Accession_Code_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Accession_Code_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               "Accession_Serial",
+               "Accession_Code",
+               {
+                  "markdown_name" : "Entry",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Accession_Code_Entry_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               }
+            ],
+            "entry" : [
+               {
+                  "markdown_name" : "Entry",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Accession_Code_Entry_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               }
+            ],
+            "entry/edit" : [
+               "Accession_Code"
+            ],
+            "filter" : {
+               "and" : [
+                  {
+                     "markdown_name" : "Accession Serial",
+                     "source" : "Accession_Serial"
+                  },
+                  {
+                     "markdown_name" : "Accession Code",
+                     "source" : "Accession_Code"
+                  }
+               ]
             }
          }
       },
@@ -9467,19 +9915,75 @@
                "Image_File_URL",
                [
                   "PDB",
-                  "entry_workflow_status_fkey"
-               ],
-               "Generated_mmCIF_Processing_Status",
-               "Record_Status_Detail",
-               "accession_code",
-               [
-                  "PDB",
-                  "entry_RCB_fkey"
+                  "entry_Accession_Code_fkey"
                ],
                [
                   "PDB",
-                  "entry_RMB_fkey"
+                  "entry_Workflow_Status_fkey"
                ],
+               "Process_Status",
+               {
+                  "aggregate" : "array_d",
+                  "display" : {
+                     "markdown_pattern" : "{{#if _Record_Status_Detail}}{{{Record_Status_Detail}}}\n{{#each $self}}- [{{{this.rowName}}}]({{{this.uri.detailed}}}) \n{{/each}}{{/if}}",
+                     "template_engine" : "handlebars"
+                  },
+                  "entity" : true,
+                  "markdown_name" : "Record Status Detail",
+                  "source" : [
+                     {
+                        "inbound" : [
+                           "PDB",
+                           "Entry_Error_File_Entry_RID_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "aggregate" : "array_d",
+                  "display" : {
+                     "markdown_pattern" : "{{#each $self}}- {{{this.rowName}}} \n{{/each}}",
+                     "template_engine" : "handlebars"
+                  },
+                  "entity" : true,
+                  "markdown_name" : "System Generated mmCIF File",
+                  "source" : [
+                     {
+                        "inbound" : [
+                           "PDB",
+                           "Entry_mmCIF_File_Structure_Id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "Deposit_Date",
+               "Release_Date",
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "entry_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "entry_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -9490,6 +9994,21 @@
             "detailed" : [
                "RID",
                "id",
+               {
+                  "sourcekey" : "entry_RCB"
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "entry_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "mmCIF_File_URL",
                {
                   "markdown_name" : "mmCIF File Size (Bytes)",
@@ -9497,26 +10016,49 @@
                },
                "Image_File_URL",
                {
+                  "display" : {
+                     "markdown_pattern" : "{{#if (or (eq Workflow_Status \"mmCIF CREATED\") (eq Workflow_Status \"SUBMISSION COMPLETE\") (eq Workflow_Status \"HOLD\") (eq Workflow_Status \"REL\") (eq Workflow_Status \"REL\"))}} {{#each molstar_image}}::: iframe [](/molstar/embedded.html?url={{this.values.File_URL}}){style=\"min-width:800px; min-height:700px; height:70vh;\" class=chaise-autofill  } \n :::{{/each}}{{else}}Not Available{{/if}}",
+                     "template_engine" : "handlebars",
+                     "wait_for" : [
+                        "molstar_image"
+                     ]
+                  },
+                  "markdown_name" : "3D Visualization"
+               },
+               {
                   "markdown_name" : "Image File Size (Bytes)",
                   "source" : "Image_File_Bytes"
                },
                [
                   "PDB",
-                  "entry_workflow_status_fkey"
-               ],
-               "Generated_mmCIF_Processing_Status",
-               "Record_Status_Detail",
-               "accession_code",
-               [
-                  "PDB",
-                  "entry_RCB_fkey"
+                  "entry_Accession_Code_fkey"
                ],
                [
                   "PDB",
-                  "entry_RMB_fkey"
+                  "entry_Workflow_Status_fkey"
                ],
-               "RCT",
-               "RMT",
+               "Process_Status",
+               {
+                  "aggregate" : "array_d",
+                  "display" : {
+                     "markdown_pattern" : "{{#if _Record_Status_Detail}}{{{Record_Status_Detail}}}\n{{#each $self}}- [{{{this.rowName}}}]({{{this.uri.detailed}}}) \n{{/each}}{{/if}}",
+                     "template_engine" : "handlebars"
+                  },
+                  "entity" : true,
+                  "markdown_name" : "Record Status Detail",
+                  "source" : [
+                     {
+                        "inbound" : [
+                           "PDB",
+                           "Entry_Error_File_Entry_RID_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "Deposit_Date",
+               "Release_Date",
+               "Notes",
                [
                   "PDB",
                   "entry_Owner_fkey"
@@ -9527,10 +10069,124 @@
                "Image_File_URL",
                [
                   "PDB",
-                  "entry_workflow_status_fkey"
+                  "entry_Workflow_Status_fkey"
                ],
-               "accession_code"
-            ]
+               "Notes"
+            ],
+            "entry/edit" : [
+               "mmCIF_File_URL",
+               "Image_File_URL",
+               [
+                  "PDB",
+                  "entry_Workflow_Status_fkey"
+               ],
+               "Deposit_Date",
+               "Release_Date",
+               "Notes"
+            ],
+            "export/compact" : [
+               "RID",
+               "id",
+               "mmCIF_File_Name",
+               "mmCIF_File_URL",
+               "Image_File_Name",
+               "Image_File_URL",
+               "Workflow_Status",
+               "Accession_Code",
+               "Deposit_Date",
+               "Release_Date",
+               "Record_Status_Detail"
+            ],
+            "filter" : {
+               "and" : [
+                  {
+                     "hide_not_null_choice" : true,
+                     "hide_null_choice" : true,
+                     "markdown_name" : "Accession Code",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "entry_Accession_Code_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  },
+                  {
+                     "hide_not_null_choice" : true,
+                     "hide_null_choice" : true,
+                     "markdown_name" : "Created By",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "entry_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "Deposit Date",
+                     "source" : "Deposit_Date"
+                  },
+                  {
+                     "markdown_name" : "Release Date",
+                     "source" : "Release_Date"
+                  },
+                  {
+                     "hide_not_null_choice" : true,
+                     "hide_null_choice" : true,
+                     "markdown_name" : "Workflow Status",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "entry_Workflow_Status_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "Authors",
+                     "source" : [
+                        {
+                           "inbound" : [
+                              "PDB",
+                              "citation_author_structure_id_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "Citations",
+                     "source" : [
+                        {
+                           "inbound" : [
+                              "PDB",
+                              "citation_structure_id_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "Software",
+                     "source" : [
+                        {
+                           "inbound" : [
+                              "PDB",
+                              "software_structure_id_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  }
+               ]
+            }
          }
       },
       {
@@ -9903,6 +10559,25 @@
                   "PDB",
                   "ihm_geometric_object_distance_restraint_structure_id_fkey"
                ],
+               {
+                  "comment" : "Collections to which the entry belongs",
+                  "markdown_name" : "Entry Collections",
+                  "source" : [
+                     {
+                        "inbound" : [
+                           "PDB",
+                           "ihm_entry_collection_mapping_entry_id_fkey"
+                        ]
+                     },
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_entry_collection_mapping_collection_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
                [
                   "PDB",
                   "audit_conform_structure_id_fkey"
@@ -12545,6 +13220,232 @@
       },
       {
          "schema" : "PDB",
+         "table" : "ihm_entry_collection",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "comment_display" : {
+               "*" : {
+                  "table_comment_display" : "inline"
+               }
+            },
+            "name" : "Entry Collections"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_entry_collection",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               "id",
+               "name",
+               "details"
+            ],
+            "detailed" : [
+               "RID",
+               "id",
+               "name",
+               "details",
+               [
+                  "PDB",
+                  "ihm_entry_collection_RCB_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_entry_collection_RMB_fkey"
+               ],
+               "RCT",
+               "RMT",
+               [
+                  "PDB",
+                  "ihm_entry_collection_Owner_fkey"
+               ]
+            ],
+            "entry" : [
+               "id",
+               "name",
+               "details"
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_entry_collection",
+         "uri" : "tag:isrd.isi.edu,2016:visible-foreign-keys",
+         "value" : {
+            "detailed" : [
+               {
+                  "comment" : "Entries in this collection",
+                  "markdown_name" : "Entry",
+                  "source" : [
+                     {
+                        "inbound" : [
+                           "PDB",
+                           "ihm_entry_collection_mapping_collection_id_fkey"
+                        ]
+                     },
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_entry_collection_mapping_entry_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               }
+            ],
+            "filter" : "detailed"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_entry_collection_mapping",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "comment_display" : {
+               "*" : {
+                  "table_comment_display" : "inline"
+               }
+            },
+            "name" : "Entry Collection Mappings"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_entry_collection_mapping",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "compact" : [
+               "RID",
+               {
+                  "comment" : "Entry Collection Id",
+                  "markdown_name" : "Entry Collection Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_entry_collection_mapping_collection_id_fkey"
+                        ]
+                     },
+                     "id"
+                  ]
+               },
+               {
+                  "comment" : "Entry Id",
+                  "markdown_name" : "Entry Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_entry_collection_mapping_entry_id_fkey"
+                        ]
+                     },
+                     "id"
+                  ]
+               },
+               {
+                  "comment" : "Entry Accession Code",
+                  "markdown_name" : "Accession Code",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_entry_collection_mapping_entry_id_fkey"
+                        ]
+                     },
+                     "Accession_Code"
+                  ]
+               }
+            ],
+            "detailed" : [
+               "RID",
+               {
+                  "comment" : "Entry Collection Id",
+                  "markdown_name" : "Entry Collection Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_entry_collection_mapping_collection_id_fkey"
+                        ]
+                     },
+                     "id"
+                  ]
+               },
+               {
+                  "comment" : "Entry Id",
+                  "markdown_name" : "Entry Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_entry_collection_mapping_entry_id_fkey"
+                        ]
+                     },
+                     "id"
+                  ]
+               },
+               {
+                  "comment" : "Entry Accession Code",
+                  "markdown_name" : "Accession Code",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_entry_collection_mapping_entry_id_fkey"
+                        ]
+                     },
+                     "Accession_Code"
+                  ]
+               },
+               [
+                  "PDB",
+                  "ihm_entry_collection_mapping_RCB_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_entry_collection_mapping_RMB_fkey"
+               ],
+               "RCT",
+               "RMT",
+               [
+                  "PDB",
+                  "ihm_entry_collection_mapping_Owner_fkey"
+               ]
+            ],
+            "entry" : [
+               {
+                  "comment" : "Entry Collection Id",
+                  "markdown_name" : "Entry Collection Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_entry_collection_mapping_collection_id_fkey"
+                        ]
+                     },
+                     "id"
+                  ]
+               },
+               {
+                  "comment" : "Entry Id",
+                  "markdown_name" : "Entry Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_entry_collection_mapping_entry_id_fkey"
+                        ]
+                     },
+                     "id"
+                  ]
+               }
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
          "table" : "ihm_hdx_restraint",
          "uri" : "tag:misd.isi.edu,2015:display",
          "value" : {
@@ -12785,13 +13686,13 @@
                },
                "id",
                "rot_matrix[1][1]",
-               "rot_matrix[2][1]",
-               "rot_matrix[3][1]",
                "rot_matrix[1][2]",
-               "rot_matrix[2][2]",
-               "rot_matrix[3][2]",
                "rot_matrix[1][3]",
+               "rot_matrix[2][1]",
+               "rot_matrix[2][2]",
                "rot_matrix[2][3]",
+               "rot_matrix[3][1]",
+               "rot_matrix[3][2]",
                "rot_matrix[3][3]",
                "tr_vector[1]",
                "tr_vector[2]",
@@ -12814,13 +13715,13 @@
                },
                "id",
                "rot_matrix[1][1]",
-               "rot_matrix[2][1]",
-               "rot_matrix[3][1]",
                "rot_matrix[1][2]",
-               "rot_matrix[2][2]",
-               "rot_matrix[3][2]",
                "rot_matrix[1][3]",
+               "rot_matrix[2][1]",
+               "rot_matrix[2][2]",
                "rot_matrix[2][3]",
+               "rot_matrix[3][1]",
+               "rot_matrix[3][2]",
                "rot_matrix[3][3]",
                "tr_vector[1]",
                "tr_vector[2]",
@@ -12856,13 +13757,13 @@
                },
                "id",
                "rot_matrix[1][1]",
-               "rot_matrix[2][1]",
-               "rot_matrix[3][1]",
                "rot_matrix[1][2]",
-               "rot_matrix[2][2]",
-               "rot_matrix[3][2]",
                "rot_matrix[1][3]",
+               "rot_matrix[2][1]",
+               "rot_matrix[2][2]",
                "rot_matrix[2][3]",
+               "rot_matrix[3][1]",
+               "rot_matrix[3][2]",
                "rot_matrix[3][3]",
                "tr_vector[1]",
                "tr_vector[2]",
@@ -12894,7 +13795,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "Reference sequence information"
+            "markdown_name" : "Reference sequence information^*^"
          }
       },
       {
@@ -13064,7 +13965,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "Alignment information with the reference sequence"
+            "markdown_name" : "Alignment information with the reference sequence^*^"
          }
       },
       {
@@ -13369,7 +14270,17 @@
          "uri" : "tag:isrd.isi.edu,2016:table-display",
          "value" : {
             "row_name" : {
-               "row_markdown_pattern" : "{{{id}}}"
+               "row_markdown_pattern" : "{{{title}}}, {{{journal_abbrev}}}, {{{year}}}"
+            }
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "Data_Dictionary",
+         "uri" : "tag:isrd.isi.edu,2016:table-display",
+         "value" : {
+            "row_name" : {
+               "row_markdown_pattern" : "{{{Name}}} (v {{{Version}}})"
             }
          }
       },
@@ -18609,18 +19520,18 @@
                   ]
                },
                "id",
-               "rot_matrix_1_1",
-               "rot_matrix_1_2",
-               "rot_matrix_1_3",
-               "rot_matrix_2_1",
-               "rot_matrix_2_2",
-               "rot_matrix_2_3",
-               "rot_matrix_3_1",
-               "rot_matrix_3_2",
-               "rot_matrix_3_3",
-               "tr_vector_1",
-               "tr_vector_2",
-               "tr_vector_3"
+               "rot_matrix[1][1]",
+               "rot_matrix[1][2]",
+               "rot_matrix[1][3]",
+               "rot_matrix[2][1]",
+               "rot_matrix[2][2]",
+               "rot_matrix[2][3]",
+               "rot_matrix[3][1]",
+               "rot_matrix[3][2]",
+               "rot_matrix[3][3]",
+               "tr_vector[1]",
+               "tr_vector[2]",
+               "tr_vector[3]"
             ],
             "detailed" : [
                "RID",
@@ -18638,18 +19549,18 @@
                   ]
                },
                "id",
-               "rot_matrix_1_1",
-               "rot_matrix_1_2",
-               "rot_matrix_1_3",
-               "rot_matrix_2_1",
-               "rot_matrix_2_2",
-               "rot_matrix_2_3",
-               "rot_matrix_3_1",
-               "rot_matrix_3_2",
-               "rot_matrix_3_3",
-               "tr_vector_1",
-               "tr_vector_2",
-               "tr_vector_3",
+               "rot_matrix[1][1]",
+               "rot_matrix[1][2]",
+               "rot_matrix[1][3]",
+               "rot_matrix[2][1]",
+               "rot_matrix[2][2]",
+               "rot_matrix[2][3]",
+               "rot_matrix[3][1]",
+               "rot_matrix[3][2]",
+               "rot_matrix[3][3]",
+               "tr_vector[1]",
+               "tr_vector[2]",
+               "tr_vector[3]",
                [
                   "PDB",
                   "ihm_geometric_object_transformation_RCB_fkey"
@@ -18680,18 +19591,18 @@
                   ]
                },
                "id",
-               "rot_matrix_1_1",
-               "rot_matrix_1_2",
-               "rot_matrix_1_3",
-               "rot_matrix_2_1",
-               "rot_matrix_2_2",
-               "rot_matrix_2_3",
-               "rot_matrix_3_1",
-               "rot_matrix_3_2",
-               "rot_matrix_3_3",
-               "tr_vector_1",
-               "tr_vector_2",
-               "tr_vector_3"
+               "rot_matrix[1][1]",
+               "rot_matrix[1][2]",
+               "rot_matrix[1][3]",
+               "rot_matrix[2][1]",
+               "rot_matrix[2][2]",
+               "rot_matrix[2][3]",
+               "rot_matrix[3][1]",
+               "rot_matrix[3][2]",
+               "rot_matrix[3][3]",
+               "tr_vector[1]",
+               "tr_vector[2]",
+               "tr_vector[3]"
             ]
          }
       },
@@ -18740,7 +19651,7 @@
          "uri" : "tag:isrd.isi.edu,2016:table-display",
          "value" : {
             "row_name" : {
-               "row_markdown_pattern" : "{{{pdbx_ordinal}}}"
+               "row_markdown_pattern" : "{{{name}}} {{{version}}}"
             }
          }
       },
@@ -19238,12 +20149,6 @@
       {
          "schema" : "PDB",
          "table" : "chem_comp",
-         "uri" : "tag:isrd.isi.edu,2016:generated",
-         "value" : null
-      },
-      {
-         "schema" : "PDB",
-         "table" : "chem_comp",
          "uri" : "tag:isrd.isi.edu,2016:table-display",
          "value" : {
             "row_name" : {
@@ -19515,7 +20420,7 @@
                },
                {
                   "comment" : "A reference to table ihm_entity_poly_segment.id.",
-                  "markdown_name" : "Entity Poly Segement Id",
+                  "markdown_name" : "Entity Poly Segment Id",
                   "source" : [
                      {
                         "outbound" : [
@@ -19598,7 +20503,7 @@
                },
                {
                   "comment" : "A reference to table ihm_entity_poly_segment.id.",
-                  "markdown_name" : "Entity Poly Segement Id",
+                  "markdown_name" : "Entity Poly Segment Id",
                   "source" : [
                      {
                         "outbound" : [
@@ -19694,7 +20599,7 @@
                },
                {
                   "comment" : "A reference to table ihm_entity_poly_segment.id.",
-                  "markdown_name" : "Entity Poly Segement Id",
+                  "markdown_name" : "Entity Poly Segment Id",
                   "source" : [
                      {
                         "outbound" : [
@@ -20199,14 +21104,8 @@
                   "table_comment_display" : "inline"
                }
             },
-            "markdown_name" : "Types of Atoms^*^"
+            "markdown_name" : "Types of Atoms"
          }
-      },
-      {
-         "schema" : "PDB",
-         "table" : "atom_type",
-         "uri" : "tag:isrd.isi.edu,2016:generated",
-         "value" : null
       },
       {
          "schema" : "PDB",
@@ -20491,7 +21390,7 @@
                },
                {
                   "comment" : "A reference to table ihm_entity_poly_segment.id.",
-                  "markdown_name" : "Entity Poly Segement Id",
+                  "markdown_name" : "Entity Poly Segment Id",
                   "source" : [
                      {
                         "outbound" : [
@@ -20588,7 +21487,7 @@
                },
                {
                   "comment" : "A reference to table ihm_entity_poly_segment.id.",
-                  "markdown_name" : "Entity Poly Segement Id",
+                  "markdown_name" : "Entity Poly Segment Id",
                   "source" : [
                      {
                         "outbound" : [
@@ -20698,7 +21597,7 @@
                },
                {
                   "comment" : "A reference to table ihm_entity_poly_segment.id.",
-                  "markdown_name" : "Entity Poly Segement Id",
+                  "markdown_name" : "Entity Poly Segment Id",
                   "source" : [
                      {
                         "outbound" : [
@@ -21162,12 +22061,6 @@
       {
          "schema" : "PDB",
          "table" : "entity_poly",
-         "uri" : "tag:isrd.isi.edu,2016:generated",
-         "value" : null
-      },
-      {
-         "schema" : "PDB",
-         "table" : "entity_poly",
          "uri" : "tag:isrd.isi.edu,2016:table-display",
          "value" : {
             "row_name" : {
@@ -21485,6 +22378,135 @@
       },
       {
          "schema" : "PDB",
+         "table" : "Data_Dictionary",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               [
+                  "PDB",
+                  "Data_Dictionary_Name_fkey"
+               ],
+               [
+                  "PDB",
+                  "Data_Dictionary_Category_fkey"
+               ],
+               "Version",
+               "Location",
+               "RCT",
+               "RMT"
+            ],
+            "detailed" : [
+               "RID",
+               [
+                  "PDB",
+                  "Data_Dictionary_Name_fkey"
+               ],
+               [
+                  "PDB",
+                  "Data_Dictionary_Category_fkey"
+               ],
+               "Version",
+               "Location"
+            ],
+            "entry" : [
+               [
+                  "PDB",
+                  "Data_Dictionary_Name_fkey"
+               ],
+               [
+                  "PDB",
+                  "Data_Dictionary_Category_fkey"
+               ],
+               "Version",
+               "Location"
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "Supported_Dictionary",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               {
+                  "comment" : "A reference to table Data_Dictionary.RID.",
+                  "markdown_name" : "Data Dictionary",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Supported_Dictionary_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "A reference to table Data_Dictionary.Category.",
+                  "markdown_name" : "Category",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Supported_Dictionary_fkey"
+                        ]
+                     },
+                     "Category"
+                  ]
+               },
+               "RCT",
+               "RMT"
+            ],
+            "detailed" : [
+               "RID",
+               {
+                  "comment" : "A reference to table Data_Dictionary.RID.",
+                  "markdown_name" : "Data Dictionary",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Supported_Dictionary_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "A reference to table Data_Dictionary.Category.",
+                  "markdown_name" : "Category",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Supported_Dictionary_fkey"
+                        ]
+                     },
+                     "Category"
+                  ]
+               }
+            ],
+            "entry" : [
+               {
+                  "comment" : "A reference to table Data_Dictionary.RID.",
+                  "markdown_name" : "Data Dictionary",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Supported_Dictionary_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               }
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
          "table" : "Entry_mmCIF_File",
          "uri" : "tag:misd.isi.edu,2015:display",
          "value" : {
@@ -21499,8 +22521,12 @@
       {
          "schema" : "PDB",
          "table" : "Entry_mmCIF_File",
-         "uri" : "tag:isrd.isi.edu,2016:generated",
-         "value" : null
+         "uri" : "tag:isrd.isi.edu,2016:table-display",
+         "value" : {
+            "row_name" : {
+               "row_markdown_pattern" : "[{{{File_Name}}}]({{{File_URL}}})"
+            }
+         }
       },
       {
          "schema" : "PDB",
@@ -21510,7 +22536,41 @@
             "*" : [
                "RID",
                "File_URL",
-               "mmCIF_Schema_Version",
+               {
+                  "aggregate" : "array_d",
+                  "array_options" : {
+                     "order" : [
+                        {
+                           "column" : "Name",
+                           "descending" : false
+                        },
+                        {
+                           "column" : "Version",
+                           "descending" : false
+                        }
+                     ]
+                  },
+                  "display" : {
+                     "array_ux_mode" : "ulist"
+                  },
+                  "entity" : true,
+                  "markdown_name" : "Conform Dictionary",
+                  "source" : [
+                     {
+                        "inbound" : [
+                           "PDB",
+                           "Conform_Dictionary_Entry_mmCIF_File_fkey"
+                        ]
+                     },
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Conform_Dictionary_Data_Dictionary_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
                [
                   "PDB",
                   "Entry_mmCIF_File_Structure_Id_fkey"
@@ -21519,7 +22579,41 @@
             "detailed" : [
                "RID",
                "File_URL",
-               "mmCIF_Schema_Version",
+               {
+                  "aggregate" : "array_d",
+                  "array_options" : {
+                     "order" : [
+                        {
+                           "column" : "Name",
+                           "descending" : false
+                        },
+                        {
+                           "column" : "Version",
+                           "descending" : false
+                        }
+                     ]
+                  },
+                  "display" : {
+                     "array_ux_mode" : "ulist"
+                  },
+                  "entity" : true,
+                  "markdown_name" : "Conform Dictionary",
+                  "source" : [
+                     {
+                        "inbound" : [
+                           "PDB",
+                           "Conform_Dictionary_Entry_mmCIF_File_fkey"
+                        ]
+                     },
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Conform_Dictionary_Data_Dictionary_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
                [
                   "PDB",
                   "Entry_mmCIF_File_Structure_Id_fkey"
@@ -21527,12 +22621,83 @@
                "File_Bytes",
                "File_MD5"
             ],
-            "entry" : [
-               "File_URL",
-               "mmCIF_Schema_Version",
+            "entry" : [],
+            "entry/edit" : [
+               "File_URL"
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "Entry_Error_File",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "comment_display" : {
+               "*" : {
+                  "table_comment_display" : "inline"
+               }
+            },
+            "name" : "System Generated mmCIF Validation Error Files"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "Entry_Error_File",
+         "uri" : "tag:isrd.isi.edu,2016:table-display",
+         "value" : {
+            "row_name" : {
+               "row_markdown_pattern" : "{{{File_Name}}}"
+            }
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "Entry_Error_File",
+         "uri" : "tag:isrd.isi.edu,2016:generated",
+         "value" : null
+      },
+      {
+         "schema" : "PDB",
+         "table" : "Entry_Error_File",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
                [
                   "PDB",
-                  "Entry_mmCIF_File_Structure_Id_fkey"
+                  "Entry_Error_File_Entry_RID_fkey"
+               ],
+               "File_Name",
+               "File_URL",
+               [
+                  "PDB",
+                  "Entry_Error_File_File_Type_fkey"
+               ]
+            ],
+            "detailed" : [
+               "RID",
+               [
+                  "PDB",
+                  "Entry_Error_File_Entry_RID_fkey"
+               ],
+               "File_Name",
+               "File_Bytes",
+               "File_MD5",
+               "File_URL",
+               [
+                  "PDB",
+                  "Entry_Error_File_File_Type_fkey"
+               ]
+            ],
+            "entry" : [
+               "File_URL",
+               [
+                  "PDB",
+                  "Entry_Error_File_Entry_RID_fkey"
+               ],
+               [
+                  "PDB",
+                  "Entry_Error_File_File_Type_fkey"
                ]
             ]
          }
@@ -25069,7 +26234,7 @@
                },
                {
                   "comment" : "A reference to table ihm_entity_poly_segment.id.",
-                  "markdown_name" : "Entity Poly Segement Id",
+                  "markdown_name" : "Entity Poly Segment Id",
                   "source" : [
                      {
                         "outbound" : [
@@ -25147,7 +26312,7 @@
                },
                {
                   "comment" : "A reference to table ihm_entity_poly_segment.id.",
-                  "markdown_name" : "Entity Poly Segement Id",
+                  "markdown_name" : "Entity Poly Segment Id",
                   "source" : [
                      {
                         "outbound" : [
@@ -25242,7 +26407,7 @@
                },
                {
                   "comment" : "A reference to table ihm_entity_poly_segment.id.",
-                  "markdown_name" : "Entity Poly Segement Id",
+                  "markdown_name" : "Entity Poly Segment Id",
                   "source" : [
                      {
                         "outbound" : [
@@ -25341,8 +26506,9 @@
                "Description",
                [
                   "PDB",
-                  "Entry_Related_File_workflow_status_fkey"
+                  "Entry_Related_File_Restraint_Workflow_Status_fkey"
                ],
+               "Restraint_Process_Status",
                "Record_Status_Detail"
             ],
             "detailed" : [
@@ -25365,8 +26531,9 @@
                "Description",
                [
                   "PDB",
-                  "Entry_Related_File_workflow_status_fkey"
+                  "Entry_Related_File_Restraint_Workflow_Status_fkey"
                ],
+               "Restraint_Process_Status",
                "Record_Status_Detail",
                [
                   "PDB",
@@ -25403,7 +26570,7 @@
                "Description",
                [
                   "PDB",
-                  "Entry_Related_File_workflow_status_fkey"
+                  "Entry_Related_File_Restraint_Workflow_Status_fkey"
                ]
             ]
          }
@@ -25894,6 +27061,95 @@
       },
       {
          "schema" : "Vocab",
+         "table" : "Data_Dictionary_Name",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               "Name",
+               "Location",
+               "Description",
+               "ID",
+               "URI",
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "Data_Dictionary_Name_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "Data_Dictionary_Name_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               "RCT",
+               "RMT",
+               [
+                  "Vocab",
+                  "Data_Dictionary_Name_Owner_fkey"
+               ]
+            ]
+         }
+      },
+      {
+         "schema" : "Vocab",
+         "table" : "Data_Dictionary_Category",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               "Name",
+               "Description",
+               "ID",
+               "URI",
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "Data_Dictionary_Category_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "Data_Dictionary_Category_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               "RCT",
+               "RMT",
+               [
+                  "Vocab",
+                  "Data_Dictionary_Category_Owner_fkey"
+               ]
+            ]
+         }
+      },
+      {
+         "schema" : "Vocab",
          "table" : "ihm_geometric_object_plane_plane_type",
          "uri" : "tag:isrd.isi.edu,2016:visible-columns",
          "value" : {
@@ -25903,14 +27159,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_geometric_object_plane_plane_type_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_geometric_object_plane_plane_type_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_geometric_object_plane_plane_type_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_geometric_object_plane_plane_type_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -25955,14 +27227,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "rived_distance_restraint_group_conditionality_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "rived_distance_restraint_group_conditionality_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "rived_distance_restraint_group_conditionality_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "rived_distance_restraint_group_conditionality_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -25983,14 +27271,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_sas_restraint_profile_segment_flag_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_sas_restraint_profile_segment_flag_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_sas_restraint_profile_segment_flag_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_sas_restraint_profile_segment_flag_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26011,14 +27315,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_probe_list_probe_link_type_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_probe_list_probe_link_type_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_probe_list_probe_link_type_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_probe_list_probe_link_type_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26039,14 +27359,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_dataset_related_db_reference_db_name_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_dataset_related_db_reference_db_name_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_dataset_related_db_reference_db_name_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_dataset_related_db_reference_db_name_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26079,14 +27415,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_feature_list_entity_type_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_feature_list_entity_type_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_feature_list_entity_type_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_feature_list_entity_type_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26119,14 +27471,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_cross_link_restraint_restraint_type_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_cross_link_restraint_restraint_type_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_cross_link_restraint_restraint_type_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_cross_link_restraint_restraint_type_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26147,14 +27515,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_sas_restraint_fitting_state_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_sas_restraint_fitting_state_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_sas_restraint_fitting_state_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_sas_restraint_fitting_state_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26175,14 +27559,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_predicted_contact_restraint_rep_atom_2_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_predicted_contact_restraint_rep_atom_2_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_predicted_contact_restraint_rep_atom_2_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_predicted_contact_restraint_rep_atom_2_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26215,14 +27615,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "predicted_contact_restraint_model_granularity_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "predicted_contact_restraint_model_granularity_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "predicted_contact_restraint_model_granularity_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "predicted_contact_restraint_model_granularity_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26243,14 +27659,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "File_Format_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "File_Format_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "File_Format_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "File_Format_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26271,14 +27703,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_probe_list_probe_origin_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_probe_list_probe_origin_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_probe_list_probe_origin_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_probe_list_probe_origin_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26299,14 +27747,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_poly_residue_feature_rep_atom_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_poly_residue_feature_rep_atom_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_poly_residue_feature_rep_atom_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_poly_residue_feature_rep_atom_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26327,14 +27791,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ject_distance_restraint_object_characteristic_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ject_distance_restraint_object_characteristic_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ject_distance_restraint_object_characteristic_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ject_distance_restraint_object_characteristic_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26355,14 +27835,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_ensemble_info_ensemble_clustering_feature_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_ensemble_info_ensemble_clustering_feature_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_ensemble_info_ensemble_clustering_feature_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_ensemble_info_ensemble_clustering_feature_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26383,14 +27879,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_cross_link_list_linker_type_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_cross_link_list_linker_type_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_cross_link_list_linker_type_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_cross_link_list_linker_type_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26411,14 +27923,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "hm_modeling_protocol_details_multi_state_flag_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "hm_modeling_protocol_details_multi_state_flag_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "hm_modeling_protocol_details_multi_state_flag_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "hm_modeling_protocol_details_multi_state_flag_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26439,14 +27967,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_epr_restraint_fitting_state_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_epr_restraint_fitting_state_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_epr_restraint_fitting_state_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_epr_restraint_fitting_state_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26467,14 +28011,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_cross_link_restraint_model_granularity_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_cross_link_restraint_model_granularity_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_cross_link_restraint_model_granularity_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_cross_link_restraint_model_granularity_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26495,14 +28055,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_3dem_restraint_map_segment_flag_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_3dem_restraint_map_segment_flag_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_3dem_restraint_map_segment_flag_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_3dem_restraint_map_segment_flag_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26535,14 +28111,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "bject_distance_restraint_group_conditionality_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "bject_distance_restraint_group_conditionality_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "bject_distance_restraint_group_conditionality_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "bject_distance_restraint_group_conditionality_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26575,14 +28167,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_external_files_content_type_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_external_files_content_type_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_external_files_content_type_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_external_files_content_type_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26603,14 +28211,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_modeling_post_process_feature_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_modeling_post_process_feature_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_modeling_post_process_feature_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_modeling_post_process_feature_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26643,14 +28267,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_modeling_protocol_details_ensemble_flag_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_modeling_protocol_details_ensemble_flag_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_modeling_protocol_details_ensemble_flag_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_modeling_protocol_details_ensemble_flag_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26695,14 +28335,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "_probe_conjugate_ambiguous_stoichiometry_flag_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "_probe_conjugate_ambiguous_stoichiometry_flag_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "_probe_conjugate_ambiguous_stoichiometry_flag_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "_probe_conjugate_ambiguous_stoichiometry_flag_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26735,14 +28391,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_derived_distance_restraint_restraint_type_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_derived_distance_restraint_restraint_type_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_derived_distance_restraint_restraint_type_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_derived_distance_restraint_restraint_type_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26763,14 +28435,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_geometric_object_list_object_type_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_geometric_object_list_object_type_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_geometric_object_list_object_type_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_geometric_object_list_object_type_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26791,14 +28479,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_residues_not_modeled_reason_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_residues_not_modeled_reason_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_residues_not_modeled_reason_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_residues_not_modeled_reason_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26819,14 +28523,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "odel_representation_details_model_granularity_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "odel_representation_details_model_granularity_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "odel_representation_details_model_granularity_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "odel_representation_details_model_granularity_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26847,14 +28567,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "hm_modeling_protocol_details_multi_scale_flag_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "hm_modeling_protocol_details_multi_scale_flag_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "hm_modeling_protocol_details_multi_scale_flag_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "hm_modeling_protocol_details_multi_scale_flag_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26875,14 +28611,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "hm_predicted_contact_restraint_restraint_type_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "hm_predicted_contact_restraint_restraint_type_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "hm_predicted_contact_restraint_restraint_type_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "hm_predicted_contact_restraint_restraint_type_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26904,14 +28656,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "File_Type_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "File_Type_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "File_Type_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "File_Type_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26932,14 +28700,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_model_representation_details_model_mode_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_model_representation_details_model_mode_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_model_representation_details_model_mode_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_model_representation_details_model_mode_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26960,14 +28744,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_poly_probe_position_mutation_flag_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_poly_probe_position_mutation_flag_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_poly_probe_position_mutation_flag_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_poly_probe_position_mutation_flag_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -26988,14 +28788,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_modeling_post_process_type_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_modeling_post_process_type_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_modeling_post_process_type_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_modeling_post_process_type_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27016,14 +28832,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "_starting_model_details_starting_model_source_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "_starting_model_details_starting_model_source_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "_starting_model_details_starting_model_source_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "_starting_model_details_starting_model_source_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27044,14 +28876,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "oly_residue_feature_residue_range_granularity_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "oly_residue_feature_residue_range_granularity_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "oly_residue_feature_residue_range_granularity_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "oly_residue_feature_residue_range_granularity_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27072,14 +28920,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_external_reference_info_reference_type_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_external_reference_info_reference_type_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_external_reference_info_reference_type_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_external_reference_info_reference_type_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27091,7 +28955,82 @@
       },
       {
          "schema" : "Vocab",
-         "table" : "workflow_status",
+         "table" : "Workflow_Status",
+         "uri" : "tag:isrd.isi.edu,2016:table-display",
+         "value" : {
+            "*" : {
+               "row_order" : [
+                  {
+                     "column" : "Rank",
+                     "descending" : false
+                  }
+               ]
+            }
+         }
+      },
+      {
+         "schema" : "Vocab",
+         "table" : "Process_Status",
+         "uri" : "tag:isrd.isi.edu,2016:table-display",
+         "value" : {
+            "*" : {
+               "row_order" : [
+                  {
+                     "column" : "Rank",
+                     "descending" : false
+                  }
+               ]
+            }
+         }
+      },
+      {
+         "schema" : "Vocab",
+         "table" : "Workflow_Status",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               "Name",
+               "Description",
+               "Rank",
+               "ID",
+               "URI",
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "workflow_status_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "workflow_status_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               "RCT",
+               "RMT",
+               [
+                  "Vocab",
+                  "workflow_status_Owner_fkey"
+               ]
+            ]
+         }
+      },
+      {
+         "schema" : "Vocab",
+         "table" : "Validation_File_Type",
          "uri" : "tag:isrd.isi.edu,2016:visible-columns",
          "value" : {
             "*" : [
@@ -27100,19 +29039,35 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "workflow_status_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "workflow_status_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "Validation_File_Type_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "Validation_File_Type_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
                   "Vocab",
-                  "workflow_status_Owner_fkey"
+                  "Validation_File_Type_Owner_fkey"
                ]
             ]
          }
@@ -27128,14 +29083,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_dataset_list_data_type_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_dataset_list_data_type_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_dataset_list_data_type_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_dataset_list_data_type_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27156,14 +29127,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_probe_list_reactive_probe_flag_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_probe_list_reactive_probe_flag_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_probe_list_reactive_probe_flag_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_probe_list_reactive_probe_flag_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27184,14 +29171,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_feature_list_feature_type_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_feature_list_feature_type_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_feature_list_feature_type_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_feature_list_feature_type_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27212,14 +29215,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "oss_link_restraint_conditional_crosslink_flag_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "oss_link_restraint_conditional_crosslink_flag_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "oss_link_restraint_conditional_crosslink_flag_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "oss_link_restraint_conditional_crosslink_flag_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27240,14 +29259,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_external_files_file_format_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_external_files_file_format_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_external_files_file_format_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_external_files_file_format_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27268,14 +29303,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_geometric_object_axis_axis_type_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_geometric_object_axis_axis_type_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_geometric_object_axis_axis_type_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_geometric_object_axis_axis_type_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27296,14 +29347,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_external_reference_info_refers_to_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_external_reference_info_refers_to_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_external_reference_info_refers_to_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_external_reference_info_refers_to_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27348,14 +29415,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_modeling_protocol_details_ordered_flag_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_modeling_protocol_details_ordered_flag_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_modeling_protocol_details_ordered_flag_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_modeling_protocol_details_ordered_flag_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27388,14 +29471,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "m_poly_residue_feature_interface_residue_flag_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "m_poly_residue_feature_interface_residue_flag_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "m_poly_residue_feature_interface_residue_flag_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "m_poly_residue_feature_interface_residue_flag_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27416,14 +29515,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "em_class_average_restraint_image_segment_flag_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "em_class_average_restraint_image_segment_flag_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "em_class_average_restraint_image_segment_flag_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "em_class_average_restraint_image_segment_flag_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27444,14 +29559,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_ensemble_info_ensemble_clustering_method_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_ensemble_info_ensemble_clustering_method_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_ensemble_info_ensemble_clustering_method_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_ensemble_info_ensemble_clustering_method_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27472,14 +29603,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "models_template_sequence_identity_denominator_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "models_template_sequence_identity_denominator_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "models_template_sequence_identity_denominator_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "models_template_sequence_identity_denominator_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27524,14 +29671,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_multi_state_modeling_experiment_type_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_multi_state_modeling_experiment_type_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_multi_state_modeling_experiment_type_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_multi_state_modeling_experiment_type_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27552,14 +29715,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_geometric_object_half_torus_section_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_geometric_object_half_torus_section_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_geometric_object_half_torus_section_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_geometric_object_half_torus_section_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27592,14 +29771,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "tric_object_distance_restraint_restraint_type_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "tric_object_distance_restraint_restraint_type_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "tric_object_distance_restraint_restraint_type_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "tric_object_distance_restraint_restraint_type_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27620,14 +29815,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_poly_probe_position_modification_flag_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_poly_probe_position_modification_flag_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_poly_probe_position_modification_flag_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_poly_probe_position_modification_flag_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27660,14 +29871,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_model_representative_selection_criteria_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_model_representative_selection_criteria_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_model_representative_selection_criteria_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_model_representative_selection_criteria_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27688,14 +29915,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_struct_assembly_class_type_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_struct_assembly_class_type_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_struct_assembly_class_type_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_struct_assembly_class_type_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27716,14 +29959,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_dataset_list_database_hosted_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_dataset_list_database_hosted_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_dataset_list_database_hosted_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_dataset_list_database_hosted_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27744,14 +30003,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "representation_details_model_object_primitive_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "representation_details_model_object_primitive_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "representation_details_model_object_primitive_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "representation_details_model_object_primitive_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27784,14 +30059,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_predicted_contact_restraint_rep_atom_1_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_predicted_contact_restraint_rep_atom_1_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_predicted_contact_restraint_rep_atom_1_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_predicted_contact_restraint_rep_atom_1_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27824,14 +30115,30 @@
                "Description",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "ihm_dataset_group_application_term_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "ihm_dataset_group_application_term_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_dataset_group_application_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_dataset_group_application_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
@@ -27855,23 +30162,40 @@
       },
       {
          "schema" : "Vocab",
-         "table" : "process_status",
+         "table" : "Process_Status",
          "uri" : "tag:isrd.isi.edu,2016:visible-columns",
          "value" : {
             "*" : [
                "RID",
                "Name",
                "Description",
+               "Rank",
                "ID",
                "URI",
-               [
-                  "Vocab",
-                  "process_status_RCB_fkey"
-               ],
-               [
-                  "Vocab",
-                  "process_status_RMB_fkey"
-               ],
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "process_status_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "process_status_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
                "RCT",
                "RMT",
                [
