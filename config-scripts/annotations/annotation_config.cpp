@@ -6749,8 +6749,9 @@
 		{
 		     "schema" : "PDB",
 		     "table" : "entry",
-		     "uri" : "tag:isrd.isi.edu,2016:export",
-		     "value" : 
+		     "uri" : "tag:isrd.isi.edu,2019:export",
+		     "value": {
+		     "compact" : 
 				{
 			        "templates" : 
 			        	[
@@ -6787,6 +6788,7 @@
 								}
 							]
 					}
+				}
 		},
 #endif
         {
