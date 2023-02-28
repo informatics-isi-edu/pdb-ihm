@@ -1990,6 +1990,158 @@ class PDBClient (object):
                 self.logger.debug('Removing directory "{}"\n'.format(file_path))
                 shutil.rmtree(file_path)
         
+    """
+    Add a table that is not specified in the initial json schema (json-full-db-ihm_dev_full-col-ihm_dev_fulljson file).
+    """
+    def addTable(self, rid, results, table_name, columns, fw):
+        def getColumnValue(table_name, column_name, column_type, column_value):
+            if column_value == None:
+                return '.'
+            if column_type in ['int4', 'float4']:
+                return '{}'.format(column_value)
+            if column_type == 'text':
+                if '\t' in column_value:
+                    self.logger.debug('tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
+                    self.export_error_message = 'ERROR getColumnValue: tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value)
+                    return None
+                if '\n' in column_value:
+                    return '\n;{}\n;\n'.format(column_value)
+                if '"' not in column_value and "“" not in column_value and "”" not in column_value and "'" not in column_value and ' ' not in column_value and not column_value.startswith('_'):
+                    return column_value
+                if '"' not in column_value and "“" not in column_value and "”" not in column_value:
+                    return '"{}"'.format(column_value)
+                if "'" not in column_value:
+                    return "'{}'".format(column_value)
+                else:
+                    self.logger.debug('Both " and \' are in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
+                    return '\n;{}\n;\n'.format(column_value)
+                self.export_error_message = 'ERROR getColumnValue: Unhandled value in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value)
+                return None
+            else:
+                self.logger.debug('unknown type: {}, table: {}, column: {}'.format(column_type, table_name, column_name))
+                self.export_error_message = 'ERROR getColumnValue: unknown type: {}, table: {}, column: {}'.format(column_type, table_name, column_name)
+                return None
+
+        """
+        Get the RCB user
+        """
+        user = self.getUser('PDB', 'entry', rid)
+
+        if len(results) > 1:
+            fw.write('loop_\n')
+            for column in columns:
+                fw.write('_{}.{}\n'.format(table_name,column['name']))
+            for row in results:
+                line = []
+                for column in columns:
+                    column_name = column['name']
+                    column_type = column['type']
+                    column_value = row[column_name]
+                    value = getColumnValue(table_name, column_name, column_type, column_value)
+                    if value == None:
+                        self.logger.debug('Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
+                        subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', process_status_error, user)
+                        self.sendMail(subject, 'Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
+                        self.export_error_message = 'ERROR exportData: Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value)
+                        return 1
+                    line.append(value)
+                fw.write('{}\n'.format('\t'.join(line)))
+        elif len(results) == 1:
+            row = results[0]
+            for column in columns:
+                column_name = column['name']
+                column_type = column['type']
+                column_value = row[column_name]
+                value = getColumnValue(table_name, column_name, column_type, column_value)
+                if value == None:
+                    self.logger.debug('Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
+                    subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', process_status_error, user)
+                    self.sendMail(subject, 'Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
+                    self.export_error_message = 'ERROR exportData: Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value)
+                    return 1
+                fw.write('_{}.{}\t{}\n'.format(table_name, column['name'], value))
+            
+        fw.write('#\n')    
+        return 0
+
+    def addCollectionRecords(self, rid, entry_id, fw):
+        """
+        Get the RCB user
+        """
+        user = self.getUser('PDB', 'entry', rid)
+
+        try:
+            url = '/attribute/A:=PDB:entry/id={}/B:=PDB:ihm_entry_collection_mapping/C:=PDB:ihm_entry_collection/C:id,C:name,C:details'.format(urlquote(entry_id))
+            self.logger.debug('ihm_entry_collection Query URL: "%s"' % url) 
+            resp = self.catalog.get(url)
+            resp.raise_for_status()
+            results = resp.json()
+            if len(results) > 0:
+                table_name = 'ihm_entry_collection'
+                columns = [
+                    {'name': 'id', 'type': 'text'},
+                    {'name': 'name', 'type': 'text'},
+                    {'name': 'details', 'type': 'text'}
+                    ]
+                if self.addTable(rid, results, table_name, columns, fw) != 0:
+                    error_message = 'ERROR addCollectionRecords: "%s"' % self.export_error_message
+                    self.updateAttributes('PDB',
+                                          'entry',
+                                          rid,
+                                          ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
+                                          {'RID': rid,
+                                          'Process_Status': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
+                                          'Record_Status_Detail': error_message,
+                                          'Workflow_Status': 'ERROR'
+                                          },
+                                          user)
+                    return False
+
+            url = '/attribute/A:=PDB:entry/id={}/B:=PDB:ihm_entry_collection_mapping/C:=PDB:ihm_entry_collection/B:collection_id,entry_id:=A:Accession_Code'.format(urlquote(entry_id))
+            self.logger.debug('ihm_entry_collection_mapping Query URL: "%s"' % url) 
+            resp = self.catalog.get(url)
+            resp.raise_for_status()
+            results = resp.json()
+            if len(results) > 0:
+                table_name = 'ihm_entry_collection_mapping'
+                columns = [
+                    {'name': 'collection_id', 'type': 'text'},
+                    {'name': 'entry_id', 'type': 'text'}
+                    ]
+                if self.addTable(rid, results, table_name, columns, fw) != 0:
+                    error_message = 'ERROR addCollectionRecords: "%s"' % self.export_error_message
+                    self.updateAttributes('PDB',
+                                          'entry',
+                                          rid,
+                                          ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
+                                          {'RID': rid,
+                                          'Process_Status': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
+                                          'Record_Status_Detail': error_message,
+                                          'Workflow_Status': 'ERROR'
+                                          },
+                                          user)
+                    return False
+            
+            return True
+        except:
+            et, ev, tb = sys.exc_info()
+            self.logger.error('got unexpected exception "%s"' % str(ev))
+            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'RELEASE READY', Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
+            self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+            error_message = 'ERROR addCollectionRecords: "%s"' % str(ev)
+            self.updateAttributes('PDB',
+                                  'entry',
+                                  rid,
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
+                                  {'RID': rid,
+                                  'Process_Status': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
+                                  'Record_Status_Detail': error_message,
+                                  'Workflow_Status': 'ERROR'
+                                  },
+                                  user)
+            return False
+
     def addReleaseRecords(self, rid):
         """
         Get the RCB user
@@ -2002,6 +2154,7 @@ class PDBClient (object):
                 We can not recreate the mmCIF exported file
                 """
                 return
+
             """
             Query for detecting the mmCIF file
             """
@@ -2097,6 +2250,10 @@ class PDBClient (object):
                     if line == '#\n':
                         audit_conform = False
                         fw.write(records_release)
+                        if self.addCollectionRecords(rid, entry_id, fw) == False:
+                            fr.close()
+                            fw.close()
+                            return
                 else:
                     fw.write(line)
             fr.close()
