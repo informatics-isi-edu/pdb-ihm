@@ -813,7 +813,13 @@ def main(server_name, catalog_id, credentials):
     set_ermrest_acl(catalog)
     
 # -- =================================================================================
-#  python ermrest_acl.py --host dev.pdb-dev.org --catalog_id 99 
+# Install the Python package:
+#    From the protein-database directory, run: 
+#        pip3 install --upgrade --no-deps .
+#
+# Running the script:
+#    python3 -m pdb_dev.config.acl.ermrest_acl --host dev.pdb-dev.org --catalog-id 99 
+#
 if __name__ == "__main__":
     args = PDBDEV_CLI(DCCTX["acl"], None, 1).parse_cli()
     credentials = get_credential(args.host, args.credential_file)
