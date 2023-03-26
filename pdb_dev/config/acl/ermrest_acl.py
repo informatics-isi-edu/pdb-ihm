@@ -183,6 +183,7 @@ def print_acls(model, schema_names=["PDB"]):
                                    {'or': [{'filter': 'Workflow_Status', 'operand': 'DRAFT', 'operator': '='},
                                            {'filter': 'Workflow_Status', 'operand': 'DEPO', 'operator': '='},
                                            {'filter': 'Workflow_Status', 'operand': 'RECORD READY', 'operator': '='},
+                                           {'filter': 'Workflow_Status', 'operand': 'AUTH', 'operator': '='},
                                            {'filter': 'Workflow_Status', 'operand': 'ERROR', 'operator': '='}]},
                                    'RCB'],
                     'projection_type': 'acl'
@@ -219,6 +220,7 @@ def print_acls(model, schema_names=["PDB"]):
                                     {'filter': 'Workflow_Status', 'operand': 'DRAFT', 'operator': '='},
                                     {'filter': 'Workflow_Status', 'operand': 'DEPO', 'operator': '='},
                                     {'filter': 'Workflow_Status', 'operand': 'RECORD READY', 'operator': '='},
+                                    {'filter': 'Workflow_Status', 'operand': 'AUTH', 'operator': '='},
                                     {'filter': 'Workflow_Status', 'operand': 'ERROR', 'operator': '='} ]
                                  },
                                 'RID'
@@ -395,6 +397,7 @@ def set_PDB_entry(model):
                         { "filter": "Workflow_Status", "operator": "=", "operand": "DRAFT",  },
                         { "filter": "Workflow_Status", "operator": "=", "operand": "DEPO", },
                         { "filter": "Workflow_Status", "operator": "=", "operand": "RECORD READY", },
+                        { "filter": "Workflow_Status", "operator": "=", "operand": "AUTH", },
                         { "filter": "Workflow_Status", "operator": "=", "operand": "ERROR", }
                     ]
                 },
@@ -512,6 +515,7 @@ def set_PDB_entry_related(model):
                                     { "filter": "Workflow_Status", "operator": "=", "operand": "DRAFT",  },
                                     { "filter": "Workflow_Status", "operator": "=", "operand": "DEPO", },
                                     { "filter": "Workflow_Status", "operator": "=", "operand": "RECORD READY", },
+                                    { "filter": "Workflow_Status", "operator": "=", "operand": "AUTH", },
                                     { "filter": "Workflow_Status", "operator": "=", "operand": "ERROR", }
                                 ]
                             },
@@ -548,6 +552,7 @@ def set_PDB_entry_related(model):
                                 { "filter": "Workflow_Status", "operator": "=", "operand": "DRAFT"  },
                                 { "filter": "Workflow_Status", "operator": "=", "operand": "DEPO" },
                                 { "filter": "Workflow_Status", "operator": "=", "operand": "RECORD READY" },
+                                { "filter": "Workflow_Status", "operator": "=", "operand": "AUTH" },
                                 { "filter": "Workflow_Status", "operator": "=", "operand": "ERROR" }
                             ]},
                             "RCB",
