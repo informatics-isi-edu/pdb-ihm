@@ -3889,7 +3889,6 @@
             "table": "ihm_model_list",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Models Submitted"
                 "markdown_name": "Models Submitted^*^",
                 "comment_display": {
                     "*": {
@@ -4157,7 +4156,6 @@
                     ],
                     [
                         "PDB",
-                        //"ihm_cross_link_pseudo_site_model_id_fkey"
                         "ihm_cross_link_pseudo_site_ihm_model_list_combo2_fkey"
                     ]
                 ],
@@ -4339,7 +4337,6 @@
                     ],
                     [
                         "PDB",
-                        //"ihm_pseudo_site_feature_feature_id_fkey"
                         "ihm_pseudo_site_feature_ihm_feature_list_combo1_fkey"
                     ],
 #if 1
@@ -6108,7 +6105,6 @@
             "table": "ihm_dataset_group",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Groups of Input Datasets"
                 "markdown_name": "Input Dataset Groups^*^",
                 "comment_display": {
                     "*": {
@@ -6243,14 +6239,7 @@
             "table": "entry",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Entry"
                 "markdown_name": "Entry^*^"
-                //"comment": "Entries submitted by depositor"
-                //"comment_display": {
-                //    "*": {
-                //        "table_comment_display" : "inline"
-                //    }
-                //}
             }
         },
         {
@@ -6512,7 +6501,6 @@
                         "markdown_name": "System Generated mmCIF File",
                         "aggregate": "array_d",
                         "display": {
-                          //"markdown_pattern": "{{#each $self}}- [{{{this.rowName}}}]({{{this.uri.detailed}}}) \n{{/each}}",
                           "markdown_pattern": "{{#each $self}}- {{{this.rowName}}} \n{{/each}}",
                           "template_engine": "handlebars"
                         }
@@ -7482,7 +7470,6 @@
             "table": "ihm_dataset_list",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Input Datasets"
                 "markdown_name": "Input Datasets^*^",
                 "comment_display": {
                     "*": {
@@ -7706,7 +7693,6 @@
             "table": "audit_author",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Authors"
                 "markdown_name": "Authors^*^",
                 "comment_display": {
                     "*": {
@@ -10417,7 +10403,6 @@
             "table": "struct_ref",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Reference sequence information",
                 "markdown_name": "Reference sequence information^*^",
                 "comment_display": {
                     "*": {
@@ -10588,7 +10573,6 @@
             "table": "struct_ref_seq",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Alignment information with the reference sequence",
                 "markdown_name": "Alignment information with the reference sequence^*^",
                 "comment_display": {
                     "*": {
@@ -10886,7 +10870,6 @@
             "table": "citation",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Citations"
                 "markdown_name": "Citations^*^",
                 "comment_display": {
                     "*": {
@@ -12133,7 +12116,6 @@
                     ],
                     [
                         "PDB",
-                        //"ihm_ensemble_sub_sample_file_id_fkey"
                         "ihm_ensemble_sub_sample_ihm_external_files_combo2_fkey"
                     ],
                     [
@@ -14034,7 +14016,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_pseudo_site_feature_feature_id_fkey"
                                     "ihm_pseudo_site_feature_ihm_feature_list_combo1_fkey"
                                 ]
                             },
@@ -14048,7 +14029,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_pseudo_site_feature_pseudo_site_id_fkey"
                                     "ihm_pseudo_site_feature_ihm_pseudo_site_combo1_fkey"
                                 ]
                             },
@@ -14091,7 +14071,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_pseudo_site_feature_feature_id_fkey"
                                     "ihm_pseudo_site_feature_ihm_feature_list_combo1_fkey"
                                 ]
                             },
@@ -14105,7 +14084,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_pseudo_site_feature_pseudo_site_id_fkey"
                                     "ihm_pseudo_site_feature_ihm_pseudo_site_combo1_fkey"
                                 ]
                             },
@@ -14161,7 +14139,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_pseudo_site_feature_feature_id_fkey"
                                     "ihm_pseudo_site_feature_ihm_feature_list_combo1_fkey"
                                 ]
                             },
@@ -14175,7 +14152,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_pseudo_site_feature_pseudo_site_id_fkey"
                                     "ihm_pseudo_site_feature_ihm_pseudo_site_combo1_fkey"
                                 ]
                             },
@@ -14227,7 +14203,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_cross_link_pseudo_site_restraint_id_fkey"
                                     "ihm_cross_link_pseudo_site_ihm_cross_link_restraint_combo1_fkey"
                                 ]
                             },
@@ -14241,7 +14216,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_cross_link_pseudo_site_model_id_fkey"
                                     "ihm_cross_link_pseudo_site_ihm_model_list_combo2_fkey"
                                 ]
                             },
@@ -14255,7 +14229,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_cross_link_pseudo_site_pseudo_site_id_fkey"
                                     "ihm_cross_link_pseudo_site_ihm_pseudo_site_combo1_fkey"
                                 ]
                             },
@@ -14303,7 +14276,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_cross_link_pseudo_site_restraint_id_fkey"
                                     "ihm_cross_link_pseudo_site_ihm_cross_link_restraint_combo1_fkey"
                                 ]
                             },
@@ -14317,7 +14289,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_cross_link_pseudo_site_model_id_fkey"
                                     "ihm_cross_link_pseudo_site_ihm_model_list_combo2_fkey"
                                 ]
                             },
@@ -14331,7 +14302,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_cross_link_pseudo_site_pseudo_site_id_fkey"
                                     "ihm_cross_link_pseudo_site_ihm_pseudo_site_combo1_fkey"
                                 ]
                             },
@@ -14392,7 +14362,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_cross_link_pseudo_site_restraint_id_fkey"
                                     "ihm_cross_link_pseudo_site_ihm_cross_link_restraint_combo1_fkey"
                                 ]
                             },
@@ -14406,7 +14375,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_cross_link_pseudo_site_model_id_fkey"
                                     "ihm_cross_link_pseudo_site_ihm_model_list_combo2_fkey"
                                 ]
                             },
@@ -14420,7 +14388,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_cross_link_pseudo_site_pseudo_site_id_fkey"
                                     "ihm_cross_link_pseudo_site_ihm_pseudo_site_combo1_fkey"
                                 ]
                             },
@@ -14567,12 +14534,10 @@
                 "detailed": [
                     [
                         "PDB",
-                        //"ihm_cross_link_pseudo_site_pseudo_site_id_fkey"
                         "ihm_cross_link_pseudo_site_ihm_pseudo_site_combo1_fkey"
                     ],
                     [
                         "PDB",
-                        //"ihm_pseudo_site_feature_pseudo_site_id_fkey"
                         "ihm_pseudo_site_feature_ihm_pseudo_site_combo1_fkey"
                     ]
                 ],
@@ -14621,7 +14586,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_ensemble_sub_sample_ensemble_id_fkey"
                                     "ihm_ensemble_sub_sample_ihm_ensemble_info_combo1_fkey"
                                 ]
                             },
@@ -14637,7 +14601,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_ensemble_sub_sample_model_group_id_fkey"
                                     "ihm_ensemble_sub_sample_ihm_model_group_combo2_fkey"
                                 ]
                             },
@@ -14651,7 +14614,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_ensemble_sub_sample_file_id_fkey"
                                     "ihm_ensemble_sub_sample_ihm_external_files_combo2_fkey"
                                 ]
                             },
@@ -14683,7 +14645,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_ensemble_sub_sample_ensemble_id_fkey"
                                     "ihm_ensemble_sub_sample_ihm_ensemble_info_combo1_fkey"
                                 ]
                             },
@@ -14699,7 +14660,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_ensemble_sub_sample_model_group_id_fkey"
                                     "ihm_ensemble_sub_sample_ihm_model_group_combo2_fkey"
                                 ]
                             },
@@ -14713,7 +14673,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_ensemble_sub_sample_file_id_fkey"
                                     "ihm_ensemble_sub_sample_ihm_external_files_combo2_fkey"
                                 ]
                             },
@@ -14758,7 +14717,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_ensemble_sub_sample_ensemble_id_fkey"
                                     "ihm_ensemble_sub_sample_ihm_ensemble_info_combo1_fkey"
                                 ]
                             },
@@ -14774,7 +14732,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_ensemble_sub_sample_model_group_id_fkey"
                                     "ihm_ensemble_sub_sample_ihm_model_group_combo2_fkey"
                                 ]
                             },
@@ -14788,7 +14745,6 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    //"ihm_ensemble_sub_sample_file_id_fkey"
                                     "ihm_ensemble_sub_sample_ihm_external_files_combo2_fkey"
                                 ]
                             },
@@ -15001,7 +14957,6 @@
             "table": "struct",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Description of the Structure",
                 "markdown_name": "Description of the Structure^*^",
                 "comment_display": {
                 	"*": {
@@ -15307,12 +15262,10 @@
                     ],
                     [
                         "PDB",
-                        //"ihm_ensemble_info_ensemble_sub_sample_flag_fkey"
                         "ihm_ensemble_info_sub_sample_flag_fkey"
                     ],
                     [
                         "PDB",
-                        //"ihm_ensemble_info_ensemble_sub_sampling_type_fkey"
                         "ihm_ensemble_info_sub_sampling_type_fkey"
                     ],
                     "num_ensemble_models",
@@ -15386,12 +15339,10 @@
                     ],
                     [
                         "PDB",
-                        //"ihm_ensemble_info_ensemble_sub_sample_flag_fkey"
                         "ihm_ensemble_info_sub_sample_flag_fkey"
                     ],
                     [
                         "PDB",
-                        //"ihm_ensemble_info_ensemble_sub_sampling_type_fkey"
                         "ihm_ensemble_info_sub_sampling_type_fkey"
                     ],
                     "num_ensemble_models",
@@ -15478,12 +15429,10 @@
                     ],
                     [
                         "PDB",
-                        //"ihm_ensemble_info_ensemble_sub_sample_flag_fkey"
                         "ihm_ensemble_info_sub_sample_flag_fkey"
                     ],
                     [
                         "PDB",
-                        //"ihm_ensemble_info_ensemble_sub_sampling_type_fkey"
                         "ihm_ensemble_info_sub_sampling_type_fkey"
                     ],
                     "num_ensemble_models",
@@ -15514,7 +15463,6 @@
                 "detailed": [
                     [
                         "PDB",
-                        //"ihm_ensemble_sub_sample_ensemble_id_fkey"
                         "ihm_ensemble_sub_sample_ihm_ensemble_info_combo1_fkey"
                     ],
                     [
@@ -16305,7 +16253,6 @@
             "table": "software",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Software"
                 "markdown_name": "Software^*^",
                 "comment_display": {
                     "*": {
@@ -16614,7 +16561,6 @@
             "table": "entity_poly_seq",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Sequences of Polymeric Entities"
                 "markdown_name": "Sequences of Polymeric Entities^*^",
                 "comment_display": {
                     "*": {
@@ -16808,7 +16754,6 @@
             "table": "chem_comp",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Chemical Components"
                 "markdown_name": "Chemical Components^*^",
                 "comment_display": {
                     "*": {
@@ -16926,7 +16871,6 @@
             "table": "citation_author",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Authors in Citations"
                 "markdown_name": "Authors in Citations^*^",
                 "comment_display": {
                     "*": {
@@ -17008,7 +16952,6 @@
             "table": "ihm_struct_assembly_details",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Details of Structural Assemblies"
                 "markdown_name": "Details of Structural Assemblies^*^",
                 "comment_display": {
                     "*": {
@@ -17463,7 +17406,6 @@
             "table": "struct_asym",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Instances of Molecular Entities in the Structure"
                 "markdown_name": "Instances of Molecular Entities^*^",
                 "comment_display": {
                     "*": {
@@ -17655,7 +17597,6 @@
             "table": "ihm_model_representation",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Model Representations"
                 "markdown_name": "Model Representations^*^",
                 "comment_display": {
                     "*": {
@@ -17774,7 +17715,6 @@
             "table": "atom_type",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Types of Atoms in the Structure"
                 "markdown_name": "Types of Atoms",
                 "comment_display": {
                     "*": {
@@ -17838,7 +17778,6 @@
             "table": "entity",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Molecular Entities"
                 "markdown_name": "Molecular Entities^*^",
                 "comment_display": {
                     "*": {
@@ -17998,7 +17937,6 @@
             "table": "ihm_model_representation_details",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Details of Model Representations"
                 "markdown_name": "Details of Model Representations^*^",
                 "comment_display": {
                     "*": {
@@ -18323,7 +18261,6 @@
             "table": "ihm_entity_poly_segment",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Segments of Polymeric Entities"
                 "markdown_name": "Segments of Polymeric Entities^*^",
                 "comment_display": {
                     "*": {
@@ -18731,7 +18668,6 @@
             "table": "entity_poly",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Polymeric Entities"
                 "markdown_name": "Polymeric Entities^*^",
                 "comment_display": {
                     "*": {
@@ -19207,7 +19143,6 @@
             "uri": "tag:isrd.isi.edu,2016:table-display",
             "value": {
                 "row_name": {
-                    //"row_markdown_pattern": "{{{File_Name}}}"
                     "row_markdown_pattern": "[{{{File_Name}}}]({{{File_URL}}})"
                 }     
             }     
@@ -19515,7 +19450,6 @@
             "table": "ihm_model_group",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Groups of Models"
                 "markdown_name": "Model Groups^*^",
                 "comment_display": {
                     "*": {
@@ -19643,7 +19577,6 @@
                     ],
                     [
                         "PDB",
-                        //"ihm_ensemble_sub_sample_model_group_id_fkey"
                         "ihm_ensemble_sub_sample_ihm_model_group_combo2_fkey"
                     ]
                 ],
@@ -20347,7 +20280,6 @@
                 "detailed": [
                     [
                         "PDB",
-                        //"ihm_cross_link_pseudo_site_restraint_id_fkey"
                         "ihm_cross_link_pseudo_site_ihm_cross_link_restraint_combo1_fkey"
                     ],
                     [
@@ -20367,7 +20299,6 @@
             "table": "ihm_model_group_link",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Models Belonging to Groups"
                 "markdown_name": "Models Belonging to Groups^*^",
                 "comment_display": {
                     "*": {
@@ -21950,7 +21881,6 @@
             "table": "ihm_modeling_protocol",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Modeling Protocols"
                 "markdown_name": "Modeling Protocols^*^",
                 "comment_display": {
                     "*": {
@@ -22313,7 +22243,6 @@
             "table": "ihm_modeling_protocol_details",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Details of Modeling Protocols"
                 "markdown_name": "Details of Modeling Protocols^*^",
                 "comment_display": {
                     "*": {
@@ -22662,7 +22591,6 @@
             "table": "ihm_dataset_group_link",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Datasets Belonging to Groups"
                 "markdown_name": "Datasets Belonging to Groups^*^",
                 "comment_display": {
                     "*": {
@@ -22822,7 +22750,6 @@
             "table": "ihm_starting_model_details",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Starting Structural Models"
                 "markdown_name": "Starting Structural Models^*^",
                 "comment_display": {
                     "*": {
@@ -23237,7 +23164,6 @@
             "table": "ihm_struct_assembly",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                //"name": "Structural Assemblies"
                 "markdown_name": "Structural Assemblies^*^",
                 "comment_display": {
                     "*": {
@@ -25650,7 +25576,15 @@
                     "RID",
                     "Name",
                     "Description",
+                    "Rank"
+                ],
+                "detailed": [
+                    "RID",
+                    "Name",
+                    "Description",
                     "Rank",
+                    "Restraint_Status",
+                    "PDB_Submitter_Allow",
                     "ID",
                     "URI",
                   {
@@ -25683,6 +25617,16 @@
                         "Vocab",
                         "workflow_status_Owner_fkey"
                     ]
+                ],
+                "entry": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "Rank",
+                    "Restraint_Status",
+                    "PDB_Submitter_Allow",
+                    "ID",
+                    "URI"
                 ]
             }
         },

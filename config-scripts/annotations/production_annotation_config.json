@@ -10192,6 +10192,43 @@
       {
          "schema" : "PDB",
          "table" : "entry",
+         "uri" : "tag:isrd.isi.edu,2019:export",
+         "value" : {
+            "compact" : {
+               "templates" : [
+                  {
+                     "displayname" : "BDBag",
+                     "outputs" : [
+                        {
+                           "destination" : {
+                              "name" : "entry",
+                              "type" : "csv"
+                           },
+                           "source" : {
+                              "api" : "entity",
+                              "table" : "PDB:entry"
+                           }
+                        },
+                        {
+                           "destination" : {
+                              "name" : "Entry_mmCIF_File",
+                              "type" : "download"
+                           },
+                           "source" : {
+                              "api" : "attribute",
+                              "path" : "PDB:Entry_mmCIF_File/url:=File_URL"
+                           }
+                        }
+                     ],
+                     "type" : "BAG"
+                  }
+               ]
+            }
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "entry",
          "uri" : "tag:isrd.isi.edu,2016:visible-foreign-keys",
          "value" : {
             "detailed" : [
@@ -28992,7 +29029,15 @@
                "RID",
                "Name",
                "Description",
+               "Rank"
+            ],
+            "detailed" : [
+               "RID",
+               "Name",
+               "Description",
                "Rank",
+               "Restraint_Status",
+               "PDB_Submitter_Allow",
                "ID",
                "URI",
                {
@@ -29025,6 +29070,16 @@
                   "Vocab",
                   "workflow_status_Owner_fkey"
                ]
+            ],
+            "entry" : [
+               "RID",
+               "Name",
+               "Description",
+               "Rank",
+               "Restraint_Status",
+               "PDB_Submitter_Allow",
+               "ID",
+               "URI"
             ]
          }
       },
