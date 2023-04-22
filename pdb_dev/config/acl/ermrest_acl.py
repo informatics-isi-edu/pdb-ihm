@@ -408,46 +408,45 @@ def set_PDB_entry(model):
     })
 
     # ==== column-level =====
-    # -- Accession_Code: submitters can only see when the entry is HOLD or REL
-    table.columns["Accession_Code"].acls.update({
-        "insert": g["entry_updaters"],
-    })
-    table.columns["Accession_Code"].acl_bindings.update({    
-        "submitters_read_own_entries": False,
-        "submitters_modify_based_on_workflow_status": False,
-        "submitters_read_based_on_workflow_status": col_acl_bindings["submitters_read_based_on_workflow_status"],
-    })
-
-    # -- Release date: submitters can only see when the entry is HOLD or REL
-    table.columns["Release_Date"].acls.update({
-        "select": g["entry_updaters"],        
-    })
-    table.columns["Release_Date"].acl_bindings.update({
-        "submitters_read_own_entries": False,
-        "submitters_modify_based_on_workflow_status": False,
-        "submitters_read_based_on_workflow_status": col_acl_bindings["submitters_read_based_on_workflow_status"],        
-    })
+    # -- acl: submitters can only see when the entry is HOLD or REL
+    # -- cnames: Accession_Code, Release_Date
+    for cname in ["Accession_Code", "Release_Date"]:
+        col = table.columns[cname]
+        col.acls.update({
+            "insert": g["entry_updaters"],
+        })
+        col.acl_bindings.update({    
+            "submitters_read_own_entries": False,
+            "submitters_modify_based_on_workflow_status": False,
+            "submitters_read_based_on_workflow_status": col_acl_bindings["submitters_read_based_on_workflow_status"],
+        })
     
-    # -- Deposit date: entry_creator can read, but only updater can insert
-    table.columns["Deposit_Date"].acls.update({    
-        "select": g["entry_creators"],        
-        "insert": g["entry_updaters"],
-    })
-    table.columns["Deposit_Date"].acl_bindings.update({
-        "submitters_modify_based_on_workflow_status": False,
-    })
-
-    # -- Notes: only entry updaters can create and read
-    table.columns["Notes"].acls.update({
-        "enumerate": {},
-        "select": g["entry_updaters"],        
-        "insert": g["entry_updaters"],
-    })
-    table.columns["Notes"].acl_bindings.update({
-        "submitters_read_own_entries": False,        
-        "submitters_modify_based_on_workflow_status": False,
-    })
-
+    # -- ACL: entry_creator can read, but only updater can insert
+    # -- cnames: Deposit date, Submitter_Flag, Subitter_Flag_Date:
+    for cname in ["Deposit_Date"]:
+        col = table.columns[cname]
+        col.acls.updates({
+            "select": g["entry_creators"],        
+            "insert": g["entry_updaters"],
+        })
+        col.acl_bindings.update({
+            "submitters_modify_based_on_workflow_status": False,
+        })
+    
+    # -- ACL: only entry updaters can create and read:
+    # -- cnames: Notes
+    for cname in ["Notes"]:
+        col = table.columns[cname]
+        col.acls.update({
+            "enumerate": {},
+            "select": g["entry_updaters"],        
+            "insert": g["entry_updaters"],
+        })
+        col.acl_bindings.update({
+            "submitters_read_own_entries": False,        
+            "submitters_modify_based_on_workflow_status": False,
+        })
+    
     # ==== foreign keys =====
 
     # -- Workflow Status: submitters can only choose Workflow_Status that they are allowed
