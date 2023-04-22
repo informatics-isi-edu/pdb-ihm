@@ -422,8 +422,8 @@ def set_PDB_entry(model):
         })
     
     # -- ACL: entry_creator can read, but only updater can insert
-    # -- cnames: Deposit date, Submitter_Flag, Subitter_Flag_Date:
-    for cname in ["Deposit_Date"]:
+    # -- cnames: Deposit date, Submitter_Flag, Submitter_Flag_Date:
+    for cname in ["Deposit_Date", "Submitter_Flag", "Submitter_Flag_Date"]:
         col = table.columns[cname]
         col.acls.updates({
             "select": g["entry_creators"],        
