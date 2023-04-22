@@ -425,7 +425,7 @@ def set_PDB_entry(model):
     # -- cnames: Deposit date, Submitter_Flag, Submitter_Flag_Date:
     for cname in ["Deposit_Date", "Submitter_Flag", "Submitter_Flag_Date"]:
         col = table.columns[cname]
-        col.acls.updates({
+        col.acls.update({
             "select": g["entry_creators"],        
             "insert": g["entry_updaters"],
         })
