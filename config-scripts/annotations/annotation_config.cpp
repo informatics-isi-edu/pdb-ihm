@@ -190,7 +190,7 @@
             "uri": "tag:isrd.isi.edu,2016:column-display",
             "value": {
                 "compact": {
-                    "markdown_pattern": "{{#if Image_File_URL }}[![{{Image_File_Name}}]({{{Image_File_URL}}}){width=auto height=200}]({{{Image_File_URL}}}){target=_blank}{{/if}}",
+                    "markdown_pattern": "{{#if Image_File_URL }}[![{{Image_File_Name}}]({{{Image_File_URL}}}){width=auto height=100}]({{{Image_File_URL}}}){target=_blank}{{/if}}",
                     "template_engine": "handlebars"
                 },
                 "detailed": {
@@ -459,6 +459,15 @@
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
                 "name": "User Provided Image File"
+            }
+        },
+        {
+            "column": "Submitter_Flag_Date",
+            "schema": "PDB",
+            "table": "entry",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Last Communicated"
             }
         },
         {
@@ -6468,6 +6477,7 @@
                     "RID",
                     "id",
                     "mmCIF_File_URL",
+                    "Submitter_Flag_Date",
                     "Image_File_URL",
                     [
                         "PDB",
@@ -6533,11 +6543,7 @@
                      ]
                   },
                     "RCT",
-                    "RMT",
-                    [
-                        "PDB",
-                        "entry_Owner_fkey"
-                    ]
+                    "RMT"
                 ],
                 "filter": {
                 	"and":
@@ -6577,6 +6583,10 @@
                   {
                      "markdown_name" : "Release Date",
                      "source" : "Release_Date"
+                  },
+                  { 
+                     "markdown_name" : "Submitter Flag Date",
+                     "source" : "Submitter_Flag_Date"
                   },
                   {
                      "markdown_name" : "Workflow Status",
@@ -6641,6 +6651,8 @@
                     "Accession_Code",
                     "Deposit_Date",
                     "Release_Date",
+                    "Submitter_Flag",
+                    "Submitter_Flag_Date",
                     "Record_Status_Detail"
                 ],
                 "detailed": [
@@ -6705,6 +6717,8 @@
                     },
                     "Deposit_Date",
                     "Release_Date",
+                    "Submitter_Flag",
+                    "Submitter_Flag_Date",
                     "Notes",
                     [
                         "PDB",
@@ -6720,6 +6734,8 @@
                     ],
                     "Deposit_Date",
                     "Release_Date",
+                    "Submitter_Flag",
+                    "Submitter_Flag_Date",
                     "Notes"
                 ],
                 "entry": [
@@ -7178,6 +7194,18 @@
                                 "outbound": [
                                     "PDB",
                                     "ihm_entry_collection_mapping_collection_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    {   
+                        "markdown_name": "Curation Log",
+                        "source": [
+                            {   
+                                "inbound": [
+                                    "PDB",
+                                    "Curation_Log_Entry_fkey"
                                 ]
                             },
                             "RID"
@@ -10053,6 +10081,160 @@
                             "id"
                         ]
                     }
+                ]
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "Curation_Log",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Curation Log",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "Curation_Log",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    {
+                        "comment": "Entry Id",
+                        "markdown_name": "Entry Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "Curation_Log_Entry_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    { 
+                        "comment": "Entry Accession Code",
+                        "markdown_name": "Accession Code",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "Curation_Log_Entry_fkey"
+                                ]
+                            },
+                            "Accession_Code"
+                        ]
+                    },
+                    "Log_Date",
+                    "Details",
+                    "Submitter_Allow",
+                    {
+                        "markdown_name" : "RCB",
+                        "source" : [
+                            {
+                                "outbound" : [
+                                    "PDB",
+                                    "Curation_Log_RCB_fkey"
+                                ]
+                            },
+                            "Full_Name"
+                        ]
+                    },
+                    {
+                        "markdown_name" : "RMB",
+                        "source" : [
+                            {
+                                "outbound" : [
+                                    "PDB",
+                                    "Curation_Log_RMB_fkey"
+                                ]
+                            },
+                            "Full_Name"
+                        ]
+                    },
+                    "RCT",
+                    "RMT"
+                ],
+                "detailed": [
+                    "RID",
+                    {
+                        "comment": "Entry Id",
+                        "markdown_name": "Entry Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "Curation_Log_Entry_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {
+                        "comment": "Entry Accession Code",
+                        "markdown_name": "Accession Code",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "Curation_Log_Entry_fkey"
+                                ]
+                            },
+                            "Accession_Code"
+                        ]
+                    },
+                    "Log_Date", 
+                    "Details",
+                    "Submitter_Allow",
+                    {
+                        "markdown_name" : "RCB",
+                        "source" : [
+                            {
+                                "outbound" : [
+                                    "PDB",
+                                    "Curation_Log_RCB_fkey"
+                                ]
+                            },
+                            "Full_Name"
+                        ]
+                    },
+                    {
+                        "markdown_name" : "RMB",
+                        "source" : [
+                            {
+                                "outbound" : [
+                                    "PDB",
+                                    "Curation_Log_RMB_fkey"
+                                ]
+                            },
+                            "Full_Name"
+                        ]
+                    },
+                    "RCT",
+                    "RMT"
+                ],
+                "entry": [
+                    {
+                        "comment": "Entry Id",
+                        "markdown_name": "Entry Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "Curation_Log_Entry_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    "Log_Date",
+                    "Details",
+                    "Submitter_Allow"
                 ]
             }
         },
@@ -27365,6 +27547,10 @@
                                         {
                                             "name": "Accession Code",
                                             "url": "/chaise/recordset/catalog_number/PDB:Accession_Code"
+                                        },
+                                        {
+                                            "name": "Curation Log",
+                                            "url": "/chaise/recordset/catalog_number/PDB:Curation_Log"
                                         },
                                         {
                                             "name": "Entry Error File",
