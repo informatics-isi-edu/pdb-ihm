@@ -994,8 +994,9 @@ class PDBClient (object):
             Apply make-mmcif.py
             """
             if filename == 'output.cif':
-                shutil.move('{}/output.cif'.format(self.make_mmCIF), '{}/input.cif'.format(self.make_mmCIF))
-                filename = 'input.cif'
+                shutil.move('{}/output.cif'.format(self.make_mmCIF), '{}/{}_input.cif'.format(self.make_mmCIF, rid))
+                filename = '{}_input.cif'.format(rid)
+                self.logger.debug('File output.cif was renamed to {}'.format(filename)) 
             error_message = None
             currentDirectory=os.getcwd()
             os.chdir('{}'.format(self.make_mmCIF))
@@ -1624,8 +1625,9 @@ class PDBClient (object):
             currentDirectory=os.getcwd()
             os.chdir('{}'.format(self.make_mmCIF))
             if filename == 'output.cif':
-                shutil.move('{}/output.cif'.format(self.make_mmCIF), '{}/input.cif'.format(self.make_mmCIF))
-                filename = 'input.cif'
+                shutil.move('{}/output.cif'.format(self.make_mmCIF), '{}/{}_input.cif'.format(self.make_mmCIF, rid))
+                filename = '{}_input.cif'.format(rid)
+                self.logger.debug('File output.cif was renamed to {}'.format(filename)) 
             args = [self.python_bin, 'make-mmcif.py', filename]
             self.logger.debug('Running "{}" from the {} directory'.format(' '.join(args), self.make_mmCIF)) 
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
