@@ -991,12 +991,14 @@ class PDBClient (object):
     def convert2json(self, filename, entry_id, rid, user):
         try:
             """
+            Prepend the RID to the input file
+            """
+            shutil.move('{}/{}'.format(self.make_mmCIF, filename), '{}/{}_{}'.format(self.make_mmCIF, rid, filename))
+            filename = '{}_{}'.format(rid, filename)
+
+            """
             Apply make-mmcif.py
             """
-            if filename == 'output.cif':
-                shutil.move('{}/output.cif'.format(self.make_mmCIF), '{}/{}_input.cif'.format(self.make_mmCIF, rid))
-                filename = '{}_input.cif'.format(rid)
-                self.logger.debug('File output.cif was renamed to {}'.format(filename)) 
             error_message = None
             currentDirectory=os.getcwd()
             os.chdir('{}'.format(self.make_mmCIF))
@@ -1618,16 +1620,22 @@ class PDBClient (object):
     def getOutputCIF(self, rid, file_url, filename, user):
         try:
             """
-            Apply make-mmcif.py
+            Get the file from hatrac
             """
             hatracFile = '{}/{}'.format(self.make_mmCIF, filename)
             self.store.get_obj(file_url, destfilename=hatracFile)
             currentDirectory=os.getcwd()
             os.chdir('{}'.format(self.make_mmCIF))
-            if filename == 'output.cif':
-                shutil.move('{}/output.cif'.format(self.make_mmCIF), '{}/{}_input.cif'.format(self.make_mmCIF, rid))
-                filename = '{}_input.cif'.format(rid)
-                self.logger.debug('File output.cif was renamed to {}'.format(filename)) 
+
+            """
+            Prepend the RID to the input file
+            """
+            shutil.move('{}/{}'.format(self.make_mmCIF, filename), '{}/{}_{}'.format(self.make_mmCIF, rid, filename))
+            filename = '{}_{}'.format(rid, filename)
+
+            """
+            Apply make-mmcif.py
+            """
             args = [self.python_bin, 'make-mmcif.py', filename]
             self.logger.debug('Running "{}" from the {} directory'.format(' '.join(args), self.make_mmCIF)) 
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
