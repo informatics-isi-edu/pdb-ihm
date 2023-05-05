@@ -254,7 +254,8 @@ def set_PDB_acl(model):
     set_PDB_entry(model)
     set_PDB_entry_related(model)      # set appropriate Entry_Related_File
     set_PDB_entry_coordinates_related(model)
-    set_PDB_Accession_Code(model)    
+    set_PDB_Accession_Code(model) 
+    set_PDB_Curation_Log(model)   
     set_PDB_entry_collection_related(model)
     set_PDB_entry_related_system_generated_tables(model)
     set_PDB_Data_Dictionary_Related(model)
@@ -623,6 +624,29 @@ def set_PDB_Accession_Code(model):
             "scope_acl": g["pdb-submitters"],
             "projection": [{"outbound": ["PDB", "Accession_Code_Entry_fkey"]}, "RCB"],
             "projection_type": "acl"
+        }
+    })
+
+# -- ---------------------------------------------------------------------    
+def set_PDB_Curation_Log(model):
+    table = model.schemas["PDB"].tables["Curation_Log"]
+    #clear_table_acls(table)
+    print("  - set_PDB_Curation_Log")
+    
+    # submitters can only read entry if Submitter_Allow is False
+    table.acl_bindings.update({
+        "submitters_read_entries": {
+            "types": ["select"],
+            "scope_acl": g["pdb-submitters"],
+            "projection": [
+                {
+                  "filter": "Submitter_Allow",
+                  "operand": False,
+                  "operator": "="
+                },
+                "RID"
+                ],
+            "projection_type": "nonnull"
         }
     })
 
