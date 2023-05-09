@@ -133,7 +133,8 @@ def set_PDB_acl(model):
     
     #schema.clear(clear_comment=False, clear_annotations=False, clear_acls=True, clear_acl_bindings=True)
     clear_schema_acls(schema)
-    
+
+    # -- set table level ACLs
     set_PDB_entry(model)
     set_PDB_entry_related(model)      # set appropriate Entry_Related_File
     set_PDB_entry_coordinates_related(model)
@@ -145,6 +146,20 @@ def set_PDB_acl(model):
     set_PDB_Entry_Related_File(model)
     set_PDB_Entry_Related_File_Templates(model)    
 
+    # -- apply add-on acls to all tables in schema
+    # disable Owner columns
+    for table in schema.tables.values():
+        for col in table.columns:
+            if col.name in ["Owner"]:
+                col.acls.update({
+                    "enumerate": [],                    
+                    "select": [],
+                    "insert": [],
+                    "update": [],
+                    "delete": [],
+                })
+    
+    
 # -- ---------------------------------------------------------------------
 '''
   Allow entry_creators to read only. All changes will be done programmitically or by entry_updaters
@@ -161,6 +176,19 @@ def set_Vocab_acl(model):
         "select": g["entry_creators"],
     })
 
+    # Block all access to ID, URI, Owner columns
+    for table in schema.tables.values():
+        for col in table.columns:
+            if col.name in ["ID", "URI", "Owner"]:
+                col.acls.update({
+                    "enumerate": [],                    
+                    "select": [],
+                    "insert": [],
+                    "update": [],
+                    "delete": [],
+                })
+
+    
 # -- ---------------------------------------------------------------------
 '''
   Most of the tables in this schema should be created by the Deriva system.
@@ -292,6 +320,16 @@ def set_PDB_entry(model):
     })
 
     # ==== column-level =====
+    # -- acl: no modification to these columns unless owner
+    for cname in ["id"]:
+        col = table.columns[cname]
+        col.acls.update({
+            "insert": [],
+            "update": [],
+            "delete": [],            
+        })
+    
+    
     # -- acl: submitters can only see when the entry is HOLD or REL
     # -- cnames: Accession_Code, Release_Date
     for cname in ["Accession_Code", "Release_Date"]:
