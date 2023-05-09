@@ -155,8 +155,8 @@ def set_PDB_acl(model):
                     "enumerate": [],                    
                     "select": [],
                     "insert": [],
-                    "update": [],
-                    "delete": [],
+                    "update": []
+                    #"delete": [],
                 })
     
     
@@ -184,8 +184,8 @@ def set_Vocab_acl(model):
                     "enumerate": [],                    
                     "select": [],
                     "insert": [],
-                    "update": [],
-                    "delete": [],
+                    "update": []
+                    #"delete": [],
                 })
 
     
@@ -325,8 +325,8 @@ def set_PDB_entry(model):
         col = table.columns[cname]
         col.acls.update({
             "insert": [],
-            "update": [],
-            "delete": [],            
+            "update": []
+            #"delete": [],            
         })
     
     
