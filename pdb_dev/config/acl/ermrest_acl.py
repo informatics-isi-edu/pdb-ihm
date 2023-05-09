@@ -627,25 +627,22 @@ def set_PDB_Accession_Code(model):
         }
     })
 
-# -- ---------------------------------------------------------------------    
+# -- ---------------------------------------------------------------------
+'''
+  Policy: Submitters can only read entry created by submitters and if Submitter_Allow is True
+  Note: Do not clear the table acl since the rest of the policies are set in set_PDB_entry_related()
+'''
 def set_PDB_Curation_Log(model):
+    if "Curation_Log" not in model.schemas["PDB"].tables:
+        return
     table = model.schemas["PDB"].tables["Curation_Log"]
-    #clear_table_acls(table)
-    print("  - set_PDB_Curation_Log")
+    #print("  - set_PDB_Curation_Log")
     
-    # submitters can only read entry if Submitter_Allow is False
     table.acl_bindings.update({
-        "submitters_read_entries": {
+        "submitters_allowed_entries": {
             "types": ["select"],
             "scope_acl": g["pdb-submitters"],
-            "projection": [
-                {
-                  "filter": "Submitter_Allow",
-                  "operand": False,
-                  "operator": "="
-                },
-                "RID"
-                ],
+            "projection": [ {"filter": "Submitter_Allow", "operator": "=", "operand": True}, "RID" ],
             "projection_type": "nonnull"
         }
     })
