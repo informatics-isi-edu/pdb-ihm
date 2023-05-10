@@ -565,7 +565,19 @@ def set_PDB_Curation_Log(model):
             "scope_acl": g["pdb-submitters"],
             "projection": [ {"filter": "Submitter_Allow", "operator": "=", "operand": True}, "RID" ],
             "projection_type": "nonnull"
-        }
+        },
+      "submitter_read_own_entries": {
+        "types": [
+          "select"
+        ],
+        "scope_acl": [
+          "https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1"
+        ],
+        "projection": [
+          "RCB"
+        ],
+        "projection_type": "acl"
+      }
     })
 
 # -- ---------------------------------------------------------------------    
