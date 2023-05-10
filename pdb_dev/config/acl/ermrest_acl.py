@@ -309,7 +309,6 @@ def set_PDB_entry(model):
                         { "filter": "Workflow_Status", "operator": "=", "operand": "DRAFT",  },
                         { "filter": "Workflow_Status", "operator": "=", "operand": "DEPO", },
                         { "filter": "Workflow_Status", "operator": "=", "operand": "RECORD READY", },
-                        { "filter": "Workflow_Status", "operator": "=", "operand": "AUTH", },
                         { "filter": "Workflow_Status", "operator": "=", "operand": "ERROR", }
                     ]
                 },
@@ -436,7 +435,6 @@ def set_PDB_entry_related(model):
                                     { "filter": "Workflow_Status", "operator": "=", "operand": "DRAFT",  },
                                     { "filter": "Workflow_Status", "operator": "=", "operand": "DEPO", },
                                     { "filter": "Workflow_Status", "operator": "=", "operand": "RECORD READY", },
-                                    { "filter": "Workflow_Status", "operator": "=", "operand": "AUTH", },
                                     { "filter": "Workflow_Status", "operator": "=", "operand": "ERROR", }
                                 ]
                             },
@@ -473,7 +471,6 @@ def set_PDB_entry_related(model):
                                 { "filter": "Workflow_Status", "operator": "=", "operand": "DRAFT"  },
                                 { "filter": "Workflow_Status", "operator": "=", "operand": "DEPO" },
                                 { "filter": "Workflow_Status", "operator": "=", "operand": "RECORD READY" },
-                                { "filter": "Workflow_Status", "operator": "=", "operand": "AUTH" },
                                 { "filter": "Workflow_Status", "operator": "=", "operand": "ERROR" }
                             ]},
                             "RCB",
