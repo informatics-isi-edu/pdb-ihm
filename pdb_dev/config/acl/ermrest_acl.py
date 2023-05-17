@@ -408,7 +408,7 @@ def set_PDB_entry_related(model):
     entry_table = schema.tables["entry"]
     entry_related_tables = []
 
-    # Create entry_related_tables: any table that has a fkey pointing to the entry_table.
+    # Create entry_related_tables: any table that has a fkey pointing to the entry_table through entry.id.
     # There might be a small subset of these tables that have their own policies. In that case,
     # the script will just clean the table policy before setting a new one. 
     for table in schema.tables.values():
@@ -547,24 +547,36 @@ def set_PDB_Accession_Code(model):
 
 # -- ---------------------------------------------------------------------
 '''
-  Policy: Submitters can only read entry created by submitters and if Submitter_Allow is True
-  Note: Do not clear the table acl since the rest of the policies are set in set_PDB_entry_related()
+  Policy: Submitters can't create and can only read entry created by submitters and if Submitter_Allow is True.
 '''
 def set_PDB_Curation_Log(model):
     if "Curation_Log" not in model.schemas["PDB"].tables:
         return
-    table = model.schemas["PDB"].tables["Curation_Log"]
-    clear_table_acls(table)
     
-    table.acls.update({
-        "insert": g["entry_updaters"],
-    })
+    schema = model.schemas["PDB"]
+    table = schema.tables["Curation_Log"]
+    clear_table_acls(table)
+
+    # -- inherit catalog-level policy: e.g. Only entry_updaters can create/update.
+    
+    # -- find fkey to entry table
+    for fkey in table.foreign_keys:
+        if fkey.pk_table == schema.tables["entry"]:
+            entry_fkey = fkey
+    # this shouldn't happen
+    if entry_fkey == None: 
+        raise Exception("ERROR: PDB.Curation_Log do not have proper foreign keys to entry table")
+
     table.acl_bindings.update({
-        "submitters_allowed_entries": {
+        "submitter_allowed_and_own_entries": {
             "types": ["select"],
             "scope_acl": g["pdb-submitters"],
-            "projection": [ {"filter": "Submitter_Allow", "operator": "=", "operand": True}, "RID" ],
-            "projection_type": "nonnull"
+            "projection": [
+                { "filter": "Submitter_Allow", "operator": "=", "operand": True},
+                { "outbound": ["PDB", entry_fkey.constraint_name]},
+                "RCB",
+            ],
+            "projection_type": "acl",
         }
     })
 
@@ -703,12 +715,7 @@ def set_PDB_Entry_Related_File(model):
     #print("set_PDB_entry_Related_Fiie: acl:%s --- acl_bindings:%s" % (fkey.acls, fkey.acl_bindings))    
 
 # -- ---------------------------------------------------------------------
-# Any group members should be able to read?
-# current acls:
-#  - Entry_Related_File_Templates: DEFAULT TABLE ACL 4: NO ACLS
-#  - c Entry_Related_File_Templates.File_URL: acls={'select': ['*']} acl_bindings={'no_binding': False}
-#    -- fk Entry_Related_File_Templates:Entry_Template_File_File_Type_fkey ({'File_Type'}->File_Type:{'Name'}) acls: {'insert': ['*'], 'update': ['*']}, acl_bindings: {}
-#    -- fk Entry_Related_File_Templates:Entry_Template_File_Owner_fkey ({'Owner'}->Catalog_Group:{'ID'}) acls: {'insert': ['https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6'], 'update': ['https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6']}, acl_bindings: {'set_owner': {'types': ['update', 'insert'], 'scope_acl': ['*'], 'projection': ['ID'], 'projection_type': 'acl'}}
+# submitters can always read
 #
 def set_PDB_Entry_Related_File_Templates(model):
     for tname in ["Entry_Related_File_Templates"]:
