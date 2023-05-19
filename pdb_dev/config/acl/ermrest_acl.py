@@ -29,21 +29,22 @@ GROUPS = {
 g = GROUPS
 GROUPS["owners"] = g["isrd-systems"] + g["pdb-admins"] 
 GROUPS["pdb-all"] = g["pdb-admins"] + g["pdb-submitters"] + g["pdb-curators"]
+GROUPS["isrd-internal"] = g["isrd-systems"] + g["isrd-staff"]
 GROUPS["isrd-all"] = g["isrd-systems"] + g["isrd-staff"] + g["isrd-testers"]
 
 # -- remove owners from the these groups, so the policy is easier to read, as owners can do anything already
 # -- NOTE: ignore pdb-readers and pdb-writers for now
-GROUPS["entry_creators"] = g["pdb-submitters"] + g["pdb-curators"] + g["isrd-staff"]
-GROUPS["entry_updaters"] = g["pdb-curators"] + g["isrd-staff"]
-#GROUPS["entry_readers"] = g["pdb-curators"] + g["isrd-staff"]   # to discuss, ignore for now
+GROUPS["entry-creators"] = g["pdb-submitters"] + g["pdb-curators"] + g["isrd-staff"] 
+GROUPS["entry-updaters"] = g["pdb-curators"] + g["isrd-staff"]
+#GROUPS["entry-readers"] = g["pdb-curators"] + g["isrd-staff"]   # to discuss, ignore for now
 
 ERMREST_CATALOG_ACLS = {
     "owner" : g["owners"],
     "enumerate": g["public"], 
-    "select": g["entry_updaters"],
-    "insert": g["entry_updaters"],
-    "update": g["entry_updaters"],
-    "delete": g["entry_updaters"],
+    "select": g["entry-updaters"],
+    "insert": g["entry-updaters"],
+    "update": g["entry-updaters"],
+    "delete": g["entry-updaters"],
     "create": [],
     "write": [],
 }
@@ -162,7 +163,7 @@ def set_PDB_acl(model):
     
 # -- ---------------------------------------------------------------------
 '''
-  Allow entry_creators to read only. All changes will be done programmitically or by entry_updaters
+  Allow entry-creators to read only. All changes will be done programmitically or by entry-updaters
 '''
 def set_Vocab_acl(model):
     schema = model.schemas["Vocab"]
@@ -173,7 +174,7 @@ def set_Vocab_acl(model):
     
     # Anyone can read. The rest follows catalog policy
     schema.acls.update({
-        "select": g["entry_creators"],
+        "select": g["entry-creators"],
     })
 
     # Block all access to ID, URI, Owner columns
@@ -204,7 +205,7 @@ def set_public_acl(model):
     clear_schema_acls(schema)    
     
     schema.acls.update({
-        "select": g["entry_updaters"],
+        "select": g["entry-updaters"],
         "insert": [],
         "update": [],
         "delete": [],
@@ -223,13 +224,13 @@ def set_public_acl(model):
 
     # -- ERMrest_Group inherit default policy
 
-    # -- Catalog_Group: entry_updaters can modify for now
+    # -- Catalog_Group: entry-updaters can modify for now
     table = schema.tables["Catalog_Group"]
     table.acls.update({
-        "select" : g['entry_updaters'],
-        "insert" : g['entry_updaters'],  
-        "update": g["entry_updaters"],
-        "delete": g["entry_updaters"],
+        "select" : g['entry-updaters'],
+        "insert" : g['entry-updaters'],  
+        "update": g["entry-updaters"],
+        "delete": g["entry-updaters"],
     })
     
 
@@ -245,12 +246,12 @@ def set_WWW_acl(model):
     #schema.clear(clear_comment=False, clear_annotations=False, clear_acls=True, clear_acl_bindings=True)
     clear_schema_acls(schema)
 
-    # -- inherit policy from catalog e.g. only entry_updaters can do anything
+    # -- inherit policy from catalog e.g. only entry-updaters can do anything
     # -- Page
     
     # -- Page_Asset
     table = schema.tables["Page_Asset"]
-    ''' # if only entry_updaters can create, no need for acl_bindings
+    ''' # if only entry-updaters can create, no need for acl_bindings
     table.acl_bindings.update({
         "rcb_update_its_own_page": {
             "types": ["insert", "update"],
@@ -291,7 +292,7 @@ def set_PDB_entry(model):
     # ==== table-level =====    
     # Policy: Submitter can create but can only see their own entries. They can't modify entries during a certain workflow status.
     table.acls.update({
-        "insert": g["entry_creators"],
+        "insert": g["entry-creators"],
     })
     table.acl_bindings.update({
         "submitters_read_own_entries": {
@@ -334,7 +335,7 @@ def set_PDB_entry(model):
     for cname in ["Accession_Code", "Release_Date"]:
         col = table.columns[cname]
         col.acls.update({
-            "insert": g["entry_updaters"],
+            "insert": g["entry-updaters"],
         })
         col.acl_bindings.update({    
             "submitters_read_own_entries": False,
@@ -347,8 +348,8 @@ def set_PDB_entry(model):
     for cname in ["Deposit_Date", "Submitter_Flag", "Submitter_Flag_Date"]:
         col = table.columns[cname]
         col.acls.update({
-            "select": g["entry_creators"],        
-            "insert": g["entry_updaters"],
+            "select": g["entry-creators"],        
+            "insert": g["entry-updaters"],
         })
         col.acl_bindings.update({
             "submitters_modify_based_on_workflow_status": False,
@@ -360,8 +361,8 @@ def set_PDB_entry(model):
         col = table.columns[cname]
         col.acls.update({
             "enumerate": {},
-            "select": g["entry_updaters"],        
-            "insert": g["entry_updaters"],
+            "select": g["entry-updaters"],        
+            "insert": g["entry-updaters"],
         })
         col.acl_bindings.update({
             "submitters_read_own_entries": False,        
@@ -372,8 +373,8 @@ def set_PDB_entry(model):
 
     # -- Workflow Status: submitters can only choose Workflow_Status that they are allowed
     table.foreign_keys[(schema, "entry_Workflow_Status_fkey")].acls.update({ 
-        "insert": g["entry_updaters"],
-        "update": g["entry_updaters"],
+        "insert": g["entry-updaters"],
+        "update": g["entry-updaters"],
     })
     table.foreign_keys[(schema, "entry_Workflow_Status_fkey")].acl_bindings.update({
         # submitters can only selected workflow status that they are allowed (PDB_Submitter_Allow)
@@ -421,8 +422,8 @@ def set_PDB_entry_related(model):
             if pk_table.name == "entry" and to_cols == {"id"} :
                 # == set fkey policies
                 fkey.acls.update({
-                    "insert": g["entry_updaters"],
-                    "update": g["entry_updaters"],
+                    "insert": g["entry-updaters"],
+                    "update": g["entry-updaters"],
                 })
                 fkey.acl_bindings.update({
                     # submitter can only choose their own entries with certain Workflow Status
@@ -451,7 +452,7 @@ def set_PDB_entry_related(model):
                 entry_related_tables.append(table)
                 # set acls: no acl is needed. use default policy
                 table.acls.update({
-                    "insert" : g["entry_creators"]
+                    "insert" : g["entry-creators"]
                 })
                 # submitters can reads their own entries and update according to its entry's workflow status (e.g. follow the fkey to entry table)        
                 table.acl_bindings.update({
@@ -557,7 +558,7 @@ def set_PDB_Curation_Log(model):
     table = schema.tables["Curation_Log"]
     clear_table_acls(table)
 
-    # -- inherit catalog-level policy: e.g. Only entry_updaters can create/update.
+    # -- inherit catalog-level policy: e.g. Only entry-updaters can create/update.
     
     # -- find fkey to entry table
     for fkey in table.foreign_keys:
@@ -609,7 +610,7 @@ def set_PDB_entry_collection_related(model):
         raise Exception("ERROR: ihm_entry_collection_mapping do not have proper foreign keys to entry and/or collection table")
 
     # == set policy on ihm_entry_collection table
-    # -- acl: adopt schema level for acls e.g. only entry_updaters can read/write
+    # -- acl: adopt schema level for acls e.g. only entry-updaters can read/write
     # -- acl_bindings: pdb_submitters can only see their entries
     collection_table.acl_bindings.update({
         "submitter_read_own_entries" : {
@@ -648,7 +649,7 @@ def set_PDB_entry_related_system_generated_tables(model):
         clear_table_acls(table) 
         
         # == table policy
-        # -- acl: only pdb-ihm can manipulate, entry_updaters can read (from schema acl)
+        # -- acl: only pdb-ihm can manipulate, entry-updaters can read (from schema acl)
         table.acls.update({
             "insert": g["pdb-ihm"],
             "update": g["pdb-ihm"],
@@ -679,7 +680,7 @@ def set_PDB_Data_Dictionary_Related(model):
         print("  - set PDB_Data_Dictionary_Related: %s" % (table_name))
         table = model.schemas["PDB"].tables[table_name]
         clear_table_acls(table)                
-        # use default schema ACLs (only entry_updaters can do anything to these tables)
+        # use default schema ACLs (only entry-updaters can do anything to these tables)
 
     
 # -- ---------------------------------------------------------------------
@@ -694,8 +695,8 @@ def set_PDB_Entry_Related_File(model):
     # -- update restraint_workflow_status fkey
     fkey = table.foreign_keys[(schema, "Entry_Related_File_Restraint_Workflow_Status_fkey")]
     fkey.acls.update({
-        "insert": g["entry_updaters"],
-        "update": g["entry_updaters"]        
+        "insert": g["entry-updaters"],
+        "update": g["entry-updaters"]        
     })
     fkey.acl_bindings.update({
         # submitters can only selected workflow status that they are allowed (PDB_Submitter_Allow)
@@ -723,9 +724,9 @@ def set_PDB_Entry_Related_File_Templates(model):
         table = model.schemas["PDB"].tables[tname]
         clear_table_acls(table)
 
-        # allow entry_creators to read        
+        # allow entry-creators to read        
         table.acls.update({
-            "select": g["entry_creators"],            
+            "select": g["entry-creators"],            
         })
 
 # -- ---------------------------------------------------------------------
@@ -760,10 +761,10 @@ def set_ermrest_acl(catalog):
 def main(server_name, catalog_id, credentials):
     server = DerivaServer("https", server_name, credentials)
     catalog = server.connect_ermrest(catalog_id)
-    catalog.dcctx["cid"] = utils.DCCTX["acl"]
+    catalog.dcctx["cid"] = DCCTX["acl"]
     #store = HatracStore("https", server_name, credentials)
 
-    set_ermrest_acl(catalog)
+    #set_ermrest_acl(catalog)
     
 # -- =================================================================================
 # Install the Python package:
