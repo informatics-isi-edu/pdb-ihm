@@ -26,6 +26,7 @@ class Config():
     host = None
     catalog_id = None
     is_www = False
+    is_prod = False
     is_staging = False
     is_dev = False
     
@@ -39,7 +40,8 @@ class Config():
         
         if host == "data.pdb-dev.org":
             self.is_www = True
-        elif "staging" == "dev.pdb-dev.org" and catalog_id == "50":
+            self.is_prod = True            
+        elif host == "dev.pdb-dev.org" and catalog_id == "50":
             self.is_staging = True
         else:
             self.is_dev = True
