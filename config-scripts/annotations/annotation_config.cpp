@@ -85,38 +85,6 @@
             }
         },
         {
-            "column": "id",
-            "schema_pattern": "Vocab",
-            "table_pattern": ".*",
-            "uri": "tag:isrd.isi.edu,2016:generated",
-            "value": null
-        },
-        {
-            "column": "uri",
-            "schema_pattern": "Vocab",
-            "table_pattern": ".*",
-            "uri": "tag:isrd.isi.edu,2016:generated",
-            "value": null
-        },
-        {
-            "column": "description",
-            "schema_pattern": "Vocab",
-            "table_pattern": ".*",
-            "uri": "tag:misd.isi.edu,2015:display",
-            "value": {
-                "name": "Description"
-            }
-        },
-        {
-            "column": "name",
-            "schema_pattern": "Vocab",
-            "table_pattern": ".*",
-            "uri": "tag:misd.isi.edu,2015:display",
-            "value": {
-                "name": "Name"
-            }
-        },
-        {
             "column": "synonyms",
             "schema_pattern": "Vocab",
             "table_pattern": ".*",
@@ -3909,18 +3877,6 @@
         {
             "schema": "PDB",
             "table": "Accession_Code",
-            "uri": "tag:isrd.isi.edu,2016:generated",
-            "value": null
-        },
-        {
-            "schema": "PDB",
-            "table": "audit_conform",
-            "uri": "tag:isrd.isi.edu,2016:generated",
-            "value": null
-        },
-        {
-            "schema": "PDB",
-            "table": "Conform_Dictionary",
             "uri": "tag:isrd.isi.edu,2016:generated",
             "value": null
         },
