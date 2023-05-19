@@ -133,13 +133,6 @@
             }
         },
         {
-            "column": "id",
-            "schema": "PDB",
-            "table": "entry",
-            "uri": "tag:isrd.isi.edu,2016:generated",
-            "value": null
-        },
-        {
             "column": "Image_File_URL",
             "schema": "PDB",
             "table": "entry",
@@ -3873,12 +3866,6 @@
                     }
                 }
             }
-        },
-        {
-            "schema": "PDB",
-            "table": "Accession_Code",
-            "uri": "tag:isrd.isi.edu,2016:generated",
-            "value": null
         },
         {
             "schema": "PDB",
@@ -16710,12 +16697,6 @@
         {
             "schema": "PDB",
             "table": "entity_poly_seq",
-            "uri": "tag:isrd.isi.edu,2016:generated",
-            "value": null
-        },
-        {
-            "schema": "PDB",
-            "table": "entity_poly_seq",
             "uri": "tag:isrd.isi.edu,2016:visible-columns",
             "value": {
                 "*": [
@@ -17551,12 +17532,6 @@
                     }
                 }
             }
-        },
-        {
-            "schema": "PDB",
-            "table": "struct_asym",
-            "uri": "tag:isrd.isi.edu,2016:generated",
-            "value": null
         },
         {
             "schema": "PDB",
@@ -19371,12 +19346,6 @@
                     "row_markdown_pattern": "{{{File_Name}}}"
                 }
             }
-        },
-        {
-            "schema": "PDB",
-            "table": "Entry_Error_File",
-            "uri": "tag:isrd.isi.edu,2016:generated",
-            "value": null
         },
         {
             "schema": "PDB",
