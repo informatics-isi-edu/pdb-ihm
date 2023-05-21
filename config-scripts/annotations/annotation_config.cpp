@@ -170,7 +170,7 @@
                 "filename_column": "mmCIF_File_Name",
                 "md5": "mmCIF_File_MD5",
                 "filename_ext_filter" : [".cif", ".CIF"],
-                "url_pattern": "/<hatrac>/pdb/entry/submitted/mmCIF/{{$moment.year}}/{{{mmCIF_File_MD5}}}.cif"
+                "url_pattern": "/<hatrac>/pdb/entry/submitted/mmCIF/{{$moment.year}}/{{{mmCIF_File_MD5}}}{{{_mmCIF_File_URL.filename_ext}}}"
             }
         },
         {
