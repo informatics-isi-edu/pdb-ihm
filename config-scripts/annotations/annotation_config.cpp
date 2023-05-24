@@ -141,7 +141,7 @@
                 "byte_count_column": "Image_File_Bytes",
                 "filename_column": "Image_File_Name",
                 "md5": "Image_File_MD5",
-                "url_pattern": "/<hatrac>/pdb/entry/submitted/image/{{$moment.year}}/{{{Image_File_Name}}}"
+                "url_pattern": "/<hatrac>/pdb/entry/submitted/image/{{$moment.year}}/{{{Image_File_MD5}}}{{{_Image_File_URL.filename_ext}}}"
             }
         },
         {
@@ -319,7 +319,7 @@
                 "byte_count_column": "mmCIF_File_Bytes",
                 "filename_column": "mmCIF_File_Name",
                 "md5": "mmCIF_File_MD5",
-                "url_pattern": "/<hatrac>/pdb/entry/{{$moment.year}}/{{{structure_id}}}/submitted_starting_model/{{{mmCIF_File_Name}}}"
+                "url_pattern": "/<hatrac>/pdb/entry/{{$moment.year}}/{{{structure_id}}}/submitted_starting_model/{{{mmCIF_File_MD5}}}{{{_mmCIF_File_URL.filename_ext}}}"
             }
         },
         {
