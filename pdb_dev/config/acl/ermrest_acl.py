@@ -27,7 +27,8 @@ GROUPS = {
     "pdb-ihm": ["https://auth.globus.org/cfc89bb6-3d96-4f50-8f1d-f625ef400e40"], 
 }
 g = GROUPS
-GROUPS["owners"] = g["isrd-systems"] + g["pdb-admins"] 
+GROUPS["owners"] = g["isrd-systems"] + g["pdb-admins"]
+GROUPS["pdb-systems"] = g["pdb-ihm"]
 GROUPS["pdb-all"] = g["pdb-admins"] + g["pdb-submitters"] + g["pdb-curators"]
 GROUPS["isrd-internal"] = g["isrd-systems"] + g["isrd-staff"]
 GROUPS["isrd-all"] = g["isrd-systems"] + g["isrd-staff"] + g["isrd-testers"]

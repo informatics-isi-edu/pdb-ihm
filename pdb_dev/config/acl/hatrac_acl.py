@@ -10,74 +10,149 @@ import requests.exceptions
 from ...utils import DCCTX, PDBDEV_CLI, cfg
 from .ermrest_acl import GROUPS
 
+# general policy: submitters can create, curators can read, only owners can update existing namespaces.
 hatrac_acl = {
     "owner": GROUPS["owners"],    
     "subtree-owner": GROUPS["owners"],
-    "subtree-create": GROUPS["entry-creators"],
-    "subtree-update": GROUPS["entry-creators"],
-    "subtree-read": GROUPS["entry-creators"],
-}
-
-hatrac_submitters_cannot_write = {
-    "owner": GROUPS["owners"],    
-    "subtree-owner": GROUPS["owners"],
     "subtree-create": GROUPS["entry-updaters"],
-    "subtree-update": GROUPS["entry-updaters"],
-    "subtree-read": GROUPS["entry-creators"],
+    "subtree-update": [],
+    "subtree-read": GROUPS["entry-updaters"],
 }
 
-hatrac_acl_dev = {
-    "owner": GROUPS["owners"],    
-    "subtree-owner": GROUPS["owners"],
-    "subtree-create": GROUPS["entry-creators"] + GROUPS["isrd-testers"],
-    "subtree-update": GROUPS["entry-creators"] + GROUPS["isrd-testers"],
-    "subtree-read": GROUPS["entry-creators"] + GROUPS["isrd-testers"],
+# policy: submitters cannot create, curators can read/write, only owners can update existing namespaces.
+hatrac_curators_own_submitters_read = {
+    "owner": GROUPS["entry-updaters"],
+    "subtree-owner": GROUPS["entry-updaters"],
+    "subtree-create": [],
+    "subtree-update": [],
+    "subtree-read": GROUPS["pdb-submitters"],
 }
 
-hatrac_submitters_cannot_write_dev = {
-    "owner": GROUPS["owners"],    
-    "subtree-owner": GROUPS["owners"],
-    "subtree-create": GROUPS["entry-updaters"] + GROUPS["isrd-testers"],
-    "subtree-update": GROUPS["entry-updaters"] + GROUPS["isrd-testers"],
-    "subtree-read": GROUPS["entry-creators"] + GROUPS["isrd-testers"],
+hatrac_curator_own_submitters_create = {
+    "owner": GROUPS["entry-updaters"],
+    "subtree-owner": GROUPS["entry-updaters"],
+    "subtree-create": GROUPS["pdb-submitters"],
+    "subtree-update": [],
+    "subtree-read": [],
 }
 
+# policy: entry_owner is the owner of <RID> based folder, curators can read, only owners can update existing namespaces.
+hatrac_curators_own = {
+    "owner": GROUPS["entry-updaters"],
+    "subtree-owner": GROUPS["entry-updaters"],
+    "subtree-create": [],
+    "subtree-update": [],
+    "subtree-read": [],
+}
 
+hatrac_reset_acls = {
+    "owner": [],
+    "subtree-owner": [],
+    "subtree-create": [],
+    "subtree-update": [],
+    "subtree-read": [],
+}
+
+count=0
 # =====================================================================
 # hatrac
 # -- ---------------------------------------------------------------------
-# update subtrees ACLs of the root namespace
-def set_hatrac_acl(store):
+def set_hatrac_namespace_acl(store, acl, namespace):
+    global count
 
-    if cfg.is_prod or cfg.is_staging:
-        for namespace in ["/hatrac/"]:        
-            for access, roles in hatrac_acl.items():
-                store.set_acl(namespace, access, roles)
-            print("-- set prod acl %s: %s" % (namespace, store.get_acl(namespace)))
-        # templates: remove pdb-submitters from writing to templates folder
-        for namespace in ["/hatrac/pdb/templates"]:
-            for access, roles in hatrac_submitters_cannot_write.items():
-                store.set_acl(namespace, access, roles)            
-            print("-- set prod acl submitters cannot create %s: %s" % (namespace, store.get_acl(namespace)))
+    if cfg.is_dev:
+        if namespace == "/hatrac/":        
+            namespace = "/hatrac/dev" 
+        else:
+            namespace = namespace.replace("/hatrac", "/hatrac/dev", 1)
+            
+    # TODO: create namespace if doesn't exist
+    
+    try :
+        if not store.is_valid_namespace(namespace):
+            print("%s is not a valid namespace" % (namespace))
+            return
+    except Exception as e:
+        print("EXCEPTION %s: %s " % (namespace, e))
+        return
+        
+    for access, roles in acl.items():
+        if cfg.is_dev and GROUPS["pdb-curators"][0] in roles:
+            print("    - namespace: %s seting access %s = %s" % (namespace, access, roles+GROUPS["isrd-testers"]))            
+            store.set_acl(namespace, access, roles+GROUPS["isrd-testers"])
+        else:
+            print("    - namespace: %s seting access %s = %s" % (namespace, access, roles))
+            store.set_acl(namespace, access, roles)
+            
+    count = count+1
+    if False:
+        try :
+            print("-- set rcb_access %s: %s" % (namespace, json.dumps(store.get_acl(namespace), indent=2) ))
+        except Exception as e:
+            pass
+        
+# -- ---------------------------------------------------------------------
+def set_hatrac_namespaces_acl(store, acl, namespaces):
+    for namespace in namespaces:
+        set_hatrac_namespace_acl(store, acl, namespace)
+        
+# -- ---------------------------------------------------------------------
+'''
+SELECT e.id, f."RID", m."RID" FROM "PDB".entry e LEFT join "PDB"."Entry_Related_File" f ON (e.id = f.structure_id)
+LEFT JOIN "PDB"."Entry_mmCIF_File" m ON (e.id = m."Structure_Id")
+'''
+def set_hatrac_rcb_access(store, catalog):
+    model = catalog.getCatalogModel()
+    table = model.schemas["PDB"].tables["entry"]
+    global count
+    count = 0
+    resp = catalog.get("/attribute/PDB:entry/RCB,RID,RCT")
+    rows = resp.json()
+    #print("---------------- number of rows: %d --------------" % (len(rows)))
+    
+    for row in rows:
+        year = row["RCT"].split("-")[0]
+        namespace = "/hatrac/pdb/entry/%s/D_%s" % (year, row["RID"])
+        acl = {
+            "subtree-read": [row["RCB"]]
+        }
+        set_hatrac_namespace_acl(store, acl, namespace)
+
+# -- ---------------------------------------------------------------------
+# In case the namespaces (non-objects) are owned by submitters
+def reset_namespaces_owners(store):
+    namespaces = []
+    if cfg.is_dev:
+        rootns = "/hatrac/dev"
     else:
-        for namespace in ["/hatrac/dev"]:        
-            for access, roles in hatrac_acl_dev.items():
-                store.set_acl(namespace, access, roles)
-            print("-- set dev acl %s: %s" % (namespace, store.get_acl(namespace)))                
-        # templates: remove pdb-submitters from writing to templates folder
-        for namespace in []:
-            for access, roles in hatrac_submitters_cannot_write.items():
-                store.set_acl(namespace, access, roles)            
-            print("-- set dev acl submitters cannot create %s: %s" % (namespace, store.get_acl(namespace)))
+        rootns = "/hatrac/"
+        
+    namespaces.extend(store.retrieve_namespace(rootns))
 
-    # clean up    
-    if cfg.is_staging:            
-        for namespace in ["/hatrac/pdb", "/hatrac/pdb/mmCIF", "/hatrac/pdb/image", "/hatrac/pdb/entry_files", "/hatrac/pdb/entry_mmCIF"]:
-            for access, roles in hatrac_acl.items():
-                if access == "owner":
-                    store.set_acl(namespace, "owner", GROUPS["owners"])                    
-                else:
-                    store.del_acl(namespace, access, None)
+    while namespaces:
+        ns = namespaces.pop(0)
+        if store.is_valid_namespace(ns):
+            print("+++++++++++++ ns: %s ++++++++++++" % (ns))
+            roles = store.get_acl(ns, "owner")
+            if roles:
+                store.del_acl(ns, "owner", None)
+            namespaces.extend(store.retrieve_namespace(ns))
+            print("--- %s: reset owner: %s ---" % (ns, roles))
+    
+                      
+    
+# -- ---------------------------------------------------------------------
+# update subtrees ACLs of the root namespace
+def set_hatrac_acl(store, catalog):
+
+    set_hatrac_namespaces_acl(store, hatrac_acl, ["/hatrac/"])
+    set_hatrac_namespaces_acl(store, hatrac_curators_own_submitters_read, ["/hatrac/pdb/templates"])
+    set_hatrac_namespaces_acl(store, hatrac_curators_own, ["/hatrac/pdb/entry"])    
+    set_hatrac_namespaces_acl(store, hatrac_curators_own_submitters_create, ["/hatrac/pdb/entry/submitted"])
+    set_hatrac_namespaces_acl(store, hatrac_reset_acls, ["/hatrac/pdb/entry_files", "/hatrac/pdb/entry_mmCIF", "/hatrac/pdb/mmCIF", "/hatrac/pdb/image"])
+
+    set_hatrac_rcb_access(store, catalog)
+    #reset_namespaces_owners(store)
     
 # =====================================================================
 
@@ -87,7 +162,7 @@ def main(server_name, catalog_id, credentials):
     catalog.dcctx["cid"] = DCCTX["acl"]
     store = HatracStore("https", server_name, credentials)
 
-    set_hatrac_acl(store)
+    set_hatrac_acl(store, catalog)
 
     
 # -- =================================================================================
