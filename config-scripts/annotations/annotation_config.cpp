@@ -141,7 +141,8 @@
                 "byte_count_column": "Image_File_Bytes",
                 "filename_column": "Image_File_Name",
                 "md5": "Image_File_MD5",
-                "url_pattern": "/<hatrac>/pdb/entry/submitted/image/{{$moment.year}}/{{{Image_File_MD5}}}{{{_Image_File_URL.filename_ext}}}"
+                "template_engine": "handlebars",
+                "url_pattern": "/<hatrac>/pdb/submitted/user/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/image/{{{Image_File_MD5}}}{{{_Image_File_URL.filename_ext}}}"
             }
         },
         {
@@ -170,7 +171,8 @@
                 "filename_column": "mmCIF_File_Name",
                 "md5": "mmCIF_File_MD5",
                 "filename_ext_filter" : [".cif", ".CIF"],
-                "url_pattern": "/<hatrac>/pdb/entry/submitted/mmCIF/{{$moment.year}}/{{{mmCIF_File_MD5}}}{{{_mmCIF_File_URL.filename_ext}}}"
+                "template_engine": "handlebars",
+                "url_pattern": "/<hatrac>/pdb/submitted/user/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/mmCIF/{{{mmCIF_File_MD5}}}{{{_mmCIF_File_URL.filename_ext}}}"
             }
         },
         {
@@ -257,7 +259,8 @@
                 "byte_count_column": "File_Bytes",
                 "filename_column": "File_Name",
                 "md5": "File_MD5",
-                "url_pattern": "/<hatrac>/pdb/entry/{{$moment.year}}/{{{Structure_Id}}}/final_mmCIF/{{{File_Name}}}"
+                "template_engine": "handlebars",
+                "url_pattern": "/<hatrac>/pdb/generated/user/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/rid/{{{Structure_Id}}}/final_mmCIF/{{{File_Name}}}"
             }
         },
 #if 1
@@ -289,7 +292,8 @@
                 "byte_count_column": "File_Bytes",
                 "filename_column": "File_Name",
                 "md5": "File_MD5",
-                "url_pattern": "/<hatrac>/pdb/entry/{{$moment.year}}/{{{Entry_RID}}}/validation_error/{{{File_Name}}}"
+                "template_engine": "handlebars",
+                "url_pattern": "/<hatrac>/pdb/generated/user/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/rid/{{{Entry_RID}}}/validation_error/{{{File_Name}}}"
             }
         },
         {
@@ -319,7 +323,8 @@
                 "byte_count_column": "mmCIF_File_Bytes",
                 "filename_column": "mmCIF_File_Name",
                 "md5": "mmCIF_File_MD5",
-                "url_pattern": "/<hatrac>/pdb/entry/{{$moment.year}}/{{{structure_id}}}/submitted_starting_model/{{{mmCIF_File_MD5}}}{{{_mmCIF_File_URL.filename_ext}}}"
+                "template_engine": "handlebars",
+                "url_pattern": "/<hatrac>/pdb/submitted/user/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/rid/{{{structure_id}}}/starting_model/{{{mmCIF_File_MD5}}}{{{_mmCIF_File_URL.filename_ext}}}"
             }
         },
         {
@@ -331,7 +336,8 @@
                 "byte_count_column": "File_Bytes",
                 "filename_column": "File_Name",
                 "md5": "File_MD5",
-                "url_pattern": "/<hatrac>/pdb/entry/{{$moment.year}}/{{{structure_id}}}/submitted_related_file/{{{File_Name}}}"
+                "template_engine": "handlebars",
+                "url_pattern": "/<hatrac>/pdb/submitted/user/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/rid/{{{structure_id}}}/related_file/{{{File_MD5}}}{{{_File_URL.filename_ext}}}"
             }
         },
         {
