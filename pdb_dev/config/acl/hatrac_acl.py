@@ -11,38 +11,41 @@ from ...utils import DCCTX, PDBDEV_CLI, cfg
 from .ermrest_acl import GROUPS
 
 # general policy: submitters can create, curators can read, only owners can update existing namespaces.
-hatrac_acl = {
+hatrac_curators_read = {
     "owner": GROUPS["owners"],    
     "subtree-owner": GROUPS["owners"],
-    "subtree-create": GROUPS["entry-updaters"],
+    "subtree-create": [],
     "subtree-update": [],
     "subtree-read": GROUPS["entry-updaters"],
 }
 
 # policy: submitters cannot create, curators can read/write, only owners can update existing namespaces.
-hatrac_curators_own_submitters_read = {
-    "owner": GROUPS["entry-updaters"],
-    "subtree-owner": GROUPS["entry-updaters"],
-    "subtree-create": [],
-    "subtree-update": [],
-    "subtree-read": GROUPS["pdb-submitters"],
+hatrac_curators_write_submitters_read = {
+    "owner": [],
+    "subtree-owner": [],
+    "create": GROUPS["entry-updaters"],
+    "subtree-create": GROUPS["entry-updaters"],
+    "subtree-update": GROUPS["entry-updaters"],
+    "subtree-read": GROUPS["entry-updaters"] + GROUPS["pdb-submitters"],
 }
 
-hatrac_curator_own_submitters_create = {
-    "owner": GROUPS["entry-updaters"],
-    "subtree-owner": GROUPS["entry-updaters"],
-    "subtree-create": GROUPS["pdb-submitters"],
-    "subtree-update": [],
-    "subtree-read": [],
+hatrac_curators_write_submitters_write = {
+    "owner": [],
+    "subtree-owner": [],    
+    "create": GROUPS["entry-updaters"] + GROUPS["pdb-submitters"],
+    "subtree-create": GROUPS["entry-updaters"] + GROUPS["pdb-submitters"],
+    "subtree-update": GROUPS["entry-updaters"] + GROUPS["pdb-submitters"],
+    "subtree-read": GROUPS["entry-updaters"] + GROUPS["pdb-submitters"],
 }
 
 # policy: entry_owner is the owner of <RID> based folder, curators can read, only owners can update existing namespaces.
-hatrac_curators_own = {
-    "owner": GROUPS["entry-updaters"],
-    "subtree-owner": GROUPS["entry-updaters"],
-    "subtree-create": [],
-    "subtree-update": [],
-    "subtree-read": [],
+hatrac_curators_write = {
+    "owner": [],
+    "subtree-owner": [],    
+    "create": GROUPS["entry-updaters"],
+    "subtree-create": GROUPS["entry-updaters"],
+    "subtree-update": GROUPS["entry-updaters"],
+    "subtree-read":  GROUPS["entry-updaters"],
 }
 
 hatrac_reset_acls = {
@@ -56,15 +59,21 @@ hatrac_reset_acls = {
 count=0
 # =====================================================================
 # hatrac
+# =====================================================================
+def adjust_hatrac_namespace(namespace):
+    if cfg.is_dev:
+        if namespace == "/hatrac/":        
+            namespace = "/hatrac/dev" 
+        elif not namespace.startswith('/hatrac/dev'):
+            namespace = namespace.replace("/hatrac", "/hatrac/dev", 1)
+            
+    return namespace
+    
 # -- ---------------------------------------------------------------------
 def set_hatrac_namespace_acl(store, acl, namespace):
     global count
 
-    if cfg.is_dev:
-        if namespace == "/hatrac/":        
-            namespace = "/hatrac/dev" 
-        else:
-            namespace = namespace.replace("/hatrac", "/hatrac/dev", 1)
+    namespace = adjust_hatrac_namespace(namespace)
             
     # TODO: create namespace if doesn't exist
     
@@ -96,12 +105,13 @@ def set_hatrac_namespaces_acl(store, acl, namespaces):
     for namespace in namespaces:
         set_hatrac_namespace_acl(store, acl, namespace)
         
+
 # -- ---------------------------------------------------------------------
 '''
 SELECT e.id, f."RID", m."RID" FROM "PDB".entry e LEFT join "PDB"."Entry_Related_File" f ON (e.id = f.structure_id)
 LEFT JOIN "PDB"."Entry_mmCIF_File" m ON (e.id = m."Structure_Id")
 '''
-def set_hatrac_rcb_access(store, catalog):
+def set_hatrac_rcb_read_per_rid(store, catalog):
     model = catalog.getCatalogModel()
     table = model.schemas["PDB"].tables["entry"]
     global count
@@ -118,8 +128,52 @@ def set_hatrac_rcb_access(store, catalog):
         }
         set_hatrac_namespace_acl(store, acl, namespace)
 
+# --------------------------------------------------------------------
+# set hatrac read access based on user folders
+def set_hatrac_read_per_user(store, parent_namespaces=[]):
+    for parent in parent_namespaces:
+        parent = adjust_hatrac_namespace(parent)
+        try:
+            uid_namespaces = store.retrieve_namespace(parent)
+            print(" - UID: %s" % (uid_namespaces))
+            for uid_namespace in uid_namespaces:
+                uid = uid_namespace.replace(parent+"/", "")
+                user_id = "https://auth.globus.org/%s" % (uid)
+                acl = {
+                    "create": [user_id],
+                    "subtree-create": [user_id],
+                    "subtree-update": [user_id],            
+                    "subtree-read": [user_id]
+                }
+                set_hatrac_namespace_acl(store, acl, uid_namespace)
+        except Exception as e:
+            print("NO node to set READ per user at: %s, %s" % (parent, e))
+    
+# --------------------------------------------------------------------
+# set hatrac read access based on user folders
+def set_hatrac_write_per_user(store, parent_namespaces=[]):
+    for parent in parent_namespaces:
+        parent = adjust_hatrac_namespace(parent)
+        try:
+            uid_namespaces = store.retrieve_namespace(parent)
+            print(" - UID: %s" % (uid_namespaces))
+            for uid_namespace in uid_namespaces:
+                uid = uid_namespace.replace(parent+"/", "")
+                user_id = "https://auth.globus.org/%s" % (uid)
+                acl = {
+                    "create": [user_id],
+                    "subtree-create": [user_id],
+                    "subtree-update": [user_id],            
+                    "subtree-read": [user_id]
+                }
+                set_hatrac_namespace_acl(store, acl, uid_namespace)
+        except Exception as e:
+            print("NO node to set WRITE per user at: %s, %s" % (parent, e))
+
+        
 # -- ---------------------------------------------------------------------
 # In case the namespaces (non-objects) are owned by submitters
+# THE HATRAC APIS ARE NOT WORKING AS INTENDED. DO NOT CALL THIS FOR NOW.
 def reset_namespaces_owners(store):
     namespaces = []
     if cfg.is_dev:
@@ -139,20 +193,46 @@ def reset_namespaces_owners(store):
             namespaces.extend(store.retrieve_namespace(ns))
             print("--- %s: reset owner: %s ---" % (ns, roles))
     
-                      
-    
+
+# =====================================================================
 # -- ---------------------------------------------------------------------
+def create_hatrac_namespace(store, namespace):
+    namespace = adjust_hatrac_namespace(namespace)
+
+    try :
+        if store.is_valid_namespace(namespace):
+            return
+        else:
+            print("CREATE NAMESPACE: %s " % (namespace))
+            store.create_namespace(namespace, parents=True)
+    except Exception as e:
+        print("EXCEPTION NAMESPACE DOES NOT EXIST: %s: %s " % (namespace, e))
+        print("CREATE NAMESPACE: %s " % (namespace))
+        store.create_namespace(namespace, parents=True)        
+        
+# -- ---------------------------------------------------------------------
+def create_hatrac_namespaces(store, namespaces=[]):
+    for namespace in namespaces:
+        create_hatrac_namespace(store, namespace)
+
+# =====================================================================
 # update subtrees ACLs of the root namespace
 def set_hatrac_acl(store, catalog):
 
-    set_hatrac_namespaces_acl(store, hatrac_acl, ["/hatrac/"])
-    set_hatrac_namespaces_acl(store, hatrac_curators_own_submitters_read, ["/hatrac/pdb/templates"])
-    set_hatrac_namespaces_acl(store, hatrac_curators_own, ["/hatrac/pdb/entry"])    
-    set_hatrac_namespaces_acl(store, hatrac_curators_own_submitters_create, ["/hatrac/pdb/entry/submitted"])
-    set_hatrac_namespaces_acl(store, hatrac_reset_acls, ["/hatrac/pdb/entry_files", "/hatrac/pdb/entry_mmCIF", "/hatrac/pdb/mmCIF", "/hatrac/pdb/image"])
+    # legacy tree
+    if True:
+        set_hatrac_namespaces_acl(store, hatrac_curators_read, ["/hatrac/"])
+        set_hatrac_namespaces_acl(store, hatrac_curators_write_submitters_read, ["/hatrac/pdb/templates"])
+        set_hatrac_namespaces_acl(store, hatrac_curators_write_submitters_read, ["/hatrac/pdb/entry"])    
+        set_hatrac_namespaces_acl(store, hatrac_curators_write_submitters_write, ["/hatrac/pdb/entry/submitted"])
+        set_hatrac_namespaces_acl(store, hatrac_reset_acls, ["/hatrac/pdb/entry_files", "/hatrac/pdb/entry_mmCIF", "/hatrac/pdb/mmCIF", "/hatrac/pdb/image"])
+        set_hatrac_rcb_read_per_rid(store, catalog)
 
-    set_hatrac_rcb_access(store, catalog)
-    #reset_namespaces_owners(store)
+    # -- new policy
+    create_hatrac_namespaces(store, ["/hatrac/pdb/user", "/hatrac/pdb/submitted/uid", "/hatrac/pdb/generated/uid"])
+    set_hatrac_namespaces_acl(store, hatrac_curators_write, ["/hatrac/pdb/submitted/uid", "/hatrac/pdb/generated/uid", "/hatrac/pdb/user"])
+    set_hatrac_write_per_user(store, ["/hatrac/pdb/submitted/uid", "/hatrac/pdb/user"])
+    set_hatrac_read_per_user(store, ["/hatrac/pdb/generated/uid"])
     
 # =====================================================================
 
