@@ -57,9 +57,9 @@ hatrac_reset_acls = {
 }
 
 count=0
-# =====================================================================
-# hatrac
-# =====================================================================
+# ============================================================================
+# helper functions
+#
 def adjust_hatrac_namespace(namespace):
     if cfg.is_dev:
         if namespace == "/hatrac/":        
@@ -68,8 +68,12 @@ def adjust_hatrac_namespace(namespace):
             namespace = namespace.replace("/hatrac", "/hatrac/dev", 1)
             
     return namespace
-    
+
+# ==============================================================================
+# functions for managing acls
+#
 # -- ---------------------------------------------------------------------
+# set one hatrac namespace acl
 def set_hatrac_namespace_acl(store, acl, namespace):
     global count
 
@@ -101,17 +105,15 @@ def set_hatrac_namespace_acl(store, acl, namespace):
             pass
         
 # -- ---------------------------------------------------------------------
+# set acl for a list of namespaces
 def set_hatrac_namespaces_acl(store, acl, namespaces):
     for namespace in namespaces:
         set_hatrac_namespace_acl(store, acl, namespace)
         
 
 # -- ---------------------------------------------------------------------
-'''
-SELECT e.id, f."RID", m."RID" FROM "PDB".entry e LEFT join "PDB"."Entry_Related_File" f ON (e.id = f.structure_id)
-LEFT JOIN "PDB"."Entry_mmCIF_File" m ON (e.id = m."Structure_Id")
-'''
-def set_hatrac_rcb_read_per_rid(store, catalog):
+# set read acl for individual submitters based on RID
+def set_hatrac_read_per_rid(store, catalog):
     model = catalog.getCatalogModel()
     table = model.schemas["PDB"].tables["entry"]
     global count
@@ -130,7 +132,7 @@ def set_hatrac_rcb_read_per_rid(store, catalog):
 
 # --------------------------------------------------------------------
 # set hatrac read access based on user folders
-def set_hatrac_read_per_user(store, parent_namespaces=[]):
+def set_hatrac_submitters_read_per_user(store, parent_namespaces=[]):
     for parent in parent_namespaces:
         parent = adjust_hatrac_namespace(parent)
         try:
@@ -173,7 +175,9 @@ def set_hatrac_write_per_user(store, parent_namespaces=[]):
         
 # -- ---------------------------------------------------------------------
 # In case the namespaces (non-objects) are owned by submitters
-# THE HATRAC APIS ARE NOT WORKING AS INTENDED. DO NOT CALL THIS FOR NOW.
+# !!!
+# NOTE: THE HATRAC APIS ARE NOT WORKING AS INTENDED. DO NOT CALL THIS FOR NOW.
+# !!!
 def reset_namespaces_owners(store):
     namespaces = []
     if cfg.is_dev:
@@ -195,7 +199,10 @@ def reset_namespaces_owners(store):
     
 
 # =====================================================================
+# functions to manage namespaces
+#
 # -- ---------------------------------------------------------------------
+# create one hatrac namespace
 def create_hatrac_namespace(store, namespace):
     namespace = adjust_hatrac_namespace(namespace)
 
@@ -211,6 +218,7 @@ def create_hatrac_namespace(store, namespace):
         store.create_namespace(namespace, parents=True)        
         
 # -- ---------------------------------------------------------------------
+# create a set of hatrac namespaces
 def create_hatrac_namespaces(store, namespaces=[]):
     for namespace in namespaces:
         create_hatrac_namespace(store, namespace)
@@ -226,7 +234,7 @@ def set_hatrac_acl(store, catalog):
         set_hatrac_namespaces_acl(store, hatrac_curators_write_submitters_read, ["/hatrac/pdb/entry"])    
         set_hatrac_namespaces_acl(store, hatrac_curators_write_submitters_write, ["/hatrac/pdb/entry/submitted"])
         set_hatrac_namespaces_acl(store, hatrac_reset_acls, ["/hatrac/pdb/entry_files", "/hatrac/pdb/entry_mmCIF", "/hatrac/pdb/mmCIF", "/hatrac/pdb/image"])
-        set_hatrac_rcb_read_per_rid(store, catalog)
+        set_hatrac_submitters_read_per_rid(store, catalog)
 
     # -- new policy
     create_hatrac_namespaces(store, ["/hatrac/pdb/user", "/hatrac/pdb/submitted/uid", "/hatrac/pdb/generated/uid"])
