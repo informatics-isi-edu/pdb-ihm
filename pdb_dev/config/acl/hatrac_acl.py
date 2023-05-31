@@ -83,10 +83,10 @@ def set_hatrac_namespace_acl(store, acl, namespace):
     
     try :
         if not store.is_valid_namespace(namespace):
-            print("%s is not a valid namespace" % (namespace))
+            print("ERROR: %s is not a valid namespace" % (namespace))
             return
     except Exception as e:
-        print("EXCEPTION %s: %s " % (namespace, e))
+        #print("EXCEPTION %s: %s " % (namespace, e))
         return
         
     for access, roles in acl.items():
@@ -132,7 +132,7 @@ def set_hatrac_read_per_rid(store, catalog):
 
 # --------------------------------------------------------------------
 # set hatrac read access based on user folders
-def set_hatrac_submitters_read_per_user(store, parent_namespaces=[]):
+def set_hatrac_read_per_user(store, parent_namespaces=[]):
     for parent in parent_namespaces:
         parent = adjust_hatrac_namespace(parent)
         try:
@@ -142,9 +142,6 @@ def set_hatrac_submitters_read_per_user(store, parent_namespaces=[]):
                 uid = uid_namespace.replace(parent+"/", "")
                 user_id = "https://auth.globus.org/%s" % (uid)
                 acl = {
-                    "create": [user_id],
-                    "subtree-create": [user_id],
-                    "subtree-update": [user_id],            
                     "subtree-read": [user_id]
                 }
                 set_hatrac_namespace_acl(store, acl, uid_namespace)
@@ -152,7 +149,9 @@ def set_hatrac_submitters_read_per_user(store, parent_namespaces=[]):
             print("NO node to set READ per user at: %s, %s" % (parent, e))
     
 # --------------------------------------------------------------------
-# set hatrac read access based on user folders
+# set hatrac read access based on user folders.
+# Note: We no longer need to execute this in python script since it will be
+# taken care of in the hourly cron job. 
 def set_hatrac_write_per_user(store, parent_namespaces=[]):
     for parent in parent_namespaces:
         parent = adjust_hatrac_namespace(parent)
@@ -163,6 +162,8 @@ def set_hatrac_write_per_user(store, parent_namespaces=[]):
                 uid = uid_namespace.replace(parent+"/", "")
                 user_id = "https://auth.globus.org/%s" % (uid)
                 acl = {
+                    "owner": [],
+                    "subtree-owner": [],
                     "create": [user_id],
                     "subtree-create": [user_id],
                     "subtree-update": [user_id],            
@@ -203,7 +204,7 @@ def reset_namespaces_owners(store):
 #
 # -- ---------------------------------------------------------------------
 # create one hatrac namespace
-def create_hatrac_namespace(store, namespace):
+def create_hatrac_namespace_if_not_exist(store, namespace):
     namespace = adjust_hatrac_namespace(namespace)
 
     try :
@@ -219,28 +220,34 @@ def create_hatrac_namespace(store, namespace):
         
 # -- ---------------------------------------------------------------------
 # create a set of hatrac namespaces
-def create_hatrac_namespaces(store, namespaces=[]):
+def create_hatrac_namespaces_if_not_exist(store, namespaces=[]):
     for namespace in namespaces:
-        create_hatrac_namespace(store, namespace)
+        create_hatrac_namespace_if_not_exist(store, namespace)
 
 # =====================================================================
 # update subtrees ACLs of the root namespace
 def set_hatrac_acl(store, catalog):
 
-    # legacy tree
+    # creating legacy namespaces on dev for proper acls. 
+    if cfg.is_dev:
+        create_hatrac_namespaces_if_not_exist(store, ["/hatrac/pdb/entry/submitted", "/hatrac/pdb/user"])  
+        
+    # legacy tree on all envs
     if True:
         set_hatrac_namespaces_acl(store, hatrac_curators_read, ["/hatrac/"])
         set_hatrac_namespaces_acl(store, hatrac_curators_write_submitters_read, ["/hatrac/pdb/templates"])
         set_hatrac_namespaces_acl(store, hatrac_curators_write_submitters_read, ["/hatrac/pdb/entry"])    
         set_hatrac_namespaces_acl(store, hatrac_curators_write_submitters_write, ["/hatrac/pdb/entry/submitted"])
         set_hatrac_namespaces_acl(store, hatrac_reset_acls, ["/hatrac/pdb/entry_files", "/hatrac/pdb/entry_mmCIF", "/hatrac/pdb/mmCIF", "/hatrac/pdb/image"])
-        set_hatrac_submitters_read_per_rid(store, catalog)
+        set_hatrac_read_per_rid(store, catalog)
 
     # -- new policy
-    create_hatrac_namespaces(store, ["/hatrac/pdb/user", "/hatrac/pdb/submitted/uid", "/hatrac/pdb/generated/uid"])
+    create_hatrac_namespaces_if_not_exist(store, ["/hatrac/pdb/templates", "/hatrac/pdb/submitted/uid", "/hatrac/pdb/generated/uid"])
     set_hatrac_namespaces_acl(store, hatrac_curators_write, ["/hatrac/pdb/submitted/uid", "/hatrac/pdb/generated/uid", "/hatrac/pdb/user"])
-    set_hatrac_write_per_user(store, ["/hatrac/pdb/submitted/uid", "/hatrac/pdb/user"])
     set_hatrac_read_per_user(store, ["/hatrac/pdb/generated/uid"])
+
+    # no need to set this up here as it covers in hourly job
+    # set_hatrac_write_per_user(store, ["/hatrac/pdb/submitted/uid", "/hatrac/pdb/user"]) 
     
 # =====================================================================
 
