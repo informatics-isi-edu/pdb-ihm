@@ -20,46 +20,51 @@ hatrac_curators_read = {
 }
 
 # policy: submitters cannot create, curators can read/write, only owners can update existing namespaces.
+# curator_read inherits from parent namespace
 hatrac_curators_write_submitters_read = {
     "owner": [],
     "subtree-owner": [],
     "create": GROUPS["entry-updaters"],
     "subtree-create": GROUPS["entry-updaters"],
     "subtree-update": GROUPS["entry-updaters"],
-    "subtree-read": GROUPS["entry-updaters"] + GROUPS["pdb-submitters"],
+    "subtree-read": GROUPS["pdb-submitters"],
 }
 
+# policy: curators and submitters can create/update. The read access will be given to appropriate submitter in the shell script. 
+# no need to set subtree-read for curators. In herit from root.
 hatrac_curators_write_submitters_write = {
     "owner": [],
     "subtree-owner": [],    
     "create": GROUPS["entry-updaters"] + GROUPS["pdb-submitters"],
     "subtree-create": GROUPS["entry-updaters"] + GROUPS["pdb-submitters"],
     "subtree-update": GROUPS["entry-updaters"] + GROUPS["pdb-submitters"],
-    "subtree-read": GROUPS["entry-updaters"] + GROUPS["pdb-submitters"],
+    "subtree-read": [],
 }
 
-# policy: entry_owner is the owner of <RID> based folder, curators can read, only owners can update existing namespaces.
+# no need to set subtree-read for curators. In herit from root.
 hatrac_curators_write = {
     "owner": [],
     "subtree-owner": [],    
     "create": GROUPS["entry-updaters"],
     "subtree-create": GROUPS["entry-updaters"],
     "subtree-update": GROUPS["entry-updaters"],
-    "subtree-read":  GROUPS["entry-updaters"],
+    "subtree-read":  [],
 }
 
+# remove all members from namespaces. Read/update doesn't work on namespace.
 hatrac_reset_acls = {
     "owner": [],
+    "create": [],
     "subtree-owner": [],
     "subtree-create": [],
     "subtree-update": [],
     "subtree-read": [],
 }
 
-count=0
 # ============================================================================
 # helper functions
 #
+# add /dev prefix to namespace in the development environment. 
 def adjust_hatrac_namespace(namespace):
     if cfg.is_dev:
         if namespace == "/hatrac/":        
@@ -75,12 +80,9 @@ def adjust_hatrac_namespace(namespace):
 # -- ---------------------------------------------------------------------
 # set one hatrac namespace acl
 def set_hatrac_namespace_acl(store, acl, namespace):
-    global count
 
     namespace = adjust_hatrac_namespace(namespace)
             
-    # TODO: create namespace if doesn't exist
-    
     try :
         if not store.is_valid_namespace(namespace):
             print("ERROR: %s is not a valid namespace" % (namespace))
@@ -97,7 +99,6 @@ def set_hatrac_namespace_acl(store, acl, namespace):
             print("    - namespace: %s seting access %s = %s" % (namespace, access, roles))
             store.set_acl(namespace, access, roles)
             
-    count = count+1
     if False:
         try :
             print("-- set rcb_access %s: %s" % (namespace, json.dumps(store.get_acl(namespace), indent=2) ))
@@ -112,7 +113,8 @@ def set_hatrac_namespaces_acl(store, acl, namespaces):
         
 
 # -- ---------------------------------------------------------------------
-# set read acl for individual submitters based on RID
+# set read acl for individual submitters based on RID.
+# This function is needed to address old namespace strategy
 def set_hatrac_read_per_rid(store, catalog):
     model = catalog.getCatalogModel()
     table = model.schemas["PDB"].tables["entry"]
@@ -120,7 +122,6 @@ def set_hatrac_read_per_rid(store, catalog):
     count = 0
     resp = catalog.get("/attribute/PDB:entry/RCB,RID,RCT")
     rows = resp.json()
-    #print("---------------- number of rows: %d --------------" % (len(rows)))
     
     for row in rows:
         year = row["RCT"].split("-")[0]
@@ -214,7 +215,7 @@ def create_hatrac_namespace_if_not_exist(store, namespace):
             print("CREATE NAMESPACE: %s " % (namespace))
             store.create_namespace(namespace, parents=True)
     except Exception as e:
-        print("EXCEPTION NAMESPACE DOES NOT EXIST: %s: %s " % (namespace, e))
+        print("NAMESPACE DOES NOT EXIST: %s: %s " % (namespace, e))
         print("CREATE NAMESPACE: %s " % (namespace))
         store.create_namespace(namespace, parents=True)        
         
@@ -231,23 +232,25 @@ def set_hatrac_acl(store, catalog):
     # creating legacy namespaces on dev for proper acls. 
     if cfg.is_dev:
         create_hatrac_namespaces_if_not_exist(store, ["/hatrac/pdb/entry/submitted", "/hatrac/pdb/user"])  
-        
-    # legacy tree on all envs
-    if True:
-        set_hatrac_namespaces_acl(store, hatrac_curators_read, ["/hatrac/"])
-        set_hatrac_namespaces_acl(store, hatrac_curators_write_submitters_read, ["/hatrac/pdb/templates"])
-        set_hatrac_namespaces_acl(store, hatrac_curators_write_submitters_read, ["/hatrac/pdb/entry"])    
-        set_hatrac_namespaces_acl(store, hatrac_curators_write_submitters_write, ["/hatrac/pdb/entry/submitted"])
-        set_hatrac_namespaces_acl(store, hatrac_reset_acls, ["/hatrac/pdb/entry_files", "/hatrac/pdb/entry_mmCIF", "/hatrac/pdb/mmCIF", "/hatrac/pdb/image"])
-        set_hatrac_read_per_rid(store, catalog)
 
     # -- new policy
     create_hatrac_namespaces_if_not_exist(store, ["/hatrac/pdb/templates", "/hatrac/pdb/submitted/uid", "/hatrac/pdb/generated/uid"])
-    set_hatrac_namespaces_acl(store, hatrac_curators_write, ["/hatrac/pdb/submitted/uid", "/hatrac/pdb/generated/uid", "/hatrac/pdb/user"])
+    set_hatrac_namespaces_acl(store, hatrac_curators_read, ["/hatrac/"])
+    set_hatrac_namespaces_acl(store, hatrac_curators_write_submitters_read, ["/hatrac/pdb/templates"])
+    set_hatrac_namespaces_acl(store, hatrac_curators_write_submitters_write, ["/hatrac/pdb/submitted/uid", "/hatrac/pdb/user"])
+    set_hatrac_namespaces_acl(store, hatrac_curators_write, ["/hatrac/pdb/generated/uid"])
     set_hatrac_read_per_user(store, ["/hatrac/pdb/generated/uid"])
 
     # no need to set this up here as it covers in hourly job
     # set_hatrac_write_per_user(store, ["/hatrac/pdb/submitted/uid", "/hatrac/pdb/user"]) 
+        
+    # legacy tree on all envs
+    if True:
+        set_hatrac_namespaces_acl(store, hatrac_curators_write, ["/hatrac/pdb/entry"])    
+        set_hatrac_namespaces_acl(store, hatrac_curators_write_submitters_write, ["/hatrac/pdb/entry/submitted"])
+        set_hatrac_namespaces_acl(store, hatrac_reset_acls, ["/hatrac/pdb/entry_files", "/hatrac/pdb/entry_mmCIF", "/hatrac/pdb/mmCIF", "/hatrac/pdb/image"])
+        set_hatrac_read_per_rid(store, catalog)
+
     
 # =====================================================================
 
