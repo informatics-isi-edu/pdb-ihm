@@ -142,7 +142,7 @@
                 "filename_column": "Image_File_Name",
                 "md5": "Image_File_MD5",
                 "template_engine": "handlebars",
-                "url_pattern": "/<hatrac>/pdb/submitted/user/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/image/{{{Image_File_MD5}}}{{{_Image_File_URL.filename_ext}}}"
+                "url_pattern": "/<hatrac>/pdb/submitted/uid/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/image/{{{Image_File_MD5}}}{{{_Image_File_URL.filename_ext}}}"
             }
         },
         {
@@ -172,7 +172,7 @@
                 "md5": "mmCIF_File_MD5",
                 "filename_ext_filter" : [".cif", ".CIF"],
                 "template_engine": "handlebars",
-                "url_pattern": "/<hatrac>/pdb/submitted/user/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/mmCIF/{{{mmCIF_File_MD5}}}{{{_mmCIF_File_URL.filename_ext}}}"
+                "url_pattern": "/<hatrac>/pdb/submitted/uid/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/mmCIF/{{{mmCIF_File_MD5}}}{{{_mmCIF_File_URL.filename_ext}}}"
             }
         },
         {
@@ -260,7 +260,7 @@
                 "filename_column": "File_Name",
                 "md5": "File_MD5",
                 "template_engine": "handlebars",
-                "url_pattern": "/<hatrac>/pdb/generated/user/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/rid/{{{Structure_Id}}}/final_mmCIF/{{{File_Name}}}"
+                "url_pattern": "/<hatrac>/pdb/generated/uid/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/rid/{{{Structure_Id}}}/final_mmCIF/{{{File_Name}}}"
             }
         },
 #if 1
@@ -293,7 +293,7 @@
                 "filename_column": "File_Name",
                 "md5": "File_MD5",
                 "template_engine": "handlebars",
-                "url_pattern": "/<hatrac>/pdb/generated/user/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/rid/{{{Entry_RID}}}/validation_error/{{{File_Name}}}"
+                "url_pattern": "/<hatrac>/pdb/generated/uid/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/rid/{{{Entry_RID}}}/validation_error/{{{File_Name}}}"
             }
         },
         {
@@ -324,7 +324,7 @@
                 "filename_column": "mmCIF_File_Name",
                 "md5": "mmCIF_File_MD5",
                 "template_engine": "handlebars",
-                "url_pattern": "/<hatrac>/pdb/submitted/user/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/rid/{{{structure_id}}}/starting_model/{{{mmCIF_File_MD5}}}{{{_mmCIF_File_URL.filename_ext}}}"
+                "url_pattern": "/<hatrac>/pdb/submitted/uid/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/rid/{{{structure_id}}}/starting_model/{{{mmCIF_File_MD5}}}{{{_mmCIF_File_URL.filename_ext}}}"
             }
         },
         {
@@ -337,7 +337,7 @@
                 "filename_column": "File_Name",
                 "md5": "File_MD5",
                 "template_engine": "handlebars",
-                "url_pattern": "/<hatrac>/pdb/submitted/user/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/rid/{{{structure_id}}}/related_file/{{{File_MD5}}}{{{_File_URL.filename_ext}}}"
+                "url_pattern": "/<hatrac>/pdb/submitted/uid/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/rid/{{{structure_id}}}/related_file/{{{File_MD5}}}{{{_File_URL.filename_ext}}}"
             }
         },
         {
