@@ -115,6 +115,7 @@ def set_hatrac_namespaces_acl(store, acl, namespaces):
 # -- ---------------------------------------------------------------------
 # set read acl for individual submitters based on RID.
 # This function is needed to address old namespace strategy
+# NOTE: DO NOT SET OWNER. LET SQL SCRIPT DEAL WITH IT
 def set_hatrac_read_per_rid(store, catalog):
     model = catalog.getCatalogModel()
     table = model.schemas["PDB"].tables["entry"]
@@ -133,6 +134,7 @@ def set_hatrac_read_per_rid(store, catalog):
 
 # --------------------------------------------------------------------
 # set hatrac read access based on user folders
+# NOTE: DO NOT SET OWNER. LET SQL SCRIPT DEAL WITH IT
 def set_hatrac_read_per_user(store, parent_namespaces=[]):
     for parent in parent_namespaces:
         parent = adjust_hatrac_namespace(parent)
