@@ -293,7 +293,7 @@
                 "filename_column": "File_Name",
                 "md5": "File_MD5",
                 "template_engine": "handlebars",
-                "url_pattern": "/<hatrac>/pdb/generated/uid/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/id/{{{Entry_RID}}}/validation_error/{{{File_Name}}}"
+                "url_pattern": "/<hatrac>/pdb/generated/uid/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/rid/{{{Entry_RID}}}/validation_error/{{{File_Name}}}"
             }
         },
         {
