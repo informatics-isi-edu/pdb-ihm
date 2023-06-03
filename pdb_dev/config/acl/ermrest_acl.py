@@ -346,7 +346,10 @@ def set_PDB_entry(model):
     
     # -- ACL: entry_creator can read, but only updater can insert
     # -- cnames: Deposit date, Submitter_Flag, Submitter_Flag_Date:
-    for cname in ["Deposit_Date", "Submitter_Flag", "Submitter_Flag_Date"]:
+    cnames = ["Deposit_Date"]
+    if cfg.is_dev:
+        cnames += ["Submitter_Flag", "Submitter_Flag_Date"]
+    for cname in cnames:
         col = table.columns[cname]
         col.acls.update({
             "select": g["entry-creators"],        
@@ -765,7 +768,7 @@ def main(server_name, catalog_id, credentials):
     catalog.dcctx["cid"] = DCCTX["acl"]
     #store = HatracStore("https", server_name, credentials)
 
-    #set_ermrest_acl(catalog)
+    set_ermrest_acl(catalog)
     
 # -- =================================================================================
 # Install the Python package:
@@ -778,6 +781,6 @@ def main(server_name, catalog_id, credentials):
 if __name__ == "__main__":
     args = PDBDEV_CLI(DCCTX["acl"], None, 1).parse_cli()
     credentials = get_credential(args.host, args.credential_file)
-    print("credential: %s" % (credentials))
+    #print("credential: %s" % (credentials))
     main(args.host, args.catalog_id, credentials)
 
