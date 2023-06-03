@@ -1886,7 +1886,7 @@ class PDBClient (object):
                 return (1, stderrdata.decode('utf-8'))
             has_errors = False
             try:
-                hatrac_namespace = '/{}/generated/uid/{}/entry/rid/{}/validation_error'.format(self.hatrac_namespace, user_id, entry_id)
+                hatrac_namespace = '/{}/generated/uid/{}/entry/id/{}/validation_error'.format(self.hatrac_namespace, user_id, entry_id)
                 log_file_name = '{}-diag.log'.format(filename)
                 log_file_path = '{}/{}-diag.log'.format(input_dir, filename)
                 fr = open(log_file_path, 'r')
@@ -1952,7 +1952,7 @@ class PDBClient (object):
             
             
             if has_errors == False:
-                hatrac_namespace = '/{}/generated/uid/{}/entry/rid/{}/final_mmCIF'.format(self.hatrac_namespace, user_id, entry_id)
+                hatrac_namespace = '/{}/generated/uid/{}/entry/id/{}/final_mmCIF'.format(self.hatrac_namespace, user_id, entry_id)
             else:
                 shutil.move('{}/{}'.format(self.scratch, filename), '{}/{}_error.cif'.format(self.scratch, entry_id))
                 filename = '{}_error.cif'.format(entry_id)
@@ -2314,7 +2314,7 @@ class PDBClient (object):
                     fw.write(line)
             fr.close()
             fw.close()
-            hatrac_namespace = '/{}/generated/uid/{}/entry/rid/{}/final_mmCIF'.format(self.hatrac_namespace, user_id, entry_id)
+            hatrac_namespace = '/{}/generated/uid/{}/entry/id/{}/final_mmCIF'.format(self.hatrac_namespace, user_id, entry_id)
             hatrac_URI, file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, file_name, input_dir, rid, user)
             self.updateAttributes('PDB',
                                   'Entry_mmCIF_File',
