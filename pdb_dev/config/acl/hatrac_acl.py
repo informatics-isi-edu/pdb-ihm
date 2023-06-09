@@ -9,6 +9,7 @@ from deriva.core import HatracStore
 import requests.exceptions
 from ...utils import DCCTX, PDBDEV_CLI, cfg
 from .ermrest_acl import GROUPS
+import re
 
 # general policy: submitters can create, curators can read, only owners can update existing namespaces.
 hatrac_curators_read = {
@@ -67,11 +68,13 @@ hatrac_reset_acls = {
 # add /dev prefix to namespace in the development environment. 
 def adjust_hatrac_namespace(namespace):
     if cfg.is_dev:
-        if namespace == "/hatrac/":        
-            namespace = "/hatrac/dev" 
-        elif not namespace.startswith('/hatrac/dev'):
+        if namespace.startswith('/hatrac/dev'):
+            return namespace
+        elif namespace == "/hatrac/":
+            namespace = "/hatrac/dev"
+        else:
             namespace = namespace.replace("/hatrac", "/hatrac/dev", 1)
-            
+        
     return namespace
 
 # ==============================================================================
@@ -108,6 +111,7 @@ def set_hatrac_namespace_acl(store, acl, namespace):
 # -- ---------------------------------------------------------------------
 # set acl for a list of namespaces
 def set_hatrac_namespaces_acl(store, acl, namespaces):
+    print("======= set_hatrac_namespaces: %s =======" % (namespaces))    
     for namespace in namespaces:
         set_hatrac_namespace_acl(store, acl, namespace)
         
@@ -123,6 +127,8 @@ def set_hatrac_read_per_rid(store, catalog):
     count = 0
     resp = catalog.get("/attribute/PDB:entry/RCB,RID,RCT")
     rows = resp.json()
+
+    print("======= set_hatrac_read_per_rid =======")
     
     for row in rows:
         year = row["RCT"].split("-")[0]
@@ -131,6 +137,33 @@ def set_hatrac_read_per_rid(store, catalog):
             "subtree-read": [row["RCB"]]
         }
         set_hatrac_namespace_acl(store, acl, namespace)
+
+# --------------------------------------------------------------------
+# set read acl for individual submitters based on URL in the entry.
+# This function is needed to address old namespace strategy.
+# NOTE: DO NOT SET OWNER. LET SQL SCRIPT DEAL WITH IT
+def set_hatrac_read_legacy_submitted_files(store, catalog):
+    model = catalog.getCatalogModel()
+    table = model.schemas["PDB"].tables["entry"]
+    resp = catalog.get("/attribute/PDB:entry/RCB,RID,RCT,Image_File_URL,mmCIF_File_URL")
+    rows = resp.json()
+    pattern = "/hatrac(/dev)*/pdb/(entry_files|entry_mmCIF|mmCIF|image|entry/submitted)/.*"
+
+    print("======= set_hatrac_read_legacy_submitted_files =======")
+    for row in rows:
+        acl = {
+            "read": [row["RCB"]],
+            "subtree-read": [row["RCB"]]
+        }
+        if row["Image_File_URL"] and re.search(pattern, row["Image_File_URL"]) :
+            image_object = row["Image_File_URL"].split(":")[0]
+            #print("image object: %s" % (image_object))
+            set_hatrac_namespace_acl(store, acl, image_object)
+            
+        if row["mmCIF_File_URL"] and re.search(pattern, row["mmCIF_File_URL"]) :
+            mmcif_object = row["mmCIF_File_URL"].split(":")[0]
+            #print("mmCIF object: %s" % (mmcif_object))            
+            set_hatrac_namespace_acl(store, acl, mmcif_object)
 
 # --------------------------------------------------------------------
 # set hatrac read access based on user folders
@@ -156,6 +189,7 @@ def set_hatrac_read_per_user(store, parent_namespaces=[]):
 # Note: We no longer need to execute this in python script since it will be
 # taken care of in the hourly cron job. 
 def set_hatrac_write_per_user(store, parent_namespaces=[]):
+    print("======= set_hatrac_write_per_user: %s =======" % (parent_namespaces))        
     for parent in parent_namespaces:
         parent = adjust_hatrac_namespace(parent)
         try:
@@ -252,6 +286,7 @@ def set_hatrac_acl(store, catalog):
         set_hatrac_namespaces_acl(store, hatrac_curators_write_submitters_write, ["/hatrac/pdb/entry/submitted"])
         set_hatrac_namespaces_acl(store, hatrac_reset_acls, ["/hatrac/pdb/entry_files", "/hatrac/pdb/entry_mmCIF", "/hatrac/pdb/mmCIF", "/hatrac/pdb/image"])
         set_hatrac_read_per_rid(store, catalog)
+        set_hatrac_read_legacy_submitted_files(store, catalog)
 
     
 # =====================================================================
