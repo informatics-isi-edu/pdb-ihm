@@ -429,7 +429,6 @@
                 "name": "User Provided Image File"
             }
         },
-#if defined(dev)
         {
             "column": "Submitter_Flag_Date",
             "schema": "PDB",
@@ -439,7 +438,6 @@
                 "name": "Last Communicated"
             }
         },
-#endif
         {
             "column": "File_URL",
             "schema": "PDB",
@@ -6429,9 +6427,7 @@
                     "RID",
                     "id",
                     "mmCIF_File_URL",
-#if defined(dev)
                     "Submitter_Flag_Date",
-#endif
                     "Image_File_URL",
                     [
                         "PDB",
@@ -6538,12 +6534,10 @@
                      "markdown_name" : "Release Date",
                      "source" : "Release_Date"
                   },
-#if defined(dev)
                   { 
                      "markdown_name" : "Submitter Flag Date",
                      "source" : "Submitter_Flag_Date"
                   },
-#endif
                   {
                      "markdown_name" : "Workflow Status",
 					  "hide_null_choice": true, 
@@ -6607,10 +6601,8 @@
                     "Accession_Code",
                     "Deposit_Date",
                     "Release_Date",
-#if defined(dev)
                     "Submitter_Flag",
                     "Submitter_Flag_Date",
-#endif
                     "Record_Status_Detail"
                 ],
                 "detailed": [
@@ -6675,10 +6667,8 @@
                     },
                     "Deposit_Date",
                     "Release_Date",
-#if defined(dev)
                     "Submitter_Flag",
                     "Submitter_Flag_Date",
-#endif
                     "Notes",
                     [
                         "PDB",
@@ -6694,10 +6684,8 @@
                     ],
                     "Deposit_Date",
                     "Release_Date",
-#if defined(dev)
                     "Submitter_Flag",
                     "Submitter_Flag_Date",
-#endif
                     "Notes"
                 ],
                 "entry": [
@@ -7162,7 +7150,6 @@
                         ]
                     },
 #endif
-#if defined(dev)
                     {   
                         "markdown_name": "Curation Log",
                         "source": [
@@ -7175,7 +7162,6 @@
                             "RID"
                         ]
                     },
-#endif
                     [
                         "PDB",
                         "audit_conform_structure_id_fkey"
@@ -10049,7 +10035,6 @@
             }
         },
 #endif
-#if defined(dev)
         {
             "schema": "PDB",
             "table": "Curation_Log",
@@ -10204,7 +10189,6 @@
                 ]
             }
         },
-#endif
         {
             "schema": "PDB",
             "table": "ihm_hdx_restraint",
@@ -27496,12 +27480,10 @@
                                             "name": "Accession Code",
                                             "url": "/chaise/recordset/catalog_number/PDB:Accession_Code"
                                         },
-#if defined(dev)
                                         {
                                             "name": "Curation Log",
                                             "url": "/chaise/recordset/catalog_number/PDB:Curation_Log"
                                         },
-#endif
                                         {
                                             "name": "Entry Error File",
                                             "url": "/chaise/recordset/catalog_number/PDB:Entry_Error_File"
