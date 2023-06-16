@@ -178,6 +178,31 @@ class PDBClient (object):
             return None
 
     """
+    Get the user_id 
+    """
+    def getUserId(self, schema, table, rid):
+        try:
+            """
+            Query for detecting the user email
+            """
+            url = '/attribute/{}:{}/RID={}/RCB'.format(urlquote(schema), urlquote(table), urlquote(rid))
+            self.logger.debug('Query user_id URL: "{}"'.format(url)) 
+            
+            resp = self.catalog.get(url)
+            resp.raise_for_status()
+            rows = resp.json()
+            if len(rows) == 1:
+                row = resp.json()[0]
+                return row['RCB'].split('/')[-1]
+            else:
+                return None
+        except:
+            et, ev, tb = sys.exc_info()
+            self.logger.error('got exception "%s"' % str(ev))
+            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+            return None
+
+    """
     Send Linux email notification
     """
     def sendLinuxMail(self, subject, text, receivers):
@@ -386,11 +411,13 @@ class PDBClient (object):
     """
     Export the mmCIF file of the entry table
     """
-    def export_mmCIF(self, schema_pdb, table_entry, rid, release=False):
+    def export_mmCIF(self, schema_pdb, table_entry, rid, release=False, user_id=None):
         """
         Get the RCB user
         """
         user = self.getUser(schema_pdb, table_entry, rid)
+        if user_id == None:
+            user_id = self.getUserId(schema_pdb, table_entry, rid)
         
         if release == True:
             process_status_error = Process_Status_Terms['ERROR_RELEASING_ENTRY']
@@ -716,7 +743,7 @@ class PDBClient (object):
                 self.logger.debug('\t{}'.format(table_name))
                 
         file_name = '{}.cif'.format(entry_id)
-        returncode,error_message = self.validateExportmmCIF(self.scratch, file_name, year, entry_id, rid, user, process_status_error)
+        returncode,error_message = self.validateExportmmCIF(self.scratch, file_name, year, entry_id, rid, user, process_status_error, user_id)
 
         if returncode == 0:
             """
@@ -1836,7 +1863,7 @@ class PDBClient (object):
     """
     Validate the exported mmCIF file
     """
-    def validateExportmmCIF(self, input_dir, filename, year, entry_id, rid, user, process_status_error):
+    def validateExportmmCIF(self, input_dir, filename, year, entry_id, rid, user, process_status_error, user_id):
         try:
             if self.cleanupEntryFileTables(entry_id, rid, user) != 0:
                 self.cleanupDataScratch()
@@ -1859,7 +1886,7 @@ class PDBClient (object):
                 return (1, stderrdata.decode('utf-8'))
             has_errors = False
             try:
-                hatrac_namespace = '/{}/entry/{}/{}/validation_error'.format(self.hatrac_namespace, year, entry_id)
+                hatrac_namespace = '/{}/generated/uid/{}/entry/id/{}/validation_error'.format(self.hatrac_namespace, user_id, entry_id)
                 log_file_name = '{}-diag.log'.format(filename)
                 log_file_path = '{}/{}-diag.log'.format(input_dir, filename)
                 fr = open(log_file_path, 'r')
@@ -1925,7 +1952,7 @@ class PDBClient (object):
             
             
             if has_errors == False:
-                hatrac_namespace = '/{}/entry/{}/{}/final_mmCIF'.format(self.hatrac_namespace, year, entry_id)
+                hatrac_namespace = '/{}/generated/uid/{}/entry/id/{}/final_mmCIF'.format(self.hatrac_namespace, user_id, entry_id)
             else:
                 shutil.move('{}/{}'.format(self.scratch, filename), '{}/{}_error.cif'.format(self.scratch, entry_id))
                 filename = '{}_error.cif'.format(entry_id)
@@ -2165,14 +2192,16 @@ class PDBClient (object):
                                   user)
             return False
 
-    def addReleaseRecords(self, rid, hold=False):
+    def addReleaseRecords(self, rid, hold=False, user_id=None):
         """
         Get the RCB user
         """
         user = self.getUser('PDB', 'entry', rid)
         
+        user_id = self.getUserId('PDB', 'entry', rid)
+
         try:
-            if self.export_mmCIF('PDB', 'entry', rid, release=True) != 0:
+            if self.export_mmCIF('PDB', 'entry', rid, release=True, user_id=user_id) != 0:
                 """
                 We can not recreate the mmCIF exported file
                 """
@@ -2285,7 +2314,7 @@ class PDBClient (object):
                     fw.write(line)
             fr.close()
             fw.close()
-            hatrac_namespace = '/{}/entry/{}/{}/final_mmCIF'.format(self.hatrac_namespace, year, entry_id)
+            hatrac_namespace = '/{}/generated/uid/{}/entry/id/{}/final_mmCIF'.format(self.hatrac_namespace, user_id, entry_id)
             hatrac_URI, file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, file_name, input_dir, rid, user)
             self.updateAttributes('PDB',
                                   'Entry_mmCIF_File',
@@ -2368,7 +2397,7 @@ class PDBClient (object):
                                   'Accession_Code': accession_code
                                   },
                                   user)
-            self.addReleaseRecords(rid, hold=True)
+            self.addReleaseRecords(rid, hold=True, user_id=None)
             self.logger.debug('Ended PDB Processing to set the accession code for the PDB:entry table with RID="{}".'.format(rid)) 
         except:
             et, ev, tb = sys.exc_info()
