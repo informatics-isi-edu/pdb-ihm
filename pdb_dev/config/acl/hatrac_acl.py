@@ -88,7 +88,7 @@ def set_hatrac_namespace_acl(store, acl, namespace):
             
     try :
         if not store.is_valid_namespace(namespace):
-            print("ERROR: %s is not a valid namespace" % (namespace))
+            print("INFO: %s is not a valid namespace" % (namespace))
             return
     except Exception as e:
         #print("EXCEPTION %s: %s " % (namespace, e))
@@ -169,6 +169,7 @@ def set_hatrac_read_legacy_submitted_files(store, catalog):
 # set hatrac read access based on user folders
 # NOTE: DO NOT SET OWNER. LET SQL SCRIPT DEAL WITH IT
 def set_hatrac_read_per_user(store, parent_namespaces=[]):
+    print("======= set_hatrac_read_per_user: %s =======" % (parent_namespaces))        
     for parent in parent_namespaces:
         parent = adjust_hatrac_namespace(parent)
         try:
