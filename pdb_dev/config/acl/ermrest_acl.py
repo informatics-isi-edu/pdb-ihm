@@ -347,8 +347,7 @@ def set_PDB_entry(model):
     # -- ACL: entry_creator can read, but only updater can insert
     # -- cnames: Deposit date, Submitter_Flag, Submitter_Flag_Date:
     cnames = ["Deposit_Date"]
-    if cfg.is_dev:
-        cnames += ["Submitter_Flag", "Submitter_Flag_Date"]
+    cnames += ["Submitter_Flag", "Submitter_Flag_Date"]
     for cname in cnames:
         col = table.columns[cname]
         col.acls.update({
