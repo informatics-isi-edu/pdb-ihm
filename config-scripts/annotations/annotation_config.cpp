@@ -6535,7 +6535,7 @@
                      "source" : "Release_Date"
                   },
                   { 
-                     "markdown_name" : "Submitter Flag Date",
+                     "markdown_name" : "Last Communicated",
                      "source" : "Submitter_Flag_Date"
                   },
                   {
