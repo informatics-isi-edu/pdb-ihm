@@ -2,12 +2,28 @@ import sys
 import json
 from deriva.core import ErmrestCatalog, AttrDict, get_credential, DEFAULT_CREDENTIAL_FILE, tag, urlquote, DerivaServer, get_credential, BaseCLI
 from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key, ForeignKey, DomainType, ArrayType
-#from __builtin__ import False
+
+class ApplicationClient (BaseCLI):
+    def __init__(self, description, epilog, version=None, hostname_required=False, config_file_required=False):
+        if version == None:
+            super(ApplicationClient, self).__init__(description, epilog, hostname_required, config_file_required)
+        else:
+            super(ApplicationClient, self).__init__(description, epilog, version, hostname_required, config_file_required)
+        self.parser.add_argument('--catalog_id', action='store', type=int, required=True, help='The catalog number.')
 
 # ========================================================
 # utility
 
 # set nullok for a column
+def set_default_column_if_exists(model, schema_name, table_name, column_name, default_value):
+    if schema_name in model.schemas.keys():
+        schema = model.schemas[schema_name]
+        if table_name in schema.tables:
+            table = model.schemas[schema_name].tables[table_name]
+            if column_name in table.column_definitions.elements:
+                table.column_definitions[column_name].alter(default=default_value)
+                print('Set default={} in column {}:{}:{}'.format(default_value, schema_name, table_name, column_name))
+
 def set_nullok_column_if_exists(model, schema_name, table_name, column_name, nullok):
     if schema_name in model.schemas.keys():
         schema = model.schemas[schema_name]
@@ -16,6 +32,15 @@ def set_nullok_column_if_exists(model, schema_name, table_name, column_name, nul
             if column_name in table.column_definitions.elements:
                 table.column_definitions[column_name].alter(nullok=nullok)
                 print('Set nullok={} in column {}:{}:{}'.format(nullok, schema_name, table_name, column_name))
+
+# rename a table
+def rename_table_if_exists(model, schema_name, table_name, new_name):
+    if schema_name in model.schemas.keys():
+        schema = model.schemas[schema_name]
+        if table_name in schema.tables:
+            table = model.schemas[schema_name].tables[table_name]
+            table.alter(table_name=new_name)
+            print('Renamed table {}:{} to {}'.format(schema_name, table_name, new_name))
 
 # rename a column
 def rename_column_if_exists(model, schema_name, table_name, old_name, new_name):
@@ -122,7 +147,19 @@ def set_table_comment_if_exist(model, schema_name, table_name, comment):
         if table_name in schema.tables:
             table = schema.tables[table_name]
             table.comment = comment
+            model.apply()
             print('Set comment for table {}:{}'.format(schema_name, table_name))
+
+# set column comment if exist
+def set_column_comment_if_exist(model, schema_name, table_name, column_name, comment):
+    if schema_name in model.schemas.keys():
+        schema = model.schemas[schema_name]
+        if table_name in schema.tables:
+            table = schema.tables[table_name]
+            if column_name in table.column_definitions.elements:
+                table.column_definitions[column_name].comment = comment
+                model.apply()
+                print('Set comment for column {}:{}:{}'.format(schema_name, table_name, column_name))
 
 # ---------------------------------------
 # remove a column if it exists
@@ -133,7 +170,7 @@ def drop_column_if_exist(model, schema_name, table_name, column_name):
 
     try:
         table.columns[column_name].drop()
-        print("Dropped column %s.%s column:%s" % (schema_name, table_name, column_name))        
+        print("Dropped column %s.%s.%s" % (schema_name, table_name, column_name))        
     except KeyError:
         pass
 
@@ -168,6 +205,19 @@ def alter_on_update_fkey_if_exist(model, schema_name, table_name, fkey_name, val
         pass
 
 # ----------------------------------------
+# alter on delete fkey if exist
+# if schema_name and table_name are not in the model, throw an error.
+def alter_on_delete_fkey_if_exist(model, schema_name, table_name, fkey_name, value):
+
+    schema = model.schemas[schema_name]
+    table = schema.tables[table_name]
+    try:
+        table.foreign_keys[(schema, fkey_name)].alter(on_delete=value)
+        print("Altered fkey %s of table %s.%s on_delete=%s" % (fkey_name, schema_name, table_name, value))
+    except KeyError:
+        pass
+
+# ----------------------------------------
 # rename fkey if exist
 # if schema_name and table_name are not in the model, throw an error.
 def rename_fkey_if_exist(model, schema_name, table_name, old_key_name, new_key_name):
@@ -194,14 +244,14 @@ def drop_fkey_if_exist(model, schema_name, table_name, fkey_name):
         pass
 
 # ----------------------------------------
-# drop fkey if exist
+# drop key if exist
 def drop_key_if_exist(model, schema_name, table_name, key_name):
 
     schema = model.schemas[schema_name]
     table = schema.tables[table_name]
     try:
         table.keys[(schema, key_name)].drop()
-        print("Dropped fkey %s.%s key:%s" % (schema_name, table_name, key_name))
+        print("Dropped key %s.%s key:%s" % (schema_name, table_name, key_name))
     except KeyError:
         pass
 
@@ -324,6 +374,16 @@ def add_rows_to_vocab_table(catalog, table_name, rows):
     print('Added rows to the vocabulary table {}'.format(table_name))
 
 """
+get the table acl_bindings
+"""
+def get_table_acl_bindings(catalog, schema_name, table_name):
+    model = catalog.getCatalogModel()
+    schema = model.schemas[schema_name]
+    table = model.schemas[schema_name].tables[table_name]
+    acl_bindings = {'acl_bindings': table.acl_bindings}
+    print('acl_bindings for table {}:{}\n{}'.format(schema_name, table_name, json.dumps(acl_bindings, indent=4)))
+
+"""
 set the table acl_bindings
 """
 def set_table_acl_bindings(catalog, schema_name, table_name, acl_bindings):
@@ -333,6 +393,18 @@ def set_table_acl_bindings(catalog, schema_name, table_name, acl_bindings):
     table.acl_bindings = acl_bindings
     model.apply()
     print('Set acl_bindings for table {}:{}'.format(schema_name, table_name))
+
+"""
+set the column acl_bindings
+"""
+def set_column_acl_bindings(catalog, schema_name, table_name, column_name, acl_bindings):
+    model = catalog.getCatalogModel()
+    schema = model.schemas[schema_name]
+    table = schema.tables[table_name]
+    if column_name in table.column_definitions.elements:
+        table.column_definitions[column_name].acl_bindings = acl_bindings
+        model.apply()
+        print('Set acl_bindings for the column {}:{}:{}'.format(schema_name, table_name, column_name))
 
 """
 set the table acls
@@ -346,6 +418,29 @@ def set_table_acls(catalog, schema_name, table_name, acls):
     print('Set acls for table {}:{}'.format(schema_name, table_name))
 
 """
+get the foreign key acl_bindings
+"""
+def get_foreign_key_acl_bindings(catalog, schema_name, table_name, constraint_name):
+    model = catalog.getCatalogModel()
+    schema = model.schemas[schema_name]
+    table = model.schemas[schema_name].tables[table_name]
+    fk = table.foreign_keys.__getitem__((schema, constraint_name))
+    acl_bindings = {'acl_bindings': fk.acl_bindings}
+    print('acl_bindings for table {}:{}, FK: {}\n{}'.format(schema_name, table_name, constraint_name, json.dumps(acl_bindings, indent=4)))
+
+"""
+set the foreign key acl_bindings
+"""
+def set_foreign_key_acl_bindings(catalog, schema_name, table_name, constraint_name, acl_bindings):
+    model = catalog.getCatalogModel()
+    schema = model.schemas[schema_name]
+    table = model.schemas[schema_name].tables[table_name]
+    fk = table.foreign_keys.__getitem__((schema, constraint_name))
+    fk.acl_bindings = acl_bindings
+    model.apply()
+    print('Set acl_bindings for the foreign key {} of the table {}:{}'.format(constraint_name, schema_name, table_name))
+
+"""
 set the foreign key acls
 """
 def set_foreign_key_acls(catalog, schema_name, table_name, constraint_name, acls):
@@ -356,4 +451,16 @@ def set_foreign_key_acls(catalog, schema_name, table_name, constraint_name, acls
     fk.acls = acls
     model.apply()
     print('Set acls for the foreign key {} of the table {}:{}'.format(constraint_name, schema_name, table_name))
+
+"""
+set the column acls
+"""
+def set_column_acls(catalog, schema_name, table_name, column_name, acls):
+    model = catalog.getCatalogModel()
+    schema = model.schemas[schema_name]
+    table = schema.tables[table_name]
+    if column_name in table.column_definitions.elements:
+        table.column_definitions[column_name].acls = acls
+        model.apply()
+        print('Set acls for the column {}:{}:{}'.format(schema_name, table_name, column_name))
 
