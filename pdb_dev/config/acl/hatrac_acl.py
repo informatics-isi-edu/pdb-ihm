@@ -271,9 +271,9 @@ def set_hatrac_acl(store, catalog):
         create_hatrac_namespaces_if_not_exist(store, ["/hatrac/pdb/entry/submitted", "/hatrac/pdb/user"])  
 
     # -- new policy
-    create_hatrac_namespaces_if_not_exist(store, ["/hatrac/pdb/templates", "/hatrac/pdb/submitted/uid", "/hatrac/pdb/generated/uid"])
+    create_hatrac_namespaces_if_not_exist(store, ["/hatrac/pdb/templates", "/hatrac/pdb/submitted/uid", "/hatrac/pdb/generated/uid", "/hatrac/pdb/public/images"])
     set_hatrac_namespaces_acl(store, hatrac_curators_read, ["/hatrac/"])
-    set_hatrac_namespaces_acl(store, hatrac_curators_write_submitters_read, ["/hatrac/pdb/templates"])
+    set_hatrac_namespaces_acl(store, hatrac_curators_write_submitters_read, ["/hatrac/pdb/templates", "/hatrac/pdb/public/images"])
     set_hatrac_namespaces_acl(store, hatrac_curators_write_submitters_write, ["/hatrac/pdb/submitted/uid", "/hatrac/pdb/user"])
     set_hatrac_namespaces_acl(store, hatrac_curators_write, ["/hatrac/pdb/generated/uid"])
     set_hatrac_read_per_user(store, ["/hatrac/pdb/generated/uid"])
