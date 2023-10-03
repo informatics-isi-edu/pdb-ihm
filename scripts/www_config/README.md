@@ -1,0 +1,1 @@
+This folder contains config file related to all web applications.
