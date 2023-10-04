@@ -1,0 +1,13 @@
+{
+    "audit_conform": ["dict_name", "dict_version"],
+    "citation_author": ["citation_id", "ordinal"],
+    "entity_poly_seq": ["entity_id", "num"],
+    "entity_src_gen": ["entity_id", "pdbx_src_id"],
+    "ihm_dataset_group_link": ["dataset_list_id", "group_id"],
+    "ihm_model_group_link": ["model_id", "group_id"],
+    "ihm_ordered_ensemble": ["process_id", "edge_id"],
+    "ihm_related_datasets": ["dataset_list_id_derived", "dataset_list_id_primary"],
+    "ihm_struct_assembly_class_link": ["assembly_id", "class_id"],
+    "pdbx_entity_poly_na_type": ["entity_id", "type"]
+}
+

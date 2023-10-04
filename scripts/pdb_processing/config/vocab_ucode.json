@@ -1,62 +1,64 @@
 {
-    "ihm_poly_residue_feature_interface_residue_flag": [
-        "NO",
-        "YES"
+    "entity_poly_seq": [
+        "hetero"
     ],
-    "ihm_modeling_protocol_details_ensemble_flag": [
-        "NO",
-        "YES"
+    "ihm_modeling_protocol_details": [
+        "multi_scale_flag",
+        "multi_state_flag",
+        "ordered_flag",
+        "ensemble_flag"
     ],
-    "pseudo_site_flag": [
-        "YES",
-        "NO"
+    "ihm_ensemble_info": [
+        "sub_sample_flag"
     ],
-    "ihm_modeling_protocol_details_multi_state_flag": [
-        "NO",
-        "YES"
+    "ihm_dataset_list": [
+        "database_hosted"
     ],
-    "ihm_probe_list_reactive_probe_flag": [
-        "NO",
-        "YES"
+    "ihm_probe_list": [
+        "reactive_probe_flag"
     ],
-    "ihm_3dem_restraint_map_segment_flag": [
-        "NO",
-        "YES"
+    "ihm_poly_probe_position": [
+        "mutation_flag",
+        "modification_flag"
     ],
-    "ihm_dataset_list_database_hosted": [
-        "NO",
-        "YES"
+    "ihm_poly_probe_conjugate": [
+        "ambiguous_stoichiometry_flag"
     ],
-    "ihm_modeling_protocol_details_ordered_flag": [
-        "NO",
-        "YES"
+    "ihm_cross_link_restraint": [
+        "pseudo_site_flag"
     ],
-    "ihm_2dem_class_average_restraint_image_segment_flag": [
-        "NO",
-        "YES"
+    "ihm_2dem_class_average_restraint": [
+        "image_segment_flag"
     ],
-    "ihm_modeling_protocol_details_multi_scale_flag": [
-        "NO",
-        "YES"
+    "ihm_3dem_restraint": [
+        "map_segment_flag"
     ],
-    "ihm_poly_probe_position_modification_flag": [
-        "NO",
-        "YES"
+    "ihm_sas_restraint": [
+        "profile_segment_flag"
     ],
-    "ihm_poly_probe_position_mutation_flag": [
-        "NO",
-        "YES"
+    "ihm_poly_residue_feature": [
+        "interface_residue_flag"
     ],
-    "sub_sample_flag": [
-        "YES",
-        "NO"
+    "chem_comp": [
+        "mon_nstd_flag",
+        "id"
     ],
-    "ihm_sas_restraint_profile_segment_flag": [
-        "NO",
-        "YES"
+    "chem_comp_atom": [
+        "substruct_code",
+        "pdbx_stereo_config",
+        "pdbx_aromatic_flag",
+        "pdbx_leaving_atom_flag"
     ],
-    "ihm_poly_probe_conjugate_ambiguous_stoichiometry_flag": [
-        "NO",
-        "YES"
+    "entity": [
+        "src_method",
+        "type"
+    ],
+    "entity_poly": [
+        "nstd_chirality",
+        "nstd_linkage",
+        "nstd_monomer"
+    ],
+    "struct_asym": [
+        "pdbx_type"
     ]
 }

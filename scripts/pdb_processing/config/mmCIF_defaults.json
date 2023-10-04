@@ -1,47 +1,50 @@
 {
-    "ihm_starting_model_details": [
-        "starting_model_auth_asym_id"
+    "struct_ref": [
+        "db_code"
     ],
-    "pdbx_protein_info": [
+    "ihm_dataset_related_db_reference": [
+        "accession_code"
+    ],
+    "ihm_external_reference_info": [
+        "reference"
+    ],
+    "ihm_chemical_component_descriptor": [
+        "auth_name"
+    ],
+    "ihm_probe_list": [
+        "probe_name"
+    ],
+    "audit_author": [
         "name"
     ],
     "pdbx_inhibitor_info": [
         "name"
     ],
+    "pdbx_ion_info": [
+        "name"
+    ],
+    "pdbx_protein_info": [
+        "name"
+    ],
+    "chem_comp_atom": [
+        "type_symbol"
+    ],
     "software": [
         "classification",
         "name"
     ],
-    "ihm_dataset_related_db_reference": [
-        "accession_code"
+    "ihm_starting_model_details": [
+        "starting_model_auth_asym_id"
     ],
     "ihm_starting_comparative_models": [
         "starting_model_auth_asym_id",
         "template_auth_asym_id"
     ],
-    "ihm_chemical_component_descriptor": [
-        "auth_name"
-    ],
-    "audit_author": [
-        "name"
-    ],
-    "struct_ref": [
-        "db_code"
-    ],
-    "ihm_probe_list": [
-        "probe_name"
-    ],
-    "ihm_external_reference_info": [
-        "reference"
-    ],
-    "chem_comp_atom": [
-        "type_symbol"
-    ],
     "ihm_starting_model_seq_dif": [
         "db_asym_id",
         "db_comp_id"
     ],
-    "pdbx_ion_info": [
-        "name"
+    "Data_Dictionary": [
+        "Location"
     ]
 }

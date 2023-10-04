@@ -1,9 +1,13 @@
 {
     "0": [
-        "Entry_Related_File",
+        "Data_Dictionary",
+        "Entry_Related_File_Templates",
         "entry"
     ],
     "1": [
+        "Entry_Related_File",
+        "Entry_mmCIF_File",
+        "Supported_Dictionary",
         "atom_type",
         "audit_author",
         "audit_conform",
@@ -11,10 +15,10 @@
         "citation",
         "entity",
         "ihm_chemical_component_descriptor",
+        "ihm_data_transformation",
         "ihm_dataset_group",
         "ihm_dataset_list",
         "ihm_external_reference_info",
-        "ihm_feature_list",
         "ihm_geometric_object_center",
         "ihm_geometric_object_list",
         "ihm_geometric_object_transformation",
@@ -31,6 +35,7 @@
         "struct"
     ],
     "2": [
+        "Conform_Dictionary",
         "chem_comp_atom",
         "citation_author",
         "entity_name_com",
@@ -40,10 +45,9 @@
         "ihm_2dem_class_average_restraint",
         "ihm_dataset_group_link",
         "ihm_dataset_related_db_reference",
-        "ihm_derived_distance_restraint",
         "ihm_external_files",
+        "ihm_feature_list",
         "ihm_geometric_object_axis",
-        "ihm_geometric_object_distance_restraint",
         "ihm_geometric_object_plane",
         "ihm_geometric_object_sphere",
         "ihm_geometric_object_torus",
@@ -51,21 +55,27 @@
         "ihm_multi_state_model_group_link",
         "ihm_ordered_ensemble",
         "ihm_probe_list",
-        "ihm_pseudo_site_feature",
+        "ihm_pseudo_site",
         "ihm_related_datasets",
         "ihm_struct_assembly_class_link",
         "pdbx_entity_nonpoly",
         "pdbx_entity_poly_na_type",
         "software",
-        "struct_asym"
+        "struct_asym",
+        "struct_ref"
     ],
     "3": [
         "entity_poly_seq",
         "ihm_2dem_class_average_fitting",
         "ihm_3dem_restraint",
         "ihm_dataset_external_reference",
+        "ihm_derived_angle_restraint",
+        "ihm_derived_dihedral_restraint",
+        "ihm_derived_distance_restraint",
         "ihm_epr_restraint",
+        "ihm_geometric_object_distance_restraint",
         "ihm_geometric_object_half_torus",
+        "ihm_hdx_restraint",
         "ihm_interface_residue_feature",
         "ihm_ligand_probe",
         "ihm_model_group_link",
@@ -73,7 +83,9 @@
         "ihm_modeling_post_process",
         "ihm_modeling_protocol_details",
         "ihm_non_poly_feature",
-        "ihm_sas_restraint"
+        "ihm_pseudo_site_feature",
+        "ihm_sas_restraint",
+        "struct_ref_seq"
     ],
     "4": [
         "ihm_cross_link_list",
@@ -84,16 +96,19 @@
         "ihm_poly_probe_position",
         "ihm_poly_residue_feature",
         "ihm_predicted_contact_restraint",
-        "ihm_residues_not_modeled"
+        "ihm_residues_not_modeled",
+        "struct_ref_seq_dif"
     ],
     "5": [
         "ihm_cross_link_restraint",
+        "ihm_ensemble_sub_sample",
         "ihm_localization_density_files",
         "ihm_poly_probe_conjugate",
         "ihm_starting_model_details",
         "ihm_struct_assembly_details"
     ],
     "6": [
+        "ihm_cross_link_pseudo_site",
         "ihm_cross_link_result",
         "ihm_cross_link_result_parameters",
         "ihm_model_representation_details",
