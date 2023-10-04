@@ -66,8 +66,7 @@ class SchemaDataPrepValidateTests(unittest.TestCase):
         self.__cfgOb = ConfigUtil(configPath=self.__configPath, defaultSectionName=configName, mockTopPath=self.__mockTopPath)
         self.__mU = MarshalUtil(workPath=self.__cachePath)
 
-        #self.__schP = SchemaProvider(self.__cfgOb, self.__cachePath, useCache=False, rebuildFlag=True)
-        self.__schP = SchemaProvider(self.__cfgOb, self.__cachePath, useCache=True)
+        self.__schP = SchemaProvider(self.__cfgOb, self.__cachePath, useCache=False, rebuildFlag=True)
         self.__rpP = RepositoryProvider(cfgOb=self.__cfgOb, numProc=self.__numProc, fileLimit=self.__fileLimit, cachePath=self.__cachePath)
         #
         self.__birdRepoPath = self.__cfgOb.getPath("BIRD_REPO_PATH", sectionName=configName)
