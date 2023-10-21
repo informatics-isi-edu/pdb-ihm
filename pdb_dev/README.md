@@ -9,7 +9,7 @@ Their sources can be viewed at [backend configuration tools](https://github.com/
 
 The following commands need to executed in order to generate the PDB backend configuration files:
 
-1. Generating the introspection of **`entry`** table from the catalog **`1`**
+1. Generating the introspection of the **`entry`** table from the catalog **`1`**
 ```
     python -m pdb_dev.config.app.get_catalog_model data.pdb-dev.org 1 display PDB:entry > catalog_1_display_entry.json
 ```
@@ -41,24 +41,24 @@ python -m pdb_dev.config.app.get_ermrest_table_defs json-full-db-ihm_dev_full-co
 ```
 The **`ermrest_table_defs.json`** file contains the `ermrest` tables and columns that will be exported in the `system generated mmCIF` file.
 
-6. Generating the columns that has the **`.`** as a default value
+6. Generating the columns that have the **`.`** as a default value
 ```
 python -m pdb_dev.config.app.get_mmcif_defaults data.pdb-dev.org 1 PDB > mmCIF_defaults.json
 ```
 In case those columns don't have a value set by the user, the default value **`.`** will be used.
 
-7. Generating the combo1 columns referring the **`RID`** column
+7. Generating the **`combo1`** columns referring the **`RID`** column
 ```
 python -m pdb_dev.config.app.get_columns_end_with_rid data.pdb-dev.org 1
 ```
 The output is the **`combo1_columns.json`** file.
 
-8. Generating the vocabulary ucode column
+8. Generating the vocabulary **`ucode`** columns
 ```
 python -m pdb_dev.config.app.get_ucode_all data.pdb-dev.org 1
 ```
 The script needs to have the [testGetUcode.py](https://github.com/informatics-isi-edu/protein-database/blob/master/scripts/dictionary-api/testGetUcode.py), 
 [ihm-extension.dic](https://github.com/informatics-isi-edu/protein-database/blob/master/scripts/make-json/py-rcsb_db/CACHE/dictionaries/ihm-extension.dic) and 
 [mmcif_v5.342_ihm_v1.17.dic](https://github.com/informatics-isi-edu/protein-database/blob/master/scripts/make-json/py-rcsb_db/CACHE/dictionaries/mmcif_v5.342_ihm_v1.17.dic) files.
-The output **`vocab_ucode.json`** contains the vocabulary columns whose values will be converted to upper case.
+The output **`vocab_ucode.json`** file contains the vocabulary columns whose values will be converted to upper case.
 
