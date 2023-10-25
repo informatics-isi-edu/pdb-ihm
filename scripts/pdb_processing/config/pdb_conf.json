@@ -11,7 +11,6 @@
     "dictSdb": "/home/pdbihm/pdb/sdb/mmcif_ihm_v1.22.sdb",
     "tables_groups": "/home/pdbihm/pdb/config/www/tables_groups.json",
     "optional_fk_file": "/home/pdbihm/pdb/config/www/optional_fk.json",
-    "pickle": "/home/pdbihm/pdb/config/www/exported_vocab.pickle",
     "export_tables": "/home/pdbihm/pdb/config/www/ermrest_table_defs.json",
     "cif_tables": "/home/pdbihm/pdb/config/www/mmcif_tables_input2output.json",
     "export_order_by": "/home/pdbihm/pdb/config/www/order_by.json",

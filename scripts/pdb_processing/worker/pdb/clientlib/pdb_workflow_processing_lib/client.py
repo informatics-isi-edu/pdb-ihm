@@ -34,7 +34,6 @@ from datetime import datetime
 from dateutil.parser import parse
 from socket import gaierror, EAI_AGAIN
 from requests import HTTPError
-import pickle
 import csv
 import filecmp
 import mimetypes
@@ -117,7 +116,6 @@ class PDBClient (object):
         self.mmCIF_Schema_Version = kwargs.get("mmCIF_Schema_Version")
         self.py_rcsb_db = kwargs.get("py_rcsb_db")
         self.python_bin = kwargs.get("python_bin")
-        self.pickle_file = kwargs.get("pickle_file")
         self.tables_groups = kwargs.get("tables_groups")
         self.export_tables = kwargs.get("export_tables")
         self.optional_fk_file = kwargs.get("optional_fk_file")

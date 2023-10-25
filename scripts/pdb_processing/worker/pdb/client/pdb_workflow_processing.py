@@ -100,11 +100,6 @@ def load(config_filename):
         logger.error('python3 executable must be provided and exist.')
         return None
 
-    pickle_file = cfg.get('pickle', None)
-    if not pickle_file or not os.path.isfile(pickle_file):
-        logger.error('pickle_file file must be provided and exist.')
-        return None
-
     tables_groups = cfg.get('tables_groups', None)
     if not tables_groups or not os.path.isfile(tables_groups):
         logger.error('tables_groups file must be provided and exist.')
@@ -189,7 +184,6 @@ def load(config_filename):
                                scratch=scratch, \
                                py_rcsb_db=py_rcsb_db, \
                                python_bin=python_bin, \
-                               pickle_file=pickle_file, \
                                tables_groups=tables_groups, \
                                optional_fk_file=optional_fk_file, \
                                export_tables=export_tables, \
