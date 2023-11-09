@@ -168,10 +168,13 @@ def load(config_filename):
     else:
         hatrac_namespace = 'hatrac/{}/pdb'.format(hatrac_namespace)
     
-    mail_server = cfg.get('mail_server', None)
-    mail_sender = cfg.get('mail_sender', None)
-    mail_receiver = cfg.get('mail_receiver', None)
-    mail_curators = cfg.get('mail_curators', None)
+    email_file = cfg.get('mail', None)
+    if not email_file or not os.path.isfile(email_file):
+        logger.error('email file must be provided and exist.')
+        return None
+    
+    with open(email_file, 'r') as f:
+        email = json.load(f)
 
     # Establish Ermrest client connection
     try:
@@ -194,10 +197,7 @@ def load(config_filename):
                                CifCheck=CifCheck, \
                                hatrac_namespace=hatrac_namespace, \
                                entry=entry, \
-                               mail_server=mail_server, \
-                               mail_sender=mail_sender, \
-                               mail_receiver=mail_receiver,
-                               mail_curators=mail_curators,
+                               email=email, \
                                logger=logger)
     except:
         et, ev, tb = sys.exc_info()
