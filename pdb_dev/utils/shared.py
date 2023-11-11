@@ -17,9 +17,11 @@ DCCTX = {
     "pipelines" : {
         "pdbdev" :  "pipeline/pdbdev",
     },
-    "tools" : {
-        "clear_entry": "tool/clr_ent",
-    },
+    "pipeline": "pipeline",
+    "pipeline/pdbdev": "pipeline/pdbdev",
+    "cli": "cli",
+    "cli/clear_entry" : "cli/clr_ent",
+    "cli/history": "cli/history",
 }
 
 class Config():
@@ -55,15 +57,15 @@ cfg = Config()
 # -- add catalog_id as an optional argument with default for SMITE
 # -- set default host to be SMITE dev server
 class PDBDEV_CLI(BaseCLI):
-    def __init__(self, description, epilog, version=None, hostname_required=False, config_file_required=False, catalog_id_required=True, rid_required=False):
+    def __init__(self, description, epilog, version=None, hostname_required=False, config_file_required=False, catalog_id_required=False, rid_required=False):
         if version:
             super().__init__(description, epilog, version, False, config_file_required)            
         else:
             super().__init__(description, epilog, False, config_file_required)
             
         self.remove_options(['--host', '--config-file'])
-        self.parser.add_argument('--host', metavar='<host>', help="Fully qualified hostname (default=dev.pdb-dev.org)", default="dev.pdb-dev.org", required=catalog_id_required)
-        self.parser.add_argument('--catalog-id', metavar='<id>', help="Deriva catalog ID (default=99)", default=1, required=catalog_id_required)
+        self.parser.add_argument('--host', metavar='<host>', help="Fully qualified hostname (default=dev.pdb-dev.org)", default="dev.pdb-dev.org", required=hostname_required)
+        self.parser.add_argument('--catalog-id', metavar='<id>', help="Deriva catalog ID (default=99)", default="99", required=catalog_id_required)
         self.parser.add_argument('--rid', type=str, metavar='<RID>', action='store', help='The RID of the record.', required=rid_required, )
         #self.parser.set_defaults(host='dev.pdb-dev.org')
         
