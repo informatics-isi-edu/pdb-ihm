@@ -65,3 +65,8 @@ rsync -arv -e "ssh -i ${IDENTITY_FILE}" ${FROM_MAKE_MMCIF} ${REMOTE_USER}@${REMO
 echo "$(date) : Home backup ended." >> ${BACKUP_LOG_FILE}
 
 echo "" >> ${BACKUP_LOG_FILE}
+
+if [ -s ${ERROR_LOG_FILE} ] ;
+then
+	python3 -m pdb_dev.tools.send_email_notification --config /home/secrets/pdbihm/mail.json -b ${ERROR_LOG_FILE}
+fi
