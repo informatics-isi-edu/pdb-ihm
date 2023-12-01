@@ -5,6 +5,11 @@
     "ihm_gaussian_obj_site",
     "ihm_gaussian_obj_ensemble",
     "pdbx_poly_seq_scheme",
-    "pdbx_nonpoly_scheme"
+    "pdbx_nonpoly_scheme",
+    "pdbx_entity_branch_list",
+    "pdbx_entity_branch",
+    "pdbx_branch_scheme",
+    "pdbx_entity_branch_descriptor",
+    "pdbx_entity_branch_link"
 ]
 
