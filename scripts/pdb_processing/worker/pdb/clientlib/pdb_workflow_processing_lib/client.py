@@ -1961,6 +1961,7 @@ class PDBClient (object):
                        'File_Bytes': file_size,
                        'File_MD5': hexa_md5,
                        'Structure_Id': entry_id,
+                       'File_Type': 'mmCIF',
                        'mmCIF_Schema_Version': urlquote(self.mmCIF_Schema_Version)
                        }
                 if self.createEntity('PDB:Entry_Generated_File', row, rid, user) == None:
