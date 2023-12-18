@@ -747,22 +747,22 @@ class PDBClient (object):
             """
             
             """
-            Get the RID of Entry_mmCIF_File
+            Get the RID of Entry_Generated_File
             """
-            url = '/attribute/PDB:Entry_mmCIF_File/Structure_Id={}/RID'.format(urlquote(entry_id))
+            url = '/attribute/PDB:Entry_Generated_File/Structure_Id={}/RID'.format(urlquote(entry_id))
             self.logger.debug('Query URL: "%s"' % url) 
             resp = self.catalog.get(url)
             resp.raise_for_status()
             mmCIF_rows = resp.json()
             if len(mmCIF_rows) != 1:
-                self.logger.debug('Entry_mmCIF_File is not unique')
+                self.logger.debug('Entry_Generated_File is not unique')
                 self.updateAttributes(schema_pdb,
                                       table_entry,
                                       rid,
                                       ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                       {'RID': rid,
                                       'Process_Status': process_status_error,
-                                      'Record_Status_Detail': 'Entry_mmCIF_File is not unique',
+                                      'Record_Status_Detail': 'Entry_Generated_File is not unique',
                                       'Workflow_Status': 'ERROR'
                                       },
                                       user)
@@ -1824,7 +1824,7 @@ class PDBClient (object):
     """
     def cleanupEntryFileTables(self, entry_id, rid, user):
         try:
-            url = '/entity/PDB:Entry_mmCIF_File/Structure_Id={}/mmCIF_Schema_Version={}'.format(urlquote(entry_id), urlquote(self.mmCIF_Schema_Version))
+            url = '/entity/PDB:Entry_Generated_File/Structure_Id={}/mmCIF_Schema_Version={}'.format(urlquote(entry_id), urlquote(self.mmCIF_Schema_Version))
             self.logger.debug('Query URL: "%s"' % url) 
             
             resp = self.catalog.get(url)
@@ -1897,7 +1897,7 @@ class PDBClient (object):
                        'File_Name': file_name,
                        'File_Bytes': file_size,
                        'File_MD5': hexa_md5,
-                       'File_Type': 'validation_diag_log',
+                       'File_Type': 'Log: CifCheck diagnostic error file',
                        'Entry_RID': rid,
                        }
                 if self.createEntity('PDB:Entry_Error_File', row, rid, user) == None:
@@ -1927,7 +1927,7 @@ class PDBClient (object):
                        'File_Name': file_name,
                        'File_Bytes': file_size,
                        'File_MD5': hexa_md5,
-                       'File_Type': 'validation_parser_log',
+                       'File_Type': 'Log: CifCheck parser error file',
                        'Entry_RID': rid,
                        }
                 if self.createEntity('PDB:Entry_Error_File', row, rid, user) == None:
@@ -1955,7 +1955,7 @@ class PDBClient (object):
 
             hatrac_URI, file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, filename, input_dir, rid, user)
             if has_errors == False:
-                self.logger.debug('Insert a row in the Entry_mmCIF_File table')
+                self.logger.debug('Insert a row in the Entry_Generated_File table')
                 row = {'File_URL' : hatrac_URI,
                        'File_Name': file_name,
                        'File_Bytes': file_size,
@@ -1963,19 +1963,19 @@ class PDBClient (object):
                        'Structure_Id': entry_id,
                        'mmCIF_Schema_Version': urlquote(self.mmCIF_Schema_Version)
                        }
-                if self.createEntity('PDB:Entry_mmCIF_File', row, rid, user) == None:
+                if self.createEntity('PDB:Entry_Generated_File', row, rid, user) == None:
                     self.updateAttributes('PDB',
                                           'entry',
                                           rid,
                                           ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                           {'RID': rid,
                                           'Process_Status': process_status_error,
-                                          'Record_Status_Detail': 'Error in createEntity(Entry_mmCIF_File)',
+                                          'Record_Status_Detail': 'Error in createEntity(Entry_Generated_File)',
                                           'Workflow_Status': 'ERROR'
                                           },
                                           user)
                     self.cleanupDataScratch()
-                    return (1, 'Error in createEntity(Entry_mmCIF_File)')
+                    return (1, 'Error in createEntity(Entry_Generated_File)')
                 self.cleanupDataScratch()
                 return (0, None)
             else:
@@ -2206,7 +2206,7 @@ class PDBClient (object):
             """
             Query for detecting the mmCIF file
             """
-            url = '/entity/PDB:entry/RID={}/PDB:Entry_mmCIF_File'.format(urlquote(rid))
+            url = '/entity/PDB:entry/RID={}/PDB:Entry_Generated_File'.format(urlquote(rid))
             self.logger.debug('Query URL: "%s"' % url) 
             
             resp = self.catalog.get(url)
@@ -2313,7 +2313,7 @@ class PDBClient (object):
             hatrac_namespace = '/{}/generated/uid/{}/entry/id/{}/final_mmCIF'.format(self.hatrac_namespace, user_id, entry_id)
             hatrac_URI, file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, file_name, input_dir, rid, user)
             self.updateAttributes('PDB',
-                                  'Entry_mmCIF_File',
+                                  'Entry_Generated_File',
                                   mmCIF_File_rid,
                                   ["File_URL", "File_Name", "File_MD5", "File_Bytes"],
                                   {'RID': mmCIF_File_rid,
