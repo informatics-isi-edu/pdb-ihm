@@ -253,7 +253,7 @@
         {
             "column": "File_URL",
             "schema": "PDB",
-            "table": "Entry_mmCIF_File",
+            "table": "Entry_Generated_File",
             "uri": "tag:isrd.isi.edu,2017:asset",
             "value": {
                 "byte_count_column": "File_Bytes",
@@ -267,7 +267,7 @@
         {
             "column": "File_URL",
             "schema": "PDB",
-            "table": "Entry_mmCIF_File",
+            "table": "Entry_Generated_File",
             "uri": "tag:isrd.isi.edu,2016:column-display",
             "value": {
                 "*": {
@@ -279,7 +279,7 @@
         {
             "column": "File_URL",
             "schema": "PDB",
-            "table": "Entry_mmCIF_File",
+            "table": "Entry_Generated_File",
             "uri": "tag:isrd.isi.edu,2018:required",
             "value": {}
         },
@@ -441,10 +441,10 @@
         {
             "column": "File_URL",
             "schema": "PDB",
-            "table": "Entry_mmCIF_File",
+            "table": "Entry_Generated_File",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "System Generated mmCIF File"
+                "name": "System Generated File"
             }
         },
         {
@@ -6215,7 +6215,7 @@
 			          {
 			            "inbound": [
 			              "PDB",
-			              "Entry_mmCIF_File_Structure_Id_fkey"
+			              "Entry_Generated_File_Structure_Id_fkey"
 			            ]
 			          },
 			          "RID"
@@ -6454,11 +6454,11 @@
 #if 1
                     {
                         "source" : [
-                            { "inbound" : ["PDB", "Entry_mmCIF_File_Structure_Id_fkey" ] },
+                            { "inbound" : ["PDB", "Entry_Generated_File_Structure_Id_fkey" ] },
                             "RID"
                         ],
                         "entity": true,
-                        "markdown_name": "System Generated mmCIF File",
+                        "markdown_name": "System Generated Files",
                         "aggregate": "array_d",
                         "display": {
                           "markdown_pattern": "{{#each $self}}- {{{this.rowName}}} \n{{/each}}",
@@ -6730,11 +6730,11 @@
 									    "source": 
 									    {
 									      "api": "attribute",
-									      "path": "PDB:Entry_mmCIF_File/url:=File_URL"
+									      "path": "PDB:Entry_Generated_File/url:=File_URL"
 									    },
 									    "destination": 
 									    {
-									      "name": "Entry_mmCIF_File",
+									      "name": "Entry_Generated_File",
 									      "type": "download"
 									    }
 									  }
@@ -6753,7 +6753,7 @@
                 "detailed": [
                     [
                         "PDB",
-                        "Entry_mmCIF_File_Structure_Id_fkey"
+                        "Entry_Generated_File_Structure_Id_fkey"
                     ],
                     [
                         "PDB",
@@ -19245,10 +19245,10 @@
         },
         {
             "schema": "PDB",
-            "table": "Entry_mmCIF_File",
+            "table": "Entry_Generated_File",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "System Generated mmCIF File",
+                "name": "System Generated Files",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -19259,7 +19259,7 @@
 #if 1
         {     
             "schema": "PDB",
-            "table": "Entry_mmCIF_File",
+            "table": "Entry_Generated_File",
             "uri": "tag:isrd.isi.edu,2016:table-display",
             "value": {
                 "row_name": {
@@ -19270,15 +19270,19 @@
 #endif
         {
             "schema": "PDB",
-            "table": "Entry_mmCIF_File",
+            "table": "Entry_Generated_File",
             "uri": "tag:isrd.isi.edu,2016:visible-columns",
             "value": {
                 "*": [
                     "RID",
                     "File_URL",
+                    [     
+                        "PDB",
+                        "Entry_Generated_File_System_Generated_File_Type_fkey"
+                    ],
                     {
                     	"source" : [
-                    		{ "inbound" : ["PDB", "Conform_Dictionary_Entry_mmCIF_File_fkey" ] },
+                    		{ "inbound" : ["PDB", "Conform_Dictionary_Entry_Generated_File_fkey" ] },
                     		{ "outbound" : ["PDB", "Conform_Dictionary_Data_Dictionary_fkey" ] },
                     		"RID"
                     	],
@@ -19294,15 +19298,19 @@
                     },
                     [
                         "PDB",
-                        "Entry_mmCIF_File_Structure_Id_fkey"
+                        "Entry_Generated_File_Structure_Id_fkey"
                     ]
                 ],
                 "detailed": [
                     "RID",
                     "File_URL",
+                    [
+                        "PDB",
+                        "Entry_Generated_File_System_Generated_File_Type_fkey"
+                    ],
                     {
                     	"source" : [
-                    		{ "inbound" : ["PDB", "Conform_Dictionary_Entry_mmCIF_File_fkey" ] },
+                    		{ "inbound" : ["PDB", "Conform_Dictionary_Entry_Generated_File_fkey" ] },
                     		{ "outbound" : ["PDB", "Conform_Dictionary_Data_Dictionary_fkey" ] },
                     		"RID"
                     	],
@@ -19319,13 +19327,17 @@
                     },
                     [
                         "PDB",
-                        "Entry_mmCIF_File_Structure_Id_fkey"
+                        "Entry_Generated_File_Structure_Id_fkey"
                     ],
                     "File_Bytes",
                     "File_MD5"
                 ],
                 "entry/edit": [
-                    "File_URL"
+                    "File_URL",
+                    [
+                        "PDB",
+                        "Entry_Generated_File_System_Generated_File_Type_fkey"
+                    ]
                 ],
                 "entry": [
                 ]
@@ -19369,7 +19381,7 @@
                     "File_URL",
                     [
                         "PDB",
-                        "Entry_Error_File_File_Type_fkey"
+                        "Entry_Error_File_System_Generated_File_Type_fkey"
                     ]
                 ],
                 "detailed": [
@@ -19384,7 +19396,7 @@
                     "File_URL",
                     [
                         "PDB",
-                        "Entry_Error_File_File_Type_fkey"
+                        "Entry_Error_File_System_Generated_File_Type_fkey"
                     ]
                 ],
                 "entry": [
@@ -19395,7 +19407,7 @@
                     ],
                     [
                         "PDB",
-                        "Entry_Error_File_File_Type_fkey"
+                        "Entry_Error_File_System_Generated_File_Type_fkey"
                     ]
                 ]
             }
@@ -25746,7 +25758,7 @@
         },
         {
             "schema": "Vocab",
-            "table": "Validation_File_Type",
+            "table": "System_Generated_File_Type",
             "uri": "tag:isrd.isi.edu,2016:visible-columns",
             "value": {
                 "*": [
@@ -25761,7 +25773,7 @@
                         {
                            "outbound" : [
                               "Vocab",
-                              "Validation_File_Type_RCB_fkey"
+                              "System_Generated_File_Type_RCB_fkey"
                            ]
                         },
                         "Full_Name"
@@ -25773,7 +25785,7 @@
                         {
                            "outbound" : [
                               "Vocab",
-                              "Validation_File_Type_RMB_fkey"
+                              "System_Generated_File_Type_RMB_fkey"
                            ]
                         },
                         "Full_Name"
@@ -25783,7 +25795,7 @@
                     "RMT",
                     [
                         "Vocab",
-                        "Validation_File_Type_Owner_fkey"
+                        "System_Generated_File_Type_Owner_fkey"
                     ]
                 ]
             }
@@ -27489,8 +27501,8 @@
                                             "url": "/chaise/recordset/catalog_number/PDB:Entry_Error_File"
                                         },
                                         {
-                                            "name": "Entry mmCIF File",
-                                            "url": "/chaise/recordset/catalog_number/PDB:Entry_mmCIF_File"
+                                            "name": "Entry Generated File",
+                                            "url": "/chaise/recordset/catalog_number/PDB:Entry_Generated_File"
                                         },
                                         {
                                             "name": "Entry Related File",
@@ -27981,8 +27993,8 @@
                                             "url": "/chaise/recordset/catalog_number/Vocab:Process_Status"
                                         },
                                         {
-                                            "name": "Validation File Type",
-                                            "url": "/chaise/recordset/catalog_number/Vocab:Validation_File_Type"
+                                            "name": "System Generated File Type",
+                                            "url": "/chaise/recordset/catalog_number/Vocab:System_Generated_File_Type"
                                         },
                                         {
                                             "name": "Workflow Status",
