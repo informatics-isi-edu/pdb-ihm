@@ -1616,8 +1616,10 @@ class PDBClient (object):
                 fk_other_column_name = fk['fk_other_column_name']
                 ref_table = fk['ref_table']
                 ref_other_column_name = fk['ref_other_column_name']
+                """
                 if fk_RID_column_name not in row.keys():
                     continue
+                """
                 if fk_other_column_name not in row.keys():
                     continue
                 fk_other_value = row[fk_other_column_name]
