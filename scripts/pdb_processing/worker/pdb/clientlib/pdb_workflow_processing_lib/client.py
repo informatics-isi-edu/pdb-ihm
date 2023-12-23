@@ -147,6 +147,15 @@ class PDBClient (object):
         self.logger.debug('Client initialized.')
 
     """
+    Trace into the /home/pdbihm/pdb/log/dev/trace.log file 
+    """
+    def trace(self, condition, message):
+        if condition==True:
+            fa = open('/home/pdbihm/pdb/log/dev/trace.log', 'a')
+            fa.write(message)
+            fa.write('\n')
+            fa.close()
+    """
     Get the user email or full name
     """
     def getUser(self, schema, table, rid):
