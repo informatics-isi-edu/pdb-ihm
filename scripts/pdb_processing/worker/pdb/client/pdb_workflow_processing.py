@@ -95,6 +95,11 @@ def load(config_filename):
         logger.error('scratch directory must be provided and exist.')
         return None
     
+    validation_dir = cfg.get('validation_dir', None)
+    if not validation_dir or not os.path.isdir(validation_dir):
+        logger.error('validation_dir directory must be provided and exist.')
+        return None
+    
     python_bin = cfg.get('python3', None)
     if not python_bin or not os.path.isfile(python_bin):
         logger.error('python3 executable must be provided and exist.')
@@ -185,6 +190,7 @@ def load(config_filename):
                                mmCIF_defaults=mmCIF_defaults, \
                                vocab_ucode=vocab_ucode, \
                                scratch=scratch, \
+                               validation_dir=validation_dir, \
                                py_rcsb_db=py_rcsb_db, \
                                python_bin=python_bin, \
                                tables_groups=tables_groups, \

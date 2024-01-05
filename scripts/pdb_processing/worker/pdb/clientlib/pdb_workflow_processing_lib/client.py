@@ -34,6 +34,7 @@ from datetime import datetime
 from dateutil.parser import parse
 from socket import gaierror, EAI_AGAIN
 from requests import HTTPError
+from subprocess import TimeoutExpired
 import csv
 import filecmp
 import mimetypes
@@ -128,6 +129,7 @@ class PDBClient (object):
         self.entry = kwargs.get("entry")
         self.hatrac_namespace = kwargs.get("hatrac_namespace")
         self.credentials = kwargs.get("credentials")
+        self.validation_dir = kwargs.get("validation_dir")
         self.store = HatracStore(
             self.scheme, 
             self.host,
@@ -144,6 +146,15 @@ class PDBClient (object):
         self.logger = kwargs.get("logger")
         self.logger.debug('Client initialized.')
 
+    """
+    Trace into the /home/pdbihm/pdb/log/dev/trace.log file 
+    """
+    def trace(self, condition, message):
+        if condition==True:
+            fa = open('/home/pdbihm/pdb/log/dev/trace.log', 'a')
+            fa.write(message)
+            fa.write('\n')
+            fa.close()
     """
     Get the user email or full name
     """
@@ -747,22 +758,22 @@ class PDBClient (object):
             """
             
             """
-            Get the RID of Entry_mmCIF_File
+            Get the RID of Entry_Generated_File
             """
-            url = '/attribute/PDB:Entry_mmCIF_File/Structure_Id={}/RID'.format(urlquote(entry_id))
+            url = '/attribute/PDB:Entry_Generated_File/Structure_Id={}&File_Type=mmCIF/RID'.format(urlquote(entry_id))
             self.logger.debug('Query URL: "%s"' % url) 
             resp = self.catalog.get(url)
             resp.raise_for_status()
             mmCIF_rows = resp.json()
             if len(mmCIF_rows) != 1:
-                self.logger.debug('Entry_mmCIF_File is not unique')
+                self.logger.debug('Entry_Generated_File is not unique')
                 self.updateAttributes(schema_pdb,
                                       table_entry,
                                       rid,
                                       ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                       {'RID': rid,
                                       'Process_Status': process_status_error,
-                                      'Record_Status_Detail': 'Entry_mmCIF_File is not unique',
+                                      'Record_Status_Detail': 'Entry_Generated_File is not unique',
                                       'Workflow_Status': 'ERROR'
                                       },
                                       user)
@@ -1614,8 +1625,10 @@ class PDBClient (object):
                 fk_other_column_name = fk['fk_other_column_name']
                 ref_table = fk['ref_table']
                 ref_other_column_name = fk['ref_other_column_name']
-                if ref_other_column_name not in row.keys():
+                """
+                if fk_RID_column_name not in row.keys():
                     continue
+                """
                 if fk_other_column_name not in row.keys():
                     continue
                 fk_other_value = row[fk_other_column_name]
@@ -1824,7 +1837,7 @@ class PDBClient (object):
     """
     def cleanupEntryFileTables(self, entry_id, rid, user):
         try:
-            url = '/entity/PDB:Entry_mmCIF_File/Structure_Id={}/mmCIF_Schema_Version={}'.format(urlquote(entry_id), urlquote(self.mmCIF_Schema_Version))
+            url = '/entity/PDB:Entry_Generated_File/Structure_Id={}/mmCIF_Schema_Version={}'.format(urlquote(entry_id), urlquote(self.mmCIF_Schema_Version))
             self.logger.debug('Query URL: "%s"' % url) 
             
             resp = self.catalog.get(url)
@@ -1897,7 +1910,7 @@ class PDBClient (object):
                        'File_Name': file_name,
                        'File_Bytes': file_size,
                        'File_MD5': hexa_md5,
-                       'File_Type': 'validation_diag_log',
+                       'File_Type': 'Log: CifCheck diagnostic error file',
                        'Entry_RID': rid,
                        }
                 if self.createEntity('PDB:Entry_Error_File', row, rid, user) == None:
@@ -1927,7 +1940,7 @@ class PDBClient (object):
                        'File_Name': file_name,
                        'File_Bytes': file_size,
                        'File_MD5': hexa_md5,
-                       'File_Type': 'validation_parser_log',
+                       'File_Type': 'Log: CifCheck parser error file',
                        'Entry_RID': rid,
                        }
                 if self.createEntity('PDB:Entry_Error_File', row, rid, user) == None:
@@ -1955,27 +1968,28 @@ class PDBClient (object):
 
             hatrac_URI, file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, filename, input_dir, rid, user)
             if has_errors == False:
-                self.logger.debug('Insert a row in the Entry_mmCIF_File table')
+                self.logger.debug('Insert a row in the Entry_Generated_File table')
                 row = {'File_URL' : hatrac_URI,
                        'File_Name': file_name,
                        'File_Bytes': file_size,
                        'File_MD5': hexa_md5,
                        'Structure_Id': entry_id,
+                       'File_Type': 'mmCIF',
                        'mmCIF_Schema_Version': urlquote(self.mmCIF_Schema_Version)
                        }
-                if self.createEntity('PDB:Entry_mmCIF_File', row, rid, user) == None:
+                if self.createEntity('PDB:Entry_Generated_File', row, rid, user) == None:
                     self.updateAttributes('PDB',
                                           'entry',
                                           rid,
                                           ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                           {'RID': rid,
                                           'Process_Status': process_status_error,
-                                          'Record_Status_Detail': 'Error in createEntity(Entry_mmCIF_File)',
+                                          'Record_Status_Detail': 'Error in createEntity(Entry_Generated_File)',
                                           'Workflow_Status': 'ERROR'
                                           },
                                           user)
                     self.cleanupDataScratch()
-                    return (1, 'Error in createEntity(Entry_mmCIF_File)')
+                    return (1, 'Error in createEntity(Entry_Generated_File)')
                 self.cleanupDataScratch()
                 return (0, None)
             else:
@@ -2034,6 +2048,19 @@ class PDBClient (object):
                 os.remove(file_path)
             elif os.path.isdir(file_path):
                 self.logger.debug('Removing directory "{}"\n'.format(file_path))
+                shutil.rmtree(file_path)
+        
+    """
+    Cleanup the singularity directory.
+    """
+    def cleanupSingularityDir(self, dir_path):
+        for file_name in os.listdir(dir_path):
+            file_path = f'{dir_path}/{file_name}'
+            if os.path.isfile(file_path):
+                self.logger.debug(f'Removing file "{file_path}"\n')
+                os.remove(file_path)
+            elif os.path.isdir(file_path):
+                self.logger.debug(f'Removing directory "{file_path}"\n')
                 shutil.rmtree(file_path)
         
     """
@@ -2188,6 +2215,111 @@ class PDBClient (object):
                                   user)
             return False
 
+    """
+    Execute scientific validation.
+    """
+    def scientific_validation(self, rid, entry_id, user, user_id):
+        if True:
+            return(None, None, None)
+        try:
+            """
+            Get the System Generated mmCIF File
+            """
+            url = f'/entity/PDB:entry/RID={rid}/PDB:Entry_Generated_File/File_Type=mmCIF'
+            self.logger.debug(f'Query URL: {url}') 
+            resp = self.catalog.get(url)
+            resp.raise_for_status()
+            row = resp.json()[0]
+            filename = row['File_Name']
+            file_url = row['File_URL']
+            file_path,error_message = self.getHatracFile(filename, file_url, self.scratch, rid, user)
+            if file_path == None:
+                self.logger.error(f'Can not get the mmCIF Entry_Generated_File RID={row["File_Name"]} for entry RID={rid}')
+                subject = f'PDB-Dev {rid} Scientific Validation Error ({user})'
+                self.sendMail(subject, f'Can not get the mmCIF Entry_Generated_File RID={row["File_Name"]} for entry RID={rid}')
+                return(None, None, None)
+    
+            self.cleanupSingularityDir(f'{self.validation_dir}/input')
+            self.cleanupSingularityDir(f'{self.validation_dir}/output')
+            shutil.copy2(file_path, f'{self.validation_dir}/input')
+            
+            filename = os.path.basename(file_path)
+            currentDirectory=os.getcwd()
+            os.chdir(f'{self.validation_dir}')
+            args = ['singularity', 'exec', 
+                    '--bind', 'IHMValidation_2.0_20231130/:/opt/IHMValidation,output:/ihmv/output,cache:/ihmv/cache,input:/ihmv/input', 
+                    'ihmv_20231130.sif', 
+                    '/opt/IHMValidation/ihm_validation/ihm_validator.py',
+                    '-f', f'/ihmv/input/{filename}', 
+                    '--force',
+                    '--output-root', '/ihmv/output', 
+                    '--cache-root', '/ihmv/cache'
+                    ]
+            self.logger.debug(f'Running "{" ".join(args)}" from the {self.validation_dir} directory') 
+            p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            try:
+                stdoutdata, stderrdata = p.communicate(timeout=15*60)
+                returncode = p.returncode
+                os.chdir(currentDirectory)
+                if returncode != 0:
+                   self.logger.debug(f'ERROR.\nstdoutdata: {stdoutdata}\nstderrdata: {stderrdata}\n') 
+                   return(None, None, None)
+                self.logger.debug('SUCCESS in executing the scientific validation')
+                output_files = []
+                filename, _ext = os.path.splitext(os.path.basename(file_path))
+                output_path = f'{self.validation_dir}/output/{filename}'
+                hatrac_namespace = f'/{self.hatrac_namespace}/generated/uid/{user_id}/entry/id/{entry_id}/validation_report/'
+                for file_name in os.listdir(output_path):
+                    if file_name.endswith('_full_validation.pdf'):
+                        file_type = 'Validation: Full PDF'
+                    elif file_name.endswith('_summary_validation.pdf'):
+                        file_type = 'Validation: Summary PDF'
+                    elif file_name.endswith('_html.tar.gz'):
+                        file_type = 'Validation: HTML tar.gz'
+                    else:
+                        self.logger.debug(f'Unknown file type got from the scientific validation: {file_name}')
+                        subject = f'PDB-Dev {rid} Scientific Validation Error ({user})'
+                        self.sendMail(subject, f'Unknown file type got from the scientific validation: {file_name}')
+                        return(None, None, None)
+                    output_file_path = f'{output_path}/{file_name}'
+                    if os.path.isfile(output_file_path):
+                        output_files.append(output_file_path)
+                        hatrac_URI, singular_file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, file_name, output_path, rid, user)
+                        if hatrac_uri != None:
+                            self.logger.debug('Insert a row in the Entry_Generated_File table')
+                            row = {'File_URL' : hatrac_URI,
+                                   'File_Name': singular_file_name,
+                                   'File_Bytes': file_size,
+                                   'File_MD5': hexa_md5,
+                                   'Structure_Id': entry_id,
+                                   'File_Type': file_type,
+                                   'mmCIF_Schema_Version': urlquote(self.mmCIF_Schema_Version)
+                                   }
+                            if self.createEntity('PDB:Entry_Generated_File', row, rid, user) == None:
+                                self.updateAttributes('PDB',
+                                                      'entry',
+                                                      rid,
+                                                      ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
+                                                      {'RID': rid,
+                                                      'Process_Status': process_status_error,
+                                                      'Record_Status_Detail': 'Error in createEntity(Entry_Generated_File)',
+                                                      'Workflow_Status': 'ERROR'
+                                                      },
+                                                      user)
+                            
+                return tuple(output_files)
+            except TimeoutExpired:
+                p.kill()
+                os.chdir(currentDirectory)
+                return(None, None, None)
+        except:
+            et, ev, tb = sys.exc_info()
+            self.logger.error('got unexpected exception "%s"' % str(ev))
+            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'RELEASE READY', Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
+            self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+            return(None, None, None)
+
     def addReleaseRecords(self, rid, hold=False, user_id=None):
         """
         Get the RCB user
@@ -2206,7 +2338,7 @@ class PDBClient (object):
             """
             Query for detecting the mmCIF file
             """
-            url = '/entity/PDB:entry/RID={}/PDB:Entry_mmCIF_File'.format(urlquote(rid))
+            url = '/entity/PDB:entry/RID={}/PDB:Entry_Generated_File/File_Type=mmCIF'.format(urlquote(rid))
             self.logger.debug('Query URL: "%s"' % url) 
             
             resp = self.catalog.get(url)
@@ -2313,7 +2445,7 @@ class PDBClient (object):
             hatrac_namespace = '/{}/generated/uid/{}/entry/id/{}/final_mmCIF'.format(self.hatrac_namespace, user_id, entry_id)
             hatrac_URI, file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, file_name, input_dir, rid, user)
             self.updateAttributes('PDB',
-                                  'Entry_mmCIF_File',
+                                  'Entry_Generated_File',
                                   mmCIF_File_rid,
                                   ["File_URL", "File_Name", "File_MD5", "File_Bytes"],
                                   {'RID': mmCIF_File_rid,
@@ -2332,6 +2464,8 @@ class PDBClient (object):
                                   'Workflow_Status': 'REL' if hold==False else 'HOLD'
                                   },
                                   user)
+            if hold==False:
+                self.scientific_validation(rid, entry_id, user, user_id)
         except:
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
