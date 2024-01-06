@@ -130,6 +130,7 @@ class PDBClient (object):
         self.hatrac_namespace = kwargs.get("hatrac_namespace")
         self.credentials = kwargs.get("credentials")
         self.validation_dir = kwargs.get("validation_dir")
+        self.timeout = kwargs.get("timeout")
         self.store = HatracStore(
             self.scheme, 
             self.host,
@@ -2216,9 +2217,9 @@ class PDBClient (object):
             return False
 
     """
-    Execute scientific validation.
+    Execute report validation.
     """
-    def scientific_validation(self, rid, entry_id, user, user_id):
+    def report_validation(self, rid, entry_id, user, user_id):
         if True:
             return(None, None, None)
         try:
@@ -2246,9 +2247,11 @@ class PDBClient (object):
             filename = os.path.basename(file_path)
             currentDirectory=os.getcwd()
             os.chdir(f'{self.validation_dir}')
-            args = ['singularity', 'exec', 
-                    '--bind', 'IHMValidation_2.0_20231130/:/opt/IHMValidation,output:/ihmv/output,cache:/ihmv/cache,input:/ihmv/input', 
-                    'ihmv_20231130.sif', 
+
+            args = ['singularity', 
+                    'exec', '--pid',
+                    '--bind', 'IHMValidation_2.0_20231222/:/opt/IHMValidation,input:/ihmv/input,cache:/ihmv/cache,output:/ihmv/output', 
+                    'ihmv_20231222.sif', 
                     '/opt/IHMValidation/ihm_validation/ihm_validator.py',
                     '-f', f'/ihmv/input/{filename}', 
                     '--force',
@@ -2258,12 +2261,25 @@ class PDBClient (object):
             self.logger.debug(f'Running "{" ".join(args)}" from the {self.validation_dir} directory') 
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             try:
-                stdoutdata, stderrdata = p.communicate(timeout=15*60)
+                stdoutdata, stderrdata = p.communicate(timeout=self.timeout*60)
                 returncode = p.returncode
                 os.chdir(currentDirectory)
                 if returncode != 0:
-                   self.logger.debug(f'ERROR.\nstdoutdata: {stdoutdata}\nstderrdata: {stderrdata}\n') 
-                   return(None, None, None)
+                    self.logger.debug(f'ERROR.\nstdoutdata: {stdoutdata}\nstderrdata: {stderrdata}\n') 
+                    subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'REPORT VALIDATION', Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
+                    error_message = f'ERROR IN REPORT VALIDATION.\nstdoutdata: {stdoutdata}\nstderrdata: {stderrdata}\n'
+                    self.sendMail(subject, error_message)
+                    self.updateAttributes('PDB',
+                                      'entry',
+                                      rid,
+                                      ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
+                                      {'RID': rid,
+                                      'Process_Status': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
+                                      'Record_Status_Detail': error_message,
+                                      'Workflow_Status': 'ERROR'
+                                      },
+                                      user)
+                    return(None, None, None)
                 self.logger.debug('SUCCESS in executing the scientific validation')
                 output_files = []
                 filename, _ext = os.path.splitext(os.path.basename(file_path))
@@ -2301,14 +2317,33 @@ class PDBClient (object):
                                                       rid,
                                                       ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                                       {'RID': rid,
-                                                      'Process_Status': process_status_error,
+                                                      'Process_Status': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
                                                       'Record_Status_Detail': 'Error in createEntity(Entry_Generated_File)',
                                                       'Workflow_Status': 'ERROR'
                                                       },
                                                       user)
+                                return(None, None, None) 
+                        else:
+                            return(None, None, None) 
                             
                 return tuple(output_files)
             except TimeoutExpired:
+                et, ev, tb = sys.exc_info()
+                self.logger.error('got TimeoutExpired exception "%s"' % str(ev))
+                self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'REPORT VALIDATION TimeoutExpired', Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
+                error_message = '%s\n' % ''.join(traceback.format_exception(et, ev, tb))
+                self.sendMail(subject, error_message)
+                self.updateAttributes('PDB',
+                                  'entry',
+                                  rid,
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
+                                  {'RID': rid,
+                                  'Process_Status': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
+                                  'Record_Status_Detail': error_message,
+                                  'Workflow_Status': 'ERROR'
+                                  },
+                                  user)
                 p.kill()
                 os.chdir(currentDirectory)
                 return(None, None, None)
@@ -2464,8 +2499,7 @@ class PDBClient (object):
                                   'Workflow_Status': 'REL' if hold==False else 'HOLD'
                                   },
                                   user)
-            if hold==False:
-                self.scientific_validation(rid, entry_id, user, user_id)
+            self.report_validation(rid, entry_id, user, user_id)
         except:
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))

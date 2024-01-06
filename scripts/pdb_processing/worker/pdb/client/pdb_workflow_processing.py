@@ -74,6 +74,8 @@ def load(config_filename):
         
     logger.info('URL: %s' % url)
     
+    timeout = cfg.get('timeout', 30)
+
     credentials_file = cfg.get('credentials', None)
     if not credentials_file or not os.path.isfile(credentials_file):
         logger.error('credentials file must be provided and exist.')
@@ -184,6 +186,7 @@ def load(config_filename):
     # Establish Ermrest client connection
     try:
         client = PDBClient(baseuri=url, \
+                               timeout=timeout, \
                                credentials=credentials, \
                                mmCIF_Schema_Version=mmCIF_Schema_Version, \
                                make_mmCIF=make_mmCIF, \
