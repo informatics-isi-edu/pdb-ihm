@@ -6218,6 +6218,10 @@
 			              "Entry_Generated_File_Structure_Id_fkey"
 			            ]
 			          },
+				      {
+				        "filter": "File_Type",
+				        "operand_pattern": "mmCIF"
+				      },
 			          "RID"
 			        ]
 			      },
