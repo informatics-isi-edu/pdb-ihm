@@ -2220,7 +2220,7 @@ class PDBClient (object):
     Execute report validation.
     """
     def report_validation(self, rid, entry_id, user, user_id):
-        if True:
+        if False:
             return(None, None, None)
         try:
             """
@@ -2308,8 +2308,7 @@ class PDBClient (object):
                                    'File_Bytes': file_size,
                                    'File_MD5': hexa_md5,
                                    'Structure_Id': entry_id,
-                                   'File_Type': file_type,
-                                   'mmCIF_Schema_Version': urlquote(self.mmCIF_Schema_Version)
+                                   'File_Type': file_type
                                    }
                             if self.createEntity('PDB:Entry_Generated_File', row, rid, user) == None:
                                 self.updateAttributes('PDB',
