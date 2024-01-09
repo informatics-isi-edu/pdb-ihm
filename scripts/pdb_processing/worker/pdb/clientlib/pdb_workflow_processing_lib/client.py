@@ -1838,7 +1838,7 @@ class PDBClient (object):
     """
     def cleanupEntryFileTables(self, entry_id, rid, user):
         try:
-            url = '/entity/PDB:Entry_Generated_File/Structure_Id={}/mmCIF_Schema_Version={}'.format(urlquote(entry_id), urlquote(self.mmCIF_Schema_Version))
+            url = '/entity/PDB:Entry_Generated_File/Structure_Id={}'.format(urlquote(entry_id))
             self.logger.debug('Query URL: "%s"' % url) 
             
             resp = self.catalog.get(url)
