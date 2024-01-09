@@ -2301,7 +2301,7 @@ class PDBClient (object):
                     if os.path.isfile(output_file_path):
                         output_files.append(output_file_path)
                         hatrac_URI, singular_file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, file_name, output_path, rid, user)
-                        if hatrac_uri != None:
+                        if hatrac_URI != None:
                             self.logger.debug('Insert a row in the Entry_Generated_File table')
                             row = {'File_URL' : hatrac_URI,
                                    'File_Name': singular_file_name,
