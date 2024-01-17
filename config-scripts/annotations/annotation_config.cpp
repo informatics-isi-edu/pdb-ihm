@@ -27009,7 +27009,7 @@
 				        "versioned_urls": true
 				      },
 				      "hatrac_templates": {
-				        "hatrac_uri": "/<hatrac>/dev/pdb/submitted/uid/{globus_ID}/entry/mmcif/{file_name}",
+				        "hatrac_uri": "/<hatrac>/pdb/submitted/uid/{globus_ID}/entry/mmcif/{file_name}",
 				        "content-disposition": "filename*=UTF-8''{file_name}"
 				      },
 				      "record_query_template": "/entity/{target_table}/mmCIF_File_MD5={md5}&RCB=https%3A%2F%2Fauth.globus.org%2F{globus_ID}",
@@ -27040,7 +27040,7 @@
 				        "versioned_urls": true
 				      },
 				      "hatrac_templates": {
-				        "hatrac_uri": "/<hatrac>/dev/pdb/submitted/uid/{globus_ID}/entry/image/{file_name}",
+				        "hatrac_uri": "/<hatrac>/pdb/submitted/uid/{globus_ID}/entry/image/{file_name}",
 				        "content-disposition": "filename*=UTF-8''{file_name}"
 				      },
 				      "record_query_template": "/entity/{target_table}/RID={entry_rid}",
