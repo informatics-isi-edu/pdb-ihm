@@ -129,7 +129,7 @@
                 "byte_count_column": "Length",
                 "filename_column": "Filename",
                 "md5": "MD5",
-                "url_pattern": "/hatrac/WWW/Page_Asset/{{{MD5}}}.{{#encode}}{{{Filename}}}{{/encode}}"
+                "url_pattern": "/<hatrac>/WWW/Page_Asset/{{{MD5}}}.{{#encode}}{{{Filename}}}{{/encode}}"
             }
         },
         {
@@ -26977,7 +26977,7 @@
                             "versioned_uris": true
                         },
                         "hatrac_templates": {
-                            "hatrac_uri": "/hatrac/{schema}/{table}/{md5}.{file_name}"
+                            "hatrac_uri": "/<hatrac>/{schema}/{table}/{md5}.{file_name}"
                         },
                         "metadata_query_templates": [
                             "/attribute/D:={schema}:{table}/RID={key_column}/table_rid:=D:RID"
@@ -26988,74 +26988,77 @@
                             "Page_Asset"
                         ]
                     },
-					{
-					      "column_map": {
-					        "mmCIF_File_MD5": "{md5}",
-					        "mmCIF_File_URL": "{URI}",
-					        "mmCIF_File_Name": "{file_name}",
-					        "mmCIF_File_Bytes": "{file_size}"
-					      },
-					      "file_pattern": "(?i)^.*/deriva/(?P<globus_ID>[^/]*)/entry/.*[.](?P<file_ext>cif)$",
-					      "target_table": [
-					        "PDB",
-					        "entry"
-					      ],
-					      "checksum_types": [
-					        "sha256",
-					        "md5"
-					      ],
-					      "hatrac_options": {
-					        "versioned_urls": true
-					      },
-					      "hatrac_templates": {
-						"hatrac_uri": "/<hatrac>/pdb/submitted/uid/{globus_ID}/entry/mmcif/{file_name}",
-					        "content-disposition": "filename*=UTF-8''{file_name}"
-					      },
-					      "record_query_template": "/entity/{target_table}/mmCIF_File_MD5={md5}&RCB=https%3A%2F%2Fauth.globus.org%2F{globus_ID}",
-					      "metadata_query_templates": [
-					      ],
-					      "create_record_before_upload": false
-					    },
-					    {
-					      "column_map": {
-						"RID": "{entry_rid}",
-					        "Image_File_MD5": "{md5}",
-					        "Image_File_URL": "{URI}",
-					        "Image_File_Name": "{file_name}",
-					        "Image_File_Bytes": "{file_size}"
-					      },
-					      "dir_pattern": "(?i)^.*/deriva/(?P<globus_ID>[^/]*)/entry/(?P<base_name>[^/]*)[.](?P<file_ext>png|jpg|jpeg)",
-					      "target_table": [
-					        "PDB",
-					        "entry"
-					      ],
-					      "checksum_types": [
-					        "sha256",
-					        "md5"
-					      ],
-					      "hatrac_options": {
-					        "versioned_urls": true
-					      },
-					      "hatrac_templates": {
-					        "hatrac_uri": "/<hatrac>/pdb/submitted/uid/{globus_ID}/entry/image/{file_name}",
-					        "content-disposition": "filename*=UTF-8''{file_name}"
-					      },
-					      "record_query_template": "/entity/{target_table}/RID={entry_rid}",
-					      "metadata_query_templates": [
-							"/attribute/{target_table}/mmCIF_File_Name={base_name}.cif/entry_rid:=RID"
-					      ],
-					      "create_record_before_upload": false,
-					      "require_record_update_template": true,
-					      "record_update_template": "/attributegroup/{target_table}/RID;Image_File_MD5,Image_File_URL,Image_File_Name,Image_File_Bytes"
-					    }                    
-                ],
-                "version_compatibility": [
-                    [
+				    {
+				      "column_map": {
+				        "mmCIF_File_MD5": "{md5}",
+				        "mmCIF_File_URL": "{URI}",
+				        "mmCIF_File_Name": "{file_name}",
+				        "mmCIF_File_Bytes": "{file_size}",
+				        "Workflow_Status": "DEPO"
+				      },
+				      "file_pattern": "(?i)^.*/deriva/(?P<globus_ID>[^/]*)/entry/.*[.](?P<file_ext>cif)$",
+				      "target_table": [
+				        "PDB",
+				        "entry"
+				      ],
+				      "checksum_types": [
+				        "sha256",
+				        "md5"
+				      ],
+				      "hatrac_options": {
+				        "versioned_urls": true
+				      },
+				      "hatrac_templates": {
+				        "hatrac_uri": "/<hatrac>/dev/pdb/submitted/uid/{globus_ID}/entry/mmcif/{file_name}",
+				        "content-disposition": "filename*=UTF-8''{file_name}"
+				      },
+				      "record_query_template": "/entity/{target_table}/mmCIF_File_MD5={md5}&RCB=https%3A%2F%2Fauth.globus.org%2F{globus_ID}",
+				      "metadata_query_templates": [
+				      ],
+				      "create_record_before_upload": false,
+				      "require_record_update_template": true,
+				      "record_update_template": "/attributegroup/{target_table}/RID;mmCIF_File_MD5,mmCIF_File_URL,mmCIF_File_Name,mmCIF_File_Bytes"
+				    },
+				    {
+				      "column_map": {
+				        "RID": "{entry_rid}",
+				        "Image_File_MD5": "{md5}",
+				        "Image_File_URL": "{URI}",
+				        "Image_File_Name": "{file_name}",
+				        "Image_File_Bytes": "{file_size}"
+				      },
+				      "dir_pattern": "(?i)^.*/deriva/(?P<globus_ID>[^/]*)/entry/(?P<base_name>[^/]*)[.](?P<file_ext>png|jpg|jpeg)",
+				      "target_table": [
+				        "PDB",
+				        "entry"
+				      ],
+				      "checksum_types": [
+				        "sha256",
+				        "md5"
+				      ],
+				      "hatrac_options": {
+				        "versioned_urls": true
+				      },
+				      "hatrac_templates": {
+				        "hatrac_uri": "/<hatrac>/dev/pdb/submitted/uid/{globus_ID}/entry/image/{file_name}",
+				        "content-disposition": "filename*=UTF-8''{file_name}"
+				      },
+				      "record_query_template": "/entity/{target_table}/RID={entry_rid}",
+				      "metadata_query_templates": [
+				        "/attribute/{target_table}/mmCIF_File_Name={base_name}.cif&RCB=https%3A%2F%2Fauth.globus.org%2F{globus_ID}/entry_rid:=RID"
+				      ],
+				      "create_record_before_upload": false,
+				      "require_record_update_template": true,
+				      "record_update_template": "/attributegroup/{target_table}/RID;Image_File_MD5,Image_File_URL,Image_File_Name,Image_File_Bytes"
+				    }
+				  ],
+				  "version_update_url": "https://github.com/informatics-isi-edu/deriva-client",
+				  "version_compatibility": [
+				    [
 				      ">=1.4.0",
 				      "<2.0.0"
-                    ]
-                ],
-                "version_update_url": "https://github.com/informatics-isi-edu/deriva-qt/releases"
+				    ]
+            	]
             }
         },
         {
