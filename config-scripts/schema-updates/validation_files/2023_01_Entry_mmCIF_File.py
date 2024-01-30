@@ -31,7 +31,8 @@ def add_rows_to_Vocab_Table_System_Generated_File_Type(catalog):
     rows =[
         {'Name': 'Validation: Full PDF', 'Description': 'System generated full validation report in PDF format'},
         {'Name': 'Validation: Summary PDF', 'Description': 'System generated summary validation report in PDF format'},
-        {'Name': 'Validation: HTML tar.gz', 'Description': 'System generated full validation report in HTML format, provided as a tar-gzipped file'}
+        {'Name': 'Validation: HTML tar.gz', 'Description': 'System generated full validation report in HTML format, provided as a tar-gzipped file'},
+        {'Name': 'JSON: mmCIF content', 'Description': 'System generated JSON file with mmCIF content'}
     ]
 
     pb = catalog.getPathBuilder()
