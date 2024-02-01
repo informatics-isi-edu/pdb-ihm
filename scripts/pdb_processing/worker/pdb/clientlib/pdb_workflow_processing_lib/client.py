@@ -2354,6 +2354,107 @@ class PDBClient (object):
             self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
             return(None, None, None)
 
+    """
+    Execute JSON mmCIF content.
+    """
+    def generate_JSON_mmCIF_content(self, rid, entry_id, user, user_id):
+        try:
+            """
+            Get the System Generated mmCIF File
+            """
+            url = f'/entity/PDB:entry/RID={rid}/PDB:Entry_Generated_File/File_Type=mmCIF'
+            self.logger.debug(f'Query URL: {url}') 
+            resp = self.catalog.get(url)
+            resp.raise_for_status()
+            row = resp.json()[0]
+            filename = row['File_Name']
+            file_url = row['File_URL']
+            file_path,error_message = self.getHatracFile(filename, file_url, self.scratch, rid, user)
+            if file_path == None:
+                self.logger.error(f'Can not get the mmCIF Entry_Generated_File RID={row["File_Name"]} for entry RID={rid}')
+                subject = f'PDB-Dev {rid} JSON mmCIF Content Error ({user})'
+                self.sendMail(subject, f'Can not get the mmCIF Entry_Generated_File RID={row["File_Name"]} for entry RID={rid}')
+                return None
+    
+            """
+            Move the System Generated mmCIF File file to the rcsb/db/tests-validate/test-output/ihm-files directory and apply testSchemaDataPrepValidate-ihm.py
+            """
+            shutil.move(file_path, f'{self.py_rcsb_db}/rcsb/db/tests-validate/test-output/ihm-files/')
+            self.logger.debug(f'File {file_path} was moved to the {self.py_rcsb_db}/rcsb/db/tests-validate/test-output/ihm-files directory') 
+            currentDirectory=os.getcwd()
+            os.chdir(f'{self.py_rcsb_db}')
+            args = ['env', f'PYTHONPATH={self.py_rcsb_db}', self.python_bin, 'rcsb/db/tests-validate/testSchemaDataPrepValidate-ihm.py']
+            self.logger.debug('Running "{}" from the {} directory'.format(' '.join(args), self.py_rcsb_db)) 
+            p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdoutdata, stderrdata = p.communicate()
+            returncode = p.returncode
+            os.chdir(currentDirectory)
+            
+            if returncode != 0:
+                self.logger.error('Can not validate testSchemaDataPrepValidate-ihm for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % ('output.cif', stdoutdata, stderrdata)) 
+                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'HOLD/REL', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], user)
+                self.sendMail(subject, 'Can not make testSchemaDataPrepValidate-ihm for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % ('output.cif', stdoutdata, stderrdata))
+                os.remove('{}/rcsb/db/tests-validate/test-output/ihm-files/output.cif'.format(self.py_rcsb_db))
+                error_message = 'ERROR convert2json: {}'.format(stderrdata)
+                return (returncode,error_message)
+            
+            os.remove(f'{self.py_rcsb_db}/rcsb/db/tests-validate/test-output/ihm-files/{filename}')
+            self.logger.debug(f'File {self.py_rcsb_db}/rcsb/db/tests-validate/test-output/ihm-files/{filename} was removed') 
+            
+            """
+            Get the JSON file of the mmCIF file 
+            """
+            fpath = f'{self.py_rcsb_db}/rcsb/db/tests-validate/test-output'
+            cif_filename,_ext = os.path.splitext(os.path.basename(filename))
+
+            for entry in os.scandir(fpath):
+                if entry.is_file() and entry.path.endswith('.json'):
+                        shutil.move(entry.path, f'{fpath}/{cif_filename}.json')
+                        break
+            
+            hatrac_namespace = f'/{self.hatrac_namespace}/generated/uid/{user_id}/entry/id/{entry_id}/final_mmCIF'
+            hatrac_URI, json_file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, f'{cif_filename}.json', f'{fpath}', rid, user)
+            if hatrac_URI != None:
+                self.logger.debug('Insert a row in the Entry_Generated_File table')
+                row = {'File_URL' : hatrac_URI,
+                       'File_Name': json_file_name,
+                       'File_Bytes': file_size,
+                       'File_MD5': hexa_md5,
+                       'Structure_Id': entry_id,
+                       'File_Type': 'JSON: mmCIF content'
+                       }
+                if self.createEntity('PDB:Entry_Generated_File', row, rid, user) == None:
+                    self.updateAttributes('PDB',
+                                          'entry',
+                                          rid,
+                                          ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
+                                          {'RID': rid,
+                                          'Process_Status': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
+                                          'Record_Status_Detail': 'Error in createEntity(Entry_Generated_File)',
+                                          'Workflow_Status': 'ERROR'
+                                          },
+                                          user)
+                    return None 
+            else:
+                return None 
+            """
+            Remove the JSON files that were created
+            """
+            for entry in os.scandir(fpath):
+                    if entry.is_file() and entry.path.endswith('.json'):
+                        os.remove(entry.path)
+                        self.logger.debug('Removed file {}'.format(entry.path))
+
+            os.chdir(currentDirectory)
+            return f'{cif_filename}.json'
+        except:
+            et, ev, tb = sys.exc_info()
+            self.logger.error('got unexpected exception "%s"' % str(ev))
+            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'RELEASE READY', Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
+            self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+            return None 
+
     def addReleaseRecords(self, rid, hold=False, user_id=None):
         """
         Get the RCB user
@@ -2499,6 +2600,7 @@ class PDBClient (object):
                                   },
                                   user)
             self.report_validation(rid, entry_id, user, user_id)
+            self.generate_JSON_mmCIF_content(rid, entry_id, user, user_id)
         except:
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
