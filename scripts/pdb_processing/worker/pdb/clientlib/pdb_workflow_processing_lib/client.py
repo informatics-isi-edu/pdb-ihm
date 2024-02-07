@@ -1369,15 +1369,25 @@ class PDBClient (object):
         resp.raise_for_status()
         deleted_rows = resp.json()
         if len(deleted_rows) > 0:
-            """
-            The table is not empty
-            """
-            url = '/entity/PDB:{}/structure_id={}'.format(tname, entry_id)
-            resp = self.catalog.delete(
-                url
-            )
-            resp.raise_for_status()
-            self.logger.debug('Deleted rows from PDB:{}/structure_id={}'.format(tname, entry_id))
+            try:
+                """
+                The table is not empty
+                """
+                url = '/entity/PDB:{}/structure_id={}'.format(tname, entry_id)
+                resp = self.catalog.delete(
+                    url
+                )
+                resp.raise_for_status()
+                self.logger.debug('Deleted rows from PDB:{}/structure_id={}'.format(tname, entry_id))
+            except:
+                et, ev, tb = sys.exc_info()
+                self.logger.error('got exception "%s"' % str(ev))
+                self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
+                self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+                error_message = 'ERROR loadTableFromCVS: "%s"' % str(ev)
+                returncode = 1
+                return (returncode, error_message)
 
         """
         Read in chunks of 1000 rows
