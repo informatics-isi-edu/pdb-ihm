@@ -143,6 +143,7 @@ def set_PDB_acl(model):
     set_PDB_Accession_Code(model) 
     set_PDB_Curation_Log(model)   
     set_PDB_entry_collection_related(model)
+    set_PDB_entry_related_error_file_tables(model)
     set_PDB_entry_related_system_generated_tables(model)
     set_PDB_Data_Dictionary_Related(model)
     set_PDB_Entry_Related_File(model)
@@ -644,9 +645,9 @@ def set_PDB_entry_collection_related(model):
 '''
   policy: pdb-ihm generated content, entry_updater can read, pdb_submitter can only read their own entry
 '''
-def set_PDB_entry_related_system_generated_tables(model):
+def set_PDB_entry_related_error_file_tables(model):
     schema = model.schemas["PDB"]
-    for tname in ["Entry_Error_File", "Entry_mmCIF_File"]:
+    for tname in ["Entry_Error_File"]:
         print("  - set_entry_related_system_generated_table: %s" % (tname,))        
         table = schema.tables[tname]
         clear_table_acls(table) 
@@ -668,6 +669,51 @@ def set_PDB_entry_related_system_generated_tables(model):
                         "types": ["select"],
                         "scope_acl": g["pdb-submitters"],
                         "projection": [{"outbound": ["PDB", fkey.constraint_name ]}, "RCB"],
+                        "projection_type": "acl"
+                    }
+                })
+            # -- if the fkey to entry
+        # -- end fkey
+    # -- end tname
+    
+# -- ---------------------------------------------------------------------
+'''
+  policy: pdb-ihm generated content, entry_updater can read, pdb_submitter can only read their own entry
+'''
+def set_PDB_entry_related_system_generated_tables(model):
+    schema = model.schemas["PDB"]
+    for tname in ["Entry_Generated_File"]:
+        print("  - set_entry_related_system_generated_table: %s" % (tname,))        
+        table = schema.tables[tname]
+        clear_table_acls(table) 
+        
+        # == table policy
+        # -- acl: only pdb-ihm can manipulate, entry-updaters can read (from schema acl)
+        table.acls.update({
+            "insert": g["pdb-ihm"],
+            "update": g["pdb-ihm"],
+            "delete": g["pdb-ihm"],
+        })
+        # -- acl_bindings: submitters can read if it is linked to their entries (need to traverse fkey to entry)
+        for fkey in table.foreign_keys:
+            from_cols = {c.name for c in fkey.column_map.keys()}
+            pk_table = fkey.pk_table
+            if pk_table.name == "entry":  
+                table.acl_bindings.update({
+                    "submitter_read_own_entries" : {
+                        "types": ["select"],
+                        "scope_acl": g["pdb-submitters"],
+                        "projection": [
+                            {
+                                "or": [
+                                    { "filter": "File_Type", "operator": "=", "operand": "mmCIF",  },
+                                    { "filter": "File_Type", "operator": "=", "operand": "Validation: Full PDF", },
+                                    { "filter": "File_Type", "operator": "=", "operand": "Validation: Summary PDF", }
+                                ]
+                            },
+                            {"outbound": ["PDB", fkey.constraint_name ]}, 
+                            "RCB"
+                        ],
                         "projection_type": "acl"
                     }
                 })
