@@ -2522,7 +2522,7 @@ class PDBClient (object):
                                       user)
                 return
             """
-            Query for detecting the mmCIF file
+            Query for detecting the entry record
             """
             url = '/entity/PDB:entry/RID={}'.format(urlquote(rid))
             self.logger.debug('Query URL: "%s"' % url) 
@@ -2535,17 +2535,6 @@ class PDBClient (object):
             input_dir = self.scratch
             deposition_date = row['Deposit_Date']
             #deposition_date = parse(row['RCT']).strftime("%Y-%m-%d")
-            revision_date = row['Release_Date']
-            if revision_date == None:
-                revision_date = parse(str(datetime.now())).strftime("%Y-%m-%d")
-                self.updateAttributes('PDB',
-                                      'entry',
-                                      rid,
-                                      ["Release_Date"],
-                                      {'RID': rid,
-                                      'Release_Date': revision_date
-                                      },
-                                      user)
                 
             entry_id = row['id']
             if hold==True:
@@ -2553,6 +2542,17 @@ class PDBClient (object):
                 records_release = mmCIF_hold_records.replace('<status_code>', record_status).replace('<entry_id>', row['Accession_Code']).replace('<deposition_date>', deposition_date)
             else:
                 record_status = 'REL'
+                revision_date = row['Release_Date']
+                if revision_date == None:
+                    revision_date = parse(str(datetime.now())).strftime("%Y-%m-%d")
+                    self.updateAttributes('PDB',
+                                          'entry',
+                                          rid,
+                                          ["Release_Date"],
+                                          {'RID': rid,
+                                          'Release_Date': revision_date
+                                          },
+                                          user)
                 records_release = mmCIF_release_records.replace('<status_code>', record_status).replace('<entry_id>', row['Accession_Code']).replace('<deposition_date>', deposition_date).replace('<revision_date>', revision_date)
             file_name = '{}.cif'.format(row['Accession_Code'])
             fr = open('{}/{}'.format(input_dir, filename), 'r')
