@@ -2260,7 +2260,7 @@ class PDBClient (object):
 
             args = ['singularity', 
                     'exec', '--pid',
-                    '--bind', 'IHMValidation_2.0_20231222/:/opt/IHMValidation,input:/ihmv/input,cache:/ihmv/cache,output:/ihmv/output', 
+                    '--bind', 'IHMValidation_2.0_20240220/:/opt/IHMValidation,input:/ihmv/input,cache:/ihmv/cache,output:/ihmv/output', 
                     'ihmv_20231222.sif', 
                     '/opt/IHMValidation/ihm_validation/ihm_validator.py',
                     '-f', f'/ihmv/input/{filename}', 
