@@ -2600,17 +2600,17 @@ class PDBClient (object):
                                   'File_Bytes': file_size
                                   },
                                   user)
-            self.report_validation(rid, entry_id, user, user_id)
-            self.generate_JSON_mmCIF_content(rid, entry_id, user, user_id)
-            self.updateAttributes('PDB',
-                                  'entry',
-                                  rid,
-                                  ["Process_Status", "Workflow_Status"],
-                                  {'RID': rid,
-                                  'Process_Status': Process_Status_Terms['SUCCESS'],
-                                  'Workflow_Status': 'REL' if hold==False else 'HOLD'
-                                  },
-                                  user)
+            if self.report_validation(rid, entry_id, user, user_id) != (None, None, None):
+                if self.generate_JSON_mmCIF_content(rid, entry_id, user, user_id) != None:
+                    self.updateAttributes('PDB',
+                                          'entry',
+                                          rid,
+                                          ["Process_Status", "Workflow_Status"],
+                                          {'RID': rid,
+                                          'Process_Status': Process_Status_Terms['SUCCESS'],
+                                          'Workflow_Status': 'REL' if hold==False else 'HOLD'
+                                          },
+                                          user)
         except:
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
