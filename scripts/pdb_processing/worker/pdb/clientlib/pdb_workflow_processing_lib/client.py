@@ -2600,6 +2600,8 @@ class PDBClient (object):
                                   'File_Bytes': file_size
                                   },
                                   user)
+            self.report_validation(rid, entry_id, user, user_id)
+            self.generate_JSON_mmCIF_content(rid, entry_id, user, user_id)
             self.updateAttributes('PDB',
                                   'entry',
                                   rid,
@@ -2609,8 +2611,6 @@ class PDBClient (object):
                                   'Workflow_Status': 'REL' if hold==False else 'HOLD'
                                   },
                                   user)
-            self.report_validation(rid, entry_id, user, user_id)
-            self.generate_JSON_mmCIF_content(rid, entry_id, user, user_id)
         except:
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
