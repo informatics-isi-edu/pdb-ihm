@@ -828,16 +828,16 @@ class PDBClient (object):
     
             if returncode == 0:
                 self.logger.debug('Update success in export_mmCIF()')
-                self.updateAttributes(schema_pdb,
-                                      table_entry,
-                                      rid,
-                                      ["Process_Status", "Workflow_Status"],
-                                      {'RID': rid,
-                                      'Process_Status': Process_Status_Terms['SUCCESS'],
-                                      'Workflow_Status': 'mmCIF CREATED'
-                                      },
-                                      user)
                 if release == False:
+                    self.updateAttributes(schema_pdb,
+                                          table_entry,
+                                          rid,
+                                          ["Process_Status", "Workflow_Status"],
+                                          {'RID': rid,
+                                          'Process_Status': Process_Status_Terms['SUCCESS'],
+                                          'Workflow_Status': 'mmCIF CREATED'
+                                          },
+                                          user)
                     subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'mmCIF CREATED', Process_Status_Terms['SUCCESS'], user)
                     self.sendMail(subject, 'The workflow status of the entry with RID={} was changed to mmCIF CREATED.'.format(rid), receivers=self.email['curators'])
             else:
