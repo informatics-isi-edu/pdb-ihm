@@ -439,6 +439,15 @@
             }
         },
         {
+            "column": "Method_Details",
+            "schema": "PDB",
+            "table": "entry",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "User Provided Method Details"
+            }
+        },
+        {
             "column": "File_URL",
             "schema": "PDB",
             "table": "Entry_Generated_File",
@@ -6472,6 +6481,7 @@
 #endif
                      "Deposit_Date",
                      "Release_Date",
+                     "Method_Details",
                   {
                      "markdown_name" : "RCB",
                      "source" : [
@@ -6605,6 +6615,7 @@
                     "Accession_Code",
                     "Deposit_Date",
                     "Release_Date",
+                    "Method_Details",
                     "Submitter_Flag",
                     "Submitter_Flag_Date",
                     "Record_Status_Detail"
@@ -6671,6 +6682,7 @@
                     },
                     "Deposit_Date",
                     "Release_Date",
+                    "Method_Details",
                     "Submitter_Flag",
                     "Submitter_Flag_Date",
                     "Notes",
@@ -6686,6 +6698,7 @@
                         "PDB",
                         "entry_Workflow_Status_fkey"
                     ],
+                    "Method_Details",
                     "Deposit_Date",
                     "Release_Date",
                     "Submitter_Flag",
@@ -6699,6 +6712,7 @@
                         "PDB",
                         "entry_Workflow_Status_fkey"
                     ],
+                    "Method_Details",
                     "Notes"
                 ]
             }
@@ -26994,7 +27008,8 @@
 				        "mmCIF_File_URL": "{URI}",
 				        "mmCIF_File_Name": "{file_name}",
 				        "mmCIF_File_Bytes": "{file_size}",
-				        "Workflow_Status": "DEPO"
+				        "Workflow_Status": "DEPO",
+                        "Method_Details": "Integrative modeling"
 				      },
 				      "file_pattern": "(?i)^.*/deriva/(?P<globus_ID>[^/]*)/entry/.*[.](?P<file_ext>cif)$",
 				      "target_table": [
