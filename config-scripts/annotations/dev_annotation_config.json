@@ -38,7 +38,7 @@
                      "versioned_uris" : true
                   },
                   "hatrac_templates" : {
-                     "hatrac_uri" : "/hatrac/{schema}/{table}/{md5}.{file_name}"
+                     "hatrac_uri" : "/hatrac/dev/{schema}/{table}/{md5}.{file_name}"
                   },
                   "metadata_query_templates" : [
                      "/attribute/D:={schema}:{table}/RID={key_column}/table_rid:=D:RID"
@@ -48,15 +48,78 @@
                      "WWW",
                      "Page_Asset"
                   ]
+               },
+               {
+                  "checksum_types" : [
+                     "sha256",
+                     "md5"
+                  ],
+                  "column_map" : {
+                     "Method_Details" : "Integrative modeling",
+                     "Workflow_Status" : "DEPO",
+                     "mmCIF_File_Bytes" : "{file_size}",
+                     "mmCIF_File_MD5" : "{md5}",
+                     "mmCIF_File_Name" : "{file_name}",
+                     "mmCIF_File_URL" : "{URI}"
+                  },
+                  "create_record_before_upload" : false,
+                  "file_pattern" : "(?i)^.*/deriva/(?P<globus_ID>[^/]*)/entry/.*[.](?P<file_ext>cif)$",
+                  "hatrac_options" : {
+                     "versioned_urls" : true
+                  },
+                  "hatrac_templates" : {
+                     "content-disposition" : "filename*=UTF-8''{file_name}",
+                     "hatrac_uri" : "/hatrac/dev/pdb/submitted/uid/{globus_ID}/entry/mmcif/{file_name}"
+                  },
+                  "metadata_query_templates" : [],
+                  "record_query_template" : "/entity/{target_table}/mmCIF_File_MD5={md5}&RCB=https%3A%2F%2Fauth.globus.org%2F{globus_ID}",
+                  "record_update_template" : "/attributegroup/{target_table}/RID;mmCIF_File_MD5,mmCIF_File_URL,mmCIF_File_Name,mmCIF_File_Bytes",
+                  "require_record_update_template" : true,
+                  "target_table" : [
+                     "PDB",
+                     "entry"
+                  ]
+               },
+               {
+                  "checksum_types" : [
+                     "sha256",
+                     "md5"
+                  ],
+                  "column_map" : {
+                     "Image_File_Bytes" : "{file_size}",
+                     "Image_File_MD5" : "{md5}",
+                     "Image_File_Name" : "{file_name}",
+                     "Image_File_URL" : "{URI}",
+                     "RID" : "{entry_rid}"
+                  },
+                  "create_record_before_upload" : false,
+                  "dir_pattern" : "(?i)^.*/deriva/(?P<globus_ID>[^/]*)/entry/(?P<base_name>[^/]*)[.](?P<file_ext>png|jpg|jpeg)",
+                  "hatrac_options" : {
+                     "versioned_urls" : true
+                  },
+                  "hatrac_templates" : {
+                     "content-disposition" : "filename*=UTF-8''{file_name}",
+                     "hatrac_uri" : "/hatrac/dev/pdb/submitted/uid/{globus_ID}/entry/image/{file_name}"
+                  },
+                  "metadata_query_templates" : [
+                     "/attribute/{target_table}/mmCIF_File_Name={base_name}.cif&RCB=https%3A%2F%2Fauth.globus.org%2F{globus_ID}/entry_rid:=RID"
+                  ],
+                  "record_query_template" : "/entity/{target_table}/RID={entry_rid}",
+                  "record_update_template" : "/attributegroup/{target_table}/RID;Image_File_MD5,Image_File_URL,Image_File_Name,Image_File_Bytes",
+                  "require_record_update_template" : true,
+                  "target_table" : [
+                     "PDB",
+                     "entry"
+                  ]
                }
             ],
             "version_compatibility" : [
                [
-                  ">=0.4.3",
-                  "<1.0.0"
+                  ">=1.4.0",
+                  "<2.0.0"
                ]
             ],
-            "version_update_url" : "https://github.com/informatics-isi-edu/deriva-qt/releases"
+            "version_update_url" : "https://github.com/informatics-isi-edu/deriva-client"
          }
       },
       {
@@ -1195,7 +1258,7 @@
             "byte_count_column" : "Length",
             "filename_column" : "Filename",
             "md5" : "MD5",
-            "url_pattern" : "/hatrac/WWW/Page_Asset/{{{MD5}}}.{{#encode}}{{{Filename}}}{{/encode}}"
+            "url_pattern" : "/hatrac/dev/WWW/Page_Asset/{{{MD5}}}.{{#encode}}{{{Filename}}}{{/encode}}"
          }
       },
       {
@@ -1503,6 +1566,15 @@
          "uri" : "tag:misd.isi.edu,2015:display",
          "value" : {
             "name" : "Last Communicated"
+         }
+      },
+      {
+         "column" : "Method_Details",
+         "schema" : "PDB",
+         "table" : "entry",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "User Provided Method Details"
          }
       },
       {
@@ -9721,6 +9793,10 @@
                            "Entry_Generated_File_Structure_Id_fkey"
                         ]
                      },
+                     {
+                        "filter" : "File_Type",
+                        "operand_pattern" : "mmCIF"
+                     },
                      "RID"
                   ]
                }
@@ -9927,6 +10003,7 @@
                },
                "Deposit_Date",
                "Release_Date",
+               "Method_Details",
                {
                   "markdown_name" : "RCB",
                   "source" : [
@@ -10021,6 +10098,7 @@
                },
                "Deposit_Date",
                "Release_Date",
+               "Method_Details",
                "Submitter_Flag",
                "Submitter_Flag_Date",
                "Notes",
@@ -10036,6 +10114,7 @@
                   "PDB",
                   "entry_Workflow_Status_fkey"
                ],
+               "Method_Details",
                "Notes"
             ],
             "entry/edit" : [
@@ -10045,6 +10124,7 @@
                   "PDB",
                   "entry_Workflow_Status_fkey"
                ],
+               "Method_Details",
                "Deposit_Date",
                "Release_Date",
                "Submitter_Flag",
@@ -10062,6 +10142,7 @@
                "Accession_Code",
                "Deposit_Date",
                "Release_Date",
+               "Method_Details",
                "Submitter_Flag",
                "Submitter_Flag_Date",
                "Record_Status_Detail"
