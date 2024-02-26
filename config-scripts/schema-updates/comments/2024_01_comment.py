@@ -10,9 +10,9 @@ from deriva.core.ermrest_model import Table, Column, Key, ForeignKey, builtin_ty
 
 def column_comments(model):
 
-    model.table("PDB", "entry").column_definitions["Image_File_URL"].comment = "URL of the uploaded image file; image provided will be used for displaying the entry on the PDB-Dev website"
-    model.table("PDB", "entry").column_definitions["mmCIF_File_URL"].comment = "URL of the uploaded mmCIF file; use MAXIT or python-ihm to convert PDB to mmCIF. Using other tools may not provide compliant files"
-    model.table("PDB", "ihm_starting_model_details").column_definitions["mmCIF_File_URL"].comment = "URL of the uploaded starting model mmCIF file. The chain identifiers and residue numbers in the mmCIF file should match the data provided in this table. PDB file format can be converted to mmCIF using the MAXIT software."
+    model.table("PDB", "entry").column_definitions["Image_File_URL"].comment = "Uploaded image file. Image provided will be used for displaying the entry on the PDB-Dev website"
+    model.table("PDB", "entry").column_definitions["mmCIF_File_URL"].comment = "Uploaded mmCIF file. Use MAXIT or python-ihm to convert PDB to mmCIF. Using other tools may not provide compliant files"
+    model.table("PDB", "ihm_starting_model_details").column_definitions["mmCIF_File_URL"].comment = "Uploaded starting model mmCIF file. The chain identifiers and residue numbers in the mmCIF file should match the data provided in this table. PDB file format can be converted to mmCIF using the MAXIT software."
 
 # ===================================================
 # -- this function will be called from the update_schemas.py file
