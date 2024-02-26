@@ -28,8 +28,10 @@ def main(server_name, catalog_id, credentials):
     """
     Update existing PDB table
     """
-    if True:
-        update_PDB_entry(model)
+    if True:      ##Step 1; set to False in Step 2
+        update_PDB_entry(model)    
+    if False:     ##Step 2; set to True in Step 2
+        utils.set_default_column_if_exists(model, 'PDB', 'entry', 'Method_Details', None)
 
 # ===================================================    
 

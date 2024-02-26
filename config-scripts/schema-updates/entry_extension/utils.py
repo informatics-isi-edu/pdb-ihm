@@ -8,6 +8,15 @@ from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key,
 # utility
 
 # set nullok for a column
+def set_default_column_if_exists(model, schema_name, table_name, column_name, default_value):
+    if schema_name in model.schemas.keys():
+        schema = model.schemas[schema_name]
+        if table_name in schema.tables:
+            table = model.schemas[schema_name].tables[table_name]
+            if column_name in table.column_definitions.elements:
+                table.column_definitions[column_name].alter(default=default_value)
+                print('Set default={} in column {}:{}:{}'.format(default_value, schema_name, table_name, column_name))
+
 def set_nullok_column_if_exists(model, schema_name, table_name, column_name, nullok):
     if schema_name in model.schemas.keys():
         schema = model.schemas[schema_name]
