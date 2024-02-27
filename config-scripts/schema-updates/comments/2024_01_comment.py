@@ -1,12 +1,13 @@
 from deriva.core import DerivaServer, get_credential, BaseCLI
 from deriva.core.ermrest_model import Table, Column, Key, ForeignKey, builtin_types
 
-#def table_comments(model):
+def table_comments(model):
     #table = model.table("PDB", "software")
     #table.comment = "List of software used in the modeling"
     #table.column_definitions["Species_Tested_In"].comment = None
 
     #model.table("PDB", "struct").comment = "Details about the structural models submitted; mmCIF category: struct"
+    model.table("PDB", "Entry_Related_File").comment = "Uploaded restraint data files (in csv/tsv format) related to the entry. Crosslinking restraints, predicted contacts, generic distance restraints etc. can be uploaded as CSV/TSV files in the correct format. Only one file of a particular type can be uploaded. The appropriate tables will be populated based on the uploaded data. Templates for the CSV files can be downloaded from https://data.pdb-dev.org/chaise/recordset/#1/PDB:Entry_Related_File_Templates"
 
 def column_comments(model):
 
@@ -18,7 +19,7 @@ def column_comments(model):
 # -- this function will be called from the update_schemas.py file
 
 def set_comments(model):
-    #table_comments(model)
+    table_comments(model)
     column_comments(model)
 
 
