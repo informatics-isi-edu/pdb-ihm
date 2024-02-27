@@ -7,7 +7,7 @@ job_tasks=(
     "pdb_www_pull_checkout pdb-20231127.1"
     "derivapy_install"
     "pdb_processing_install"
-    "require /home/isrddev/protein-database/scripts/deploy/config_update.sh"
+    "require /home/isrddev/protein-database/scripts/ubuntu/config_update.sh"
     "require service pdb_www_processing_worker restart"
 )
 
