@@ -9,7 +9,8 @@ from utils import ApplicationClient
 def update_PDB_entry(model):
     # Add the PDB.entry.Submitter_Flag and PDB.entry.Submitter_Flag_date columns  
     utils.set_column_comment_if_exist(model, 'PDB', 'entry', 'Submitter_Flag_Date', 'Date last communicated with the submitter. Waiting for response from submitter. This date can only be set when Submitter_Flag is True.')
-    
+    utils.set_column_comment_if_exist(model, 'PDB', 'entry', 'Submitter_Flag', 'This flag is set to "true" when the entry is waiting for input from user.')
+
 
 # ============================================================
 def main(server_name, catalog_id, credentials):
