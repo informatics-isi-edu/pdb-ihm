@@ -1,0 +1,18 @@
+
+[Unit]
+Description=PDB Processing Worker
+
+[Service]
+Environment="PDB_CREDENTIALS=/home/secrets/pdbihm/credentials.json" "PDB_SERVER=data.pdb-dev.org" "CATALOG=1" "PDB_CONFIG=/home/pdbihm/pdb/config/www/pdb.conf" "PDB_LOG=/home/pdbihm/pdb/log/www/pdb.log"
+ExecStart=/usr/local/bin/pdb_worker
+RestartSec=60
+Restart=always
+KillMode=mixed
+TimeoutStopSec=60
+User=pdbihm
+Nice=19
+IOSchedulingClass=idle
+
+[Install]
+WantedBy=multi-user.target
+
