@@ -58,7 +58,7 @@ _pdbx_database_status.recvd_initial_deposition_date   <deposition_date>
 mmCIF_release_records="""_pdbx_database_status.status_code                     <status_code>
 _pdbx_database_status.entry_id                        <entry_id>
 _pdbx_database_status.deposit_site                    ?
-_pdbx_database_status.process_site                    ?
+_pdbx_database_status.process_site                    RCSB
 _pdbx_database_status.recvd_initial_deposition_date   <deposition_date> 
 # 
 loop_
