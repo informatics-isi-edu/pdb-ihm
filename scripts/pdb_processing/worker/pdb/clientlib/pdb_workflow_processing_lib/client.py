@@ -1061,6 +1061,7 @@ class PDBClient (object):
             self.logger.debug('File {} was moved to the {} directory'.format('{}/output.cif'.format(self.make_mmCIF), '{}/rcsb/db/tests-validate/test-output/ihm-files/'.format(self.py_rcsb_db))) 
             currentDirectory=os.getcwd()
             os.chdir('{}'.format(self.py_rcsb_db))
+            shutil.copy2(f'{self.py_rcsb_db}/rcsb/db/config/exdb-config-example-ihm-DEPO.yml', f'{self.py_rcsb_db}/rcsb/db/config/exdb-config-example-ihm.yml')
             args = ['env', 'PYTHONPATH={}'.format(self.py_rcsb_db), self.python_bin, 'rcsb/db/tests-validate/testSchemaDataPrepValidate-ihm.py']
             self.logger.debug('Running "{}" from the {} directory'.format(' '.join(args), self.py_rcsb_db)) 
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -2393,6 +2394,7 @@ class PDBClient (object):
             self.logger.debug(f'File {file_path} was moved to the {self.py_rcsb_db}/rcsb/db/tests-validate/test-output/ihm-files directory') 
             currentDirectory=os.getcwd()
             os.chdir(f'{self.py_rcsb_db}')
+            shutil.copy2(f'{self.py_rcsb_db}/rcsb/db/config/exdb-config-example-ihm-HOLD-REL.yml', f'{self.py_rcsb_db}/rcsb/db/config/exdb-config-example-ihm.yml')
             args = ['env', f'PYTHONPATH={self.py_rcsb_db}', self.python_bin, 'rcsb/db/tests-validate/testSchemaDataPrepValidate-ihm.py']
             self.logger.debug('Running "{}" from the {} directory'.format(' '.join(args), self.py_rcsb_db)) 
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
