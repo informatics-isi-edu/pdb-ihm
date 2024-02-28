@@ -43,5 +43,5 @@ if __name__ == '__main__':
 #    if args.catalog is None:
 #        catalog_id = 99
 
-    main(args.host, 99, credentials)
+    main(args.host, 1, credentials)
 

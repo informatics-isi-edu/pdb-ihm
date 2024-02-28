@@ -28,10 +28,9 @@ def main(server_name, catalog_id, credentials):
     """
     Update existing PDB table
     """
-    if True:      ##Step 1; set to False in Step 2
+    if True:
         update_PDB_entry(model)    
-    if False:     ##Step 2; set to True in Step 2
-        utils.set_default_column_if_exists(model, 'PDB', 'entry', 'Method_Details', None)
+        utils.set_default_column_if_exists(model, 'PDB', 'entry', 'Method_Details', None) 
 
 # ===================================================    
 
@@ -39,5 +38,5 @@ if __name__ == '__main__':
     args = BaseCLI('ad-hoc table creation tool', None, 1).parse_cli()
     credentials = get_credential(args.host, args.credential_file)
 
-    main(args.host, 99, credentials)
+    main(args.host, 1, credentials)
     

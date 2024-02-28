@@ -79,8 +79,8 @@ def main(server_name, catalog_id, credentials):
         utils.rename_key_if_exist(model, 'PDB', 'Entry_Generated_File', 'Entry_mmCIF_File_RID_key', 'Entry_Generated_File_RID_key')
         utils.rename_key_if_exist(model, 'PDB', 'Entry_Generated_File', 'Entry_mmCIF_File_Structure_Id_mmCIF_Schema_Version_key', 'Entry_Generated_File_Structure_Id_mmCIF_Schema_Version_key')
         # Replace key ['Structure_Id', 'mmCIF_Schema_Version'] by ['Structure_Id', 'File_Type'] for Entry_Generated_File
-        utils.drop_key_if_exist(model, 'PDB', 'Entry_Generated_File', 'Entry_Generated_File_Structure_Id_mmCIF_Schema_Version_key')
-        utils.create_key_if_not_exists(model, 'PDB', 'Entry_Generated_File', ['Structure_Id', 'File_Type'], 'Entry_Generated_File_Structure_Id_File_Type_key')
+        #utils.drop_key_if_exist(model, 'PDB', 'Entry_Generated_File', 'Entry_Generated_File_Structure_Id_mmCIF_Schema_Version_key')
+        #utils.create_key_if_not_exists(model, 'PDB', 'Entry_Generated_File', ['Structure_Id', 'File_Type'], 'Entry_Generated_File_Structure_Id_File_Type_key')
 
     """
     Add rows to Vocab table
@@ -101,6 +101,14 @@ def main(server_name, catalog_id, credentials):
     if True:
         table_comments(model)
         model.apply()
+
+    """
+    Replace key ['Structure_Id', 'mmCIF_Schema_Version'] by ['Structure_Id', 'File_Type'] for Entry_Generated_File
+    """
+
+    if True:
+        utils.drop_key_if_exist(model, 'PDB', 'Entry_Generated_File', 'Entry_Generated_File_Structure_Id_mmCIF_Schema_Version_key')
+        utils.create_key_if_not_exists(model, 'PDB', 'Entry_Generated_File', ['Structure_Id', 'File_Type'], 'Entry_Generated_File_Structure_Id_File_Type_key')
     
 # ===================================================    
 
@@ -108,5 +116,5 @@ if __name__ == '__main__':
     args = BaseCLI('ad-hoc table creation tool', None, 1).parse_cli()
     credentials = get_credential(args.host, args.credential_file)
 
-    main(args.host, 99, credentials)
-    
+    main(args.host, 1, credentials)
+
