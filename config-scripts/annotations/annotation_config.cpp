@@ -260,7 +260,7 @@
                 "filename_column": "File_Name",
                 "md5": "File_MD5",
                 "template_engine": "handlebars",
-                "url_pattern": "/<hatrac>/pdb/generated/uid/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/id/{{{Structure_Id}}}/final_mmCIF/{{{File_Name}}}"
+                "url_pattern": "/<hatrac>/pdb/generated/uid/{{#if _Entry_RCB}}{{#regexFindFirst _Entry_RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/id/{{{Structure_Id}}}/final_mmCIF/{{{File_Name}}}"
             }
         },
 #if 1
@@ -19355,9 +19355,22 @@
                     [
                         "PDB",
                         "Entry_Generated_File_System_Generated_File_Type_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "Entry_Generated_File_Structure_Id_Entry_RCB_fkey"
                     ]
                 ],
                 "entry": [
+                    "File_URL",
+                    [
+                        "PDB",
+                        "Entry_Generated_File_System_Generated_File_Type_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "Entry_Generated_File_Structure_Id_Entry_RCB_fkey"
+                    ]
                 ]
             }
         },
