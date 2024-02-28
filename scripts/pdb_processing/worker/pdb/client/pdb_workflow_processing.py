@@ -175,6 +175,7 @@ def load(config_filename):
     else:
         hatrac_namespace = 'hatrac/{}/pdb'.format(hatrac_namespace)
     
+    reportValidation = cfg.get('reportValidation', 'Yes')
     email_file = cfg.get('mail', None)
     if not email_file or not os.path.isfile(email_file):
         logger.error('email file must be provided and exist.')
@@ -203,6 +204,7 @@ def load(config_filename):
                                export_order_by=export_order_by, \
                                combo1_columns=combo1_columns, \
                                dictSdb=dictSdb, \
+                               reportValidation=reportValidation, \
                                CifCheck=CifCheck, \
                                hatrac_namespace=hatrac_namespace, \
                                entry=entry, \

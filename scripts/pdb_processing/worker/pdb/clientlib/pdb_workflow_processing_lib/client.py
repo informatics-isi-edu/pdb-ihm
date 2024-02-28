@@ -131,6 +131,7 @@ class PDBClient (object):
         self.credentials = kwargs.get("credentials")
         self.validation_dir = kwargs.get("validation_dir")
         self.timeout = kwargs.get("timeout")
+        self.reportValidation = True if kwargs.get("reportValidation")=='Yes' else False
         self.store = HatracStore(
             self.scheme, 
             self.host,
@@ -201,6 +202,31 @@ class PDBClient (object):
             if len(rows) == 1:
                 row = resp.json()[0]
                 return row['RCB'].split('/')[-1]
+            else:
+                return None
+        except:
+            et, ev, tb = sys.exc_info()
+            self.logger.error('got exception "%s"' % str(ev))
+            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+            return None
+
+    """
+    Get the user_id 
+    """
+    def getUserRCB(self, schema, table, rid):
+        try:
+            """
+            Query for detecting the user email
+            """
+            url = '/attribute/{}:{}/RID={}/RCB'.format(urlquote(schema), urlquote(table), urlquote(rid))
+            self.logger.debug('Query user_id URL: "{}"'.format(url)) 
+            
+            resp = self.catalog.get(url)
+            resp.raise_for_status()
+            rows = resp.json()
+            if len(rows) == 1:
+                row = resp.json()[0]
+                return row['RCB']
             else:
                 return None
         except:
@@ -1890,6 +1916,7 @@ class PDBClient (object):
                 self.cleanupDataScratch()
                 return (1, 'Can not cleanup the entry file tables')
 
+            entry_RCB = self.getUserRCB('PDB', 'entry', rid)
             currentDirectory=os.getcwd()
             os.chdir('{}'.format(input_dir))
             args = [self.CifCheck, '-f', '{}/{}'.format(input_dir, filename), '-dictSdb', self.dictSdb]
@@ -1986,6 +2013,7 @@ class PDBClient (object):
                        'File_Bytes': file_size,
                        'File_MD5': hexa_md5,
                        'Structure_Id': entry_id,
+                       'Entry_RCB': entry_RCB,
                        'File_Type': 'mmCIF',
                        'mmCIF_Schema_Version': urlquote(self.mmCIF_Schema_Version)
                        }
@@ -2237,6 +2265,7 @@ class PDBClient (object):
             """
             Get the System Generated mmCIF File
             """
+            entry_RCB = self.getUserRCB('PDB', 'entry', rid)
             url = f'/entity/PDB:entry/RID={rid}/PDB:Entry_Generated_File/File_Type=mmCIF'
             self.logger.debug(f'Query URL: {url}') 
             resp = self.catalog.get(url)
@@ -2319,6 +2348,7 @@ class PDBClient (object):
                                    'File_Bytes': file_size,
                                    'File_MD5': hexa_md5,
                                    'Structure_Id': entry_id,
+                                   'Entry_RCB': entry_RCB,
                                    'File_Type': file_type
                                    }
                             if self.createEntity('PDB:Entry_Generated_File', row, rid, user) == None:
@@ -2373,6 +2403,7 @@ class PDBClient (object):
             """
             Get the System Generated mmCIF File
             """
+            entry_RCB = self.getUserRCB('PDB', 'entry', rid)
             url = f'/entity/PDB:entry/RID={rid}/PDB:Entry_Generated_File/File_Type=mmCIF'
             self.logger.debug(f'Query URL: {url}') 
             resp = self.catalog.get(url)
@@ -2433,6 +2464,7 @@ class PDBClient (object):
                        'File_Bytes': file_size,
                        'File_MD5': hexa_md5,
                        'Structure_Id': entry_id,
+                       'Entry_RCB': entry_RCB,
                        'File_Type': 'JSON: mmCIF content'
                        }
                 if self.createEntity('PDB:Entry_Generated_File', row, rid, user) == None:
@@ -2602,17 +2634,28 @@ class PDBClient (object):
                                   'File_Bytes': file_size
                                   },
                                   user)
-            if self.report_validation(rid, entry_id, user, user_id) != (None, None, None):
-                if self.generate_JSON_mmCIF_content(rid, entry_id, user, user_id) != None:
-                    self.updateAttributes('PDB',
-                                          'entry',
-                                          rid,
-                                          ["Process_Status", "Workflow_Status"],
-                                          {'RID': rid,
-                                          'Process_Status': Process_Status_Terms['SUCCESS'],
-                                          'Workflow_Status': 'REL' if hold==False else 'HOLD'
-                                          },
-                                          user)
+            if self.reportValidation:
+                if self.report_validation(rid, entry_id, user, user_id) != (None, None, None):
+                    if self.generate_JSON_mmCIF_content(rid, entry_id, user, user_id) != None:
+                        self.updateAttributes('PDB',
+                                              'entry',
+                                              rid,
+                                              ["Process_Status", "Workflow_Status"],
+                                              {'RID': rid,
+                                              'Process_Status': Process_Status_Terms['SUCCESS'],
+                                              'Workflow_Status': 'REL' if hold==False else 'HOLD'
+                                              },
+                                              user)
+            else:
+                self.updateAttributes('PDB',
+                                      'entry',
+                                      rid,
+                                      ["Process_Status", "Workflow_Status"],
+                                      {'RID': rid,
+                                      'Process_Status': Process_Status_Terms['SUCCESS'],
+                                      'Workflow_Status': 'REL' if hold==False else 'HOLD'
+                                      },
+                                      user)
         except:
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
