@@ -37,6 +37,10 @@ git clone https://github.com/informatics-isi-edu/deriva-py.git /home/isrddev/der
 git clone https://github.com/informatics-isi-edu/protein-database.git /home/isrddev/protein-database
 chown -R isrddev:isrddev /home/isrddev
 
+# Install py-rcsb_db
+wget https://salilab.org/~arthur/ihmv/packages/py-rcsb_db_v0.86.tar.gz
+tar -xzf py-rcsb_db_v0.86.tar.gz
+
 # Install SELinux packages
 apt -y install policycoreutils
 
