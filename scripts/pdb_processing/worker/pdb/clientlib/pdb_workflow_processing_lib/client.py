@@ -1943,7 +1943,7 @@ class PDBClient (object):
                 hatrac_URI, file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, log_file_name, input_dir, rid, user)
                 if hatrac_URI == None:
                     self.cleanupDataScratch()
-                    return (1, 'Can not store file {} in hatrac'.format(file_name))
+                    return (1, 'Can not store file {} in hatrac'.format(log_file_name))
                 self.logger.debug('Insert a row in the Entry_Error_File table')
                 row = {'File_URL' : hatrac_URI,
                        'File_Name': file_name,
@@ -1974,6 +1974,9 @@ class PDBClient (object):
                 has_errors = True
                 fr.close()
                 hatrac_URI, file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, log_file_name, input_dir, rid, user)
+                if hatrac_URI == None:
+                    self.cleanupDataScratch()
+                    return (1, 'Can not store file {} in hatrac'.format(log_file_name))
                 self.logger.debug('Insert a row in the Entry_Error_File table')
                 row = {'File_URL' : hatrac_URI,
                        'File_Name': file_name,
@@ -2006,6 +2009,8 @@ class PDBClient (object):
                 filename = '{}_error.cif'.format(entry_id)
 
             hatrac_URI, file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, filename, input_dir, rid, user)
+            if hatrac_URI == None:
+                raise RuntimeError(f'Can not store file {filename} in hatrac')
             if has_errors == False:
                 self.logger.debug('Insert a row in the Entry_Generated_File table')
                 row = {'File_URL' : hatrac_URI,
@@ -2623,6 +2628,9 @@ class PDBClient (object):
             fw.close()
             hatrac_namespace = '/{}/generated/uid/{}/entry/id/{}/final_mmCIF'.format(self.hatrac_namespace, user_id, entry_id)
             hatrac_URI, file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, file_name, input_dir, rid, user)
+            if hatrac_URI == None:
+                self.cleanupDataScratch()
+                raise RuntimeError(f'Can not store file {file_name} in hatrac')
             self.updateAttributes('PDB',
                                   'Entry_Generated_File',
                                   mmCIF_File_rid,
