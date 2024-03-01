@@ -33,13 +33,23 @@ useradd -m pdbihm
 useradd -m isrddev
 
 # Clone the isrddev repositories
-git clone https://github.com/informatics-isi-edu/deriva-py.git /home/isrddev/deriva-py
-git clone https://github.com/informatics-isi-edu/protein-database.git /home/isrddev/protein-database
+cd /home/isrddev
+git clone https://github.com/informatics-isi-edu/deriva-py.git
+git clone https://github.com/informatics-isi-edu/protein-database.git
 chown -R isrddev:isrddev /home/isrddev
 
 # Install py-rcsb_db
+cd /home/pdbihm
+mkdir -p pdb/config/www pdb/make-mmCIF backup_logs temp 
+cd /home/pdbihm/pdb
 wget https://salilab.org/~arthur/ihmv/packages/py-rcsb_db_v0.86.tar.gz
 tar -xzf py-rcsb_db_v0.86.tar.gz
+rm -f py-rcsb_db_v0.86.tar.gz
+
+# Install make-mmcif.py
+mkdir -p /home/pdbihm/pdb/make-mmCIF
+cd /home/pdbihm/pdb/make-mmCIF
+wget https://github.com/ihmwg/python-ihm/blob/main/util/make-mmcif.py
 
 # Install SELinux packages
 apt -y install policycoreutils
