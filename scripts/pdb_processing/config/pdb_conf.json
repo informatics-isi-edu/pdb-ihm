@@ -1,6 +1,7 @@
 {
     "url": "https://data.pdb-dev.org/ermrest/catalog/1",
     "credentials": "/.../credentials.json",
+    "timeout": 30,
     "mmCIF_Schema_Version": "1.17",
     "make_mmCIF": "/home/pdbihm/pdb/make-mmCIF",
     "mmCIF_defaults": "/home/pdbihm/pdb/config/www/mmCIF_defaults.json",
@@ -16,13 +17,11 @@
     "export_order_by": "/home/pdbihm/pdb/config/www/order_by.json",
     "combo1_columns": "/home/pdbihm/pdb/config/www/combo1_columns.json",
     "scratch": "/var/scratch/www",
+    "validation_dir": "/mnt/vdb1/pdbihm",
+    "reportValidation": "Yes",
     "vocab_data_map": "/home/pdbihm/pdb/config/www/exported_vocab.map",
     "log": "/home/pdbihm/pdb/log/www/pdb.log",
     "loglevel": "debug",
     "python3": "/usr/bin/python3",
-    "mail_server": "relay.isi.edu",
-    "mail_sender": "PDB Online Notification <no_reply@isi.edu>",
-    "mail_curators": "pdb-ihm@wwpdb.org",
-    "mail_receiver": "pdb-ihm@wwpdb.org"
+    "mail": ".../mail.json"
 }
-

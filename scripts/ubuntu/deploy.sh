@@ -40,16 +40,38 @@ chown -R isrddev:isrddev /home/isrddev
 
 # Install py-rcsb_db
 cd /home/pdbihm
-mkdir -p pdb/config/www pdb/make-mmCIF backup_logs temp 
+mkdir -p .secrets pdb/config/www pdb/make-mmCIF pdb/sdb pdb/cpp-dict-pack/build/bin backup_logs/www temp 
 cd /home/pdbihm/pdb
 wget https://salilab.org/~arthur/ihmv/packages/py-rcsb_db_v0.86.tar.gz
 tar -xzf py-rcsb_db_v0.86.tar.gz
 rm -f py-rcsb_db_v0.86.tar.gz
 
 # Install make-mmcif.py
-mkdir -p /home/pdbihm/pdb/make-mmCIF
 cd /home/pdbihm/pdb/make-mmCIF
 wget https://github.com/ihmwg/python-ihm/blob/main/util/make-mmcif.py
+
+# Install CifCheck
+cp /home/isrddev/protein-database/scripts/validator/CifCheck /home/pdbihm/pdb/cpp-dict-pack/build/bin/
+
+# Install the mmcif_ihm_v1.22.sdb dictionary
+cp /home/isrddev/protein-database/scripts/pdb_processing/config/mmcif_ihm_v1.22.sdb /home/pdbihm/pdb/sdb/
+
+# Install secrets
+cp XXX/credentials.json /home/pdbihm/.secrets/
+cp XXX/mail.json /home/pdbihm/.secrets/
+
+# Install configuration files
+cd /home/pdbihm/pdb/config/www
+cp /home/isrddev/protein-database/scripts/pdb_processing/config/catalog_1_display_entry.json ./
+cp /home/isrddev/protein-database/scripts/pdb_processing/config/mmCIF_defaults.json ./
+cp /home/isrddev/protein-database/scripts/pdb_processing/config/vocab_ucode.json ./
+cp /home/isrddev/protein-database/scripts/pdb_processing/config/tables_groups.json ./
+cp /home/isrddev/protein-database/scripts/pdb_processing/config/optional_fk.json ./
+cp /home/isrddev/protein-database/scripts/pdb_processing/config/ermrest_table_defs.json ./
+cp /home/isrddev/protein-database/scripts/pdb_processing/config/mmcif_tables_input2output.json ./
+cp /home/isrddev/protein-database/scripts/pdb_processing/config/order_by.json ./
+cp /home/isrddev/protein-database/scripts/pdb_processing/config/combo1_columns.json ./
+cp /home/isrddev/protein-database/scripts/pdb_processing/config/exported_vocab.map ./
 
 # Install SELinux packages
 apt -y install policycoreutils
