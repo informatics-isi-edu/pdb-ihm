@@ -40,7 +40,7 @@ chown -R isrddev:isrddev /home/isrddev
 
 # Install py-rcsb_db
 cd /home/pdbihm
-mkdir -p .secrets pdb/config/www pdb/make-mmCIF pdb/sdb pdb/cpp-dict-pack/build/bin backup_logs/www temp 
+mkdir -p .secrets pdb/config/www pdb/make-mmCIF pdb/sdb pdb/log/www pdb/cpp-dict-pack/build/bin backup_logs/www temp 
 cd /home/pdbihm/pdb
 wget https://salilab.org/~arthur/ihmv/packages/py-rcsb_db_v0.86.tar.gz
 tar -xzf py-rcsb_db_v0.86.tar.gz
@@ -48,7 +48,11 @@ rm -f py-rcsb_db_v0.86.tar.gz
 
 # Install make-mmcif.py
 cd /home/pdbihm/pdb/make-mmCIF
-wget https://github.com/ihmwg/python-ihm/blob/main/util/make-mmcif.py
+# wget https://github.com/ihmwg/python-ihm/blob/main/util/make-mmcif.py
+wget https://raw.githubusercontent.com/ihmwg/python-ihm/main/util/make-mmcif.py
+
+# From the protein-database repository
+# wget https://raw.githubusercontent.com/informatics-isi-edu/protein-database/master/scripts/make-mmCIF/make-mmcif.py
 
 # Install CifCheck
 cp /home/isrddev/protein-database/scripts/validator/CifCheck /home/pdbihm/pdb/cpp-dict-pack/build/bin/
@@ -72,6 +76,9 @@ cp /home/isrddev/protein-database/scripts/pdb_processing/config/mmcif_tables_inp
 cp /home/isrddev/protein-database/scripts/pdb_processing/config/order_by.json ./
 cp /home/isrddev/protein-database/scripts/pdb_processing/config/combo1_columns.json ./
 cp /home/isrddev/protein-database/scripts/pdb_processing/config/exported_vocab.map ./
+cp /home/isrddev/protein-database/scripts/pdb_processing/config/pdb_conf.json ./
+cp /home/isrddev/protein-database/scripts/make-json/py-rcsb_db/rcsb/db/config/exdb-config-example-ihm-DEPO.yml /home/pdbihm/pdb/py-rcsb_db/rcsb/db/config/ 
+cp /home/isrddev/protein-database/scripts/make-json/py-rcsb_db/rcsb/db/config/exdb-config-example-ihm-HOLD-REL.yml /home/pdbihm/pdb/py-rcsb_db/rcsb/db/config/
 
 # Install SELinux packages
 apt -y install policycoreutils
@@ -103,14 +110,15 @@ mkdir -p /var/scratch/www
 add-apt-repository -y ppa:ubuntu-toolchain-r/test
 apt install -y g++-11
 
-# Install the backend service
-cp /home/isrddev/protein-database/scripts/ubuntu/pdb_www_processing_worker.service /etc/systemd/system/
-systemctl daemon-reload
-systemctl enable pdb_www_processing_worker
-
 # Adjust ownership
+chown -R pdbihm:pdbihm /home/pdbihm
 chown -R pdbihm:pdbihm /var/scratch
 chown -R pdbihm:root /mnt/vdb1/pdbihm
 
-
+# Install and start the backend service
+cp /home/isrddev/protein-database/scripts/ubuntu/pdb_www_processing_worker.service /etc/systemd/system/
+chmod u-w /etc/systemd/system/pdb_www_processing_worker.service
+systemctl daemon-reload
+systemctl enable pdb_www_processing_worker
+systemctl start pdb_www_processing_worker
 
