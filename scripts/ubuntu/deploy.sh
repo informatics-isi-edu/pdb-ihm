@@ -77,8 +77,6 @@ cp /home/isrddev/protein-database/scripts/pdb_processing/config/order_by.json ./
 cp /home/isrddev/protein-database/scripts/pdb_processing/config/combo1_columns.json ./
 cp /home/isrddev/protein-database/scripts/pdb_processing/config/exported_vocab.map ./
 cp /home/isrddev/protein-database/scripts/pdb_processing/config/pdb_conf.json ./
-cp /home/isrddev/protein-database/scripts/make-json/py-rcsb_db/rcsb/db/config/exdb-config-example-ihm-DEPO.yml /home/pdbihm/pdb/py-rcsb_db/rcsb/db/config/ 
-cp /home/isrddev/protein-database/scripts/make-json/py-rcsb_db/rcsb/db/config/exdb-config-example-ihm-HOLD-REL.yml /home/pdbihm/pdb/py-rcsb_db/rcsb/db/config/
 
 # Install SELinux packages
 apt -y install policycoreutils
