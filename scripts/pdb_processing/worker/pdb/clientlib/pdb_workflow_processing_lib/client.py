@@ -962,6 +962,14 @@ class PDBClient (object):
             return
         
         """
+        Cleanup the self.make_mmCIF directory 
+        """
+        for entry in os.scandir(self.make_mmCIF):
+            if entry.is_file() and entry.path.endswith('.cif'):
+                os.remove(entry.path)
+                self.logger.debug('Removed file {}'.format(entry.path))
+            
+        """
         Extract the file from hatrac
         """
         f,error_message = self.getHatracFile(filename, file_url, self.make_mmCIF, rid, user)
@@ -1080,6 +1088,21 @@ class PDBClient (object):
             
             os.remove('{}/{}'.format(self.make_mmCIF, filename))
             
+            """
+            Cleanup the rcsb/db/tests-validate/test-output/ihm-files and rcsb/db/tests-validate/test-output directories 
+            """
+            fpath = '{}/rcsb/db/tests-validate/test-output/ihm-files'.format(self.py_rcsb_db)
+            for entry in os.scandir(fpath):
+                if entry.is_file() and entry.path.endswith('.cif'):
+                    os.remove(entry.path)
+                    self.logger.debug('Removed file {}'.format(entry.path))
+            
+            fpath = '{}/rcsb/db/tests-validate/test-output'.format(self.py_rcsb_db)
+            for entry in os.scandir(fpath):
+                if entry.is_file() and entry.path.endswith('.json'):
+                    os.remove(entry.path)
+                    self.logger.debug('Removed file {}'.format(entry.path))
+
             """
             Move the output.cif file to the rcsb/db/tests-validate/test-output/ihm-files directory and apply testSchemaDataPrepValidate-ihm.py
             """
@@ -1693,6 +1716,14 @@ class PDBClient (object):
     """
     def getOutputCIF(self, rid, file_url, filename, user):
         try:
+            """
+            Cleanup the self.make_mmCIF directory 
+            """
+            for entry in os.scandir(self.make_mmCIF):
+                if entry.is_file() and entry.path.endswith('.cif'):
+                    os.remove(entry.path)
+                    self.logger.debug('Removed file {}'.format(entry.path))
+                    
             """
             Get the file from hatrac
             """
@@ -2423,6 +2454,21 @@ class PDBClient (object):
                 self.sendMail(subject, f'Can not get the mmCIF Entry_Generated_File RID={row["File_Name"]} for entry RID={rid}')
                 return None
     
+            """
+            Cleanup the rcsb/db/tests-validate/test-output/ihm-files and rcsb/db/tests-validate/test-output directories 
+            """
+            fpath = '{}/rcsb/db/tests-validate/test-output/ihm-files'.format(self.py_rcsb_db)
+            for entry in os.scandir(fpath):
+                if entry.is_file() and entry.path.endswith('.cif'):
+                    os.remove(entry.path)
+                    self.logger.debug('Removed file {}'.format(entry.path))
+            
+            fpath = '{}/rcsb/db/tests-validate/test-output'.format(self.py_rcsb_db)
+            for entry in os.scandir(fpath):
+                if entry.is_file() and entry.path.endswith('.json'):
+                    os.remove(entry.path)
+                    self.logger.debug('Removed file {}'.format(entry.path))
+
             """
             Move the System Generated mmCIF File file to the rcsb/db/tests-validate/test-output/ihm-files directory and apply testSchemaDataPrepValidate-ihm.py
             """
