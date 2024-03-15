@@ -108,6 +108,17 @@ mkdir -p /var/scratch/www
 add-apt-repository -y ppa:ubuntu-toolchain-r/test
 apt install -y g++-11
 
+# Build CifCheck
+apt install -y cmake flex bison
+cd /home/pdbihm/pdb
+git clone  --recurse-submodules  https://github.com/rcsb/cpp-dict-pack.git
+cd cpp-dict-pack
+mkdir build
+cd build
+cmake .. -DMINIMAL_DICTS=ON
+make
+
+
 # Adjust ownership
 chown -R pdbihm:pdbihm /home/pdbihm
 chown -R pdbihm:pdbihm /var/scratch
