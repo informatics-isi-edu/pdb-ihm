@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. /usr/local/sbin/isrd-software-lib.sh
+. /usr/local/sbin/pdb-software-lib.sh
 
 job_tasks=(
     "derivapy_pull_checkout pdb-20240227.1"

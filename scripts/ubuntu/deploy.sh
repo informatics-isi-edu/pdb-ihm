@@ -99,7 +99,7 @@ pip3 install --upgrade rcsb.utils.taxonomy
 pip3 install --upgrade rcsb.utils.multiproc
 
 # Copy the isrd software library
-cp /home/isrddev/protein-database/scripts/ubuntu/isrd-software-lib.sh /usr/local/sbin/
+cp /home/isrddev/protein-database/scripts/ubuntu/pdb-software-lib.sh /usr/local/sbin/
 
 # Create the scratch directory
 mkdir -p /var/scratch/www
