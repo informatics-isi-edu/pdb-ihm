@@ -11,7 +11,6 @@ then
     PATH=/usr/local/bin:${PATH}
 fi
 
-############## utility stuff
 ISRD_PYLIBDIR=$(python3 -c 'import site; print(site.getsitepackages()[1])')
 
 error()
@@ -138,5 +137,15 @@ derivapy_install()
 {
     python_install /home/${DEVUSER}/deriva-py
     pip3 install globus_sdk fair-research-login fair-identifiers-client jsonschema
+}
+
+python_ihm_pull_checkout()
+{
+    git_pull_checkout /home/${DEVUSER}/python-ihm "$@"
+}
+
+python_ihm_install()
+{
+    python_install /home/${DEVUSER}/python-ihm
 }
 
