@@ -11,6 +11,7 @@ then
     PATH=/usr/local/bin:${PATH}
 fi
 
+############## utility stuff
 ISRD_PYLIBDIR=$(python3 -c 'import site; print(site.getsitepackages()[1])')
 
 error()
