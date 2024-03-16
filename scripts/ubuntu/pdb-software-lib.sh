@@ -31,6 +31,49 @@ else
     error could not determine DEVUSER
 fi
 
+cron_run()
+{
+    # usage: jobname cmd [ cmd... ]
+    jobname="$1"
+    shift
+
+    (
+	cat <<EOF
+$0 cron_run $jobname started $(date -Iseconds)
+EOF
+
+	status=0
+	for cmd in "$@"
+	do
+	    cat <<EOF
+
+> running $cmd
+EOF
+	    $cmd
+	    status="$?"
+	    if [[ "$status" -ne 0 ]]
+	    then
+		cat <<EOF
+error: $0 $cmd returned $status
+
+EOF
+		exit $status
+	    else
+		cat <<EOF
+: status 0 from $cmd
+EOF
+	    fi
+	done
+    ) > /root/pdb-cron-${jobname}.log 2>&1
+    status=$?
+
+    if [[ $status -ne 0 ]]
+    then
+	cat /root/pdb-cron-${jobname}.log
+	echo "aborting on status $status"
+	exit $status
+    fi
+}
 require()
 {
     # usage: require cmd [args...]
