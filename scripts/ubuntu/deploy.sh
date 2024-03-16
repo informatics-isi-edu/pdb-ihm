@@ -36,6 +36,7 @@ useradd -m isrddev
 cd /home/isrddev
 git clone https://github.com/informatics-isi-edu/deriva-py.git
 git clone https://github.com/informatics-isi-edu/protein-database.git
+git clone https://github.com/ihmwg/python-ihm.git
 chown -R isrddev:isrddev /home/isrddev
 
 # Install py-rcsb_db
@@ -47,15 +48,7 @@ tar -xzf py-rcsb_db_v0.86.tar.gz
 rm -f py-rcsb_db_v0.86.tar.gz
 
 # Install make-mmcif.py
-cd /home/pdbihm/pdb/make-mmCIF
-# wget https://github.com/ihmwg/python-ihm/blob/main/util/make-mmcif.py
-wget https://raw.githubusercontent.com/ihmwg/python-ihm/main/util/make-mmcif.py
-
-# From the protein-database repository
-# wget https://raw.githubusercontent.com/informatics-isi-edu/protein-database/master/scripts/make-mmCIF/make-mmcif.py
-
-# Install CifCheck
-cp /home/isrddev/protein-database/scripts/validator/CifCheck /home/pdbihm/pdb/cpp-dict-pack/build/bin/
+cp /home/isrddev/python-ihm/util/make-mmcif.py /home/pdbihm/pdb/make-mmCIF/
 
 # Install the mmcif_ihm_v1.22.sdb dictionary
 cp /home/isrddev/protein-database/scripts/pdb_processing/config/mmcif_ihm_v1.22.sdb /home/pdbihm/pdb/sdb/

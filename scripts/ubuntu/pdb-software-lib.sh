@@ -146,6 +146,6 @@ python_ihm_pull_checkout()
 
 python_ihm_install()
 {
-    python_install /home/${DEVUSER}/python-ihm
+    pip3 install ihm==1.0
 }
 
