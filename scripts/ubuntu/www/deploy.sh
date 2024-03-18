@@ -92,7 +92,7 @@ pip3 install --upgrade rcsb.utils.taxonomy
 pip3 install --upgrade rcsb.utils.multiproc
 
 # Copy the isrd software library
-cp /home/isrddev/protein-database/scripts/ubuntu/pdb-software-lib.sh /usr/local/sbin/
+cp /home/isrddev/protein-database/scripts/ubuntu//www/pdb-software-lib.sh /usr/local/sbin/
 
 # Create the scratch directory
 mkdir -p /var/scratch/www
@@ -118,7 +118,7 @@ chown -R pdbihm:pdbihm /var/scratch
 chown -R pdbihm:root /mnt/vdb1/pdbihm
 
 # Install and start the backend service
-cp /home/isrddev/protein-database/scripts/ubuntu/pdb_www_processing_worker.service /etc/systemd/system/
+cp /home/isrddev/protein-database/scripts/ubuntu/www/pdb_www_processing_worker.service /etc/systemd/system/
 chmod u-w /etc/systemd/system/pdb_www_processing_worker.service
 systemctl daemon-reload
 systemctl enable pdb_www_processing_worker
