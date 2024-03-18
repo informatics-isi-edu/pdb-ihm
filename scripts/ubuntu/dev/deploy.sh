@@ -69,7 +69,7 @@ cp /home/isrddev/protein-database/scripts/pdb_processing/config/mmcif_tables_inp
 cp /home/isrddev/protein-database/scripts/pdb_processing/config/order_by.json ./
 cp /home/isrddev/protein-database/scripts/pdb_processing/config/combo1_columns.json ./
 cp /home/isrddev/protein-database/scripts/pdb_processing/config/exported_vocab.map ./
-cp /home/isrddev/protein-database/scripts/pdb_processing/config/pdb_conf.json ./
+cp /home/isrddev/protein-database/scripts/pdb_processing/config/pdb_conf_dev.json ./pdb_conf.json
 
 cd /home/pdbihm/pdb/config/staging
 cp /home/isrddev/protein-database/scripts/pdb_processing/config/catalog_50_display_entry.json ./
@@ -82,7 +82,7 @@ cp /home/isrddev/protein-database/scripts/pdb_processing/config/mmcif_tables_inp
 cp /home/isrddev/protein-database/scripts/pdb_processing/config/order_by.json ./
 cp /home/isrddev/protein-database/scripts/pdb_processing/config/combo1_columns.json ./
 cp /home/isrddev/protein-database/scripts/pdb_processing/config/exported_vocab.map ./
-cp /home/isrddev/protein-database/scripts/pdb_processing/config/pdb_conf.json ./
+cp /home/isrddev/protein-database/scripts/pdb_processing/config/pdb_conf_staging.json ./pdb_conf.json
 
 # Install SELinux packages
 apt -y install policycoreutils
