@@ -142,6 +142,7 @@ derivapy_install()
 python_ihm_pull_checkout()
 {
     git_pull_checkout /home/${DEVUSER}/python-ihm "$@"
+    cp /home/isrddev/python-ihm/util/make-mmcif.py /home/pdbihm/pdb/make-mmCIF/
 }
 
 python_ihm_install()
