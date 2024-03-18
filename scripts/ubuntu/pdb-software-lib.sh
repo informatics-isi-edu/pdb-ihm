@@ -86,6 +86,22 @@ require()
     fi
 }
 
+require_retry()
+{
+    for trial in {1..5}
+    do
+	"$@"
+	status="$?"
+	if [[ "$status" = 0 ]]
+	then
+	    return 0
+	else
+	    echo "require_retry: $* returned status $status" >&2
+	fi
+    done
+    error Command "($*)" failed too many times
+}
+
 python_install()
 {
     require cd "$1"
