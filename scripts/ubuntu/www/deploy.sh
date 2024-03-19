@@ -54,8 +54,9 @@ cp /home/isrddev/python-ihm/util/make-mmcif.py /home/pdbihm/pdb/make-mmCIF/
 cp /home/isrddev/protein-database/scripts/pdb_processing/config/mmcif_ihm_v1.22.sdb /home/pdbihm/pdb/sdb/
 
 # Install secrets
-cp XXX/credentials.json /home/pdbihm/.secrets/
-cp XXX/mail.json /home/pdbihm/.secrets/
+# Replace XXX with the location of those files and uncomment the lines
+# cp XXX/credentials.json /home/pdbihm/.secrets/
+# cp XXX/mail.json /home/pdbihm/.secrets/
 
 # Install configuration files
 cd /home/pdbihm/pdb/config/www

@@ -54,8 +54,9 @@ cp /home/isrddev/python-ihm/util/make-mmcif.py /home/pdbihm/pdb/make-mmCIF/
 cp /home/isrddev/protein-database/scripts/pdb_processing/config/mmcif_ihm_v1.22.sdb /home/pdbihm/pdb/sdb/
 
 # Install secrets
-cp XXX/credentials.json /home/pdbihm/.secrets/
-cp XXX/mail.json /home/pdbihm/.secrets/
+# Replace XXX with the location of those files and uncomment the lines
+# cp XXX/credentials.json /home/pdbihm/.secrets/
+# cp XXX/mail.json /home/pdbihm/.secrets/
 
 # Install configuration files
 cd /home/pdbihm/pdb/config/dev
@@ -105,10 +106,11 @@ pip3 install --upgrade rcsb.utils.taxonomy
 pip3 install --upgrade rcsb.utils.multiproc
 
 # Copy the isrd software library
-cp /home/isrddev/protein-database/scripts/ubuntu//www/pdb-software-lib.sh /usr/local/sbin/
+cp /home/isrddev/protein-database/scripts/ubuntu/dev/pdb-software-lib.sh /usr/local/sbin/
 
 # Create the scratch directory
-mkdir -p /var/scratch/www
+mkdir -p /var/scratch/dev
+mkdir -p /var/scratch/staging
 
 # Install the g++ library
 add-apt-repository -y ppa:ubuntu-toolchain-r/test
@@ -131,9 +133,13 @@ chown -R pdbihm:pdbihm /var/scratch
 chown -R pdbihm:root /mnt/vdb1/pdbihm
 
 # Install and start the backend service
-cp /home/isrddev/protein-database/scripts/ubuntu/www/pdb_www_processing_worker.service /etc/systemd/system/
-chmod u-w /etc/systemd/system/pdb_www_processing_worker.service
+cp /home/isrddev/protein-database/scripts/ubuntu/dev/pdb_dev_processing_worker.service /etc/systemd/system/
+cp /home/isrddev/protein-database/scripts/ubuntu/dev/pdb_staging_processing_worker.service /etc/systemd/system/
+chmod u-w /etc/systemd/system/pdb_dev_processing_worker.service
+chmod u-w /etc/systemd/system/pdb_staging_processing_worker.service
 systemctl daemon-reload
-systemctl enable pdb_www_processing_worker
-systemctl start pdb_www_processing_worker
+systemctl enable pdb_dev_processing_worker
+systemctl enable pdb_staging_processing_worker
+systemctl start pdb_dev_processing_worker
+systemctl start pdb_staging_processing_worker
 
