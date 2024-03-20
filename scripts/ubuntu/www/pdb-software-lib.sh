@@ -168,7 +168,7 @@ python_ihm_install()
 
 python_ihm_validation()
 {
-	DEVUSER=pdbihm
+    DEVUSER=pdbihm
     git_pull_checkout /mnt/vdb1/pdbihm/IHMValidation "$@"
 }
 
