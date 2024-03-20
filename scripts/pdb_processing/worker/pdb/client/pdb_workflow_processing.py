@@ -25,6 +25,7 @@ import logging
 import json
 import sys
 import traceback
+import logging.handlers
 
 from pdb_workflow_processing_lib.client import PDBClient
 from deriva.core import init_logging
@@ -52,6 +53,8 @@ def load(config_filename):
             loglevel = cfg.get('loglevel', None)
             logfile = cfg.get('log', None)
             if loglevel and logfile:
+                handler=logging.handlers.TimedRotatingFileHandler(logfile,when='D',backupCount=7)
+                logger.addHandler(handler)
                 init_logging(level=__LOGLEVEL.get(loglevel), log_format=FORMAT, file_path=logfile)
             else:
                 logging.getLogger().addHandler(logging.NullHandler())

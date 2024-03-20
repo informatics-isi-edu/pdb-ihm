@@ -7,6 +7,7 @@ import subprocess
 import logging
 import sys
 import traceback
+import logging.handlers
 
 # Loglevel dictionary
 __LOGLEVEL = {'error': logging.ERROR,
@@ -20,6 +21,8 @@ logger = logging.getLogger(__name__)
 loglevel = os.getenv('LOGLEVEL', 'info')
 loglevel =__LOGLEVEL.get(loglevel)
 logfile = os.getenv('PDB_LOG', '/home/pdbihm/pdb/log/pdb.log')
+handler=logging.handlers.TimedRotatingFileHandler(logfile,when='D',backupCount=7)
+logger.addHandler(handler)
 init_logging(level=loglevel, log_format=FORMAT, file_path=logfile)
 
 Process_Status_Terms = {

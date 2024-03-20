@@ -2295,8 +2295,6 @@ class PDBClient (object):
     Execute report validation.
     """
     def report_validation(self, rid, entry_id, user, user_id):
-        if False:
-            return(None, None, None)
         try:
             """
             Get the System Generated mmCIF File
