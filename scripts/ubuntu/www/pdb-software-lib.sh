@@ -166,3 +166,9 @@ python_ihm_install()
     pip3 install ihm==1.0
 }
 
+python_ihm_validation()
+{
+	DEVUSER=pdbihm
+    git_pull_checkout /mnt/vdb1/pdbihm/IHMValidation "$@"
+}
+
