@@ -1,7 +1,5 @@
 #!/bin/bash
 
-ROOT_DIR=$PWD
-
 apt update -y
 apt install -y wget git
 
@@ -26,7 +24,7 @@ wget https://salilab.org/~arthur/ihmv/prebuilt_containers/ihmv_20231222.sif
 git clone --branch dev_2.0 https://github.com/salilab/IHMValidation.git
 
 # Test installation
-singularity exec --pid --bind IHMValidation/:/opt/IHMValidation,input:/ihmv/input,output:/ihmv/output,cache:/ihmv/cache ihmv_20231222.sif /opt/IHMValidation/ihm_validation/ihm_validator.py --output-root /ihmv/output --cache-root /ihmv/cache --force -h
+# singularity exec --pid --bind IHMValidation/:/opt/IHMValidation,input:/ihmv/input,output:/ihmv/output,cache:/ihmv/cache ihmv_20231222.sif /opt/IHMValidation/ihm_validation/ihm_validator.py --output-root /ihmv/output --cache-root /ihmv/cache --force -h
 
 # Create users
 useradd -m pdbihm
