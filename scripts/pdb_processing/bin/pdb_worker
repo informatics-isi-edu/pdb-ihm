@@ -30,7 +30,7 @@ Process_Status_Terms = {
     'REPROCESS': 'Reprocess (trigger backend process after Error)',
     'IN_PROGRESS_UPLOADING_mmCIF_FILE': 'In progress: processing uploaded mmCIF file',
     'IN_PROGRESS_GENERATING_mmCIF_FILE': 'In progress: generating mmCIF file',
-    'IN_PROGRESS_GENERATING_ACCESSION_CODE': 'In progress: generating accession code',
+    'IN_PROGRESS_GENERATING_ACCESSION_CODE': 'In progress: generating system files',
     'IN_PROGRESS_RELEASING_ENTRY': 'In progress: releasing entry',
     'SUCCESS': 'Success',
     'RESUME': 'Resume (trigger backend process)',
