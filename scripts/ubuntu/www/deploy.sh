@@ -1,7 +1,7 @@
 #!/bin/bash
 
 apt update -y
-apt install -y wget git
+# apt install -y wget git
 
 # Download prebuilt singularity package for Ubuntu 20.04
 wget https://salilab.org/~arthur/ihmv/packages/singularity_3.8.4-2_amd64.deb
@@ -39,7 +39,7 @@ chown -R isrddev:isrddev /home/isrddev
 
 # Install py-rcsb_db
 cd /home/pdbihm
-mkdir -p .secrets pdb/config/www pdb/make-mmCIF pdb/sdb pdb/log/www pdb/cpp-dict-pack/build/bin backup_logs/www temp 
+mkdir -p .secrets pdb/config/www pdb/make-mmCIF pdb/sdb pdb/log/www backup_logs/www temp 
 cd /home/pdbihm/pdb
 wget https://salilab.org/~arthur/ihmv/packages/py-rcsb_db_v0.86.tar.gz
 tar -xzf py-rcsb_db_v0.86.tar.gz
@@ -79,7 +79,7 @@ apt -y install python3-pip
 # Install Python packages
 pip3 install --upgrade bdbag[boto,globus]
 pip3 install --upgrade biopython
-pip3 install --upgrade ihm
+pip3 install --upgrade ihm==1.0
 pip3 install --upgrade mmcif
 pip3 install --upgrade rcsb.utils.io
 pip3 install --upgrade rcsb.utils.io
@@ -92,6 +92,8 @@ pip3 install --upgrade rcsb.utils.multiproc
 
 # Copy the isrd software library
 cp /home/isrddev/protein-database/scripts/ubuntu/www/pdb-software-lib.sh /usr/local/sbin/
+cp /home/isrddev/protein-database/scripts/ubuntu/www/www-update.sh /root/
+cp /home/isrddev/protein-database/scripts/ubuntu/www/ihm_validation_checkout.sh /root/
 
 # Create the scratch directory
 mkdir -p /var/scratch/www
@@ -115,6 +117,10 @@ make
 chown -R pdbihm:pdbihm /home/pdbihm
 chown -R pdbihm:pdbihm /var/scratch
 chown -R pdbihm:root /mnt/vdb1/pdbihm
+
+# Apply the tags
+/root/ihm_validation_checkout.sh
+/root/www-update.sh
 
 # Install and start the backend service
 cp /home/isrddev/protein-database/scripts/ubuntu/www/pdb_www_processing_worker.service /etc/systemd/system/
