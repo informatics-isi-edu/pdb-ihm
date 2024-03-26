@@ -30,13 +30,13 @@ Process_Status_Terms = {
     'REPROCESS': 'Reprocess (trigger backend process after Error)',
     'IN_PROGRESS_UPLOADING_mmCIF_FILE': 'In progress: processing uploaded mmCIF file',
     'IN_PROGRESS_GENERATING_mmCIF_FILE': 'In progress: generating mmCIF file',
-    'IN_PROGRESS_GENERATING_ACCESSION_CODE': 'In progress: generating system files',
+    'IN_PROGRESS_GENERATING_SYSTEM_FILES': 'In progress: generating system files',
     'IN_PROGRESS_RELEASING_ENTRY': 'In progress: releasing entry',
     'SUCCESS': 'Success',
     'RESUME': 'Resume (trigger backend process)',
     'ERROR_PROCESSING_UPLOADED_mmCIF_FILE': 'Error: processing uploaded mmCIF file',
     'ERROR_GENERATING_mmCIF_FILE': 'Error: generating mmCIF file',
-    'ERROR_GENERATING_ACCESSION_CODE': 'Error: generating accession code',
+    'ERROR_GENERATING_SYSTEM_FILES': 'Error: generating accession code',
     'ERROR_RELEASING_ENTRY': 'Error: releasing entry',
     'IN_PROGRESS_PROCESSING_UPLOADED_RESTRAINT_FILES': 'In progress: processing uploaded restraint files',
     'ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES': 'Error: processing uploaded restraint files'
@@ -152,8 +152,8 @@ _work_units.append(
         '/attributegroup/PDB:entry/RID;Process_Status',
         '/attributegroup/PDB:entry/RID',
         submission_complete_row_job,
-        claim_input_data=lambda row: {'RID': row['RID'], 'Process_Status': Process_Status_Terms['IN_PROGRESS_GENERATING_ACCESSION_CODE']},
-        failure_input_data=lambda row, e: {'RID': row['RID'], 'Process_Status': Process_Status_Terms['ERROR_GENERATING_ACCESSION_CODE']}
+        claim_input_data=lambda row: {'RID': row['RID'], 'Process_Status': Process_Status_Terms['IN_PROGRESS_GENERATING_SYSTEM_FILES']},
+        failure_input_data=lambda row, e: {'RID': row['RID'], 'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES']}
     )
 )
 

@@ -82,13 +82,13 @@ Process_Status_Terms = {
     'REPROCESS': 'Reprocess (trigger backend process after Error)',
     'IN_PROGRESS_UPLOADING_mmCIF_FILE': 'In progress: processing uploaded mmCIF file',
     'IN_PROGRESS_GENERATING_mmCIF_FILE': 'In progress: generating mmCIF file',
-    'IN_PROGRESS_GENERATING_ACCESSION_CODE': 'In progress: generating system files',
+    'IN_PROGRESS_GENERATING_SYSTEM_FILES': 'In progress: generating system files',
     'IN_PROGRESS_RELEASING_ENTRY': 'In progress: releasing entry',
     'SUCCESS': 'Success',
     'RESUME': 'Resume (trigger backend process)',
     'ERROR_PROCESSING_UPLOADED_mmCIF_FILE': 'Error: processing uploaded mmCIF file',
     'ERROR_GENERATING_mmCIF_FILE': 'Error: generating mmCIF file',
-    'ERROR_GENERATING_ACCESSION_CODE': 'Error: generating accession code',
+    'ERROR_GENERATING_SYSTEM_FILES': 'Error: generating system files',
     'ERROR_RELEASING_ENTRY': 'Error: releasing entry',
     'IN_PROGRESS_PROCESSING_UPLOADED_RESTRAINT_FILES': 'In progress: processing uploaded restraint files',
     'ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES': 'Error: processing uploaded restraint files'
@@ -1795,8 +1795,8 @@ class PDBClient (object):
                 accession_serial_value = row['Accession_Code']
             else:
                 self.logger.error('Error created in the table Accession_Code the row "%s".' % (json.dumps(row, indent=4)))
-                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMISSION COMPLETE', Process_Status_Terms['ERROR_GENERATING_ACCESSION_CODE'], user)
-                self.sendMail(subject, 'RID: %s\n%s\n' % (rid, Process_Status_Terms['ERROR_GENERATING_ACCESSION_CODE']))
+                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMISSION COMPLETE', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'], user)
+                self.sendMail(subject, 'RID: %s\n%s\n' % (rid, Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES']))
                 return (None, 'Error in getting a new serial value')
             return (accession_serial_value, None)
         except:
@@ -1804,7 +1804,7 @@ class PDBClient (object):
             self.logger.error('got exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
             self.export_error_message = 'ERROR getNextAccessionSerial: "%s"' % str(ev)
-            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', Process_Status_Terms['ERROR_GENERATING_ACCESSION_CODE'], user)
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'], user)
             self.sendMail(subject, 'RID: %s\n%s\n' % (rid, ''.join(traceback.format_exception(et, ev, tb))))
             return (None, str(ev))
         
@@ -1834,7 +1834,7 @@ class PDBClient (object):
             et, ev, tb = sys.exc_info()
             self.logger.error('got exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            subject = 'PDB-Dev {} {}: {} ({})'.format(row['RID'], 'SUBMISSION COMPLETE', Process_Status_Terms['ERROR_GENERATING_ACCESSION_CODE'], user)
+            subject = 'PDB-Dev {} {}: {} ({})'.format(row['RID'], 'SUBMISSION COMPLETE', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'], user)
             self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
             return (None, str(ev))
         
@@ -2213,7 +2213,7 @@ class PDBClient (object):
         fw.write('#\n')    
         return 0
 
-    def addCollectionRecords(self, rid, entry_id, fw):
+    def addCollectionRecords(self, rid, entry_id, fw, hold):
         """
         Get the RCB user
         """
@@ -2239,7 +2239,7 @@ class PDBClient (object):
                                           rid,
                                           ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                           {'RID': rid,
-                                          'Process_Status': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
+                                          'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'],
                                           'Record_Status_Detail': error_message,
                                           'Workflow_Status': 'ERROR'
                                           },
@@ -2264,7 +2264,7 @@ class PDBClient (object):
                                           rid,
                                           ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                           {'RID': rid,
-                                          'Process_Status': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
+                                          'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'],
                                           'Record_Status_Detail': error_message,
                                           'Workflow_Status': 'ERROR'
                                           },
@@ -2276,7 +2276,7 @@ class PDBClient (object):
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'RELEASE READY', Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMISSION COMPLETE' if hold else 'RELEASE READY', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
             self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
             error_message = 'ERROR addCollectionRecords: "%s"' % str(ev)
             self.updateAttributes('PDB',
@@ -2284,7 +2284,7 @@ class PDBClient (object):
                                   rid,
                                   ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
+                                  'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'],
                                   'Record_Status_Detail': error_message,
                                   'Workflow_Status': 'ERROR'
                                   },
@@ -2294,7 +2294,7 @@ class PDBClient (object):
     """
     Execute report validation.
     """
-    def report_validation(self, rid, entry_id, user, user_id):
+    def report_validation(self, rid, entry_id, user, user_id, hold):
         try:
             """
             Get the System Generated mmCIF File
@@ -2340,7 +2340,7 @@ class PDBClient (object):
                 os.chdir(currentDirectory)
                 if returncode != 0:
                     self.logger.debug(f'ERROR.\nstdoutdata: {stdoutdata}\nstderrdata: {stderrdata}\n') 
-                    subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'REPORT VALIDATION', Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
+                    subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'REPORT VALIDATION', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
                     error_message = f'ERROR IN REPORT VALIDATION.\nstdoutdata: {stdoutdata}\nstderrdata: {stderrdata}\n'
                     self.sendMail(subject, error_message)
                     self.updateAttributes('PDB',
@@ -2348,7 +2348,7 @@ class PDBClient (object):
                                       rid,
                                       ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                       {'RID': rid,
-                                      'Process_Status': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
+                                      'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'],
                                       'Record_Status_Detail': error_message,
                                       'Workflow_Status': 'ERROR'
                                       },
@@ -2391,7 +2391,7 @@ class PDBClient (object):
                                                       rid,
                                                       ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                                       {'RID': rid,
-                                                      'Process_Status': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
+                                                      'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'],
                                                       'Record_Status_Detail': 'Error in createEntity(Entry_Generated_File)',
                                                       'Workflow_Status': 'ERROR'
                                                       },
@@ -2405,7 +2405,7 @@ class PDBClient (object):
                 et, ev, tb = sys.exc_info()
                 self.logger.error('got TimeoutExpired exception "%s"' % str(ev))
                 self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'REPORT VALIDATION TimeoutExpired', Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
+                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'REPORT VALIDATION TimeoutExpired', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
                 error_message = '%s\n' % ''.join(traceback.format_exception(et, ev, tb))
                 self.sendMail(subject, error_message)
                 self.updateAttributes('PDB',
@@ -2413,7 +2413,7 @@ class PDBClient (object):
                                   rid,
                                   ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
+                                  'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'],
                                   'Record_Status_Detail': error_message,
                                   'Workflow_Status': 'ERROR'
                                   },
@@ -2425,14 +2425,14 @@ class PDBClient (object):
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'RELEASE READY', Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMISSION COMPLETE' if hold else 'RELEASE READY', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
             self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
             return(None, None, None)
 
     """
     Execute JSON mmCIF content.
     """
-    def generate_JSON_mmCIF_content(self, rid, entry_id, user, user_id):
+    def generate_JSON_mmCIF_content(self, rid, entry_id, user, user_id, hold):
         try:
             """
             Get the System Generated mmCIF File
@@ -2522,7 +2522,7 @@ class PDBClient (object):
                                           rid,
                                           ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                           {'RID': rid,
-                                          'Process_Status': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
+                                          'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'],
                                           'Record_Status_Detail': 'Error in createEntity(Entry_Generated_File)',
                                           'Workflow_Status': 'ERROR'
                                           },
@@ -2544,7 +2544,7 @@ class PDBClient (object):
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'RELEASE READY', Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMISSION COMPLETE' if hold else 'RELEASE READY', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
             self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
             return None 
 
@@ -2579,12 +2579,12 @@ class PDBClient (object):
                                       ["Process_Status", "Workflow_Status"],
                                       {'RID': rid,
                                       'Record_Status_Detail': 'ERROR addReleaseRecords: Invalid number of mmCIF files: {}'.format(len(rows)),
-                                      'Process_Status': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
+                                      'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'],
                                       'Workflow_Status': 'ERROR'
                                       },
                                       user)
                 self.logger.debug('Invalid number of mmCIF files: {}'.format(len(rows))) 
-                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'RELEASE READY', Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
+                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMISSION COMPLETE' if hold else 'RELEASE READY', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
                 self.sendMail(subject, 'Invalid number of mmCIF files: {}'.format(len(rows)))
                 return
             row = rows[0]
@@ -2598,7 +2598,7 @@ class PDBClient (object):
                                       rid,
                                       ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                       {'RID': rid,
-                                      'Process_Status': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
+                                      'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'],
                                       'Record_Status_Detail': error_message,
                                       'Workflow_Status': 'ERROR'
                                       },
@@ -2662,7 +2662,7 @@ class PDBClient (object):
                     if line == '#\n':
                         audit_conform = False
                         fw.write(records_release)
-                        if self.addCollectionRecords(rid, entry_id, fw) == False:
+                        if self.addCollectionRecords(rid, entry_id, fw, hold) == False:
                             fr.close()
                             fw.close()
                             return
@@ -2687,8 +2687,8 @@ class PDBClient (object):
                                   },
                                   user)
             if self.reportValidation:
-                if self.report_validation(rid, entry_id, user, user_id) != (None, None, None):
-                    if self.generate_JSON_mmCIF_content(rid, entry_id, user, user_id) != None:
+                if self.report_validation(rid, entry_id, user, user_id, hold) != (None, None, None):
+                    if self.generate_JSON_mmCIF_content(rid, entry_id, user, user_id, hold) != None:
                         self.updateAttributes('PDB',
                                               'entry',
                                               rid,
@@ -2712,7 +2712,7 @@ class PDBClient (object):
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'RELEASE READY', Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMISSION COMPLETE' if hold else 'RELEASE READY', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
             self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
             error_message = 'ERROR addReleaseRecords: "%s"' % str(ev)
             self.updateAttributes('PDB',
@@ -2720,7 +2720,7 @@ class PDBClient (object):
                                   rid,
                                   ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
+                                  'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'],
                                   'Record_Status_Detail': error_message,
                                   'Workflow_Status': 'ERROR'
                                   },
@@ -2749,7 +2749,7 @@ class PDBClient (object):
                                       rid,
                                       ["Process_Status", "Accession_Code", "Workflow_Status", "Record_Status_Detail"],
                                       {'RID': rid,
-                                      'Process_Status': Process_Status_Terms['ERROR_GENERATING_ACCESSION_CODE'],
+                                      'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'],
                                       'Accession_Code': None,
                                       'Record_Status_Detail': error_message,
                                       'Workflow_Status': 'ERROR'
@@ -2775,7 +2775,7 @@ class PDBClient (object):
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'RELEASE READY', Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
+            subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMISSION COMPLETE', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'], user)
             self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
             error_message = 'ERROR set_accession_code: "%s"' % str(ev)
             self.updateAttributes('PDB',
@@ -2783,7 +2783,7 @@ class PDBClient (object):
                                   rid,
                                   ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                   {'RID': rid,
-                                  'Process_Status': Process_Status_Terms['ERROR_GENERATING_ACCESSION_CODE'],
+                                  'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'],
                                   'Record_Status_Detail': error_message,
                                   'Workflow_Status': 'ERROR'
                                   },
