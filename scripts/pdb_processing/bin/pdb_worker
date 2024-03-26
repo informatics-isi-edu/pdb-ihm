@@ -36,7 +36,7 @@ Process_Status_Terms = {
     'RESUME': 'Resume (trigger backend process)',
     'ERROR_PROCESSING_UPLOADED_mmCIF_FILE': 'Error: processing uploaded mmCIF file',
     'ERROR_GENERATING_mmCIF_FILE': 'Error: generating mmCIF file',
-    'ERROR_GENERATING_SYSTEM_FILES': 'Error: generating accession code',
+    'ERROR_GENERATING_SYSTEM_FILES': 'Error: generating system files',
     'ERROR_RELEASING_ENTRY': 'Error: releasing entry',
     'IN_PROGRESS_PROCESSING_UPLOADED_RESTRAINT_FILES': 'In progress: processing uploaded restraint files',
     'ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES': 'Error: processing uploaded restraint files'
