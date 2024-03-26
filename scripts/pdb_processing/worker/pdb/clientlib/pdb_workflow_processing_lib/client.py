@@ -2557,7 +2557,7 @@ class PDBClient (object):
         user_id = self.getUserId('PDB', 'entry', rid)
 
         try:
-            if self.export_mmCIF('PDB', 'entry', rid, release=True, user_id=user_id) != 0:
+            if self.export_mmCIF('PDB', 'entry', rid, release=not hold, user_id=user_id) != 0:
                 """
                 We can not recreate the mmCIF exported file
                 """
