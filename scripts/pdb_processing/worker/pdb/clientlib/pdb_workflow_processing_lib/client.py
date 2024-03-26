@@ -456,7 +456,7 @@ class PDBClient (object):
         if release == True:
             process_status_error = Process_Status_Terms['ERROR_RELEASING_ENTRY']
         else:
-            process_status_error = Process_Status_Terms['ERROR_GENERATING_mmCIF_FILE']
+            process_status_error = Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES']
         
         deriva_tables = ['entry']
         mmCIF_tables = []
