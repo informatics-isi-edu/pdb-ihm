@@ -3,15 +3,13 @@
 . /usr/local/sbin/pdb-software-lib.sh
 
 job_tasks=(
-    "derivapy_pull_checkout"
-    "pdb_www_pull_checkout"
+    "derivapy_pull_checkout pdb-20240321.1"
+    "pdb_www_pull_checkout pdb-20240321.1"
     "python_ihm_pull_checkout 1.0"
     "derivapy_install"
     "pdb_processing_install"
     "python_ihm_install"
-    "python_ihm_validation origin/dev_2.0"
-    "require service pdb_dev_processing_worker restart"
-    "require service pdb_staging_processing_worker restart"
+    "python_ihm_validation 20240315"
 )
 
 cron_run "hourly-update" "${job_tasks[@]}"

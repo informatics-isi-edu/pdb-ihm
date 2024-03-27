@@ -94,6 +94,8 @@ pip3 install --upgrade rcsb.utils.multiproc
 cp /home/isrddev/protein-database/scripts/ubuntu/www/pdb-software-lib.sh /usr/local/sbin/
 cp /home/isrddev/protein-database/scripts/ubuntu/www/www-update.sh /root/
 cp /home/isrddev/protein-database/scripts/ubuntu/www/ihm_validation_checkout.sh /root/
+cp /home/isrddev/protein-database/scripts/ubuntu/www/www-checkout.sh /root/
+cp /home/isrddev/protein-database/scripts/ubuntu/www/cleanup-tmp /etc/cron.daily/
 
 # Create the scratch directory
 mkdir -p /var/scratch/www
@@ -120,7 +122,11 @@ chown -R pdbihm:root /mnt/vdb1/pdbihm
 
 # Apply the tags
 /root/ihm_validation_checkout.sh
-/root/www-update.sh
+/root/www-checkout.sh
+
+# Install pdb_dev
+cd /home/isrddev/protein-database
+pip3 install --upgrade .
 
 # Install and start the backend service
 cp /home/isrddev/protein-database/scripts/ubuntu/www/pdb_www_processing_worker.service /etc/systemd/system/

@@ -107,6 +107,8 @@ pip3 install --upgrade rcsb.utils.multiproc
 
 # Copy the isrd software library
 cp /home/isrddev/protein-database/scripts/ubuntu/dev/pdb-software-lib.sh /usr/local/sbin/
+cp /home/isrddev/protein-database/scripts/ubuntu/dev/cleanup-tmp /etc/cron.daily/
+cp /home/isrddev/protein-database/scripts/ubuntu/dev/dev-checkout.sh /root/
 
 # Create the scratch directory
 mkdir -p /var/scratch/dev
@@ -131,6 +133,13 @@ make
 chown -R pdbihm:pdbihm /home/pdbihm
 chown -R pdbihm:pdbihm /var/scratch
 chown -R pdbihm:root /mnt/vdb1/pdbihm
+
+# Apply the tags
+/root/dev-checkout.sh
+
+# Install pdb_dev
+cd /home/isrddev/protein-database
+pip3 install --upgrade .
 
 # Install and start the backend service
 cp /home/isrddev/protein-database/scripts/ubuntu/dev/pdb_dev_processing_worker.service /etc/systemd/system/

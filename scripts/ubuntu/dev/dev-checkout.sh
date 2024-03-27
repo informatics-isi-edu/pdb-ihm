@@ -10,8 +10,6 @@ job_tasks=(
     "pdb_processing_install"
     "python_ihm_install"
     "python_ihm_validation origin/dev_2.0"
-    "require service pdb_dev_processing_worker restart"
-    "require service pdb_staging_processing_worker restart"
 )
 
 cron_run "hourly-update" "${job_tasks[@]}"
