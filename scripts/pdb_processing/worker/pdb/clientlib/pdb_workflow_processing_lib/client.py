@@ -317,14 +317,19 @@ class PDBClient (object):
                 return
                 
             if action == 'entry':
+                self.action = 'DEPO'
                 self.process_mmCIF('PDB','entry', rid)
             elif action == 'Entry_Related_File':
+                self.action = 'DEPO'
                 self.process_Entry_Related_File('PDB', 'Entry_Related_File', rid)
             elif action == 'export':
+                self.action = 'SUBMIT'
                 self.export_mmCIF('PDB', 'entry', rid)
             elif action == 'accession_code':
+                self.action = 'SUBMISSION COMPLETE'
                 self.set_accession_code(rid)
             elif action == 'release_mmCIF':
+                self.action = 'RELEASE READY'
                 self.addReleaseRecords(rid)
             else:
                 self.logger.error('Unknown action: "%s".' % action)
@@ -456,7 +461,10 @@ class PDBClient (object):
         if release == True:
             process_status_error = Process_Status_Terms['ERROR_RELEASING_ENTRY']
         else:
-            process_status_error = Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES']
+            if self.action == 'SUBMIT':
+                process_status_error = Process_Status_Terms['ERROR_GENERATING_mmCIF_FILE']
+            else:
+                process_status_error = Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES']
         
         deriva_tables = ['entry']
         mmCIF_tables = []
