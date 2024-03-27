@@ -312,7 +312,9 @@ def set_PDB_entry(model):
                         { "filter": "Workflow_Status", "operator": "=", "operand": "DRAFT",  },
                         { "filter": "Workflow_Status", "operator": "=", "operand": "DEPO", },
                         { "filter": "Workflow_Status", "operator": "=", "operand": "RECORD READY", },
-                        { "filter": "Workflow_Status", "operator": "=", "operand": "ERROR", }
+                        { "filter": "Process_Status", "operator": "=", "operand": "Error: generating mmCIF file", },
+                        { "filter": "Process_Status", "operator": "=", "operand": "Error: processing uploaded mmCIF file", },
+                        { "filter": "Process_Status", "operator": "=", "operand": "Error: processing uploaded restraint files", }
                     ]
                 },
                 "RCB"
