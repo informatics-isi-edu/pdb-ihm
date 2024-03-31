@@ -1,16 +1,19 @@
 #!/bin/bash
 
 apt update -y
-# apt install -y wget git
 
-# Download prebuilt singularity package for Ubuntu 20.04
-wget https://salilab.org/~arthur/ihmv/packages/singularity_3.8.4-2_amd64.deb
+# Install if necessary wget and git
+apt install -y wget git
 
-# Install singularity
-apt install -yf ./singularity_3.8.4-2_amd64.deb
+# Create isrddev user
+useradd -m isrddev
 
-# Remove deb
-rm ./singularity_3.8.4-2_amd64.deb
+# Clone protein-database repository
+cd /home/isrddev
+git clone https://github.com/informatics-isi-edu/protein-database.git
+
+# Install common packages
+/home/isrddev/protein-database/scripts/ubuntu/workflow-common/deploy-common.sh
 
 # Create singularity work directory
 mkdir -p /mnt/vdb1/pdbihm
@@ -28,28 +31,16 @@ git clone --branch dev_2.0 https://github.com/salilab/IHMValidation.git
 
 # Create users
 useradd -m pdbihm
-useradd -m isrddev
 
 # Clone the isrddev repositories
 cd /home/isrddev
 git clone https://github.com/informatics-isi-edu/deriva-py.git
-git clone https://github.com/informatics-isi-edu/protein-database.git
 git clone https://github.com/ihmwg/python-ihm.git
 chown -R isrddev:isrddev /home/isrddev
 
-# Install py-rcsb_db
+# Make production specific directories
 cd /home/pdbihm
-mkdir -p .secrets pdb/config/www pdb/make-mmCIF pdb/sdb pdb/log/www backup_logs/www temp 
-cd /home/pdbihm/pdb
-wget https://salilab.org/~arthur/ihmv/packages/py-rcsb_db_v0.86.tar.gz
-tar -xzf py-rcsb_db_v0.86.tar.gz
-rm -f py-rcsb_db_v0.86.tar.gz
-
-# Install make-mmcif.py
-cp /home/isrddev/python-ihm/util/make-mmcif.py /home/pdbihm/pdb/make-mmCIF/
-
-# Install the mmcif_ihm_v1.22.sdb dictionary
-cp /home/isrddev/protein-database/scripts/pdb_processing/config/mmcif_ihm_v1.22.sdb /home/pdbihm/pdb/sdb/
+mkdir -p pdb/config/www pdb/log/www backup_logs/www 
 
 # Install secrets
 # Replace XXX with the location of those files and uncomment the lines
@@ -70,50 +61,13 @@ cp /home/isrddev/protein-database/scripts/pdb_processing/config/combo1_columns.j
 cp /home/isrddev/protein-database/scripts/pdb_processing/config/exported_vocab.map ./
 cp /home/isrddev/protein-database/scripts/pdb_processing/config/pdb_conf_www.json ./pdb_conf.json
 
-# Install SELinux packages
-apt -y install policycoreutils
-
-# Install pip3
-apt -y install python3-pip
-
-# Install Python packages
-pip3 install --upgrade bdbag[boto,globus]
-pip3 install --upgrade biopython
-pip3 install --upgrade ihm==1.0
-pip3 install --upgrade mmcif
-pip3 install --upgrade rcsb.utils.io
-pip3 install --upgrade rcsb.utils.io
-pip3 install --upgrade rcsb.utils.chemref
-pip3 install --upgrade rcsb.utils.ec
-pip3 install --upgrade rcsb.utils.seq
-pip3 install --upgrade rcsb.utils.struct
-pip3 install --upgrade rcsb.utils.taxonomy
-pip3 install --upgrade rcsb.utils.multiproc
-
-# Copy the isrd software library
-cp /home/isrddev/protein-database/scripts/ubuntu/www/pdb-software-lib.sh /usr/local/sbin/
-cp /home/isrddev/protein-database/scripts/ubuntu/www/www-update.sh /root/
-cp /home/isrddev/protein-database/scripts/ubuntu/www/ihm_validation_checkout.sh /root/
-cp /home/isrddev/protein-database/scripts/ubuntu/www/www-checkout.sh /root/
-cp /home/isrddev/protein-database/scripts/ubuntu/www/cleanup-tmp /etc/cron.daily/
+# Copy the production scripts
+cp /home/isrddev/protein-database/scripts/ubuntu/workflow-prod/www-update.sh /root/
+cp /home/isrddev/protein-database/scripts/ubuntu/workflow-prod/ihm_validation_checkout.sh /root/
+cp /home/isrddev/protein-database/scripts/ubuntu/workflow-prod/www-checkout.sh /root/
 
 # Create the scratch directory
 mkdir -p /var/scratch/www
-
-# Install the g++ library
-add-apt-repository -y ppa:ubuntu-toolchain-r/test
-apt install -y g++-11
-
-# Build CifCheck
-apt install -y cmake flex bison
-cd /home/pdbihm/pdb
-git clone  --recurse-submodules  https://github.com/rcsb/cpp-dict-pack.git
-cd cpp-dict-pack
-mkdir build
-cd build
-cmake .. -DMINIMAL_DICTS=ON
-make
-
 
 # Adjust ownership
 chown -R pdbihm:pdbihm /home/pdbihm
@@ -124,12 +78,8 @@ chown -R pdbihm:root /mnt/vdb1/pdbihm
 /root/ihm_validation_checkout.sh
 /root/www-checkout.sh
 
-# Install pdb_dev
-cd /home/isrddev/protein-database
-pip3 install --upgrade .
-
 # Install and start the backend service
-cp /home/isrddev/protein-database/scripts/ubuntu/www/pdb_www_processing_worker.service /etc/systemd/system/
+cp /home/isrddev/protein-database/scripts/ubuntu/workflow-prod/pdb_www_processing_worker.service /etc/systemd/system/
 chmod u-w /etc/systemd/system/pdb_www_processing_worker.service
 systemctl daemon-reload
 systemctl enable pdb_www_processing_worker
