@@ -6332,6 +6332,24 @@
                      ]
                   },
                   {
+                     "markdown_name" : "Workflow Status",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Accession_Code_Entry_fkey"
+                           ]
+                        },
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "entry_Workflow_Status_fkey"
+                           ]
+                        },
+                        "Name"
+                     ]
+                  },
+                  {
                      "markdown_name" : "RCB",
                      "source" : [
                         {
@@ -6434,6 +6452,24 @@
                            ]
                         },
                         "RID"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "Workflow Status",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Accession_Code_Entry_fkey"
+                           ]
+                        },
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "entry_Workflow_Status_fkey"
+                           ]
+                        },
+                        "Name"
                      ]
                   }
                 ],
