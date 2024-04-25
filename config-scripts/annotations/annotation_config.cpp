@@ -6315,10 +6315,22 @@
                     "RID",
                     "Accession_Serial",
                     "Accession_Code",
-                    "PDBDEV_Accession_Code",
-                    "PDB_Extended_Code",
-                    "PDB_code",
-                    "PDB_Accession_Code",
+                  {
+                     "markdown_name" : "PDBDEV Accession Code",
+                     "source" : "PDBDEV_Accession_Code"
+                  },
+                  {
+                     "markdown_name" : "PDB Extended Code",
+                     "source" : "PDB_Extended_Code"
+                  },
+                  {
+                     "markdown_name" : "PDB Code",
+                     "source" : "PDB_code"
+                  },
+                  {
+                     "markdown_name" : "PDB Accession Code",
+                     "source" : "PDB_Accession_Code"
+                  },
                   {
                      "markdown_name" : "Entry",
                      "source" : [
@@ -6437,10 +6449,22 @@
                   },
                       "Accession_Serial",
                       "Accession_Code",
-                      "PDBDEV_Accession_Code",
-                      "PDB_Extended_Code",
-                      "PDB_code",
-                      "PDB_Accession_Code",
+                  {
+                     "markdown_name" : "PDBDEV Accession Code",
+                     "source" : "PDBDEV_Accession_Code"
+                  },
+                  {
+                     "markdown_name" : "PDB Extended Code",
+                     "source" : "PDB_Extended_Code"
+                  },
+                  {
+                     "markdown_name" : "PDB Code",
+                     "source" : "PDB_code"
+                  },
+                  {
+                     "markdown_name" : "PDB Accession Code",
+                     "source" : "PDB_Accession_Code"
+                  },
                       "Notes",
                   {
                      "markdown_name" : "Entry",
