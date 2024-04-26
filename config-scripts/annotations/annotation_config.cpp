@@ -6418,6 +6418,24 @@
                   {
                      "markdown_name" : "PDB Accession Code",
                      "source" : "PDB_Accession_Code"
+                  },
+                  {
+                     "markdown_name" : "Workflow Status",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Accession_Code_Entry_fkey"
+                           ]
+                        },
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "entry_Workflow_Status_fkey"
+                           ]
+                        },
+                        "Name"
+                     ]
                   }
                 ]
                 },
