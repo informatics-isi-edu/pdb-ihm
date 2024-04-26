@@ -6325,7 +6325,7 @@
                   },
                   {
                      "markdown_name" : "PDB Code",
-                     "source" : "PDB_code"
+                     "source" : "PDB_Code"
                   },
                   {
                      "markdown_name" : "PDB Accession Code",
@@ -6413,7 +6413,7 @@
                   },
                   {
                      "markdown_name" : "PDB Code",
-                     "source" : "PDB_code"
+                     "source" : "PDB_Code"
                   },
                   {
                      "markdown_name" : "PDB Accession Code",
@@ -6477,7 +6477,7 @@
                   },
                   {
                      "markdown_name" : "PDB Code",
-                     "source" : "PDB_code"
+                     "source" : "PDB_Code"
                   },
                   {
                      "markdown_name" : "PDB Accession Code",
@@ -6516,8 +6516,37 @@
                   }
                 ],
                 "entry/edit": [
+                  {
+                     "markdown_name" : "Entry",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Accession_Code_Entry_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  },
+                    "Accession_Serial",
                     "Accession_Code",
-                    "Notes"
+                  {
+                     "markdown_name" : "PDBDEV Accession Code",
+                     "source" : "PDBDEV_Accession_Code"
+                  },
+                  {
+                     "markdown_name" : "PDB Extended Code",
+                     "source" : "PDB_Extended_Code"
+                  },
+                  {
+                     "markdown_name" : "PDB Code",
+                     "source" : "PDB_Code"
+                  },
+                  {
+                     "markdown_name" : "PDB Accession Code",
+                     "source" : "PDB_Accession_Code"
+                  },
+                      "Notes"
                 ],
                 "entry": [
                   {
@@ -6531,6 +6560,24 @@
                         },
                         "RID"
                      ]
+                  },
+                    "Accession_Serial",
+                    "Accession_Code",
+                  {
+                     "markdown_name" : "PDBDEV Accession Code",
+                     "source" : "PDBDEV_Accession_Code"
+                  },
+                  {
+                     "markdown_name" : "PDB Extended Code",
+                     "source" : "PDB_Extended_Code"
+                  },
+                  {
+                     "markdown_name" : "PDB Code",
+                     "source" : "PDB_Code"
+                  },
+                  {
+                     "markdown_name" : "PDB Accession Code",
+                     "source" : "PDB_Accession_Code"
                   },
                   "Notes"
                 ]
