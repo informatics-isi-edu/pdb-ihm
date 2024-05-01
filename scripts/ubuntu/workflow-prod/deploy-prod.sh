@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# scp the credentials.json and mail.json files into the directory from where you are running the deploy-prod.sh script
+
+BASEDIR=$(pwd)
+
 apt update -y
 
 # Install if necessary wget and git
@@ -43,9 +47,8 @@ cd /home/pdbihm
 mkdir -p pdb/config/www pdb/log/www backup_logs/www 
 
 # Install secrets
-# Replace XXX with the location of those files and uncomment the lines
-# cp XXX/credentials.json /home/pdbihm/.secrets/
-# cp XXX/mail.json /home/pdbihm/.secrets/
+cp $BASEDIR/credentials.json /home/pdbihm/.secrets/
+cp $BASEDIR/mail.json /home/pdbihm/.secrets/
 
 # Install configuration files
 cd /home/pdbihm/pdb/config/www

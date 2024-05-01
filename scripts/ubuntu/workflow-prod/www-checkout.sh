@@ -9,7 +9,7 @@ job_tasks=(
     "derivapy_install"
     "pdb_processing_install"
     "python_ihm_install"
-    "python_ihm_validation 20240315"
+    "python_ihm_validation 20240320"
 )
 
 cron_run "hourly-update" "${job_tasks[@]}"

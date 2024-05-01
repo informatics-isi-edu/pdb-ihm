@@ -1,6 +1,6 @@
 {
     "url": "https://data.pdb-dev.org/ermrest/catalog/1",
-    "credentials": "/.../credentials.json",
+    "credentials": "/home/pdbihm/.secrets/credentials.json",
     "timeout": 30,
     "mmCIF_Schema_Version": "1.17",
     "make_mmCIF": "/home/pdbihm/pdb/make-mmCIF",
@@ -23,5 +23,5 @@
     "log": "/home/pdbihm/pdb/log/www/pdb.log",
     "loglevel": "debug",
     "python3": "/usr/bin/python3",
-    "mail": ".../mail.json"
+    "mail": "/home/pdbihm/.secrets/mail.json"
 }

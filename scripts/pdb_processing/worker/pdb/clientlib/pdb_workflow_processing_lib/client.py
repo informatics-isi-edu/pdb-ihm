@@ -54,6 +54,14 @@ _pdbx_database_status.deposit_site                    ?
 _pdbx_database_status.process_site                    RCSB
 _pdbx_database_status.recvd_initial_deposition_date   <deposition_date> 
 #
+loop_
+_database_2.database_id 
+_database_2.database_code 
+_database_2.pdbx_database_accession 
+_database_2.pdbx_DOI 
+PDB-Dev <PDBDEV_Accession_Code> <PDBDEV_Accession_Code> ?
+PDB <PDB_Code> <PDB_Extended_Code> 10.2210/<PDB_Code>/pdb 
+#
 """
 mmCIF_release_records="""_pdbx_database_status.status_code                     <status_code>
 _pdbx_database_status.entry_id                        <entry_id>
@@ -75,6 +83,14 @@ _pdbx_audit_revision_details.data_content_type   'Structure model'
 _pdbx_audit_revision_details.provider            repository
 _pdbx_audit_revision_details.type                'Initial release'
 _pdbx_audit_revision_details.description         ?
+#
+loop_
+_database_2.database_id 
+_database_2.database_code 
+_database_2.pdbx_database_accession 
+_database_2.pdbx_DOI 
+PDB-Dev <PDBDEV_Accession_Code> <PDBDEV_Accession_Code> ?
+PDB <PDB_Code> <PDB_Extended_Code> 10.2210/<PDB_Code>/pdb 
 #
 """
 Process_Status_Terms = {
@@ -1788,25 +1804,22 @@ class PDBClient (object):
     """
     def getNextAccessionSerial(self, rid, user):
         try:
-            accession_serial_value = None
-            row = {'Entry': rid}
-            url = '/entity/PDB:Accession_Code?defaults=Accession_Serial,Accession_Code'
-            resp = self.catalog.post(
-                url,
-                json=[row]
-            )
+            url = '/entity/PDB:Accession_Code/Entry::null::@sort(Accession_Serial)?limit=1'
+            resp = self.catalog.get(url)
             resp.raise_for_status()
-            
-            self.logger.debug('SUCCEEDED created in the table Accession_Code the row "%s".' % (json.dumps(row, indent=4))) 
             if len(resp.json()) == 1:
                 row = resp.json()[0]
+                row['Entry'] = rid
+                self.updateAttributes('PDB', 'Accession_Code', row['RID'], ['Entry'], row, user)
+                self.logger.debug('SUCCEEDED updated the table Accession_Code with Entry "%s".' % (rid))
                 accession_serial_value = row['Accession_Code']
+                return (accession_serial_value, None)
             else:
-                self.logger.error('Error created in the table Accession_Code the row "%s".' % (json.dumps(row, indent=4)))
-                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMISSION COMPLETE', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'], user)
-                self.sendMail(subject, 'RID: %s\n%s\n' % (rid, Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES']))
-                return (None, 'Error in getting a new serial value')
-            return (accession_serial_value, None)
+                error_message = f'No accession codes available'
+                self.logger.error(error_message)
+                subject = 'PDB-Dev {} {}: {} ({})'.format(row['RID'], 'SUBMISSION COMPLETE', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'], user)
+                self.sendMail(subject, error_message)
+                return (None, error_message)
         except:
             et, ev, tb = sys.exc_info()
             self.logger.error('got exception "%s"' % str(ev))
@@ -2628,9 +2641,37 @@ class PDBClient (object):
             #deposition_date = parse(row['RCT']).strftime("%Y-%m-%d")
                 
             entry_id = row['id']
+            
+            """
+            Get the Accession_Code record
+            """
+            accesion_code_row = None
+            url = '/entity/PDB:Accession_Code/Entry={}'.format(rid)
+            resp = self.catalog.get(
+                url
+            )
+            resp.raise_for_status()
+            accesion_code_rows = resp.json()
+            if len(accesion_code_rows) == 1:
+                accesion_code_row = accesion_code_rows[0]
+            else:
+                self.updateAttributes('PDB',
+                                      'entry',
+                                      rid,
+                                      ["Process_Status", "Workflow_Status"],
+                                      {'RID': rid,
+                                      'Record_Status_Detail': 'ERROR addReleaseRecords: Invalid number of mmCIF files: {}'.format(len(rows)),
+                                      'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'],
+                                      'Workflow_Status': 'ERROR'
+                                      },
+                                      user)
+                self.logger.debug(f'Entry RID={rid} has no accession code') 
+                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMISSION COMPLETE' if hold else 'RELEASE READY', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
+                self.sendMail(subject, f'Entry RID={rid} has no accession code')
+                return
             if hold==True:
                 record_status = 'HOLD'
-                records_release = mmCIF_hold_records.replace('<status_code>', record_status).replace('<entry_id>', row['Accession_Code']).replace('<deposition_date>', deposition_date)
+                records_release = mmCIF_hold_records.replace('<status_code>', record_status).replace('<entry_id>', row['Accession_Code']).replace('<deposition_date>', deposition_date).replace('<PDBDEV_Accession_Code>', accesion_code_row['PDBDEV_Accession_Code']).replace('<PDB_Code>', accesion_code_row['PDB_Code']).replace('<PDB_Extended_Code>', accesion_code_row['PDB_Extended_Code'])
             else:
                 record_status = 'REL'
                 revision_date = row['Release_Date']
@@ -2644,7 +2685,7 @@ class PDBClient (object):
                                           'Release_Date': revision_date
                                           },
                                           user)
-                records_release = mmCIF_release_records.replace('<status_code>', record_status).replace('<entry_id>', row['Accession_Code']).replace('<deposition_date>', deposition_date).replace('<revision_date>', revision_date)
+                records_release = mmCIF_release_records.replace('<status_code>', record_status).replace('<entry_id>', row['Accession_Code']).replace('<deposition_date>', deposition_date).replace('<revision_date>', revision_date).replace('<PDBDEV_Accession_Code>', accesion_code_row['PDBDEV_Accession_Code']).replace('<PDB_Code>', accesion_code_row['PDB_Code']).replace('<PDB_Extended_Code>', accesion_code_row['PDB_Extended_Code'])
             file_name = '{}.cif'.format(row['Accession_Code'])
             fr = open('{}/{}'.format(input_dir, filename), 'r')
             fw = open('{}/{}'.format(input_dir, file_name), 'w')

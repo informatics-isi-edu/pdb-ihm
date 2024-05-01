@@ -9,7 +9,7 @@ job_tasks=(
     "derivapy_install"
     "pdb_processing_install"
     "python_ihm_install"
-    "python_ihm_validation 20240315"
+    "python_ihm_validation 20240320"
     "require service pdb_www_processing_worker restart"
 )
 
