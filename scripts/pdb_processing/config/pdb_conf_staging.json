@@ -2,6 +2,8 @@
     "url": "https://dev-aws.pdb-dev.org/ermrest/catalog/50",
     "credentials": "/.../credentials.json",
     "timeout": 30,
+    "primary_accession_code_mode": "PDBDEV",
+    "alternative_accession_code_mode": "PDB",
     "mmCIF_Schema_Version": "1.17",
     "make_mmCIF": "/home/pdbihm/pdb/make-mmCIF",
     "mmCIF_defaults": "/home/pdbihm/pdb/config/staging/mmCIF_defaults.json",

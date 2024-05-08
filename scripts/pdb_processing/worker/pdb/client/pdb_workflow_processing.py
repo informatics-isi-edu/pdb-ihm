@@ -79,6 +79,20 @@ def load(config_filename):
     
     timeout = cfg.get('timeout', 30)
 
+    primary_accession_code_mode = cfg.get('primary_accession_code_mode', 'PDBDEV')
+    if primary_accession_code_mode not in ['PDBDEV', 'PDB']:
+        logger.error(f'Invalid value for the primary_accession_code_mode: {primary_accession_code_mode}.')
+        return None
+
+    alternative_accession_code_mode = cfg.get('alternative_accession_code_mode', 'PDB')
+    if alternative_accession_code_mode not in ['PDBDEV', 'PDB']:
+        logger.error(f'Invalid value for the alternative_accession_code_mode: {alternative_accession_code_mode}.')
+        return None
+
+    if primary_accession_code_mode == alternative_accession_code_mode:
+        logger.error(f'primary_accession_code_mode "{primary_accession_code_mode}" must be different from alternative_accession_code_mode "{alternative_accession_code_mode}".')
+        return None
+
     credentials_file = cfg.get('credentials', None)
     if not credentials_file or not os.path.isfile(credentials_file):
         logger.error('credentials file must be provided and exist.')
@@ -191,6 +205,8 @@ def load(config_filename):
     try:
         client = PDBClient(baseuri=url, \
                                timeout=timeout, \
+                               primary_accession_code_mode=primary_accession_code_mode, \
+                               alternative_accession_code_mode=alternative_accession_code_mode, \
                                credentials=credentials, \
                                mmCIF_Schema_Version=mmCIF_Schema_Version, \
                                make_mmCIF=make_mmCIF, \

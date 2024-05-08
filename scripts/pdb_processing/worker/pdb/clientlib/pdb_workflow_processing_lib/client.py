@@ -59,8 +59,8 @@ _database_2.database_id
 _database_2.database_code 
 _database_2.pdbx_database_accession 
 _database_2.pdbx_DOI 
-PDB-Dev <PDBDEV_Accession_Code> <PDBDEV_Accession_Code> ?
-PDB <PDB_Code> <PDB_Extended_Code> 10.2210/<PDB_Code>/pdb 
+<database_2_primary_accession_code>
+<database_2_alternative_accession_code>
 #
 """
 mmCIF_release_records="""_pdbx_database_status.status_code                     <status_code>
@@ -89,8 +89,8 @@ _database_2.database_id
 _database_2.database_code 
 _database_2.pdbx_database_accession 
 _database_2.pdbx_DOI 
-PDB-Dev <PDBDEV_Accession_Code> <PDBDEV_Accession_Code> ?
-PDB <PDB_Code> <PDB_Extended_Code> 10.2210/<PDB_Code>/pdb 
+<database_2_primary_accession_code>
+<database_2_alternative_accession_code>
 #
 """
 Process_Status_Terms = {
@@ -147,6 +147,8 @@ class PDBClient (object):
         self.credentials = kwargs.get("credentials")
         self.validation_dir = kwargs.get("validation_dir")
         self.timeout = kwargs.get("timeout")
+        self.primary_accession_code_mode = kwargs.get("primary_accession_code_mode")
+        self.alternative_accession_code_mode = kwargs.get("alternative_accession_code_mode")
         self.reportValidation = True if kwargs.get("reportValidation")=='Yes' else False
         self.store = HatracStore(
             self.scheme, 
@@ -2569,6 +2571,20 @@ class PDBClient (object):
             self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
             return None 
 
+    def get_primary_accession_code(self, mode, accesion_code_row):
+        """
+        Get the primary accession code
+        """
+        return accesion_code_row['PDBDEV_Accession_Code'] if mode == 'PDBDEV' else accesion_code_row['PDB_Accession_Code']
+
+    def get_database_2_string(self, mode, accesion_code_row):
+        """
+        Get the primary accession code
+        """
+        
+        return f'PDB-Dev {self.get_primary_accession_code("PDBDEV", accesion_code_row)} {self.get_primary_accession_code("PDBDEV", accesion_code_row)} ?' if mode == 'PDBDEV' \
+            else f'PDB {accesion_code_row["PDB_Code"]} {accesion_code_row["PDB_Extended_Code"]} 10.2210/pdb{accesion_code_row["PDB_Code"]}/pdb'
+
     def addReleaseRecords(self, rid, hold=False, user_id=None):
         """
         Get the RCB user
@@ -2654,6 +2670,21 @@ class PDBClient (object):
             accesion_code_rows = resp.json()
             if len(accesion_code_rows) == 1:
                 accesion_code_row = accesion_code_rows[0]
+                if accesion_code_row['Accession_Code'] not in [self.get_primary_accession_code(self.primary_accession_code_mode, accesion_code_row), f'TEST-{self.get_primary_accession_code(self.primary_accession_code_mode, accesion_code_row)}']:
+                    self.updateAttributes('PDB',
+                                          'entry',
+                                          rid,
+                                          ["Process_Status", "Workflow_Status"],
+                                          {'RID': rid,
+                                          'Record_Status_Detail': f'ERROR addReleaseRecords: primary_accession_code {self.get_primary_accession_code(self.primary_accession_code_mode, accesion_code_row)} different from Accession_Code column: {accesion_code_row["Accession_Code"]}',
+                                          'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'],
+                                          'Workflow_Status': 'ERROR'
+                                          },
+                                          user)
+                    self.logger.debug(f'Entry RID={rid} ERROR addReleaseRecords: primary_accession_code {self.get_primary_accession_code(self.primary_accession_code_mode, accesion_code_row)} different from Accession_Code column: {accesion_code_row["Accession_Code"]}') 
+                    subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMISSION COMPLETE' if hold else 'RELEASE READY', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
+                    self.sendMail(subject, f'Entry RID={rid} ERROR addReleaseRecords: primary_accession_code {self.get_primary_accession_code(self.primary_accession_code_mode, accesion_code_row)} different from Accession_Code column: {accesion_code_row["Accession_Code"]}')
+                    return
             else:
                 self.updateAttributes('PDB',
                                       'entry',
@@ -2671,7 +2702,11 @@ class PDBClient (object):
                 return
             if hold==True:
                 record_status = 'HOLD'
-                records_release = mmCIF_hold_records.replace('<status_code>', record_status).replace('<entry_id>', row['Accession_Code']).replace('<deposition_date>', deposition_date).replace('<PDBDEV_Accession_Code>', accesion_code_row['PDBDEV_Accession_Code']).replace('<PDB_Code>', accesion_code_row['PDB_Code']).replace('<PDB_Extended_Code>', accesion_code_row['PDB_Extended_Code'])
+                records_release = mmCIF_hold_records.replace('<status_code>', record_status) \
+                    .replace('<entry_id>', row['Accession_Code']) \
+                    .replace('<deposition_date>', deposition_date) \
+                    .replace('<database_2_primary_accession_code>', self.get_database_2_string(self.primary_accession_code_mode, accesion_code_row)) \
+                    .replace('<database_2_alternative_accession_code>', self.get_database_2_string(self.alternative_accession_code_mode, accesion_code_row))
             else:
                 record_status = 'REL'
                 revision_date = row['Release_Date']
@@ -2685,7 +2720,12 @@ class PDBClient (object):
                                           'Release_Date': revision_date
                                           },
                                           user)
-                records_release = mmCIF_release_records.replace('<status_code>', record_status).replace('<entry_id>', row['Accession_Code']).replace('<deposition_date>', deposition_date).replace('<revision_date>', revision_date).replace('<PDBDEV_Accession_Code>', accesion_code_row['PDBDEV_Accession_Code']).replace('<PDB_Code>', accesion_code_row['PDB_Code']).replace('<PDB_Extended_Code>', accesion_code_row['PDB_Extended_Code'])
+                records_release = mmCIF_release_records.replace('<status_code>', record_status) \
+                    .replace('<entry_id>', row['Accession_Code']) \
+                    .replace('<deposition_date>', deposition_date) \
+                    .replace('<revision_date>', revision_date) \
+                    .replace('<database_2_primary_accession_code>', self.get_database_2_string(self.primary_accession_code_mode, accesion_code_row)) \
+                    .replace('<database_2_alternative_accession_code>', self.get_database_2_string(self.alternative_accession_code_mode, accesion_code_row))
             file_name = '{}.cif'.format(row['Accession_Code'])
             fr = open('{}/{}'.format(input_dir, filename), 'r')
             fw = open('{}/{}'.format(input_dir, file_name), 'w')

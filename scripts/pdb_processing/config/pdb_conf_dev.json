@@ -3,6 +3,8 @@
     "credentials": "/.../credentials.json",
     "hatrac_namespace": "dev",
     "timeout": 30,
+    "primary_accession_code_mode": "PDBDEV",
+    "alternative_accession_code_mode": "PDB",
     "mmCIF_Schema_Version": "1.17",
     "make_mmCIF": "/home/pdbihm/pdb/make-mmCIF",
     "mmCIF_defaults": "/home/pdbihm/pdb/config/dev/mmCIF_defaults.json",
