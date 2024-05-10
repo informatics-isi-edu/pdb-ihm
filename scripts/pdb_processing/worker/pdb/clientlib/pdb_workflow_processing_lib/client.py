@@ -880,7 +880,7 @@ class PDBClient (object):
     
             if returncode == 0:
                 self.logger.debug('Update success in export_mmCIF()')
-                if release == False:
+                if release == False and self.action == 'SUBMIT':
                     self.updateAttributes(schema_pdb,
                                           table_entry,
                                           rid,
