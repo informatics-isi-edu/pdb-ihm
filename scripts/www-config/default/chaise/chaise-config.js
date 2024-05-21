@@ -4,7 +4,7 @@ var chaiseConfig = {
 		disableExternalLinkModal: true,
 		internaleHosts: ["github.com"],
 	    confirmDelete: true,
-            signUpURL: 'https://app.globus.org/groups/99da042e-64a6-11ea-ad5f-0ef992ed7ca1/about',
+	    signUpURL: 'https://app.globus.org/groups/99da042e-64a6-11ea-ad5f-0ef992ed7ca1/about',
 	    navbarBrandText: 'PDB-Dev',
 	    authnProvider: 'goauth',
 	    feedbackURL: 'http://goo.gl/forms/f30sfheh4H',
@@ -15,7 +15,7 @@ var chaiseConfig = {
 	    customCSS: '/assets/css/chaise.css',
 	    navbarBrand: '/',
 	    headTitle: 'PDB-Dev',
-	    defaultCatalog: 99,
+	    defaultCatalog: '1',
 	    recordUiGridEnabled: false,
 	    recordUiGridExportCSVEnabled: true,
 	    recordUiGridExportPDFEnabled: true,
@@ -26,6 +26,6 @@ var chaiseConfig = {
 	    plotViewEnabled: true,
 	    showFaceting: true,
 	    showExportButton: true,
-            resolverImplicitCatalog: 99,
+	    resolverImplicitCatalog: '1',
 	    maxRecordsetRowHeight: 235
 };
