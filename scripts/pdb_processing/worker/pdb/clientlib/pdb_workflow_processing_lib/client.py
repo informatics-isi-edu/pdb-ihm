@@ -2846,9 +2846,11 @@ class PDBClient (object):
                                       user)
                 return
 
+            """
             if self.is_catalog_dev == True:
                 subject = 'PDB-Dev {}: {} ({})'.format(rid, row['Process_Status'], user)
                 self.sendMail(subject, 'The Process Status of the entry with RID={} was changed to "{}".'.format(rid, row['Process_Status']), receivers=self.email['curators'])
+            """
 
             self.updateAttributes('PDB',
                                   'entry',
