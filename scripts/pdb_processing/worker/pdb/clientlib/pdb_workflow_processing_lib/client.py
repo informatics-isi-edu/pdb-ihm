@@ -2583,7 +2583,7 @@ class PDBClient (object):
         """
         
         return f'PDB-Dev {self.get_primary_accession_code("PDBDEV", accesion_code_row)} {self.get_primary_accession_code("PDBDEV", accesion_code_row)} ?' if mode == 'PDBDEV' \
-            else f'PDB {accesion_code_row["PDB_Code"]} {accesion_code_row["PDB_Extended_Code"]} 10.2210/pdb{accesion_code_row["PDB_Code"]}/pdb'
+            else f'PDB {accesion_code_row["PDB_Code"]} {accesion_code_row["PDB_Extended_Code"]} 10.2210/pdb{accesion_code_row["PDB_Code"].lower()}/pdb'
 
     def addReleaseRecords(self, rid, hold=False, user_id=None):
         """
@@ -2674,7 +2674,7 @@ class PDBClient (object):
                     self.updateAttributes('PDB',
                                           'entry',
                                           rid,
-                                          ["Process_Status", "Workflow_Status"],
+                                          ["Process_Status", "Workflow_Status", "Record_Status_Detail"],
                                           {'RID': rid,
                                           'Record_Status_Detail': f'ERROR addReleaseRecords: primary_accession_code {self.get_primary_accession_code(self.primary_accession_code_mode, accesion_code_row)} different from Accession_Code column: {accesion_code_row["Accession_Code"]}',
                                           'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'],
@@ -2689,7 +2689,7 @@ class PDBClient (object):
                 self.updateAttributes('PDB',
                                       'entry',
                                       rid,
-                                      ["Process_Status", "Workflow_Status"],
+                                      ["Process_Status", "Workflow_Status", "Record_Status_Detail"],
                                       {'RID': rid,
                                       'Record_Status_Detail': 'ERROR addReleaseRecords: Invalid number of mmCIF files: {}'.format(len(rows)),
                                       'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'],
