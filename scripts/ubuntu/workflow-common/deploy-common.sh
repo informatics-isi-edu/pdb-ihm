@@ -26,9 +26,6 @@ wget https://salilab.org/~arthur/ihmv/packages/py-rcsb_db_v0.86.tar.gz
 tar -xzf py-rcsb_db_v0.86.tar.gz
 rm -f py-rcsb_db_v0.86.tar.gz
 
-# Install make-mmcif.py
-cp /home/isrddev/python-ihm/util/make-mmcif.py /home/pdbihm/pdb/make-mmCIF/
-
 # Install the mmcif_ihm_v1.22.sdb dictionary
 cp /home/isrddev/protein-database/scripts/pdb_processing/config/mmcif_ihm_v1.22.sdb /home/pdbihm/pdb/sdb/
 

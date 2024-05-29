@@ -1092,12 +1092,12 @@ class PDBClient (object):
             filename = '{}_{}'.format(rid, filename)
 
             """
-            Apply make-mmcif.py
+            Apply make_mmcif.py
             """
             error_message = None
             currentDirectory=os.getcwd()
             os.chdir('{}'.format(self.make_mmCIF))
-            args = [self.python_bin, 'make-mmcif.py', filename]
+            args = [self.python_bin, '-m', 'ihm.util.make_mmcif', filename]
             self.logger.debug('Running "{}" from the {} directory'.format(' '.join(args), self.make_mmCIF)) 
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdoutdata, stderrdata = p.communicate()
@@ -1765,9 +1765,9 @@ class PDBClient (object):
             filename = '{}_{}'.format(rid, filename)
 
             """
-            Apply make-mmcif.py
+            Apply make_mmcif.py
             """
-            args = [self.python_bin, 'make-mmcif.py', filename]
+            args = [self.python_bin, '-m', 'ihm.util.make_mmcif', filename]
             self.logger.debug('Running "{}" from the {} directory'.format(' '.join(args), self.make_mmCIF)) 
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdoutdata, stderrdata = p.communicate()
