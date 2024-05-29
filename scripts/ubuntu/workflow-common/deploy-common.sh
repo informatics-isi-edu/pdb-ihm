@@ -50,7 +50,7 @@ pip3 install --upgrade rcsb.utils.taxonomy
 pip3 install --upgrade rcsb.utils.multiproc
 
 # Copy the isrd software library
-cp /home/isrddev/protein-database/scripts/ubuntu/lib/pdb-software-lib.sh /usr/local/sbin/
+cp /home/isrddev/protein-database/scripts/ubuntu/pdb/pdb-software-lib.sh /usr/local/sbin/
 cp /home/isrddev/protein-database/scripts/cron.daily/cleanup-tmp /etc/cron.daily/
 
 # Install the g++ library
