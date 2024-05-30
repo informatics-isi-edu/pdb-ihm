@@ -2582,8 +2582,8 @@ class PDBClient (object):
         Get the primary accession code
         """
         
-        return f'PDB-Dev {self.get_primary_accession_code("PDBDEV", accesion_code_row)} {self.get_primary_accession_code("PDBDEV", accesion_code_row)} ?' if mode == 'PDBDEV' \
-            else f'PDB {accesion_code_row["PDB_Code"]} {accesion_code_row["PDB_Extended_Code"]} 10.2210/pdb{accesion_code_row["PDB_Code"].lower()}/pdb'
+        return f'PDB-Dev {accesion_code_row["Accession_Code"]} {self.get_primary_accession_code("PDBDEV", accesion_code_row)} ?' if mode == 'PDBDEV' \
+            else f'PDB {accesion_code_row["Accession_Code"]} {accesion_code_row["PDB_Extended_Code"]} 10.2210/pdb{accesion_code_row["PDB_Code"].lower()}/pdb'
 
     def addReleaseRecords(self, rid, hold=False, user_id=None):
         """
@@ -2670,7 +2670,7 @@ class PDBClient (object):
             accesion_code_rows = resp.json()
             if len(accesion_code_rows) == 1:
                 accesion_code_row = accesion_code_rows[0]
-                if accesion_code_row['Accession_Code'] not in [self.get_primary_accession_code(self.primary_accession_code_mode, accesion_code_row), f'TEST-{self.get_primary_accession_code(self.primary_accession_code_mode, accesion_code_row)}']:
+                if accesion_code_row['Accession_Code'] not in [self.get_primary_accession_code(self.primary_accession_code_mode, accesion_code_row)]:
                     self.updateAttributes('PDB',
                                           'entry',
                                           rid,
