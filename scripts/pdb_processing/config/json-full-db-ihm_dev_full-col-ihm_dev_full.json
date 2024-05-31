@@ -11856,7 +11856,14 @@
                   "_primary_key": true
                },
                "biol_id": {
-                  "$ref": "#struct_biol/id"
+                  "type": "string",
+                  "description": "This data item is a pointer to _struct_biol.id in the\n STRUCT_BIOL category.",
+                  "rcsb_description": [
+                     {
+                        "text": "This data item is a pointer to _struct_biol.id in the\n STRUCT_BIOL category.",
+                        "context": "dictionary"
+                     }
+                  ]
                },
                "db_code": {
                   "type": "string",
