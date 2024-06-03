@@ -259,6 +259,18 @@
                 "comment": "type:text\nA flag indicating an aromatic atom."
             },
             {
+                "name": "pdbx_backbone_atom_flag",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nA flag indicating the backbone atoms in polypeptide units."
+            },
+            {
+                "name": "pdbx_c_terminal_atom_flag",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nA flag indicating the C-terminal group atoms in polypeptide units."
+            },
+            {
                 "name": "pdbx_component_atom_id",
                 "type": "text",
                 "nullok": true,
@@ -305,6 +317,12 @@
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nAn alternative z component of the coordinates for this atom in this\n component specified as orthogonal angstroms."
+            },
+            {
+                "name": "pdbx_n_terminal_atom_flag",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nA flag indicating the N-terminal group atoms in polypeptide units."
             },
             {
                 "name": "pdbx_ordinal",
@@ -365,8 +383,23 @@
                 "refcolumn": "ID"
             },
             {
+                "column": "pdbx_backbone_atom_flag",
+                "reftable": "chem_comp_atom_pdbx_backbone_atom_flag_term",
+                "refcolumn": "ID"
+            },
+            {
+                "column": "pdbx_c_terminal_atom_flag",
+                "reftable": "chem_comp_atom_pdbx_c_terminal_atom_flag_term",
+                "refcolumn": "ID"
+            },
+            {
                 "column": "pdbx_leaving_atom_flag",
                 "reftable": "chem_comp_atom_pdbx_leaving_atom_flag_term",
+                "refcolumn": "ID"
+            },
+            {
+                "column": "pdbx_n_terminal_atom_flag",
+                "reftable": "chem_comp_atom_pdbx_n_terminal_atom_flag_term",
                 "refcolumn": "ID"
             },
             {
@@ -527,6 +560,56 @@
             "citation_id",
             "name",
             "ordinal"
+        ]
+    },
+    "database_2": {
+        "name": "database_2",
+        "columns": [
+            {
+                "name": "structure_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "A reference to table entry.id."
+            },
+            {
+                "name": "database_code",
+                "type": "text",
+                "nullok": false,
+                "comment": "type:text\nThe code assigned by the database identified in\n _database_2.database_id.\nexamples:1ABC,ABCDEF"
+            },
+            {
+                "name": "database_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "type:text\nAn abbreviation that identifies the database."
+            },
+            {
+                "name": "pdbx_DOI",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nDocument Object Identifier (DOI) for this entry registered\nwith http://crossref.org.\nexamples:10.2210/pdb6lu7/pdb"
+            },
+            {
+                "name": "pdbx_database_accession",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nExtended accession code issued for for _database_2.database_code assigned by the database identified in\n _database_2.database_id.\nexamples:pdb_00006lu7"
+            }
+        ],
+        "vocab": {
+            "database_2": "database_id"
+        },
+        "fkeys": [
+            {
+                "column": "database_id",
+                "reftable": "database_2_database_id_term",
+                "refcolumn": "ID"
+            }
+        ],
+        "pkey_columns": [
+            "structure_id",
+            "database_code",
+            "database_id"
         ]
     },
     "entity": {
@@ -696,13 +779,13 @@
                 "name": "pdbx_seq_one_letter_code",
                 "type": "text",
                 "nullok": true,
-                "comment": "type:text\nSequence of protein or nucleic acid polymer in standard one-letter\n               codes of amino acids or nucleotides. Non-standard amino\n               acids/nucleotides are represented by their Chemical\n               Component Dictionary (CCD) codes in\n               parenthesis. Deoxynucleotides are represented by the\n               specially-assigned 2-letter CCD codes in parenthesis,\n               with 'D' prefix added to their ribonucleotide\n               counterparts. For hybrid polymer, each residue is\n               represented by the code of its individual type. A\n               cyclic polymer is represented in linear sequence from\n               the chosen start to end.\n\nA for Alanine or Adenosine-5'-monophosphate\nC for Cysteine or Cytidine-5'-monophosphate\nD for Aspartic acid\nE for Glutamic acid\nF for Phenylalanine\nG for Glycine or Guanosine-5'-monophosphate\nH for Histidine\nI for Isoleucine or Inosinic Acid\nL for Leucine\nK for Lysine\nM for Methionine\nN for Asparagine  or Unknown ribonucleotide\nO for Pyrrolysine\nP for Proline\nQ for Glutamine\nR for Arginine\nS for Serine\nT for Threonine\nU for Selenocysteine or Uridine-5'-monophosphate\nV for Valine\nW for Tryptophan\nY for Tyrosine\n(DA) for 2'-deoxyadenosine-5'-monophosphate\n(DC) for 2'-deoxycytidine-5'-monophosphate\n(DG) for 2'-deoxyguanosine-5'-monophosphate\n(DT) for Thymidine-5'-monophosphate\n(MSE) for Selenomethionine\n(SEP) for Phosphoserine\n(PTO) for Phosphothreonine\n(PTR) for Phosphotyrosine\n(PCA) for Pyroglutamic acid\n(UNK) for Unknown amino acid\n(ACE) for Acetylation cap\n(NH2) for Amidation cap\nexamples:HHHH(MSE)AKQRSG or AUCGGAAU,(MSE)SHHWGYGKHNGPEHWHKDFPIAKGERQSPVDIDTHTAKYDPSLKPLSVSYDQATSLRILNNGAAFNVEFD"
+                "comment": "type:text\nSequence of protein or nucleic acid polymer in standard one-letter\n               codes of amino acids or nucleotides. Non-standard amino\n               acids/nucleotides are represented by their Chemical\n               Component Dictionary (CCD) codes in\n               parenthesis. Deoxynucleotides are represented by the\n               specially-assigned 2-letter CCD codes in parenthesis,\n               with 'D' prefix added to their ribonucleotide\n               counterparts. For hybrid polymer, each residue is\n               represented by the code of its individual type. A\n               cyclic polymer is represented in linear sequence from\n               the chosen start to end.\n\nA for Alanine or Adenosine-5'-monophosphate\nC for Cysteine or Cytidine-5'-monophosphate\nD for Aspartic acid\nE for Glutamic acid\nF for Phenylalanine\nG for Glycine or Guanosine-5'-monophosphate\nH for Histidine\nI for Isoleucine or Inosinic Acid\nL for Leucine\nK for Lysine\nM for Methionine\nN for Asparagine  or Unknown ribonucleotide\nO for Pyrrolysine\nP for Proline\nQ for Glutamine\nR for Arginine\nS for Serine\nT for Threonine\nU for Selenocysteine or Uridine-5'-monophosphate\nV for Valine\nW for Tryptophan\nY for Tyrosine\n(DA) for 2'-deoxyadenosine-5'-monophosphate\n(DC) for 2'-deoxycytidine-5'-monophosphate\n(DG) for 2'-deoxyguanosine-5'-monophosphate\n(DT) for Thymidine-5'-monophosphate\n(MSE) for Selenomethionine\n(SEP) for Phosphoserine\n(TPO) for Phosphothreonine\n(PTR) for Phosphotyrosine\n(PCA) for Pyroglutamic acid\n(UNK) for Unknown amino acid\n(ACE) for Acetylation cap\n(NH2) for Amidation cap\nexamples:HHHH(MSE)AKQRSG or AUCGGAAU,(MSE)SHHWGYGKHNGPEHWHKDFPIAKGERQSPVDIDTHTAKYDPSLKPLSVSYDQATSLRILNNGAAFNVEFD"
             },
             {
                 "name": "pdbx_seq_one_letter_code_can",
                 "type": "text",
                 "nullok": true,
-                "comment": "type:text\nCanonical sequence of protein or nucleic acid polymer in standard\n one-letter codes of amino acids or nucleotides,\n corresponding to the sequence in\n _entity_poly.pdbx_seq_one_letter_code. Non-standard\n amino acids/nucleotides are represented by the codes of\n their parents if parent is specified in\n _chem_comp.mon_nstd_parent_comp_id, or by letter 'X' if\n parent is not specified. Deoxynucleotides are\n represented by their canonical one-letter codes of A,\n C, G, or T.\nexamples:MSHHWGYGKHNGPEHWHKDFPIAKGERQSPVDIDTHTAKYDPSLKPLSVSYDQATSLRILNNGAAFNVEFD"
+                "comment": "type:text\nCanonical sequence of protein or nucleic acid polymer in standard\n               one-letter codes of amino acids or nucleotides,\n               corresponding to the sequence in\n               _entity_poly.pdbx_seq_one_letter_code. Non-standard\n               amino acids/nucleotides are represented by the codes of\n               their parents if parent is specified in\n               _chem_comp.mon_nstd_parent_comp_id, or by letter 'X' if\n               parent is not specified. Deoxynucleotides are\n               represented by their canonical one-letter codes of A,\n               C, G, or T.\n\n               For modifications with several parent amino acids,\n\t       all corresponding parent amino acid codes will be listed\n\t       (ex. chromophores).\nexamples:MSHHWGYGKHNGPEHWHKDFPIAKGERQSPVDIDTHTAKYDPSLKPLSVSYDQATSLRILNNGAAFNVEFD"
             },
             {
                 "name": "pdbx_sequence_evidence_code",
@@ -852,7 +935,7 @@
                 "name": "pdbx_gene_src_ncbi_taxonomy_id",
                 "type": "text",
                 "nullok": true,
-                "comment": "type:text\nNCBI Taxonomy identifier for the gene source organism.\n\n Reference:\n\n Wheeler DL, Chappey C, Lash AE, Leipe DD, Madden TL, Schuler GD,\n Tatusova TA, Rapp BA (2000). Database resources of the National\n Center for Biotechnology Information. Nucleic Acids Res 2000 Jan\n 1;28(1):10-4\n\n Benson DA, Karsch-Mizrachi I, Lipman DJ, Ostell J, Rapp BA,\n Wheeler DL (2000). GenBank. Nucleic Acids Res 2000 Jan 1;28(1):15-18.\n"
+                "comment": "type:text\nNCBI Taxonomy identifier for the gene source organism.\n\n Reference:\n\n Wheeler DL, Chappey C, Lash AE, Leipe DD, Madden TL, Schuler GD,\n Tatusova TA, Rapp BA (2000). Database resources of the National\n Center for Biotechnology Information. Nucleic Acids Res 2000 Jan\n 1;28(1):10-4\n\n Benson DA, Karsch-Mizrachi I, Lipman DJ, Ostell J, Rapp BA,\n Wheeler DL (2000). GenBank. Nucleic Acids Res 2000 Jan 1;28(1):15-18."
             },
             {
                 "name": "pdbx_gene_src_scientific_name",
@@ -864,7 +947,7 @@
                 "name": "pdbx_host_org_ncbi_taxonomy_id",
                 "type": "text",
                 "nullok": true,
-                "comment": "type:text\nNCBI Taxonomy identifier for the expression system organism.\n\n Reference:\n\n Wheeler DL, Chappey C, Lash AE, Leipe DD, Madden TL, Schuler GD,\n Tatusova TA, Rapp BA (2000). Database resources of the National\n Center for Biotechnology Information. Nucleic Acids Res 2000 Jan\n 1;28(1):10-4\n\n Benson DA, Karsch-Mizrachi I, Lipman DJ, Ostell J, Rapp BA,\n Wheeler DL (2000). GenBank. Nucleic Acids Res 2000 Jan 1;28(1):15-18.\n"
+                "comment": "type:text\nNCBI Taxonomy identifier for the expression system organism.\n\n Reference:\n\n Wheeler DL, Chappey C, Lash AE, Leipe DD, Madden TL, Schuler GD,\n Tatusova TA, Rapp BA (2000). Database resources of the National\n Center for Biotechnology Information. Nucleic Acids Res 2000 Jan\n 1;28(1):10-4\n\n Benson DA, Karsch-Mizrachi I, Lipman DJ, Ostell J, Rapp BA,\n Wheeler DL (2000). GenBank. Nucleic Acids Res 2000 Jan 1;28(1):15-18."
             },
             {
                 "name": "pdbx_host_org_scientific_name",
@@ -958,73 +1041,73 @@
                 "comment": "A reference to table ihm_2dem_class_average_restraint.id."
             },
             {
-                "name": "rot_matrix_1_1",
+                "name": "rot_matrix[1][1]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [1][1] of the rotation matrix used in the fitting of the model to the image."
             },
             {
-                "name": "rot_matrix_1_2",
+                "name": "rot_matrix[1][2]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [1][2] of the rotation matrix used in the fitting of the model to the image."
             },
             {
-                "name": "rot_matrix_1_3",
+                "name": "rot_matrix[1][3]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [1][3] of the rotation matrix used in the fitting of the model to the image."
             },
             {
-                "name": "rot_matrix_2_1",
+                "name": "rot_matrix[2][1]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [2][1] of the rotation matrix used in the fitting of the model to the image."
             },
             {
-                "name": "rot_matrix_2_2",
+                "name": "rot_matrix[2][2]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [2][2] of the rotation matrix used in the fitting of the model to the image."
             },
             {
-                "name": "rot_matrix_2_3",
+                "name": "rot_matrix[2][3]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [2][3] of the rotation matrix used in the fitting of the model to the image."
             },
             {
-                "name": "rot_matrix_3_1",
+                "name": "rot_matrix[3][1]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [3][1] of the rotation matrix used in the fitting of the model to the image."
             },
             {
-                "name": "rot_matrix_3_2",
+                "name": "rot_matrix[3][2]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [3][2] of the rotation matrix used in the fitting of the model to the image."
             },
             {
-                "name": "rot_matrix_3_3",
+                "name": "rot_matrix[3][3]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [3][3] of the rotation matrix used in the fitting of the model to the image."
             },
             {
-                "name": "tr_vector_1",
+                "name": "tr_vector[1]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [1] of the tranlation vector used in the fitting of the model to the image."
             },
             {
-                "name": "tr_vector_2",
+                "name": "tr_vector[2]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [2] of the tranlation vector used in the fitting of the model to the image."
             },
             {
-                "name": "tr_vector_3",
+                "name": "tr_vector[3]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [3] of the tranlation vector used in the fitting of the model to the image."
@@ -1315,13 +1398,13 @@
                 "name": "entity_description_1",
                 "type": "text",
                 "nullok": true,
-                "comment": "type:text\nA text description of molecular entity 1. \n"
+                "comment": "type:text\nA text description of molecular entity 1."
             },
             {
                 "name": "entity_description_2",
                 "type": "text",
                 "nullok": true,
-                "comment": "type:text\nA text description of molecular entity 2. \n"
+                "comment": "type:text\nA text description of molecular entity 2."
             },
             {
                 "name": "entity_id_1",
@@ -1699,6 +1782,101 @@
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nThe uncertainty in the position of residue 2 in the crosslink\n arising due to the multi-scale nature of the model represention."
+            }
+        ],
+        "vocab": {},
+        "fkeys": [],
+        "pkey_columns": [
+            "structure_id",
+            "id"
+        ]
+    },
+    "ihm_data_transformation": {
+        "name": "ihm_data_transformation",
+        "columns": [
+            {
+                "name": "structure_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "A reference to table entry.id."
+            },
+            {
+                "name": "id",
+                "type": "int4",
+                "nullok": false,
+                "comment": "type:int4\nA unique identifier for the transformation."
+            },
+            {
+                "name": "rot_matrix[1][1]",
+                "type": "float4",
+                "nullok": true,
+                "comment": "type:float4\nData item [1][1] of the rotation matrix used in the transformation."
+            },
+            {
+                "name": "rot_matrix[1][2]",
+                "type": "float4",
+                "nullok": true,
+                "comment": "type:float4\nData item [1][2] of the rotation matrix used in the transformation."
+            },
+            {
+                "name": "rot_matrix[1][3]",
+                "type": "float4",
+                "nullok": true,
+                "comment": "type:float4\nData item [1][3] of the rotation matrix used in the transformation."
+            },
+            {
+                "name": "rot_matrix[2][1]",
+                "type": "float4",
+                "nullok": true,
+                "comment": "type:float4\nData item [2][1] of the rotation matrix used in the transformation."
+            },
+            {
+                "name": "rot_matrix[2][2]",
+                "type": "float4",
+                "nullok": true,
+                "comment": "type:float4\nData item [2][2] of the rotation matrix used in the transformation."
+            },
+            {
+                "name": "rot_matrix[2][3]",
+                "type": "float4",
+                "nullok": true,
+                "comment": "type:float4\nData item [2][3] of the rotation matrix used in the transformation."
+            },
+            {
+                "name": "rot_matrix[3][1]",
+                "type": "float4",
+                "nullok": true,
+                "comment": "type:float4\nData item [3][1] of the rotation matrix used in the transformation."
+            },
+            {
+                "name": "rot_matrix[3][2]",
+                "type": "float4",
+                "nullok": true,
+                "comment": "type:float4\nData item [3][2] of the rotation matrix used in the transformation."
+            },
+            {
+                "name": "rot_matrix[3][3]",
+                "type": "float4",
+                "nullok": true,
+                "comment": "type:float4\nData item [3][3] of the rotation matrix used in the transformation."
+            },
+            {
+                "name": "tr_vector[1]",
+                "type": "float4",
+                "nullok": true,
+                "comment": "type:float4\nData item [1] of the translation vector used in the transformation."
+            },
+            {
+                "name": "tr_vector[2]",
+                "type": "float4",
+                "nullok": true,
+                "comment": "type:float4\nData item [2] of the translation vector used in the transformation."
+            },
+            {
+                "name": "tr_vector[3]",
+                "type": "float4",
+                "nullok": true,
+                "comment": "type:float4\nData item [3] of the translation vector used in the transformation."
             }
         ],
         "vocab": {},
@@ -2307,6 +2485,12 @@
                 "comment": "A reference to table ihm_model_group.id."
             },
             {
+                "name": "model_group_superimposed_flag",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nFlag to identify if the models in a group or cluster are structurally aligned."
+            },
+            {
                 "name": "num_ensemble_models",
                 "type": "int4",
                 "nullok": false,
@@ -2349,6 +2533,11 @@
             {
                 "column": "ensemble_clustering_method",
                 "reftable": "ihm_ensemble_info_ensemble_clustering_method_term",
+                "refcolumn": "ID"
+            },
+            {
+                "column": "model_group_superimposed_flag",
+                "reftable": "m_ensemble_info_model_group_superimposed_flag_term",
                 "refcolumn": "ID"
             },
             {
@@ -2471,6 +2660,71 @@
         "pkey_columns": [
             "structure_id",
             "id"
+        ]
+    },
+    "ihm_entry_collection": {
+        "name": "ihm_entry_collection",
+        "columns": [
+            {
+                "name": "structure_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "A reference to table entry.id."
+            },
+            {
+                "name": "details",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nDetails about the entry collection."
+            },
+            {
+                "name": "id",
+                "type": "text",
+                "nullok": false,
+                "comment": "type:text\nA unique identifier for the entry collection assigned by the archive."
+            },
+            {
+                "name": "name",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nName for the entry collection."
+            }
+        ],
+        "vocab": {},
+        "fkeys": [],
+        "pkey_columns": [
+            "structure_id",
+            "id"
+        ]
+    },
+    "ihm_entry_collection_mapping": {
+        "name": "ihm_entry_collection_mapping",
+        "columns": [
+            {
+                "name": "structure_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "A reference to table entry.id."
+            },
+            {
+                "name": "collection_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "A reference to table ihm_entry_collection.id."
+            },
+            {
+                "name": "entry_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "A reference to table entry.id."
+            }
+        ],
+        "vocab": {},
+        "fkeys": [],
+        "pkey_columns": [
+            "structure_id",
+            "collection_id",
+            "entry_id"
         ]
     },
     "ihm_epr_restraint": {
@@ -3198,76 +3452,123 @@
                 "comment": "type:int4\nA unique identifier for the transformation."
             },
             {
-                "name": "rot_matrix_1_1",
+                "name": "rot_matrix[1][1]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [1][1] of the rotation matrix used in the transformation."
             },
             {
-                "name": "rot_matrix_1_2",
+                "name": "rot_matrix[1][2]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [1][2] of the rotation matrix used in the transformation."
             },
             {
-                "name": "rot_matrix_1_3",
+                "name": "rot_matrix[1][3]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [1][3] of the rotation matrix used in the transformation."
             },
             {
-                "name": "rot_matrix_2_1",
+                "name": "rot_matrix[2][1]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [2][1] of the rotation matrix used in the transformation."
             },
             {
-                "name": "rot_matrix_2_2",
+                "name": "rot_matrix[2][2]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [2][2] of the rotation matrix used in the transformation."
             },
             {
-                "name": "rot_matrix_2_3",
+                "name": "rot_matrix[2][3]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [2][3] of the rotation matrix used in the transformation."
             },
             {
-                "name": "rot_matrix_3_1",
+                "name": "rot_matrix[3][1]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [3][1] of the rotation matrix used in the transformation."
             },
             {
-                "name": "rot_matrix_3_2",
+                "name": "rot_matrix[3][2]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [3][2] of the rotation matrix used in the transformation."
             },
             {
-                "name": "rot_matrix_3_3",
+                "name": "rot_matrix[3][3]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [3][3] of the rotation matrix used in the transformation."
             },
             {
-                "name": "tr_vector_1",
+                "name": "tr_vector[1]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [1] of the translation vector used in the transformation."
             },
             {
-                "name": "tr_vector_2",
+                "name": "tr_vector[2]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [2] of the translation vector used in the transformation."
             },
             {
-                "name": "tr_vector_3",
+                "name": "tr_vector[3]",
                 "type": "float4",
                 "nullok": true,
                 "comment": "type:float4\nData item [3] of the translation vector used in the transformation."
+            }
+        ],
+        "vocab": {},
+        "fkeys": [],
+        "pkey_columns": [
+            "structure_id",
+            "id"
+        ]
+    },
+    "ihm_hdx_restraint": {
+        "name": "ihm_hdx_restraint",
+        "columns": [
+            {
+                "name": "structure_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "A reference to table entry.id."
+            },
+            {
+                "name": "dataset_list_id",
+                "type": "int4",
+                "nullok": true,
+                "comment": "A reference to table ihm_dataset_list.id."
+            },
+            {
+                "name": "details",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nAdditional details regarding the HDX restraint."
+            },
+            {
+                "name": "feature_id",
+                "type": "int4",
+                "nullok": false,
+                "comment": "A reference to table ihm_feature_list.feature_id."
+            },
+            {
+                "name": "id",
+                "type": "int4",
+                "nullok": false,
+                "comment": "type:int4\nA unique identifier for the category."
+            },
+            {
+                "name": "protection_factor",
+                "type": "float4",
+                "nullok": true,
+                "comment": "type:float4\nThe value of the protection factor determined from HDX experiments. \n These are reported as log(protection factor). Protection factors\n are scaling factors and are unitless."
             }
         ],
         "vocab": {},
@@ -3308,7 +3609,7 @@
                 "name": "entity_description",
                 "type": "text",
                 "nullok": true,
-                "comment": "type:text\nA text description of the molecular entity. \n"
+                "comment": "type:text\nA text description of the molecular entity."
             },
             {
                 "name": "entity_id",
@@ -4730,13 +5031,13 @@
                 "name": "entity_description_1",
                 "type": "text",
                 "nullok": true,
-                "comment": "type:text\nA text description of molecular entity 1. \n"
+                "comment": "type:text\nA text description of molecular entity 1."
             },
             {
                 "name": "entity_description_2",
                 "type": "text",
                 "nullok": true,
-                "comment": "type:text\nA text description of molecular entity 2. \n"
+                "comment": "type:text\nA text description of molecular entity 2."
             },
             {
                 "name": "entity_id_1",
@@ -5020,6 +5321,12 @@
                 "type": "int4",
                 "nullok": false,
                 "comment": "A reference to table ihm_dataset_list.id."
+            },
+            {
+                "name": "transformation_id",
+                "type": "int4",
+                "nullok": true,
+                "comment": "A reference to table ihm_data_transformation.id."
             }
         ],
         "vocab": {},
@@ -5380,7 +5687,7 @@
                 "name": "entity_description",
                 "type": "text",
                 "nullok": true,
-                "comment": "type:text\nA text description of the molecular entity\n"
+                "comment": "type:text\nA text description of the molecular entity"
             },
             {
                 "name": "entity_id",
@@ -5690,6 +5997,189 @@
             "id"
         ]
     },
+    "pdbx_audit_revision_details": {
+        "name": "pdbx_audit_revision_details",
+        "columns": [
+            {
+                "name": "structure_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "A reference to table entry.id."
+            },
+            {
+                "name": "data_content_type",
+                "type": "text",
+                "nullok": false,
+                "comment": "A reference to table pdbx_audit_revision_history.data_content_type."
+            },
+            {
+                "name": "ordinal",
+                "type": "int4",
+                "nullok": false,
+                "comment": "type:int4\nA unique identifier for the pdbx_audit_revision_details record.\nexamples:1"
+            },
+            {
+                "name": "provider",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nThe provider of the revision.\nexamples:repository"
+            },
+            {
+                "name": "revision_ordinal",
+                "type": "int4",
+                "nullok": false,
+                "comment": "A reference to table pdbx_audit_revision_history.ordinal."
+            },
+            {
+                "name": "type",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nA type classification of the revision\nexamples:Initial release"
+            }
+        ],
+        "vocab": {
+            "pdbx_audit_revision_details": "type"
+        },
+        "fkeys": [
+            {
+                "column": "provider",
+                "reftable": "pdbx_audit_revision_details_provider_term",
+                "refcolumn": "ID"
+            },
+            {
+                "column": "type",
+                "reftable": "pdbx_audit_revision_details_type_term",
+                "refcolumn": "ID"
+            }
+        ],
+        "pkey_columns": [
+            "structure_id",
+            "data_content_type",
+            "ordinal",
+            "revision_ordinal"
+        ]
+    },
+    "pdbx_audit_revision_history": {
+        "name": "pdbx_audit_revision_history",
+        "columns": [
+            {
+                "name": "structure_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "A reference to table entry.id."
+            },
+            {
+                "name": "data_content_type",
+                "type": "text",
+                "nullok": false,
+                "comment": "type:text\nThe type of file that the pdbx_audit_revision_history record refers to.\nexamples:Structure model"
+            },
+            {
+                "name": "major_revision",
+                "type": "int4",
+                "nullok": false,
+                "comment": "type:int4\nThe major version number of deposition release.\nexamples:1"
+            },
+            {
+                "name": "minor_revision",
+                "type": "int4",
+                "nullok": false,
+                "comment": "type:int4\nThe minor version number of deposition release.\nexamples:1"
+            },
+            {
+                "name": "ordinal",
+                "type": "int4",
+                "nullok": false,
+                "comment": "type:int4\nA unique identifier for the pdbx_audit_revision_history record.\nexamples:1"
+            },
+            {
+                "name": "revision_date",
+                "type": "text",
+                "nullok": false,
+                "comment": "type:text\nThe release date of the revision\nexamples:2017-03-08"
+            }
+        ],
+        "vocab": {
+            "pdbx_audit_revision_history": "data_content_type"
+        },
+        "fkeys": [
+            {
+                "column": "data_content_type",
+                "reftable": "pdbx_audit_revision_history_data_content_type_term",
+                "refcolumn": "ID"
+            }
+        ],
+        "pkey_columns": [
+            "structure_id",
+            "data_content_type",
+            "ordinal"
+        ]
+    },
+    "pdbx_database_status": {
+        "name": "pdbx_database_status",
+        "columns": [
+            {
+                "name": "structure_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "A reference to table entry.id."
+            },
+            {
+                "name": "deposit_site",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nThe site where the file was deposited.\nexamples:NDB,RCSB,PDBE,PDBJ,BMRB,BNL,PDBC"
+            },
+            {
+                "name": "entry_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "A reference to table entry.id."
+            },
+            {
+                "name": "process_site",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nThe site where the file was deposited.\nexamples:NDB,RCSB,PDBE,PDBJ,BNL,PDBC"
+            },
+            {
+                "name": "recvd_initial_deposition_date",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nThe date of initial deposition.  (The first message for\n deposition has been received.)\nexamples:1983-02-21"
+            },
+            {
+                "name": "status_code",
+                "type": "text",
+                "nullok": false,
+                "comment": "type:text\nCode for status of file.\nexamples:REL,HPUB"
+            }
+        ],
+        "vocab": {
+            "pdbx_database_status": "status_code"
+        },
+        "fkeys": [
+            {
+                "column": "deposit_site",
+                "reftable": "pdbx_database_status_deposit_site_term",
+                "refcolumn": "ID"
+            },
+            {
+                "column": "process_site",
+                "reftable": "pdbx_database_status_process_site_term",
+                "refcolumn": "ID"
+            },
+            {
+                "column": "status_code",
+                "reftable": "pdbx_database_status_status_code_term",
+                "refcolumn": "ID"
+            }
+        ],
+        "pkey_columns": [
+            "structure_id",
+            "entry_id"
+        ]
+    },
     "pdbx_entity_nonpoly": {
         "name": "pdbx_entity_nonpoly",
         "columns": [
@@ -5919,6 +6409,12 @@
                 "comment": "type:text\nThe classification of the program according to its\n major function.\nexamples:data collection,data reduction,phasing,model building,refinement,validation,other"
             },
             {
+                "name": "dependencies",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nAny prerequisite software required to run _software.name.\nexamples:PDBlib class library"
+            },
+            {
                 "name": "description",
                 "type": "text",
                 "nullok": true,
@@ -6016,6 +6512,12 @@
                 "comment": "type:text\nA description of the type of structure model.\nexamples:MINIMIZED AVERAGE"
             },
             {
+                "name": "pdbx_structure_determination_methodology",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nIndicates if the structure was determined using experimental, computational, or integrative methods"
+            },
+            {
                 "name": "title",
                 "type": "text",
                 "nullok": true,
@@ -6023,12 +6525,17 @@
             }
         ],
         "vocab": {
-            "struct": "pdbx_CASP_flag"
+            "struct": "pdbx_structure_determination_methodology"
         },
         "fkeys": [
             {
                 "column": "pdbx_CASP_flag",
                 "reftable": "struct_pdbx_CASP_flag_term",
+                "refcolumn": "ID"
+            },
+            {
+                "column": "pdbx_structure_determination_methodology",
+                "reftable": "ruct_pdbx_structure_determination_methodology_term",
                 "refcolumn": "ID"
             }
         ],
@@ -6121,6 +6628,162 @@
             "id"
         ]
     },
+    "struct_conn": {
+        "name": "struct_conn",
+        "columns": [
+            {
+                "name": "structure_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "A reference to table entry.id."
+            },
+            {
+                "name": "conn_type_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "A reference to table struct_conn_type.id."
+            },
+            {
+                "name": "id",
+                "type": "text",
+                "nullok": false,
+                "comment": "type:text\nThe value of _struct_conn.id must uniquely identify a record in\n the STRUCT_CONN list.\n\n Note that this item need not be a number; it can be any unique\n identifier."
+            },
+            {
+                "name": "pdbx_dist_value",
+                "type": "float4",
+                "nullok": true,
+                "comment": "type:float4\nDistance value for this contact."
+            },
+            {
+                "name": "ptnr1_auth_asym_id",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nA component of the identifier for partner 1 of the structure\n connection.\n\n This data item is a pointer to _atom_site.auth_asym_id in the\n ATOM_SITE category."
+            },
+            {
+                "name": "ptnr1_auth_comp_id",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nA component of the identifier for partner 1 of the structure\n connection.\n\n This data item is a pointer to _atom_site.auth_comp_id in the\n ATOM_SITE category."
+            },
+            {
+                "name": "ptnr1_auth_seq_id",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nA component of the identifier for partner 1 of the structure\n connection.\n\n This data item is a pointer to _atom_site.auth_seq_id in the\n ATOM_SITE category."
+            },
+            {
+                "name": "ptnr1_label_asym_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "type:text\nA component of the identifier for partner 1 of the structure\n connection.\n\n This data item is a pointer to _atom_site.label_asym_id in the\n ATOM_SITE category."
+            },
+            {
+                "name": "ptnr1_label_atom_id",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nA component of the identifier for partner 1 of the structure\n connection.\n\n This data item is a pointer to _chem_comp_atom.atom_id in the\n CHEM_COMP_ATOM category."
+            },
+            {
+                "name": "ptnr1_label_comp_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "type:text\nA component of the identifier for partner 1 of the structure\n connection.\n\n This data item is a pointer to _atom_site.label_comp_id in the\n ATOM_SITE category."
+            },
+            {
+                "name": "ptnr1_label_seq_id",
+                "type": "int4",
+                "nullok": false,
+                "comment": "type:int4\nA component of the identifier for partner 1 of the structure\n connection.\n\n This data item is a pointer to _atom_site.label_seq_id in the\n ATOM_SITE category."
+            },
+            {
+                "name": "ptnr1_symmetry",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nDescribes the symmetry operation that should be applied to the\n atom set specified by _struct_conn.ptnr1_label* to generate the\n first partner in the structure connection.\nexamples:4,7_645"
+            },
+            {
+                "name": "ptnr2_auth_asym_id",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nA component of the identifier for partner 2 of the structure\n connection.\n\n This data item is a pointer to _atom_site.auth_asym_id in the\n ATOM_SITE category."
+            },
+            {
+                "name": "ptnr2_auth_comp_id",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nA component of the identifier for partner 2 of the structure\n connection.\n\n This data item is a pointer to _atom_site.auth_comp_id in the\n ATOM_SITE category."
+            },
+            {
+                "name": "ptnr2_auth_seq_id",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nA component of the identifier for partner 2 of the structure\n connection.\n\n This data item is a pointer to _atom_site.auth_seq_id in the\n ATOM_SITE category."
+            },
+            {
+                "name": "ptnr2_label_asym_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "type:text\nA component of the identifier for partner 2 of the structure\n connection.\n\n This data item is a pointer to _atom_site.label_asym_id in the\n ATOM_SITE category."
+            },
+            {
+                "name": "ptnr2_label_atom_id",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nA component of the identifier for partner 2 of the structure\n connection.\n\n This data item is a pointer to _chem_comp_atom.atom_id in the\n CHEM_COMP_ATOM category."
+            },
+            {
+                "name": "ptnr2_label_comp_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "type:text\nA component of the identifier for partner 2 of the structure\n connection.\n\n This data item is a pointer to _atom_site.label_comp_id in the\n ATOM_SITE category."
+            },
+            {
+                "name": "ptnr2_symmetry",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nDescribes the symmetry operation that should be applied to the\n atom set specified by _struct_conn.ptnr2_label* to generate the\n second partner in the structure connection.\nexamples:4,7_645"
+            }
+        ],
+        "vocab": {},
+        "fkeys": [],
+        "pkey_columns": [
+            "structure_id",
+            "id"
+        ]
+    },
+    "struct_conn_type": {
+        "name": "struct_conn_type",
+        "columns": [
+            {
+                "name": "structure_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "A reference to table entry.id."
+            },
+            {
+                "name": "id",
+                "type": "text",
+                "nullok": false,
+                "comment": "type:text\nThe chemical or structural type of the interaction."
+            }
+        ],
+        "vocab": {
+            "struct_conn_type": "id"
+        },
+        "fkeys": [
+            {
+                "column": "id",
+                "reftable": "struct_conn_type_id_term",
+                "refcolumn": "ID"
+            }
+        ],
+        "pkey_columns": [
+            "structure_id",
+            "id"
+        ]
+    },
     "struct_ref": {
         "name": "struct_ref",
         "columns": [
@@ -6129,6 +6792,12 @@
                 "type": "text",
                 "nullok": false,
                 "comment": "A reference to table entry.id."
+            },
+            {
+                "name": "biol_id",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nThis data item is a pointer to _struct_biol.id in the\n STRUCT_BIOL category."
             },
             {
                 "name": "db_code",
@@ -6167,20 +6836,57 @@
                 "comment": "type:text\nBeginning index in the chemical sequence from the\nreference database.\nexamples:1,2"
             },
             {
+                "name": "pdbx_align_end",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nEnding index in the chemical sequence from the\nreference database.\nexamples:105,245"
+            },
+            {
                 "name": "pdbx_db_accession",
                 "type": "text",
                 "nullok": true,
                 "comment": "type:text\nAccession code assigned by the reference database.\nexamples:P07617"
             },
             {
+                "name": "pdbx_db_isoform",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nDatabase code assigned by the reference database for a sequence isoform.   An isoform sequence is an\n alternative protein sequence that can be generated from the same gene by a single or by a combination of\n biological events such as: alternative promoter usage, alternative splicing, alternative initiation\n and ribosomal frameshifting.\nexamples:P29994-6"
+            },
+            {
                 "name": "pdbx_seq_one_letter_code",
                 "type": "text",
                 "nullok": true,
                 "comment": "type:text\nDatabase chemical sequence expressed as string of one-letter\n amino acid codes.\nexamples:A  for alanine or adenine\nB  for ambiguous asparagine/aspartic-acid\nR  for arginine\nN  for asparagine\nD  for aspartic-acid\nC  for cysteine or cystine or cytosine\nQ  for glutamine\nE  for glutamic-acid\nZ  for ambiguous glutamine/glutamic acid\nG  for glycine or guanine\nH  for histidine\nI  for isoleucine\nL  for leucine\nK  for lysine\nM  for methionine\nF  for phenylalanine\nP  for proline\nS  for serine\nT  for threonine or thymine\nW  for tryptophan\nY  for tyrosine\nV  for valine\nU  for uracil\nO  for water\nX  for other"
+            },
+            {
+                "name": "seq_align",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nA flag to indicate the scope of the alignment between the\n sequence of the entity or biological unit described in the data\n block and that in the referenced database entry. 'entire'\n indicates that alignment spans the entire length of both\n sequences (although point differences may occur and can be\n annotated using the data items in the STRUCT_REF_SEQ_DIF\n category). 'partial' indicates a partial alignment. The region\n (or regions) of the alignment may be delimited using data items\n in the STRUCT_REF_SEQ category. This data item may also take\n the value '.', indicating that the reference is not to a\n sequence."
+            },
+            {
+                "name": "seq_dif",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nA flag to indicate the presence ('yes') or absence ('no') of\n point differences between the sequence of the entity or\n biological unit described in the data block and that in\n the referenced database entry. This data item may also\n take the value '.', indicating that the reference is not to a\n sequence."
             }
         ],
-        "vocab": {},
-        "fkeys": [],
+        "vocab": {
+            "struct_ref": "seq_dif"
+        },
+        "fkeys": [
+            {
+                "column": "seq_align",
+                "reftable": "struct_ref_seq_align_term",
+                "refcolumn": "ID"
+            },
+            {
+                "column": "seq_dif",
+                "reftable": "struct_ref_seq_dif_term",
+                "refcolumn": "ID"
+            }
+        ],
         "pkey_columns": [
             "structure_id",
             "id"

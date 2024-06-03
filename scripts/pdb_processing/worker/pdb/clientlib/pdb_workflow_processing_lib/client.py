@@ -533,6 +533,7 @@ class PDBClient (object):
         mmCIF_export = self.cif_tables
         pks_map = self.export_order_by
         matrix_tables = ['ihm_2dem_class_average_fitting', 'ihm_geometric_object_transformation']
+        collections_tables = ['ihm_entry_collection', 'ihm_entry_collection_mapping']
 
         def writeLine(line, loopLine=None):
             table_name = line[1:].split('.')[0]
@@ -542,6 +543,8 @@ class PDBClient (object):
                 mmCIF_ignored.append(table_name)
             if table_name not in deriva_tables and (table_name in mmCIF_export or table_name.startswith('flr_')):
                 if table_name.startswith('flr_'):
+                    return False
+                if table_name in collections_tables:
                     return False
                 if loopLine != None:
                     fw.write('{}\n'.format(loopLine))
