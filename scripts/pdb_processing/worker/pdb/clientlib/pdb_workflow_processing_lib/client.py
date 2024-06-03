@@ -615,7 +615,7 @@ class PDBClient (object):
                         self.logger.debug('More than 3 PK Table {}, PK: {}'.format(table_name,pk))
                     """
                             
-                    if table_name in ['entry', 'chem_comp_atom']:
+                    if table_name in ['entry', 'chem_comp_atom', 'database_2']:
                         continue
                     table = schema.tables[table_name]
                     self.logger.debug('Exporting table: {}'.format(table_name))
