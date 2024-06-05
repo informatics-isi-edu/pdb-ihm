@@ -616,7 +616,7 @@ class PDBClient (object):
                     """
                             
                     if table_name in ['entry', 'chem_comp_atom', 'database_2', 'ihm_entry_collection', 'ihm_entry_collection_mapping', 'pdbx_audit_revision_details',
-                                      'pdbx_audit_revision_history', 'pdbx_database_status', 'struct_conn', 'struct_conn_type']:
+                                      'pdbx_audit_revision_history', 'pdbx_database_status']:
                         continue
                     table = schema.tables[table_name]
                     self.logger.debug('Exporting table: {}'.format(table_name))
