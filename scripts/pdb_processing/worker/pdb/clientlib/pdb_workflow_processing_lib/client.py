@@ -50,7 +50,7 @@ catalog_dev_number = [99]
 
 mmCIF_hold_records="""_pdbx_database_status.status_code                     <status_code>
 _pdbx_database_status.entry_id                        <entry_id>
-_pdbx_database_status.deposit_site                    ?
+_pdbx_database_status.deposit_site                    RCSB
 _pdbx_database_status.process_site                    RCSB
 _pdbx_database_status.recvd_initial_deposition_date   <deposition_date> 
 #
@@ -65,7 +65,7 @@ _database_2.pdbx_DOI
 """
 mmCIF_release_records="""_pdbx_database_status.status_code                     <status_code>
 _pdbx_database_status.entry_id                        <entry_id>
-_pdbx_database_status.deposit_site                    ?
+_pdbx_database_status.deposit_site                    RCSB
 _pdbx_database_status.process_site                    RCSB
 _pdbx_database_status.recvd_initial_deposition_date   <deposition_date> 
 # 
@@ -2586,7 +2586,7 @@ class PDBClient (object):
         Get the primary accession code
         """
         
-        return f'PDB-Dev {accesion_code_row["PDBDEV_Accession_Code"]} {self.get_primary_accession_code("PDBDEV", accesion_code_row)} RCSB' if mode == 'PDBDEV' \
+        return f'PDB-Dev {accesion_code_row["PDBDEV_Accession_Code"]} {self.get_primary_accession_code("PDBDEV", accesion_code_row)} ?' if mode == 'PDBDEV' \
             else f'PDB {accesion_code_row["Accession_Code"]} {accesion_code_row["PDB_Extended_Code"].lower()} 10.2210/pdb{accesion_code_row["PDB_Code"].lower()}/pdb'
 
     def addReleaseRecords(self, rid, hold=False, user_id=None):
