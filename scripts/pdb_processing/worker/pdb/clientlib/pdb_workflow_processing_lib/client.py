@@ -1244,7 +1244,7 @@ class PDBClient (object):
     """
     def sortTable(self, fpath):
         excluded_mmCIF_tables = [
-            "entry"
+            'entry', 'database_2', 'pdbx_audit_revision_details', 'pdbx_audit_revision_history', 'pdbx_database_status'
         ]
 
         """
