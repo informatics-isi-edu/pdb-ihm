@@ -551,6 +551,14 @@ def set_PDB_Accession_Code(model):
             "projection_type": "acl"
         }
     })
+    
+    cnames = ["Accession_Serial", "PDBDEV_Accession_Code", "PDB_Extended_Code", "PDB_Code", "PDB_Accession_Code", "Notes"]
+    for cname in cnames:
+        col = table.columns[cname]
+        col.acls.update({
+            "select": g["entry-creators"],        
+            "insert": g["entry-updaters"],
+        })
 
 # -- ---------------------------------------------------------------------
 '''
