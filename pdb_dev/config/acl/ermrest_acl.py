@@ -28,7 +28,7 @@ GROUPS = {
 }
 g = GROUPS
 GROUPS["owners"] = g["isrd-systems"] + g["pdb-admins"]
-GROUPS["pdb-systems"] = g["pdb-ihm"]
+GROUPS["pdb-pipelines"] = g["pdb-ihm"]
 GROUPS["pdb-all"] = g["pdb-admins"] + g["pdb-submitters"] + g["pdb-curators"]
 GROUPS["isrd-internal"] = g["isrd-systems"] + g["isrd-staff"]
 GROUPS["isrd-all"] = g["isrd-systems"] + g["isrd-staff"] + g["isrd-testers"]
@@ -65,6 +65,12 @@ FKEY_ACL_BINDINGS = {
     }
 }
 
+column_updaters_enumerate_updaters_read_updaters_write = {
+    "enumerate": g["entry-updaters"],
+    "select": g["entry-updaters"],
+    "insert": g["entry-updaters"],
+    "update": g["entry-updaters"],
+}
 
 
 # -- ---------------------------------------------------------------------
@@ -362,14 +368,11 @@ def set_PDB_entry(model):
         })
     
     # -- ACL: only entry updaters can create and read:
-    # -- cnames: Notes
-    for cname in ["Notes"]:
+    # -- cnames: Notes, Manual_Processing (TO-ADD)
+    for cname in ["Notes", "Manual_Processing"]:
+        if not cname in table.columns.elements: continue
         col = table.columns[cname]
-        col.acls.update({
-            "enumerate": {},
-            "select": g["entry-updaters"],        
-            "insert": g["entry-updaters"],
-        })
+        col.acls.update(column_updaters_enumerate_updaters_read_updaters_write)
         col.acl_bindings.update({
             "submitters_read_own_entries": False,        
             "submitters_modify_based_on_workflow_status": False,
@@ -506,12 +509,12 @@ def set_PDB_entry_coordinates_related(model):
         table = schema.tables[tname]
         clear_table_acls(table) # clear policies
         # -- user_edit_exclusion: uses default schema/catalog policies.  
-        # -- curator_edit_exclusion: take away curator write access. Only pdb-ihm can modify
+        # -- curator_edit_exclusion: take away curator write access. Only pdb-pipelines can modify
         if tname in curator_edit_exclusions:
             table.acls.update({
-                "insert": g["pdb-ihm"],
-                "update": g["pdb-ihm"],
-                "delete": g["pdb-ihm"],
+                "insert": g["pdb-pipelines"],
+                "update": g["pdb-pipelines"],
+                "delete": g["pdb-pipelines"],
             })
         
         # -- submitters can only read their own entries, no editing
@@ -555,11 +558,8 @@ def set_PDB_Accession_Code(model):
     cnames = ["Accession_Serial", "PDB_Extended_Code", "PDB_Code", "PDB_Accession_Code", "Notes"]
     for cname in cnames:
         col = table.columns[cname]
-        col.acls.update({
-            "enumerate": {},
-            "select": g["entry-updaters"],        
-            "insert": g["entry-updaters"],
-        })
+        col.acls.update(column_updaters_enumerate_updaters_read_updaters_write)
+        
 
 # -- ---------------------------------------------------------------------
 '''
@@ -659,16 +659,16 @@ def set_PDB_entry_collection_related(model):
 def set_PDB_entry_related_error_file_tables(model):
     schema = model.schemas["PDB"]
     for tname in ["Entry_Error_File"]:
-        print("  - set_entry_related_system_generated_table: %s" % (tname,))        
+        print("  - set_entry_related_error_file_table: %s" % (tname,))        
         table = schema.tables[tname]
         clear_table_acls(table) 
         
         # == table policy
         # -- acl: only pdb-ihm can manipulate, entry-updaters can read (from schema acl)
         table.acls.update({
-            "insert": g["pdb-ihm"],
-            "update": g["pdb-ihm"],
-            "delete": g["pdb-ihm"],
+            "insert": g["pdb-pipelines"],
+            "update": g["pdb-pipelines"],
+            "delete": g["pdb-pipelines"],
         })
         # -- acl_bindings: submitters can read if it is linked to their entries (need to traverse fkey to entry)
         for fkey in table.foreign_keys:
@@ -689,7 +689,7 @@ def set_PDB_entry_related_error_file_tables(model):
     
 # -- ---------------------------------------------------------------------
 '''
-  policy: pdb-ihm generated content, entry_updater can read, pdb_submitter can only read their own entry
+  policy: pdb-ihm generated content, entry_updater can read, pdb_submitter can only read their own entry.
 '''
 def set_PDB_entry_related_system_generated_tables(model):
     schema = model.schemas["PDB"]
@@ -699,11 +699,11 @@ def set_PDB_entry_related_system_generated_tables(model):
         clear_table_acls(table) 
         
         # == table policy
-        # -- acl: only pdb-ihm can manipulate, entry-updaters can read (from schema acl)
+        # -- acl: only pdb-ihm can manipulate, entry-updaters can read and manipulate (from schema acl)
         table.acls.update({
-            "insert": g["pdb-ihm"],
-            "update": g["pdb-ihm"],
-            "delete": g["pdb-ihm"],
+            "insert": g["pdb-pipelines"] + g["entry-updaters"],
+            "update": g["pdb-pipelines"] + g["entry-updaters"],
+            "delete": g["pdb-pipelines"] + g["entry-updaters"],
         })
         # -- acl_bindings: submitters can read if it is linked to their entries (need to traverse fkey to entry)
         for fkey in table.foreign_keys:
