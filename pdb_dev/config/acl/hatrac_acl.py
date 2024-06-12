@@ -8,49 +8,8 @@ from deriva.core import urlquote, urlunquote
 from deriva.core import HatracStore
 import requests.exceptions
 from ...utils import DCCTX, PDBDEV_CLI, cfg
-from .ermrest_acl import GROUPS
+from .ermrest_acl import GROUPS, initialize_policies
 import re
-
-# general policy: submitters can create, curators can read, only owners can update existing namespaces.
-hatrac_curators_read = {
-    "owner": GROUPS["owners"],    
-    "subtree-owner": GROUPS["owners"],
-    "subtree-create": [],
-    "subtree-update": [],
-    "subtree-read": GROUPS["entry-updaters"],
-}
-
-# policy: submitters cannot create, curators can read/write, only owners can update existing namespaces.
-# curator_read inherits from parent namespace
-hatrac_curators_write_submitters_read = {
-    "owner": [],
-    "subtree-owner": [],
-    "create": GROUPS["entry-updaters"],
-    "subtree-create": GROUPS["entry-updaters"],
-    "subtree-update": GROUPS["entry-updaters"],
-    "subtree-read": GROUPS["pdb-submitters"],
-}
-
-# policy: curators and submitters can create/update. The read access will be given to appropriate submitter in the shell script. 
-# no need to set subtree-read for curators. In herit from root.
-hatrac_curators_write_submitters_write = {
-    "owner": [],
-    "subtree-owner": [],    
-    "create": GROUPS["entry-updaters"] + GROUPS["pdb-submitters"],
-    "subtree-create": GROUPS["entry-updaters"] + GROUPS["pdb-submitters"],
-    "subtree-update": GROUPS["entry-updaters"] + GROUPS["pdb-submitters"],
-    "subtree-read": [],
-}
-
-# no need to set subtree-read for curators. In herit from root.
-hatrac_curators_write = {
-    "owner": [],
-    "subtree-owner": [],    
-    "create": GROUPS["entry-updaters"],
-    "subtree-create": GROUPS["entry-updaters"],
-    "subtree-update": GROUPS["entry-updaters"],
-    "subtree-read":  [],
-}
 
 # remove all members from namespaces. Read/update doesn't work on namespace.
 hatrac_reset_acls = {
@@ -61,6 +20,55 @@ hatrac_reset_acls = {
     "subtree-update": [],
     "subtree-read": [],
 }
+hatrac_curators_read = {}
+hatrac_curators_write_submitters_read = {}
+hatrac_curators_write_submitters_write = {}
+hatrac_curators_write = {}
+
+def initialize_hatrac_policies():
+    global hatrac_curators_read, curator_write, hatrac_curators_write_submitters_read, hatrac_curators_write_submitters_write
+    
+    # general policy: submitters can create, curators can read, only owners can update existing namespaces.
+    hatrac_curators_read = {
+        "owner": GROUPS["owners"],    
+        "subtree-owner": GROUPS["owners"],
+        "subtree-create": [],
+        "subtree-update": [],
+        "subtree-read": GROUPS["entry-updaters"],
+    }
+
+    # no need to set subtree-read for curators. In herit from root.
+    hatrac_curators_write = {
+        "owner": [],
+        "subtree-owner": [],    
+        "create": GROUPS["entry-updaters"],
+        "subtree-create": GROUPS["entry-updaters"],
+        "subtree-update": GROUPS["entry-updaters"],
+        "subtree-read":  [],
+    }
+
+    # policy: submitters cannot create, curators can read/write, only owners can update existing namespaces.
+    # curator_read inherits from parent namespace
+    hatrac_curators_write_submitters_read = {
+        "owner": [],
+        "subtree-owner": [],
+        "create": GROUPS["entry-updaters"],
+        "subtree-create": GROUPS["entry-updaters"],
+        "subtree-update": GROUPS["entry-updaters"],
+        "subtree-read": GROUPS["pdb-submitters"],
+    }
+    
+    # policy: curators and submitters can create/update. The read access will be given to appropriate submitter in the shell script. 
+    # no need to set subtree-read for curators. In herit from root.
+    hatrac_curators_write_submitters_write = {
+        "owner": [],
+        "subtree-owner": [],    
+        "create": GROUPS["entry-updaters"] + GROUPS["pdb-submitters"],
+        "subtree-create": GROUPS["entry-updaters"] + GROUPS["pdb-submitters"],
+        "subtree-update": GROUPS["entry-updaters"] + GROUPS["pdb-submitters"],
+        "subtree-read": [],
+    }
+    
 
 # ============================================================================
 # helper functions
@@ -95,12 +103,8 @@ def set_hatrac_namespace_acl(store, acl, namespace):
         return
         
     for access, roles in acl.items():
-        if cfg.is_dev and GROUPS["pdb-curators"][0] in roles:
-            print("    - namespace: %s seting access %s = %s" % (namespace, access, roles+GROUPS["isrd-testers"]))            
-            store.set_acl(namespace, access, roles+GROUPS["isrd-testers"])
-        else:
-            print("    - namespace: %s seting access %s = %s" % (namespace, access, roles))
-            store.set_acl(namespace, access, roles)
+        print("    - namespace: %s seting access %s = %s" % (namespace, access, roles))
+        store.set_acl(namespace, access, roles)
             
     if False:
         try :
@@ -283,8 +287,8 @@ def set_hatrac_acl(store, catalog):
     # no need to set this up here as it covers in hourly job
     # set_hatrac_write_per_user(store, ["/hatrac/pdb/submitted/uid", "/hatrac/pdb/user"]) 
         
-    # legacy tree on all envs
-    if True:
+    # legacy tree on all envs. Only turns this to True if needs to rerun the acl for legacy trees.
+    if False:
         set_hatrac_namespaces_acl(store, hatrac_curators_write, ["/hatrac/pdb/entry"])    
         set_hatrac_namespaces_acl(store, hatrac_curators_write_submitters_write, ["/hatrac/pdb/entry/submitted"])
         set_hatrac_namespaces_acl(store, hatrac_reset_acls, ["/hatrac/pdb/entry_files", "/hatrac/pdb/entry_mmCIF", "/hatrac/pdb/mmCIF", "/hatrac/pdb/image"])
@@ -295,6 +299,8 @@ def set_hatrac_acl(store, catalog):
 # =====================================================================
 
 def main(server_name, catalog_id, credentials):
+    initialize_policies()
+    initialize_hatrac_policies()    
     server = DerivaServer("https", server_name, credentials)
     catalog = server.connect_ermrest(catalog_id)
     catalog.dcctx["cid"] = DCCTX["acl"]

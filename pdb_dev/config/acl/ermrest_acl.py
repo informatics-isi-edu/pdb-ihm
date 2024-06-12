@@ -39,17 +39,6 @@ GROUPS["entry-creators"] = g["pdb-submitters"] + g["pdb-curators"] + g["isrd-sta
 GROUPS["entry-updaters"] = g["pdb-curators"] + g["isrd-staff"]
 #GROUPS["entry-readers"] = g["pdb-curators"] + g["isrd-staff"]   # to discuss, ignore for now
 
-ERMREST_CATALOG_ACLS = {
-    "owner" : g["owners"],
-    "enumerate": g["public"], 
-    "select": g["entry-updaters"],
-    "insert": g["entry-updaters"],
-    "update": g["entry-updaters"],
-    "delete": g["entry-updaters"],
-    "create": [],
-    "write": [],
-}
-
 FKEY_ACLS = {
     "default": { "insert": ["*"], "update": ["*"] },
     "RCBRMB": None,
@@ -65,14 +54,35 @@ FKEY_ACL_BINDINGS = {
     }
 }
 
-column_updaters_enumerate_updaters_read_updaters_write = {
-    "enumerate": g["entry-updaters"],
-    "select": g["entry-updaters"],
-    "insert": g["entry-updaters"],
-    "update": g["entry-updaters"],
-}
+ermrest_catalog_acls = {}
+column_curators_enumericate_curator_read_curator_write = {}
 
+# -- set different group members depending on deployment environment
+def initialize_policies():
+    global g, ermrest_catalog_acls, column_curators_enumericate_curator_read_curator_write
+    
+    if cfg.is_dev:
+        g["owners"] = g["owners"] + g["isrd-staff"]
+        g["entry-updaters"] = g["entry-updaters"] + g["isrd-testers"]
 
+    ermrest_catalog_acls = {
+        "owner" : g["owners"],
+        "enumerate": g["public"], 
+        "select": g["entry-updaters"],
+        "insert": g["entry-updaters"],
+        "update": g["entry-updaters"],
+        "delete": g["entry-updaters"],
+        "create": [],
+        "write": [],
+    }
+
+    column_curators_enumericate_curator_read_curator_write = {
+        "enumerate": g["entry-updaters"],
+        "select": g["entry-updaters"],
+        "insert": g["entry-updaters"],
+        "update": g["entry-updaters"],
+    }
+        
 # -- ---------------------------------------------------------------------
 # clear all the ACLs in the table and reset the fkey.acls to default
 def clear_table_acls(table):
@@ -372,7 +382,7 @@ def set_PDB_entry(model):
     for cname in ["Notes", "Manual_Processing"]:
         if not cname in table.columns.elements: continue
         col = table.columns[cname]
-        col.acls.update(column_updaters_enumerate_updaters_read_updaters_write)
+        col.acls.update(column_curators_enumericate_curator_read_curator_write)
         col.acl_bindings.update({
             "submitters_read_own_entries": False,        
             "submitters_modify_based_on_workflow_status": False,
@@ -558,7 +568,7 @@ def set_PDB_Accession_Code(model):
     cnames = ["Accession_Serial", "PDB_Extended_Code", "PDB_Code", "PDB_Accession_Code", "Notes"]
     for cname in cnames:
         col = table.columns[cname]
-        col.acls.update(column_updaters_enumerate_updaters_read_updaters_write)
+        col.acls.update(column_curators_enumericate_curator_read_curator_write)
         
 
 # -- ---------------------------------------------------------------------
@@ -807,7 +817,7 @@ def set_ermrest_acl(catalog):
 
 
     # -- catalog
-    model.acls.update(ERMREST_CATALOG_ACLS)
+    model.acls.update(ermrest_catalog_acls)
     # -- schemas
     set_PDB_acl(model)
     set_Vocab_acl(model)        
@@ -819,6 +829,7 @@ def set_ermrest_acl(catalog):
 # -- =================================================================================
         
 def main(server_name, catalog_id, credentials):
+    initialize_policies()    
     server = DerivaServer("https", server_name, credentials)
     catalog = server.connect_ermrest(catalog_id)
     catalog.dcctx["cid"] = DCCTX["acl"]
