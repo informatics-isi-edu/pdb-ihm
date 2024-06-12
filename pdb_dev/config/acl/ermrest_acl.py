@@ -556,7 +556,8 @@ def set_PDB_Accession_Code(model):
     for cname in cnames:
         col = table.columns[cname]
         col.acls.update({
-            "select": g["entry-creators"],        
+            "enumerate": {},
+            "select": g["entry-updaters"],        
             "insert": g["entry-updaters"],
         })
 

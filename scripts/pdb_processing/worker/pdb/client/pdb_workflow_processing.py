@@ -85,7 +85,7 @@ def load(config_filename):
         return None
 
     alternative_accession_code_mode = cfg.get('alternative_accession_code_mode', 'PDB')
-    if alternative_accession_code_mode not in ['PDBDEV', 'PDB']:
+    if alternative_accession_code_mode not in ['PDBDEV', 'PDB', 'None']:
         logger.error(f'Invalid value for the alternative_accession_code_mode: {alternative_accession_code_mode}.')
         return None
 

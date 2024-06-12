@@ -2586,7 +2586,7 @@ class PDBClient (object):
         Get the primary accession code
         """
         
-        return f'PDB-Dev {accesion_code_row["PDBDEV_Accession_Code"]} {self.get_primary_accession_code("PDBDEV", accesion_code_row)} ?' if mode == 'PDBDEV' \
+        return '' if mode == 'None' else f'PDB-Dev {accesion_code_row["PDBDEV_Accession_Code"]} {self.get_primary_accession_code("PDBDEV", accesion_code_row)} ?' if mode == 'PDBDEV' \
             else f'PDB {accesion_code_row["PDB_Accession_Code"]} {accesion_code_row["PDB_Extended_Code"].lower()} 10.2210/pdb{accesion_code_row["PDB_Code"].lower()}/pdb'
 
     def addReleaseRecords(self, rid, hold=False, user_id=None):
