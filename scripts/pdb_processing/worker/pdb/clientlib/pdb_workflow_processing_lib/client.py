@@ -2129,7 +2129,7 @@ class PDBClient (object):
                                       },
                                       user)
                 self.cleanupDataScratch()
-                return (1, 'mmCIF Validation Failure. For details, see the files at: https://data.pdb-dev.org/chaise/recordset/#{}/PDB:Entry_Error_File/Entry_RID={}'.format(self.catalog_number, rid))
+                return (1, 'mmCIF Validation Failure. For details, see the files at: https://{}/chaise/recordset/#{}/PDB:Entry_Error_File/Entry_RID={}'.format(self.host, self.catalog_number, rid))
                 
         except:
             et, ev, tb = sys.exc_info()
