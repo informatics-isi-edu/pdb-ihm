@@ -2779,6 +2779,12 @@ class PDBClient (object):
                                   'File_Bytes': file_size
                                   },
                                   user)
+            process_status_error = Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY']
+            returncode,error_message = self.validateExportmmCIF(input_dir, file_name, year, entry_id, rid, user, process_status_error, user_id)
+            if returncode != 0:
+                subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'HOLD' if hold else 'REL', process_status_error, user)
+                self.sendMail(subject, error_message)
+                return
             if self.reportValidation:
                 if self.report_validation(rid, entry_id, user, user_id, hold) != (None, None, None):
                     if self.generate_JSON_mmCIF_content(rid, entry_id, user, user_id, hold) != None:
