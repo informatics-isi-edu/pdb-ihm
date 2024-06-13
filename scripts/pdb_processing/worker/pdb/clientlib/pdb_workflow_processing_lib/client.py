@@ -2063,8 +2063,8 @@ class PDBClient (object):
             if has_errors == False:
                 hatrac_namespace = '/{}/generated/uid/{}/entry/id/{}/final_mmCIF'.format(self.hatrac_namespace, user_id, entry_id)
             else:
-                shutil.move('{}/{}'.format(self.scratch, filename), '{}/{}_error.cif'.format(self.scratch, entry_id))
-                filename = '{}_error.cif'.format(entry_id)
+                shutil.move('{}/{}'.format(self.scratch, filename), '{}/{}_error.cif'.format(self.scratch, filename))
+                filename = '{}_error.cif'.format(filename)
 
             hatrac_URI, file_name, file_size, hexa_md5 = self.storeFileInHatrac(hatrac_namespace, filename, input_dir, rid, user)
             if hatrac_URI == None:
