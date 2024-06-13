@@ -1,12 +1,16 @@
 {
     "0": [
+        "Accession_Code",
         "Data_Dictionary",
         "Entry_Related_File_Templates",
-        "entry"
+        "entry",
+        "ihm_entry_collection"
     ],
     "1": [
+        "Curation_Log",
+        "Entry_Error_File",
+        "Entry_Generated_File",
         "Entry_Related_File",
-        "Entry_mmCIF_File",
         "Supported_Dictionary",
         "atom_type",
         "audit_author",
@@ -18,6 +22,7 @@
         "ihm_data_transformation",
         "ihm_dataset_group",
         "ihm_dataset_list",
+        "ihm_entry_collection_mapping",
         "ihm_external_reference_info",
         "ihm_geometric_object_center",
         "ihm_geometric_object_list",
