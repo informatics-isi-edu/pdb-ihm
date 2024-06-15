@@ -126,7 +126,7 @@ def pdb_row_job(handler, action):
 
 _work_units.append(
     WorkUnit(
-        '/entity/A:=PDB:entry/Process_Status={};Process_Status={};Process_Status={}/Vocab:Workflow_Status/Name=DEPO/$A?limit=1'.format(urlquote(Process_Status_Terms['NEW']), urlquote(Process_Status_Terms['RESUME']), urlquote(Process_Status_Terms['REPROCESS'])),
+        '/entity/A:=PDB:entry/Manual_Processing=False/Process_Status={};Process_Status={};Process_Status={}/Vocab:Workflow_Status/Name=DEPO/$A?limit=1'.format(urlquote(Process_Status_Terms['NEW']), urlquote(Process_Status_Terms['RESUME']), urlquote(Process_Status_Terms['REPROCESS'])),
         '/attributegroup/PDB:entry/RID;Process_Status',
         '/attributegroup/PDB:entry/RID',
         entry_row_job,
@@ -137,7 +137,7 @@ _work_units.append(
 
 _work_units.append(
     WorkUnit(
-        '/entity/A:=PDB:entry/Process_Status={};Process_Status={};Process_Status={}/Vocab:Workflow_Status/Name=SUBMIT/$A?limit=1'.format(urlquote(Process_Status_Terms['NEW']), urlquote(Process_Status_Terms['RESUME']), urlquote(Process_Status_Terms['REPROCESS'])),
+        '/entity/A:=PDB:entry/Manual_Processing=False/Process_Status={};Process_Status={};Process_Status={}/Vocab:Workflow_Status/Name=SUBMIT/$A?limit=1'.format(urlquote(Process_Status_Terms['NEW']), urlquote(Process_Status_Terms['RESUME']), urlquote(Process_Status_Terms['REPROCESS'])),
         '/attributegroup/PDB:entry/RID;Process_Status',
         '/attributegroup/PDB:entry/RID',
         entry_export_job,
@@ -148,7 +148,7 @@ _work_units.append(
 
 _work_units.append(
     WorkUnit(
-        '/entity/A:=PDB:entry/Process_Status={};Process_Status={}/Vocab:Workflow_Status/Name=SUBMISSION%20COMPLETE/$A?limit=1'.format(urlquote(Process_Status_Terms['RESUME']), urlquote(Process_Status_Terms['REPROCESS'])),
+        '/entity/A:=PDB:entry/Manual_Processing=False/Process_Status={};Process_Status={}/Vocab:Workflow_Status/Name=SUBMISSION%20COMPLETE/$A?limit=1'.format(urlquote(Process_Status_Terms['RESUME']), urlquote(Process_Status_Terms['REPROCESS'])),
         '/attributegroup/PDB:entry/RID;Process_Status',
         '/attributegroup/PDB:entry/RID',
         submission_complete_row_job,
@@ -159,7 +159,7 @@ _work_units.append(
 
 _work_units.append(
     WorkUnit(
-        '/entity/A:=PDB:entry/Process_Status={};Process_Status={}/Vocab:Workflow_Status/Name=RELEASE%20READY/$A?limit=1'.format(urlquote(Process_Status_Terms['RESUME']), urlquote(Process_Status_Terms['REPROCESS'])),
+        '/entity/A:=PDB:entry/Manual_Processing=False/Process_Status={};Process_Status={}/Vocab:Workflow_Status/Name=RELEASE%20READY/$A?limit=1'.format(urlquote(Process_Status_Terms['RESUME']), urlquote(Process_Status_Terms['REPROCESS'])),
         '/attributegroup/PDB:entry/RID;Process_Status',
         '/attributegroup/PDB:entry/RID',
         release_ready_row_job,
@@ -170,7 +170,7 @@ _work_units.append(
 
 _work_units.append(
     WorkUnit(
-        '/entity/A:=PDB:Entry_Related_File/Restraint_Process_Status={};Restraint_Process_Status={};Restraint_Process_Status={}/Vocab:Workflow_Status/Name=DEPO/$A/PDB:entry/Process_Status={}/$A?limit=1'.format(urlquote(Process_Status_Terms['NEW']), urlquote(Process_Status_Terms['RESUME']), urlquote(Process_Status_Terms['REPROCESS']), urlquote(Process_Status_Terms['SUCCESS'])),
+        '/entity/A:=PDB:Entry_Related_File/Restraint_Process_Status={};Restraint_Process_Status={};Restraint_Process_Status={}/Vocab:Workflow_Status/Name=DEPO/$A/PDB:entry/Manual_Processing=False&Process_Status={}/$A?limit=1'.format(urlquote(Process_Status_Terms['NEW']), urlquote(Process_Status_Terms['RESUME']), urlquote(Process_Status_Terms['REPROCESS']), urlquote(Process_Status_Terms['SUCCESS'])),
         '/attributegroup/PDB:Entry_Related_File/RID;Restraint_Process_Status',
         '/attributegroup/PDB:Entry_Related_File/RID',
         Entry_Related_File_row_job,

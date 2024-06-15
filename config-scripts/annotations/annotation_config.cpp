@@ -6635,6 +6635,7 @@
                      "Deposit_Date",
                      "Release_Date",
                      "Method_Details",
+                     "Manual_Processing",
                   {
                      "markdown_name" : "RCB",
                      "source" : [
@@ -6754,6 +6755,10 @@
                         },
                         "RID"
                      ]
+                  },
+                  { 
+                     "markdown_name" : "Manual Processing",
+                     "source" : "Manual_Processing"
                   }
                 ]
                 },
@@ -6838,6 +6843,7 @@
                     "Method_Details",
                     "Submitter_Flag",
                     "Submitter_Flag_Date",
+                    "Manual_Processing",
                     "Notes",
                     [
                         "PDB",
@@ -6856,6 +6862,7 @@
                     "Release_Date",
                     "Submitter_Flag",
                     "Submitter_Flag_Date",
+                    "Manual_Processing",
                     "Notes"
                 ],
                 "entry": [
@@ -6866,6 +6873,7 @@
                         "entry_Workflow_Status_fkey"
                     ],
                     "Method_Details",
+                    "Manual_Processing",
                     "Notes"
                 ]
             }
