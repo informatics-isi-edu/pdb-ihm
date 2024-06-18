@@ -2581,13 +2581,24 @@ class PDBClient (object):
         """
         return accesion_code_row['PDBDEV_Accession_Code'] if mode == 'PDBDEV' else accesion_code_row['PDB_Accession_Code']
 
+    def get_lower_accession_code(self, value):
+        """
+        Change to lower case
+        If prefix is TEST- do not change the prefix
+        """
+        if value.startswith('TEST-'):
+            value = f'TEST-{value[len("TEST-"):].lower()}'
+        else:
+           value = value.lower()
+        return value
+
     def get_database_2_string(self, mode, accesion_code_row):
         """
         Get the primary accession code
         """
         
         return '#' if mode == 'None' else f'PDB-Dev {accesion_code_row["PDBDEV_Accession_Code"]} {self.get_primary_accession_code("PDBDEV", accesion_code_row)} ?' if mode == 'PDBDEV' \
-            else f'PDB {accesion_code_row["PDB_Accession_Code"]} {accesion_code_row["PDB_Extended_Code"].lower()} 10.2210/pdb{accesion_code_row["PDB_Code"].lower()}/pdb'
+            else f'PDB {accesion_code_row["PDB_Accession_Code"]} {self.get_lower_accession_code(accesion_code_row["PDB_Extended_Code"])} 10.2210/pdb{self.get_lower_accession_code(accesion_code_row["PDB_Code"])}/pdb'
 
     def addReleaseRecords(self, rid, hold=False, user_id=None):
         """
