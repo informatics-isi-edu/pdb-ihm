@@ -1,49 +1,16 @@
 {
-    "ihm_cross_link_pseudo_site": {
-        "Pseudo_Site_RID": {
-            "ihm_pseudo_site": {
-                "pseudo_site_id": "id"
-            }
+    "Conform_Dictionary": {
+        "Exported_mmCIF_RID": {
+            "Entry_Generated_File": {}
         },
-        "Restraint_RID": {
-            "ihm_cross_link_restraint": {
-                "restraint_id": "id"
-            }
-        }
-    },
-    "ihm_ensemble_sub_sample": {
-        "Ensemble_RID": {
-            "ihm_ensemble_info": {
-                "ensemble_id": "ensemble_id"
-            }
+        "Data_Dictionary_RID": {
+            "Data_Dictionary": {}
         }
     },
     "ihm_hdx_restraint": {
         "Feature_RID": {
             "ihm_feature_list": {
                 "feature_id": "feature_id"
-            }
-        },
-        "Dataset_List_RID": {
-            "ihm_dataset_list": {
-                "dataset_list_id": "id"
-            }
-        }
-    },
-    "ihm_derived_angle_restraint": {
-        "Feature_Id_1_RID": {
-            "ihm_feature_list": {
-                "feature_id_1": "feature_id"
-            }
-        },
-        "Feature_Id_2_RID": {
-            "ihm_feature_list": {
-                "feature_id_2": "feature_id"
-            }
-        },
-        "Feature_Id_3_RID": {
-            "ihm_feature_list": {
-                "feature_id_3": "feature_id"
             }
         },
         "Dataset_List_RID": {
@@ -79,27 +46,6 @@
             }
         }
     },
-    "struct_ref": {
-        "Entity_RID": {
-            "entity": {
-                "entity_id": "id"
-            }
-        }
-    },
-    "struct_ref_seq": {
-        "Ref_RID": {
-            "struct_ref": {
-                "ref_id": "id"
-            }
-        }
-    },
-    "struct_ref_seq_dif": {
-        "Align_RID": {
-            "struct_ref_seq": {
-                "align_id": "align_id"
-            }
-        }
-    },
     "ihm_pseudo_site_feature": {
         "Pseudo_Site_RID": {
             "ihm_pseudo_site": {
@@ -119,12 +65,71 @@
             }
         }
     },
-    "Conform_Dictionary": {
-        "Exported_mmCIF_RID": {
-            "Entry_mmCIF_File": {}
+    "ihm_ensemble_sub_sample": {
+        "Ensemble_RID": {
+            "ihm_ensemble_info": {
+                "ensemble_id": "ensemble_id"
+            }
+        }
+    },
+    "struct_ref": {
+        "Entity_RID": {
+            "entity": {
+                "entity_id": "id"
+            }
+        }
+    },
+    "ihm_cross_link_pseudo_site": {
+        "Pseudo_Site_RID": {
+            "ihm_pseudo_site": {
+                "pseudo_site_id": "id"
+            }
         },
-        "Data_Dictionary_RID": {
-            "Data_Dictionary": {}
+        "Restraint_RID": {
+            "ihm_cross_link_restraint": {
+                "restraint_id": "id"
+            }
+        }
+    },
+    "ihm_derived_angle_restraint": {
+        "Feature_Id_1_RID": {
+            "ihm_feature_list": {
+                "feature_id_1": "feature_id"
+            }
+        },
+        "Feature_Id_2_RID": {
+            "ihm_feature_list": {
+                "feature_id_2": "feature_id"
+            }
+        },
+        "Feature_Id_3_RID": {
+            "ihm_feature_list": {
+                "feature_id_3": "feature_id"
+            }
+        },
+        "Dataset_List_RID": {
+            "ihm_dataset_list": {
+                "dataset_list_id": "id"
+            }
+        }
+    },
+    "Entry_Error_File": {
+        "Entry_RID": {
+            "entry": {}
+        }
+    },
+    "struct_ref_seq_dif": {
+        "Align_RID": {
+            "struct_ref_seq": {
+                "align_id": "align_id"
+            }
+        }
+    },
+    "struct_ref_seq": {
+        "Ref_RID": {
+            "struct_ref": {
+                "ref_id": "id"
+            }
         }
     }
 }
