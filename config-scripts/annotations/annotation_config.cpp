@@ -133,6 +133,42 @@
             }
         },
         {
+            "column": "Current_File_Holdings_URL",
+            "schema": "PDB",
+            "table": "PDB_Archive",
+            "uri": "tag:isrd.isi.edu,2017:asset",
+            "value": {
+                "byte_count_column": "Current_File_Holdings_Bytes",
+                "filename_column": "Current_File_Holdings_Name",
+                "md5": "Current_File_Holdings_MD5",
+                "url_pattern": "/<hatrac>/pdb/archive/holdings/{{{Current_File_Holdings_Name}}}"
+            }
+        },
+        {
+            "column": "Released_Structures_LMD_URL",
+            "schema": "PDB",
+            "table": "PDB_Archive",
+            "uri": "tag:isrd.isi.edu,2017:asset",
+            "value": {
+                "byte_count_column": "Released_Structures_LMD_Bytes",
+                "filename_column": "Released_Structures_LMD_Name",
+                "md5": "Released_Structures_LMD_MD5",
+                "url_pattern": "/<hatrac>/pdb/archive/holdings/{{{Released_Structures_LMD_Name}}}"
+            }
+        },
+        {
+            "column": "Unreleased_Entries_URL",
+            "schema": "PDB",
+            "table": "PDB_Archive",
+            "uri": "tag:isrd.isi.edu,2017:asset",
+            "value": {
+                "byte_count_column": "Unreleased_Entries_Bytes",
+                "filename_column": "Unreleased_Entries_Name",
+                "md5": "Unreleased_Entries_MD5",
+                "url_pattern": "/<hatrac>/pdb/archive/holdings/{{{Unreleased_Entries_Name}}}"
+            }
+        },
+        {
             "column": "Image_File_URL",
             "schema": "PDB",
             "table": "entry",
@@ -365,6 +401,98 @@
             "table": "Entry_Related_File_Templates",
             "uri": "tag:isrd.isi.edu,2018:required",
             "value": {}
+        },
+        {
+            "column": "Archive_Category",
+            "schema": "Vocab",
+            "table": "System_Generated_File_Type",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Archive Category"
+            }
+        },
+        {
+            "column": "Current_File_Holdings_URL",
+            "schema": "PDB",
+            "table": "PDB_Archive",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Current File Holdings"
+            }
+        },
+        {
+            "column": "Released_Structures_LMD_URL",
+            "schema": "PDB",
+            "table": "PDB_Archive",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Released Structures LMD"
+            }
+        },
+        {
+            "column": "Unreleased_Entries_URL",
+            "schema": "PDB",
+            "table": "PDB_Archive",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Unreleased Entries"
+            }
+        },
+        {
+            "column": "Current_File_Holdings_MD5",
+            "schema": "PDB",
+            "table": "PDB_Archive",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Current File Holdings MD5"
+            }
+        },
+        {
+            "column": "Unreleased_Entries_MD5",
+            "schema": "PDB",
+            "table": "PDB_Archive",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Unreleased Entries MD5"
+            }
+        },
+        {
+            "column": "Released_Structures_LMD_MD5",
+            "schema": "PDB",
+            "table": "PDB_Archive",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Released Structures LMD MD5"
+            }
+        },
+        {
+            "column": "mmCIF_URL",
+            "schema": "PDB",
+            "table": "Entry_Latest_Archive",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "mmCIF"
+            }
+        },
+        {
+            "column": "mmCIF_URL",
+            "schema": "PDB",
+            "table": "Entry_Latest_Archive",
+            "uri": "tag:isrd.isi.edu,2016:column-display",
+            "value": {
+                "*": {
+                    "markdown_pattern": "[{{Entry}}]({{#encode}}{{{mmCIF_URL}}}{{/encode}})"
+                }
+            }
+        },
+        {
+            "column": "Released_Structures_LMD_Name",
+            "schema": "PDB",
+            "table": "PDB_Archive",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Released Structures LMD Name"
+            }
         },
         {
             "column": "pdbx_descriptor",
@@ -1518,6 +1646,19 @@
             "value": {
                 "row_name": {
                     "row_markdown_pattern": "{{{Name}}}"
+                }
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "PDB_Archive",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "PDB Archive",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
                 }
             }
         },
@@ -6875,6 +7016,298 @@
                     "Method_Details",
                     "Manual_Processing",
                     "Notes"
+                ]
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "PDB_Archive",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Submission_Time",
+                    "Submitted_Entries",
+                    "Current_File_Holdings_URL",
+                    "Released_Structures_LMD_URL",
+                    "Unreleased_Entries_URL",
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "PDB_Archive_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "PDB_Archive_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                    "RCT",
+                    "RMT"
+                ],
+                "filter": {
+                	"and":
+                	[
+                  {
+                     "markdown_name" : "Submission Date",
+                     "source" : "Submission_Time"
+                  },
+                  {
+                     "markdown_name" : "Submitted Entries",
+                     "source" : "Submitted_Entries"
+                  }
+                ]
+                },
+                "detailed": [
+                    "RID",
+                    "Submission_Time",
+                    "Submitted_Entries",
+                    "Current_File_Holdings_URL",
+                    {
+                        "markdown_name": "Current File Holdings Size (Bytes)",
+                        "source": "Current_File_Holdings_Bytes"
+                    },
+                    "Released_Structures_LMD_URL",
+                    {
+                        "markdown_name": "Released Structures LMD Size (Bytes)",
+                        "source": "Released_Structures_LMD_Bytes"
+                    },
+                    "Unreleased_Entries_URL",
+                    {
+                        "markdown_name": "Unreleased Entries Bytes Size (Bytes)",
+                        "source": "Unreleased_Entries_Bytes"
+                    },
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "PDB_Archive_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "PDB_Archive_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  }
+                ],
+                "entry/edit": [
+                    "Submission_Time",
+                    "Submitted_Entries",
+                    "Current_File_Holdings_URL",
+                    "Released_Structures_LMD_URL",
+                    "Unreleased_Entries_URL"
+                ],
+                "entry": [
+                    "Submission_Time",
+                    "Submitted_Entries",
+                    "Current_File_Holdings_URL",
+                    "Released_Structures_LMD_URL",
+                    "Unreleased_Entries_URL"
+                ]
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "Entry_Latest_Archive",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                  {
+                     "markdown_name" : "Entry",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Entry_Latest_Archive_Entry_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "Archive",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Entry_Latest_Archive_Archive_Submission_Time_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  },
+                    "mmCIF_URL",
+                    "Submitted_Files",
+                    "Submission_Time",
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Entry_Latest_Archive_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Entry_Latest_Archive_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                    "RCT",
+                    "RMT"
+                ],
+                "filter": {
+                	"and":
+                	[
+                  {
+                     "markdown_name" : "Submission Date",
+                     "source" : "Submission_Time"
+                  }
+                ]
+                },
+                "detailed": [
+                    "RID",
+                    "Submission_Time",
+                    "Submitted_Files",
+                    "mmCIF_URL",
+                  {
+                     "markdown_name" : "Entry",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Entry_Latest_Archive_Entry_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "Archive",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Entry_Latest_Archive_Archive_Submission_Time_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Entry_Latest_Archive_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Entry_Latest_Archive_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  }
+                ],
+                "entry/edit": [
+                    "Submission_Time",
+                  {
+                     "markdown_name" : "Entry",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Entry_Latest_Archive_Entry_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "Archive",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Entry_Latest_Archive_Archive_Submission_Time_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  }
+                ],
+                "entry": [
+                    "Submission_Time",
+                  {
+                     "markdown_name" : "Entry",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Entry_Latest_Archive_Entry_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "Archive",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Entry_Latest_Archive_Archive_Submission_Time_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  }
                 ]
             }
         },
@@ -25956,6 +26389,7 @@
                 "*": [
                     "RID",
                     "Name",
+                    "Archive_Category",
                     "Description",
                     "ID",
                     "URI",
@@ -27779,6 +28213,19 @@
                                         }
                                     ],
                                     "name": "Entry Collection"
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "name": "PDB Archive",
+                                            "url": "/chaise/recordset/catalog_number/PDB:PDB_Archive"
+                                        },
+                                        {
+                                            "name": "Entry Latest Archive",
+                                            "url": "/chaise/recordset/catalog_number/PDB:Entry_Latest_Archive"
+                                        }
+                                    ],
+                                    "name": "Archive"
                                 }
                             ],
                             "name": "Data Categories"
