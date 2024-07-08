@@ -193,7 +193,7 @@ def main():
 """
 # Install the Python package:
 #    From the protein-database directory, run: 
-#        pip3 install --upgrade --no-deps .
+#        pip3 install --upgrade .
 #
 # Running the script:
 #    python3 -m pdb_dev.archive.client --config /home/pdbihm/pdb/config/www/pdb_archive.json 

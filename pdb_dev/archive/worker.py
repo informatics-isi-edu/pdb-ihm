@@ -123,6 +123,35 @@ class ArchiveClient (object):
                     ready = True
 
     """
+    Rollback the database 
+    """
+    def rollbackArchive(self):
+        try:
+            """
+            Delete the self.PDB_Archive_RID record
+            """
+            if self.PDB_Archive_RID != None:
+                url = f'/entity/PDB:Entry_Latest_Archive/Entry={urlquote(self.PDB_Archive_RID)}'
+                resp = self.catalog.delete(
+                    url
+                )
+                resp.raise_for_status()
+                self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
+           
+                url = f'/entity/PDB:PDB_Archive/RID={urlquote(self.PDB_Archive_RID)}'
+                resp = self.catalog.delete(
+                    url
+                )
+                resp.raise_for_status()
+                self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
+        except:
+            et, ev, tb = sys.exc_info()
+            self.logger.error('got exception "%s"' % str(ev))
+            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+            subject = 'PDB-Dev Error archiving files.'
+            self.sendMail(subject, '%s\n' % (''.join(traceback.format_exception(et, ev, tb))))
+
+    """
     Process Archiving Files 
     """
     def processArchive(self):
@@ -155,6 +184,8 @@ class ArchiveClient (object):
             Archive files
             """
             return_code = self.archiveFiles()
+            if return_code != 0:
+                self.rollbackArchive()
             return return_code
         except:
             et, ev, tb = sys.exc_info()
@@ -162,16 +193,7 @@ class ArchiveClient (object):
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
             subject = 'PDB-Dev Error archiving files.'
             self.sendMail(subject, '%s\n' % (''.join(traceback.format_exception(et, ev, tb))))
-            """
-            Delete the self.PDB_Archive_RID record
-            """
-            if self.PDB_Archive_RID != None:
-                url = f'/entity/PDB:PDB_Archive/RID={urlquote(self.PDB_Archive_RID)}'
-                resp = self.catalog.delete(
-                    url
-                )
-                resp.raise_for_status()
-                self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
+            self.rollbackArchive()
            
             return 1
 
@@ -277,7 +299,7 @@ class ArchiveClient (object):
                 We are in the REL status but the report validation was not run
                 """
                 self.no_validation_rids.append({"Accession_Code": row['Accession_Code'], "Deposit_Date": row['Deposit_Date']})
-                continue
+                #continue
             
             submitted_files = {}
             self.current_holdings[entry_id] = {}
@@ -638,10 +660,12 @@ class ArchiveClient (object):
                                                          'deposit_date': row['Deposit_Date'],
                                                          'prerelease_sequence_available_flag': 'N'}
         
+        """
         for row in self.no_validation_rids:
             unreleased_entries[row['Accession_Code']] = {'status_code': 'REL',
                                                          'deposit_date': row['Deposit_Date'],
                                                          'prerelease_sequence_available_flag': 'N'}
+        """
         
         """
         Write the unreleased_entries file
