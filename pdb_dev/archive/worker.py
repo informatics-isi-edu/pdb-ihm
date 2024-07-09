@@ -90,6 +90,8 @@ class ArchiveClient (object):
     """
     def sendMail(self, subject, text):
         if self.email['server'] and self.email['sender']:
+            if self.host in ['dev.pdb-dev.org', 'dev-aws.pdb-dev.org']:
+                subject = 'DEV {}'.format(subject)
             retry = 0
             ready = False
             receivers = self.email['receivers']
@@ -206,7 +208,10 @@ class ArchiveClient (object):
          - not released
          - or modified
         """
-        url = '/attribute/A:=PDB:entry/Workflow_Status=REL/B:=PDB:Entry_Generated_File/File_Type=mmCIF/C:=left(A:RID)=(PDB:Entry_Latest_Archive:Entry)/Entry::null::;!B:File_URL=mmCIF_URL/$A/RID,Deposit_Date,Accession_Code'
+        rel_warnings = []
+        hold_warnings = []
+        
+        url = '/attribute/A:=PDB:entry/Workflow_Status=REL/B:=PDB:Entry_Generated_File/File_Type=mmCIF/C:=left(A:RID)=(PDB:Entry_Latest_Archive:Entry)/Entry::null::;!B:File_URL=mmCIF_URL/$A/RID,id,Deposit_Date,Accession_Code'
         self.logger.debug(f'Query for entries to be archived: "{url}"') 
         
         resp = self.catalog.get(url)
@@ -266,6 +271,7 @@ class ArchiveClient (object):
         Get the new released files
         """
         for row in rows:
+            structure_id = row['id']
             rid = row['RID']
             """
             Get the associated Accession_Code record
@@ -317,17 +323,21 @@ class ArchiveClient (object):
                 
                 submitted_files[self.archive_category[file_type]].append(f'{filename}.gz')
                 if file_type == 'mmCIF':
-                    self.released_structures[entry_id]['File_URL'] = file_generated['File_URL']
+                    if filename == f'{structure_id}.cif':
+                        rel_warnings.append(rid)
+                    else:
+                        self.released_structures[entry_id]['File_URL'] = file_generated['File_URL']
                 
-                """
-                Extract the file from hatrac
-                """
-                file_path,error_message = self.getHatracFile(filename, file_url, self.data_scratch)
-
-                """
-                Zip the file
-                """
-                self.generateReleasedZip(filename, hash, entry_id, file_type)
+                if rid not in rel_warnings:
+                    """
+                    Extract the file from hatrac
+                    """
+                    file_path,error_message = self.getHatracFile(filename, file_url, self.data_scratch)
+    
+                    """
+                    Zip the file
+                    """
+                    self.generateReleasedZip(filename, hash, entry_id, file_type)
 
             url = f'/attribute/PDB:entry/RID={urlquote(rid)}/PDB:Entry_Latest_Archive/RID'
             self.logger.debug(f'Query for detecting if the record exists or not in the Entry_Latest_Archive table: "{url}"') 
@@ -342,14 +352,15 @@ class ArchiveClient (object):
                 """
                 New entry
                 """
-                inserted_rows.append(
-                    {
-                        'Entry': rid,
-                        'mmCIF_URL': self.released_structures[entry_id]['File_URL'],
-                        'Submission_Time': self.submission_date,
-                        'Archive': self.PDB_Archive_RID,
-                        'Submitted_Files': submitted_files
-                    }
+                if rid not in rel_warnings:
+                    inserted_rows.append(
+                        {
+                            'Entry': rid,
+                            'mmCIF_URL': self.released_structures[entry_id]['File_URL'],
+                            'Submission_Time': self.submission_date,
+                            'Archive': self.PDB_Archive_RID,
+                            'Submitted_Files': submitted_files
+                        }
                 )
             elif len(latest_archive_record) == 1:
                 """
@@ -437,6 +448,41 @@ class ArchiveClient (object):
         ]
         self.update_rows(columns, rows, 'PDB_Archive')
         
+        url = '/attribute/A:=PDB:entry/Workflow_Status=HOLD/B:=left(A:id)=(PDB:Entry_Generated_File:Structure_Id)/Structure_Id::null::/$A/RID'
+        self.logger.debug(f'Query for unreleased entries w/o a system mmCIF generated file: "{url}"') 
+        
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        rows = resp.json()
+        for row in rows:
+            hold_warnings.append(row['RID'])
+        
+        total_warning = len(hold_warnings) + len(rel_warnings)
+        if total_warning > 0:
+            subject_rids = []
+            for rel_warning in rel_warnings:
+                subject_rids.append(rel_warning)
+                if len(subject_rids) >= 3:
+                    break
+            if len(subject_rids) < 3:
+                for hold_warning in hold_warnings:
+                    subject_rids.append(hold_warning)
+                    if len(subject_rids) >= 3:
+                        break
+                    
+            subject = f'PDB-Dev weekly archive warnings: {", ".join(subject_rids)}'
+            if total_warning > 3:
+                subject= f'{subject}, ...'
+                rids = []
+                for rel_warning in rel_warnings:
+                    rids.append(f'{rel_warning}: REL') 
+                for hold_warning in hold_warnings:
+                    rids.append(f'{hold_warning}: HOLD') 
+            newline_char = "\n"
+            rids = f'{newline_char.join(rids)}'
+            message_body = f'The following entries were not archived due to inconsistent filenames or missing system generated files:\n\n{rids}'
+            self.sendMail(subject, message_body)
+
         return 0
 
     """
@@ -648,7 +694,7 @@ class ArchiveClient (object):
     Generate the released_structures_LMD file
     """
     def generate_unreleased_entries(self):
-        url = '/attribute/PDB:entry/Workflow_Status=HOLD/Accession_Code,Deposit_Date'
+        url = '/attribute/A:=PDB:entry/Workflow_Status=HOLD/B:=PDB:Entry_Generated_File/$A/Accession_Code,Deposit_Date'
         self.logger.debug(f'Query for unreleased entries: "{url}"') 
         
         resp = self.catalog.get(url)
