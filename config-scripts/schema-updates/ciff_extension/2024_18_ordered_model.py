@@ -78,7 +78,7 @@ def define_tdoc_ihm_ordered_model():
         ),
         Column.define(
             "Model_Group_RID",
-            builtin_types.int8,
+            builtin_types.text,
             comment='Identifier to the model group RID',
             nullok=False
         )
@@ -133,6 +133,11 @@ def main(server_name, catalog_id, credentials):
     Update table comments
     """
     table_comments(model)
+
+    """
+    Create keys for existing tables
+    """
+    utils.create_key_if_not_exists(model, 'PDB', 'ihm_model_group', ['RID', 'structure_id', 'id'], 'ihm_model_group_combo1_key')
 
     """
     Create table

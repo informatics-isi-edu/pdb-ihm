@@ -33,7 +33,7 @@ ihm_relaxation_time_unit_rows = [
         {'Name': 'microseconds', 'Description': 'microseconds'}
     ]
 
-ihm_kinetic_rate_equilibrium_constant_determination_method_rows = [
+ihm_equilibrium_constant_determination_method_rows = [
         {'Name': 'from population', 'Description': 'from population'},
         {'Name': 'from kinetic rates', 'Description': 'from kinetic rates'},
         {'Name': 'other', 'Description': 'other'}
@@ -50,7 +50,7 @@ def main(server_name, catalog_id, credentials):
     """
     utils.create_table_if_not_exist(model, 'Vocab', utils.define_Vocab_table('struct_pdbx_structure_determination_methodology', 'Structure determination methodology'))
     utils.create_table_if_not_exist(model, 'Vocab', utils.define_Vocab_table('ihm_relaxation_time_unit', 'Relaxation time unit'))
-    utils.create_table_if_not_exist(model, 'Vocab', utils.define_Vocab_table('ihm_kinetic_rate_equilibrium_constant_determination_method', 'Method used to determine the equilibrium constant'))
+    utils.create_table_if_not_exist(model, 'Vocab', utils.define_Vocab_table('ihm_equilibrium_constant_determination_method', 'Method used to determine the equilibrium constant'))
 
     """
     Load data into new and existing vocabulary tables
@@ -61,7 +61,7 @@ def main(server_name, catalog_id, credentials):
     utils.add_rows_to_vocab_table(catalog, 'ihm_dataset_related_db_reference_db_name', ihm_dataset_related_db_reference_db_name_rows)
     utils.add_rows_to_vocab_table(catalog, 'struct_pdbx_structure_determination_methodology', struct_pdbx_structure_determination_methodology_rows)
     utils.add_rows_to_vocab_table(catalog, 'ihm_relaxation_time_unit', ihm_relaxation_time_unit_rows)
-    utils.add_rows_to_vocab_table(catalog, 'ihm_kinetic_rate_equilibrium_constant_determination_method', ihm_kinetic_rate_equilibrium_constant_determination_method_rows)
+    utils.add_rows_to_vocab_table(catalog, 'ihm_equilibrium_constant_determination_method', ihm_equilibrium_constant_determination_method_rows)
 
 if __name__ == '__main__':
     args = BaseCLI("ad-hoc table creation tool", None, 1).parse_cli()

@@ -147,22 +147,22 @@ def define_tdoc_ihm_multi_state_scheme_connectivity():
                           on_delete="NO ACTION"
         ), 
         ForeignKey.define(["Scheme_RID", "structure_id", "scheme_id"], "PDB", "ihm_multi_state_scheme", ["RID", "structure_id", "id"],
-                          constraint_names=[["PDB", "ihm_multi_state_scheme_connectivity_ihm_multi_state_scheme_combo1_fkey"]],
+                          constraint_names=[["PDB", "ihm_multi_state_scheme_connectivity_scheme_combo1_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
         ForeignKey.define(["State_RID", "structure_id", "begin_state_id"], "PDB", "ihm_multi_state_modeling", ["RID", "structure_id", "state_id"],
-                          constraint_names=[["PDB", "ihm_multi_state_scheme_connectivity_ihm_multi_state_modeling_1_combo1_fkey"]],
+                          constraint_names=[["PDB", "ihm_multi_state_scheme_connectivity_modeling_1_combo1_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
         ForeignKey.define(["State_RID", "end_state_id"], "PDB", "ihm_multi_state_modeling", ["RID", "state_id"],
-                          constraint_names=[["PDB", "ihm_multi_state_scheme_connectivity_ihm_multi_state_modeling_2_combo2_fkey"]],
+                          constraint_names=[["PDB", "ihm_multi_state_scheme_connectivity_modeling_2_combo2_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
         ForeignKey.define(["Dataset_Group_RID", "structure_id", "dataset_group_id"], "PDB", "ihm_dataset_group", ["RID", "structure_id", "id"],
-                          constraint_names=[["PDB", "ihm_multi_state_scheme_connectivity_ihm_dataset_group_combo1_fkey"]],
+                          constraint_names=[["PDB", "multi_state_scheme_connectivity_dataset_group_combo1_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         )
@@ -276,7 +276,7 @@ def define_tdoc_ihm_kinetic_rate():
                           on_delete="NO ACTION"
         ), 
         ForeignKey.define(["Scheme_Connectivity_RID", "structure_id", "scheme_connectivity_id"], "PDB", "ihm_multi_state_scheme_connectivity", ["RID", "structure_id", "id"],
-                          constraint_names=[["PDB", "ihm_kinetic_rate_ihm_multi_state_scheme_connectivity_combo1_fkey"]],
+                          constraint_names=[["PDB", "ihm_kinetic_rate_multi_state_scheme_connectivity_combo1_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
@@ -290,8 +290,8 @@ def define_tdoc_ihm_kinetic_rate():
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
-        ForeignKey.define(['equilibrium_constant_determination_method'], 'Vocab', 'ihm_kinetic_rate_equilibrium_constant_determination_method', ['Name'],
-                          constraint_names=[ ['Vocab', 'ihm_kinetic_rate_equilibrium_constant_determination_method_fkey'] ],
+        ForeignKey.define(['equilibrium_constant_determination_method'], 'Vocab', 'ihm_equilibrium_constant_determination_method', ['Name'],
+                          constraint_names=[ ['Vocab', 'ihm_equilibrium_constant_determination_method_fkey'] ],
                           on_update='CASCADE',
                           on_delete='NO ACTION'
         )
@@ -334,7 +334,7 @@ def define_tdoc_ihm_relaxation_time():
         ),
         Column.define(
             'amplitude',
-            builtin_types.float,
+            builtin_types.float8,
             comment='The relaxation time amplitude',
             nullok=True
         ),
@@ -488,17 +488,17 @@ def define_tdoc_ihm_relaxation_time_multi_state_scheme():
                           on_delete="NO ACTION"
         ), 
         ForeignKey.define(["Scheme_Connectivity_RID", "scheme_connectivity_id"], "PDB", "ihm_multi_state_scheme_connectivity", ["RID", "id"],
-                          constraint_names=[["PDB", "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_connectivity_combo2_fkey"]],
+                          constraint_names=[["PDB", "relaxation_time_multi_state_scheme_connectivity_combo2_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
         ForeignKey.define(["Scheme_RID", "structure_id", "scheme_id"], "PDB", "ihm_multi_state_scheme", ["RID", "structure_id", "id"],
-                          constraint_names=[["PDB", "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_combo1_fkey"]],
+                          constraint_names=[["PDB", "ihm_relaxation_time_multi_state_scheme_scheme_combo1_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
         ForeignKey.define(["Relaxation_Time_RID", "structure_id", "relaxation_time_id"], "PDB", "ihm_relaxation_time", ["RID", "structure_id", "id"],
-                          constraint_names=[["PDB", "ihm_relaxation_time_multi_state_scheme_ihm_relaxation_time_combo1_fkey"]],
+                          constraint_names=[["PDB", "ihm_relaxation_time_multi_state_scheme_time_combo1_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         )
