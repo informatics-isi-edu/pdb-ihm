@@ -6248,7 +6248,7 @@
                     ],
                     [
                         "PDB",
-                        "ihm_multi_state_scheme_connectivity_ihm_multi_state_modeling_1_combo1_fkey"
+                        "ihm_multi_state_scheme_connectivity_modeling_1_combo1_fkey"
                     ]
                 ],
                 "filter": "detailed"
@@ -6386,7 +6386,7 @@
                     ],
                     [
                         "PDB",
-                        "ihm_multi_state_scheme_connectivity_ihm_dataset_group_combo1_fkey"
+                        "multi_state_scheme_connectivity_dataset_group_combo1_fkey"
                     ],
                     [
                         "PDB",
@@ -10535,11 +10535,11 @@
                 "detailed": [
                     [
                         "PDB",
-                        "ihm_multi_state_scheme_connectivity_ihm_multi_state_scheme_combo1_fkey"
+                        "ihm_multi_state_scheme_connectivity_scheme_combo1_fkey"
                     ],
                     [
                         "PDB",
-                        "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_combo1_fkey"
+                        "ihm_relaxation_time_multi_state_scheme_scheme_combo1_fkey"
                     ]
                 ],
                 "filter": "detailed"
@@ -10586,7 +10586,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_multi_state_scheme_connectivity_ihm_multi_state_scheme_combo1_fkey"
+                                    "ihm_multi_state_scheme_connectivity_scheme_combo1_fkey"
                                 ]
                             },
                             "id"
@@ -10599,7 +10599,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_multi_state_scheme_connectivity_ihm_multi_state_modeling_1_combo1_fkey"
+                                    "ihm_multi_state_scheme_connectivity_modeling_1_combo1_fkey"
                                 ]
                             },
                             "state_id"
@@ -10612,7 +10612,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_multi_state_scheme_connectivity_ihm_multi_state_modeling_2_combo2_fkey"
+                                    "ihm_multi_state_scheme_connectivity_modeling_2_combo1_fkey"
                                 ]
                             },
                             "state_id"
@@ -10625,7 +10625,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_multi_state_scheme_connectivity_ihm_dataset_group_combo1_fkey"
+                                    "multi_state_scheme_connectivity_dataset_group_combo1_fkey"
                                 ]
                             },
                             "id"
@@ -10656,7 +10656,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_multi_state_scheme_connectivity_ihm_multi_state_scheme_combo1_fkey"
+                                    "ihm_multi_state_scheme_connectivity_scheme_combo1_fkey"
                                 ]
                             },
                             "id"
@@ -10669,7 +10669,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_multi_state_scheme_connectivity_ihm_multi_state_modeling_1_combo1_fkey"
+                                    "ihm_multi_state_scheme_connectivity_modeling_1_combo1_fkey"
                                 ]
                             },
                             "state_id"
@@ -10682,7 +10682,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_multi_state_scheme_connectivity_ihm_multi_state_modeling_2_combo2_fkey"
+                                    "ihm_multi_state_scheme_connectivity_modeling_2_combo1_fkey"
                                 ]
                             },
                             "state_id"
@@ -10695,7 +10695,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_multi_state_scheme_connectivity_ihm_dataset_group_combo1_fkey"
+                                    "multi_state_scheme_connectivity_dataset_group_combo1_fkey"
                                 ]
                             },
                             "id"
@@ -10739,7 +10739,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_multi_state_scheme_connectivity_ihm_multi_state_scheme_combo1_fkey"
+                                    "ihm_multi_state_scheme_connectivity_scheme_combo1_fkey"
                                 ]
                             },
                             "id"
@@ -10752,7 +10752,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_multi_state_scheme_connectivity_ihm_multi_state_modeling_1_combo1_fkey"
+                                    "ihm_multi_state_scheme_connectivity_modeling_1_combo1_fkey"
                                 ]
                             },
                             "state_id"
@@ -10765,7 +10765,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_multi_state_scheme_connectivity_ihm_multi_state_modeling_2_combo2_fkey"
+                                    "ihm_multi_state_scheme_connectivity_modeling_2_combo1_fkey"
                                 ]
                             },
                             "state_id"
@@ -10778,7 +10778,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_multi_state_scheme_connectivity_ihm_dataset_group_combo1_fkey"
+                                    "multi_state_scheme_connectivity_dataset_group_combo1_fkey"
                                 ]
                             },
                             "id"
@@ -10796,11 +10796,11 @@
                 "detailed": [
                     [
                         "PDB",
-                        "ihm_kinetic_rate_ihm_multi_state_scheme_connectivity_combo1_fkey"
+                        "ihm_kinetic_rate_multi_state_scheme_connectivity_combo1_fkey"
                     ],
                     [
                         "PDB",
-                        "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_connectivity_combo2_fkey"
+                        "relaxation_time_multi_state_scheme_connectivity_combo2_fkey"
                     ]               
                 ],              
                 "filter": "detailed"
@@ -10844,7 +10844,7 @@
                     "equilibrium_constant",
                     [
                         "PDB",
-                        "ihm_kinetic_rate_equilibrium_constant_determination_method_fkey"
+                        "ihm_equilibrium_constant_determination_method_fkey"
                     ],
                     "equilibrium_constant_unit",
                     {   
@@ -10854,7 +10854,7 @@
                             {   
                                 "outbound": [
                                     "PDB",
-                                    "ihm_kinetic_rate_ihm_multi_state_scheme_connectivity_combo1_fkey"
+                                    "ihm_kinetic_rate_multi_state_scheme_connectivity_combo1_fkey"
                                 ]   
                             },  
                             "id"
@@ -10908,7 +10908,7 @@
                     "equilibrium_constant",
                     [   
                         "PDB",
-                        "ihm_kinetic_rate_equilibrium_constant_determination_method_fkey"
+                        "ihm_equilibrium_constant_determination_method_fkey"
                     ],
                     "equilibrium_constant_unit",
                     {
@@ -10918,7 +10918,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_kinetic_rate_ihm_multi_state_scheme_connectivity_combo1_fkey"
+                                    "ihm_kinetic_rate_multi_state_scheme_connectivity_combo1_fkey"
                                 ]
                             },
                             "id"
@@ -10985,7 +10985,7 @@
                     "equilibrium_constant",
                     [   
                         "PDB",
-                        "ihm_kinetic_rate_equilibrium_constant_determination_method_fkey"
+                        "ihm_equilibrium_constant_determination_method_fkey"
                     ],
                     "equilibrium_constant_unit",
                     {
@@ -10995,7 +10995,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_kinetic_rate_ihm_multi_state_scheme_connectivity_combo1_fkey"
+                                    "ihm_kinetic_rate_multi_state_scheme_connectivity_combo1_fkey"
                                 ]
                             },
                             "id"
@@ -11222,7 +11222,7 @@
                 "detailed": [
                     [
                         "PDB",
-                        "ihm_relaxation_time_multi_state_scheme_ihm_relaxation_time_combo1_fkey"
+                        "ihm_relaxation_time_multi_state_scheme_time_combo1_fkey"
                     ]               
                 ],              
                 "filter": "detailed"
@@ -11269,7 +11269,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_combo1_fkey"
+                                    "ihm_relaxation_time_multi_state_scheme_scheme_combo1_fkey"
                                 ]
                             },
                             "id"
@@ -11282,7 +11282,7 @@
                             {   
                                 "outbound": [
                                     "PDB",
-                                    "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_connectivity_combo2_fkey"
+                                    "relaxation_time_multi_state_scheme_connectivity_combo2_fkey"
                                 ]   
                             },  
                             "id"
@@ -11295,7 +11295,7 @@
                             {   
                                 "outbound": [
                                     "PDB",
-                                    "ihm_relaxation_time_multi_state_scheme_ihm_relaxation_time_combo1_fkey"
+                                    "ihm_relaxation_time_multi_state_scheme_time_combo1_fkey"
                                 ]   
                             },  
                             "id"
@@ -11326,7 +11326,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_combo1_fkey"
+                                    "ihm_relaxation_time_multi_state_scheme_scheme_combo1_fkey"
                                 ]
                             },
                             "id"
@@ -11339,7 +11339,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_connectivity_combo2_fkey"
+                                    "relaxation_time_multi_state_scheme_connectivity_combo2_fkey"
                                 ]   
                             },  
                             "id"
@@ -11352,7 +11352,7 @@
                             {   
                                 "outbound": [
                                     "PDB",
-                                    "ihm_relaxation_time_multi_state_scheme_ihm_relaxation_time_combo1_fkey"
+                                    "ihm_relaxation_time_multi_state_scheme_time_combo1_fkey"
                                 ]
                             },
                             "id"
@@ -11396,7 +11396,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_combo1_fkey"
+                                    "ihm_relaxation_time_multi_state_scheme_scheme_combo1_fkey"
                                 ]
                             },
                             "id"
@@ -11409,7 +11409,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_connectivity_combo2_fkey"
+                                    "relaxation_time_multi_state_scheme_connectivity_combo2_fkey"
                                 ]   
                             },  
                             "id"
@@ -11422,7 +11422,7 @@
                             {   
                                 "outbound": [
                                     "PDB",
-                                    "ihm_relaxation_time_multi_state_scheme_ihm_relaxation_time_combo1_fkey"
+                                    "ihm_relaxation_time_multi_state_scheme_time_combo1_fkey"
                                 ]
                             },
                             "id"
@@ -29330,7 +29330,7 @@
                                         },
                                         {
                                             "name": "Equilibrium Constant Determination Methods",
-                                            "url": "/chaise/recordset/catalog_number/Vocab:ihm_kinetic_rate_equilibrium_constant_determination_method"
+                                            "url": "/chaise/recordset/catalog_number/Vocab:ihm_equilibrium_constant_determination_method"
                                         }
                                     ],
                                     "name": "Ihm Multi State Modeling"
@@ -31915,7 +31915,7 @@
             }
         },
         {
-            "foreign_key": "ihm_multi_state_scheme_connectivity_ihm_multi_state_scheme_combo1_fkey",
+            "foreign_key": "ihm_multi_state_scheme_connectivity_scheme_combo1_fkey",
             "foreign_key_schema": "PDB",
             "schema": "PDB",
             "table": "ihm_multi_state_scheme_connectivity",
@@ -31926,7 +31926,7 @@
             }
         },
         {
-            "foreign_key": "ihm_multi_state_scheme_connectivity_ihm_multi_state_modeling_1_combo1_fkey",
+            "foreign_key": "ihm_multi_state_scheme_connectivity_modeling_1_combo1_fkey",
             "foreign_key_schema": "PDB",
             "schema": "PDB",
             "table": "ihm_multi_state_scheme_connectivity",
@@ -31938,7 +31938,7 @@
             }
         },
         {
-            "foreign_key": "ihm_multi_state_scheme_connectivity_ihm_multi_state_modeling_2_combo2_fkey",
+            "foreign_key": "ihm_multi_state_scheme_connectivity_modeling_2_combo2_fkey",
             "foreign_key_schema": "PDB",
             "schema": "PDB",
             "table": "ihm_multi_state_scheme_connectivity",
@@ -31950,7 +31950,7 @@
             }
         },
         {
-            "foreign_key": "ihm_multi_state_scheme_connectivity_ihm_dataset_group_combo1_fkey",
+            "foreign_key": "multi_state_scheme_connectivity_dataset_group_combo1_fkey",
             "foreign_key_schema": "PDB",
             "schema": "PDB",
             "table": "ihm_multi_state_scheme_connectivity",
@@ -31961,7 +31961,7 @@
             }
         },
         {
-            "foreign_key": "ihm_kinetic_rate_ihm_multi_state_scheme_connectivity_combo1_fkey",
+            "foreign_key": "ihm_kinetic_rate_multi_state_scheme_connectivity_combo1_fkey",
             "foreign_key_schema": "PDB",
             "schema": "PDB",
             "table": "ihm_kinetic_rate",
@@ -32016,7 +32016,7 @@
             }
         },
         {
-            "foreign_key": "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_connectivity_combo2_fkey",
+            "foreign_key": "relaxation_time_multi_state_scheme_connectivity_combo2_fkey",
             "foreign_key_schema": "PDB",
             "schema": "PDB",
             "table": "ihm_relaxation_time_multi_state_scheme",
@@ -32027,7 +32027,7 @@
             }
         },
         {
-            "foreign_key": "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_combo1_fkey",
+            "foreign_key": "ihm_relaxation_time_multi_state_scheme_scheme_combo1_fkey",
             "foreign_key_schema": "PDB",
             "schema": "PDB",
             "table": "ihm_relaxation_time_multi_state_scheme",
@@ -32038,7 +32038,7 @@
             }
         },
         {
-            "foreign_key": "ihm_relaxation_time_multi_state_scheme_ihm_relaxation_time_combo1_fkey",
+            "foreign_key": "ihm_relaxation_time_multi_state_scheme_time_combo1_fkey",
             "foreign_key_schema": "PDB",
             "schema": "PDB",
             "table": "ihm_relaxation_time_multi_state_scheme",
