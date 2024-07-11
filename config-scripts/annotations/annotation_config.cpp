@@ -11045,7 +11045,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_multi_state_scheme_connectivity_modeling_2_combo1_fkey"
+                                    "ihm_multi_state_scheme_connectivity_modeling_2_combo2_fkey"
                                 ]
                             },
                             "state_id"
@@ -11115,7 +11115,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_multi_state_scheme_connectivity_modeling_2_combo1_fkey"
+                                    "ihm_multi_state_scheme_connectivity_modeling_2_combo2_fkey"
                                 ]
                             },
                             "state_id"
@@ -11198,7 +11198,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_multi_state_scheme_connectivity_modeling_2_combo1_fkey"
+                                    "ihm_multi_state_scheme_connectivity_modeling_2_combo2_fkey"
                                 ]
                             },
                             "state_id"
