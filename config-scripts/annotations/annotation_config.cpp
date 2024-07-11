@@ -4659,7 +4659,7 @@
                                     "ihm_ordered_model_ihm_model_group_1_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     {
@@ -4672,7 +4672,7 @@
                                     "ihm_ordered_model_ihm_model_group_2_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     }
                 ],
@@ -4708,7 +4708,7 @@
                                     "ihm_ordered_model_ihm_model_group_1_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     {
@@ -4721,7 +4721,7 @@
                                     "ihm_ordered_model_ihm_model_group_2_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     [
@@ -4770,7 +4770,7 @@
                                     "ihm_ordered_model_ihm_model_group_1_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     {
@@ -4783,7 +4783,7 @@
                                     "ihm_ordered_model_ihm_model_group_2_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     }
                 ]
@@ -10875,7 +10875,7 @@
             "table": "ihm_multi_state_scheme",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Multi-state Schemes",
+                "name": "Multi-State Schemes",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -10983,7 +10983,7 @@
             "table": "ihm_multi_state_scheme_connectivity",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Multi-state Scheme Connectivities",
+                "name": "Multi-State Scheme Connectivities",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -11022,7 +11022,7 @@
                                     "ihm_multi_state_scheme_connectivity_scheme_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     {
@@ -11035,7 +11035,7 @@
                                     "ihm_multi_state_scheme_connectivity_modeling_1_combo1_fkey"
                                 ]
                             },
-                            "state_id"
+                            "RID"
                         ]
                     },
                     {
@@ -11048,7 +11048,7 @@
                                     "ihm_multi_state_scheme_connectivity_modeling_2_combo2_fkey"
                                 ]
                             },
-                            "state_id"
+                            "RID"
                         ]
                     },
                     {
@@ -11061,7 +11061,7 @@
                                     "multi_state_scheme_connectivity_dataset_group_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     "details"
@@ -11092,7 +11092,7 @@
                                     "ihm_multi_state_scheme_connectivity_scheme_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     {
@@ -11105,7 +11105,7 @@
                                     "ihm_multi_state_scheme_connectivity_modeling_1_combo1_fkey"
                                 ]
                             },
-                            "state_id"
+                            "RID"
                         ]
                     },
                     {
@@ -11118,7 +11118,7 @@
                                     "ihm_multi_state_scheme_connectivity_modeling_2_combo2_fkey"
                                 ]
                             },
-                            "state_id"
+                            "RID"
                         ]
                     },
                     {
@@ -11131,7 +11131,7 @@
                                     "multi_state_scheme_connectivity_dataset_group_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     "details",
@@ -11175,7 +11175,7 @@
                                     "ihm_multi_state_scheme_connectivity_scheme_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     {
@@ -11188,7 +11188,7 @@
                                     "ihm_multi_state_scheme_connectivity_modeling_1_combo1_fkey"
                                 ]
                             },
-                            "state_id"
+                            "RID"
                         ]
                     },
                     {
@@ -11201,7 +11201,7 @@
                                     "ihm_multi_state_scheme_connectivity_modeling_2_combo2_fkey"
                                 ]
                             },
-                            "state_id"
+                            "RID"
                         ]
                     },
                     {
@@ -11214,7 +11214,7 @@
                                     "multi_state_scheme_connectivity_dataset_group_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     "details"
@@ -11290,7 +11290,7 @@
                                     "ihm_kinetic_rate_multi_state_scheme_connectivity_combo1_fkey"
                                 ]   
                             },  
-                            "id"
+                            "RID"
                         ]   
                     },
                     {   
@@ -11303,7 +11303,7 @@
                                     "ihm_kinetic_rate_ihm_external_files_combo2_fkey"
                                 ]   
                             },  
-                            "id"
+                            "RID"
                         ]   
                     },
                     {   
@@ -11316,7 +11316,7 @@
                                     "ihm_kinetic_rate_ihm_dataset_group_combo1_fkey"
                                 ]   
                             },  
-                            "id"
+                            "RID"
                         ]   
                     },
                     "details"
@@ -11354,7 +11354,7 @@
                                     "ihm_kinetic_rate_multi_state_scheme_connectivity_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     {
@@ -11367,7 +11367,7 @@
                                     "ihm_kinetic_rate_ihm_external_files_combo2_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     {
@@ -11380,7 +11380,7 @@
                                     "ihm_kinetic_rate_ihm_dataset_group_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     "details", 
@@ -11431,7 +11431,7 @@
                                     "ihm_kinetic_rate_multi_state_scheme_connectivity_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     {
@@ -11444,7 +11444,7 @@
                                     "ihm_kinetic_rate_ihm_external_files_combo2_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     {
@@ -11457,7 +11457,7 @@
                                     "ihm_kinetic_rate_ihm_dataset_group_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     "details"
@@ -11514,7 +11514,7 @@
                                     "ihm_relaxation_time_ihm_external_files_combo2_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     {
@@ -11527,7 +11527,7 @@
                                     "ihm_relaxation_time_ihm_dataset_group_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     "details"
@@ -11564,7 +11564,7 @@
                                     "ihm_relaxation_time_ihm_external_files_combo2_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     {
@@ -11577,7 +11577,7 @@
                                     "ihm_relaxation_time_ihm_dataset_group_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     "details",
@@ -11627,7 +11627,7 @@
                                     "ihm_relaxation_time_ihm_external_files_combo2_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     {
@@ -11640,7 +11640,7 @@
                                     "ihm_relaxation_time_ihm_dataset_group_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     "details"
@@ -11705,7 +11705,7 @@
                                     "ihm_relaxation_time_multi_state_scheme_scheme_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     {   
@@ -11718,7 +11718,7 @@
                                     "relaxation_time_multi_state_scheme_connectivity_combo2_fkey"
                                 ]   
                             },  
-                            "id"
+                            "RID"
                         ]   
                     },
                     {   
@@ -11731,7 +11731,7 @@
                                     "ihm_relaxation_time_multi_state_scheme_time_combo1_fkey"
                                 ]   
                             },  
-                            "id"
+                            "RID"
                         ]   
                     },
                     "details"
@@ -11762,7 +11762,7 @@
                                     "ihm_relaxation_time_multi_state_scheme_scheme_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     {
@@ -11775,7 +11775,7 @@
                                     "relaxation_time_multi_state_scheme_connectivity_combo2_fkey"
                                 ]   
                             },  
-                            "id"
+                            "RID"
                         ]   
                     },
                     {   
@@ -11788,7 +11788,7 @@
                                     "ihm_relaxation_time_multi_state_scheme_time_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]  
                     },
                     "details", 
@@ -11832,7 +11832,7 @@
                                     "ihm_relaxation_time_multi_state_scheme_scheme_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]
                     },
                     {
@@ -11845,7 +11845,7 @@
                                     "relaxation_time_multi_state_scheme_connectivity_combo2_fkey"
                                 ]   
                             },  
-                            "id"
+                            "RID"
                         ]   
                     },
                     {   
@@ -11858,7 +11858,7 @@
                                     "ihm_relaxation_time_multi_state_scheme_time_combo1_fkey"
                                 ]
                             },
-                            "id"
+                            "RID"
                         ]  
                     },
                     "details"
@@ -28243,6 +28243,50 @@
         },
         {
             "schema": "Vocab",
+            "table": "struct_pdbx_structure_determination_methodology",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "struct_pdbx_structure_determination_methodology_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "struct_pdbx_structure_determination_methodology_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "struct_pdbx_structure_determination_methodology_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
             "table": "software_type",
             "uri": "tag:isrd.isi.edu,2016:visible-columns",
             "value": {
@@ -28293,6 +28337,94 @@
                     [
                         "Vocab",
                         "ihm_multi_state_modeling_experiment_type_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_relaxation_time_unit",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_relaxation_time_unit_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_relaxation_time_unit_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_relaxation_time_unit_term_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "ihm_equilibrium_constant_determination_method",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_equilibrium_constant_determination_method_term_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "ihm_equilibrium_constant_determination_method_term_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "ihm_equilibrium_constant_determination_method_term_Owner_fkey"
                     ]
                 ]
             }
@@ -29612,6 +29744,10 @@
                                             "url": "/chaise/recordset/catalog_number/Vocab:ihm_dataset_list_database_hosted"
                                         },
                                         {
+                                            "name": "Related DB Reference DB Name",
+                                            "url": "/chaise/recordset/catalog_number/Vocab:ihm_dataset_related_db_reference_db_name"
+                                        },
+                                        {
                                             "name": "Group Conditionality",
                                             "url": "/chaise/recordset/catalog_number/Vocab:ihm_derived_distance_restraint_group_conditionality"
                                         },
@@ -30404,7 +30540,7 @@
             "uri": "tag:isrd.isi.edu,2016:foreign-key",
             "value": {          
                 "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
-                "from_name": "Ihm Model Group Id Begin",
+                //"from_name": "Ihm Model Group Id Begin",
                 "template_engine": "handlebars"
             }                               
         },                                  
@@ -30416,7 +30552,7 @@
             "uri": "tag:isrd.isi.edu,2016:foreign-key",
             "value": {                      
                 "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
-                "from_name": "Ihm Model Group Id End",
+                //"from_name": "Ihm Model Group Id End",
                 "template_engine": "handlebars"
             }                           
         },
@@ -32380,7 +32516,7 @@
             "uri": "tag:isrd.isi.edu,2016:foreign-key",
             "value": {
                 "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
-                "from_name": "Ihm Multi State Modeling Begin State",
+                //"from_name": "Ihm Multi State Modeling Begin State",
                 "template_engine": "handlebars"
             }
         },
@@ -32392,7 +32528,7 @@
             "uri": "tag:isrd.isi.edu,2016:foreign-key",
             "value": {
                 "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
-                "from_name": "Ihm Multi State Modeling End State",
+                //"from_name": "Ihm Multi State Modeling End State",
                 "template_engine": "handlebars"
             }
         },
