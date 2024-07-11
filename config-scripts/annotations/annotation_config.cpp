@@ -4467,12 +4467,194 @@
                 ]
             }
         },
+#if defined(dev)
+        {
+            "schema": "PDB",
+            "table": "ihm_ordered_model",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Ordered Models",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "ihm_ordered_model",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    {
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_ordered_model_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "process_id",
+                    "process_description",
+                    "edge_id",
+                    "edge_description",
+                    "step_id",
+                    "step_description",
+                    "ordered_by",
+                    {
+                        "comment": "Model group id corresponding to the node at the origin of the directed edge",
+                        "markdown_name": "Model Group Id Begin",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_ordered_model_ihm_model_group_1_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {
+                        "comment": "Model group id corresponding to the node at the end of the directed edge",
+                        "markdown_name": "Model Group Id End",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_ordered_model_ihm_model_group_2_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    }
+                ],
+                "detailed": [
+                    "RID",
+                    {
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_ordered_model_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "process_id",
+                    "process_description",
+                    "edge_id",
+                    "edge_description",
+                    "step_id",
+                    "step_description",
+                    "ordered_by",
+                    {
+                        "comment": "Model group id corresponding to the node at the origin of the directed edge",
+                        "markdown_name": "Model Group Id Begin",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_ordered_model_ihm_model_group_1_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {
+                        "comment": "Model group id corresponding to the node at the end of the directed edge",
+                        "markdown_name": "Model Group Id End",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_ordered_model_ihm_model_group_2_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    [
+                        "PDB",
+                        "ihm_ordered_model_RCB_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_ordered_model_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "PDB",
+                        "ihm_ordered_model_Owner_fkey"
+                    ]
+                ],
+                "entry": [
+                    {
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_ordered_model_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "process_id",
+                    "process_description",
+                    "edge_id",
+                    "edge_description",
+                    "step_id",
+                    "step_description",
+                    "ordered_by",
+                    {
+                        "comment": "Model group id corresponding to the node at the origin of the directed edge",
+                        "markdown_name": "Model Group Id Begin",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_ordered_model_ihm_model_group_1_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {
+                        "comment": "Model group id corresponding to the node at the end of the directed edge",
+                        "markdown_name": "Model Group Id End",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_ordered_model_ihm_model_group_2_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    }
+                ]
+            }
+        },
+#endif
         {
             "schema": "PDB",
             "table": "ihm_ordered_ensemble",
             "uri": "tag:misd.isi.edu,2015:display",
             "value": {
-                "name": "Ordered States",
+                "name": "Ordered Ensembles (to be deprecated and superseded by Ordered Models)",
                 "comment_display": {
                     "*": {
                         "table_comment_display" : "inline"
@@ -6063,6 +6245,10 @@
                     [
                         "PDB",
                         "ihm_multi_state_model_group_link_state_id_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_multi_state_scheme_connectivity_ihm_multi_state_modeling_1_combo1_fkey"
                     ]
                 ],
                 "filter": "detailed"
@@ -6197,6 +6383,18 @@
                     [
                         "PDB",
                         "ihm_modeling_post_process_dataset_group_id_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_multi_state_scheme_connectivity_ihm_dataset_group_combo1_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_kinetic_rate_ihm_dataset_group_combo1_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_relaxation_time_ihm_dataset_group_combo1_fkey"
                     ]
                 ],
                 "filter": "detailed"
@@ -7132,6 +7330,10 @@
                     ],
                     [
                         "PDB",
+                        "ihm_ordered_model_structure_id_fkey"
+                    ],
+                    [
+                        "PDB",
                         "ihm_ordered_ensemble_structure_id_fkey"
                     ],
                     [
@@ -7307,6 +7509,26 @@
                     [
                         "PDB",
                         "ihm_geometric_object_distance_restraint_structure_id_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_multi_state_scheme_structure_id_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_multi_state_scheme_connectivity_structure_id_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_kinetic_rate_structure_id_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_relaxation_time_structure_id_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_relaxation_time_multi_state_scheme_structure_id_fkey"
                     ],
 #if 1 
                     {
@@ -10214,6 +10436,1003 @@
             }
         },
 #endif
+#if defined(dev)
+        {
+            "schema": "PDB",
+            "table": "ihm_multi_state_scheme",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Multi-state Schemes",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "ihm_multi_state_scheme",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    {
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_multi_state_scheme_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "id",
+                    "name",
+                    "details"
+                ],
+                "detailed": [
+                    "RID",
+                    {
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_multi_state_scheme_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "id",
+                    "name", 
+                    "details", 
+                    [
+                        "PDB",
+                        "ihm_multi_state_scheme_RCB_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_multi_state_scheme_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "PDB",
+                        "ihm_multi_state_scheme_Owner_fkey"
+                    ]
+                ],
+                "entry": [
+                    "id",
+                    {
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_multi_state_scheme_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "name",
+                    "details"
+                ]
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "ihm_multi_state_scheme",
+            "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+            "value": {
+                "detailed": [
+                    [
+                        "PDB",
+                        "ihm_multi_state_scheme_connectivity_ihm_multi_state_scheme_combo1_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_combo1_fkey"
+                    ]
+                ],
+                "filter": "detailed"
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "ihm_multi_state_scheme_connectivity",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Multi-state Scheme Connectivities",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "ihm_multi_state_scheme_connectivity",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    {
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_multi_state_scheme_connectivity_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "id",
+                    {
+                        "comment": "Identifier for the multi-state scheme",
+                        "markdown_name": "Scheme Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_multi_state_scheme_connectivity_ihm_multi_state_scheme_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {
+                        "comment": "Identifier for the starting state in the multi-state scheme",
+                        "markdown_name": "Begin State Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_multi_state_scheme_connectivity_ihm_multi_state_modeling_1_combo1_fkey"
+                                ]
+                            },
+                            "state_id"
+                        ]
+                    },
+                    {
+                        "comment": "Identifier for the ending state in the multi-state scheme",
+                        "markdown_name": "End State Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_multi_state_scheme_connectivity_ihm_multi_state_modeling_2_combo2_fkey"
+                                ]
+                            },
+                            "state_id"
+                        ]
+                    },
+                    {
+                        "comment": "Identifier for the dataset group from which the multi-state scheme is obtained",
+                        "markdown_name": "Dataset Group Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_multi_state_scheme_connectivity_ihm_dataset_group_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    "details"
+                ],
+                "detailed": [
+                    "RID",
+                    {
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_multi_state_scheme_connectivity_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "id",
+                    {
+                        "comment": "Identifier for the multi-state scheme",
+                        "markdown_name": "Scheme Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_multi_state_scheme_connectivity_ihm_multi_state_scheme_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {
+                        "comment": "Identifier for the starting state in the multi-state scheme",
+                        "markdown_name": "Begin State Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_multi_state_scheme_connectivity_ihm_multi_state_modeling_1_combo1_fkey"
+                                ]
+                            },
+                            "state_id"
+                        ]
+                    },
+                    {
+                        "comment": "Identifier for the ending state in the multi-state scheme",
+                        "markdown_name": "End State Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_multi_state_scheme_connectivity_ihm_multi_state_modeling_2_combo2_fkey"
+                                ]
+                            },
+                            "state_id"
+                        ]
+                    },
+                    {
+                        "comment": "Identifier for the dataset group from which the multi-state scheme is obtained",
+                        "markdown_name": "Dataset Group Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_multi_state_scheme_connectivity_ihm_dataset_group_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    "details",
+                    [
+                        "PDB",
+                        "ihm_multi_state_scheme_connectivity_RCB_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_multi_state_scheme_connectivity_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "PDB",
+                        "ihm_multi_state_scheme_connectivity_Owner_fkey"
+                    ]
+                ],
+                "entry": [
+                    {
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_multi_state_scheme_connectivity_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "id",
+                    {
+                        "comment": "Identifier for the multi-state scheme",
+                        "markdown_name": "Scheme Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_multi_state_scheme_connectivity_ihm_multi_state_scheme_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {
+                        "comment": "Identifier for the starting state in the multi-state scheme",
+                        "markdown_name": "Begin State Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_multi_state_scheme_connectivity_ihm_multi_state_modeling_1_combo1_fkey"
+                                ]
+                            },
+                            "state_id"
+                        ]
+                    },
+                    {
+                        "comment": "Identifier for the ending state in the multi-state scheme",
+                        "markdown_name": "End State Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_multi_state_scheme_connectivity_ihm_multi_state_modeling_2_combo2_fkey"
+                                ]
+                            },
+                            "state_id"
+                        ]
+                    },
+                    {
+                        "comment": "Identifier for the dataset group from which the multi-state scheme is obtained",
+                        "markdown_name": "Dataset Group Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_multi_state_scheme_connectivity_ihm_dataset_group_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    "details"
+                ]
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "ihm_multi_state_scheme_connectivity",
+            "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+            "value": {
+                "detailed": [
+                    [
+                        "PDB",
+                        "ihm_kinetic_rate_ihm_multi_state_scheme_connectivity_combo1_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_connectivity_combo2_fkey"
+                    ]               
+                ],              
+                "filter": "detailed"
+            }               
+        },
+        {
+            "schema": "PDB",
+            "table": "ihm_kinetic_rate",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Kinetic Rates from Biophysical Experiments",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "ihm_kinetic_rate",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    {
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_kinetic_rate_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "id",
+                    "transition_rate_constant",
+                    "equilibrium_constant",
+                    [
+                        "PDB",
+                        "ihm_kinetic_rate_equilibrium_constant_determination_method_fkey"
+                    ],
+                    "equilibrium_constant_unit",
+                    {   
+                        "comment": "Identifier for the multi-state scheme connectivity",
+                        "markdown_name": "Scheme Connectivity Id",
+                        "source": [
+                            {   
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_kinetic_rate_ihm_multi_state_scheme_connectivity_combo1_fkey"
+                                ]   
+                            },  
+                            "id"
+                        ]   
+                    },
+                    {   
+                        "comment": "Identifier for the external file corresponding to the kinetic rate measurement",
+                        "markdown_name": "External File Id",
+                        "source": [
+                            {   
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_kinetic_rate_ihm_external_files_combo2_fkey"
+                                ]   
+                            },  
+                            "id"
+                        ]   
+                    },
+                    {   
+                        "comment": "Identifier for the dataset group from which the kinetic rate is obtained",
+                        "markdown_name": "Dataset Group Id",
+                        "source": [
+                            {   
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_kinetic_rate_ihm_dataset_group_combo1_fkey"
+                                ]   
+                            },  
+                            "id"
+                        ]   
+                    },
+                    "details"
+                ],
+                "detailed": [
+                    "RID",
+                    {
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_kinetic_rate_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "id",
+                    "transition_rate_constant",
+                    "equilibrium_constant",
+                    [   
+                        "PDB",
+                        "ihm_kinetic_rate_equilibrium_constant_determination_method_fkey"
+                    ],
+                    "equilibrium_constant_unit",
+                    {
+                        "comment": "Identifier for the multi-state scheme connectivity",
+                        "markdown_name": "Scheme Connectivity Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_kinetic_rate_ihm_multi_state_scheme_connectivity_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {
+                        "comment": "Identifier for the external file corresponding to the kinetic rate measurement",
+                        "markdown_name": "External File Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_kinetic_rate_ihm_external_files_combo2_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {
+                        "comment": "Identifier for the dataset group from which the kinetic rate is obtained",
+                        "markdown_name": "Dataset Group Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_kinetic_rate_ihm_dataset_group_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    "details", 
+                    [
+                        "PDB",
+                        "ihm_kinetic_rate_RCB_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_kinetic_rate_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "PDB",
+                        "ihm_kinetic_rate_Owner_fkey"
+                    ]
+                ],
+                "entry": [
+                    {
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_kinetic_rate_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "id",
+                    "transition_rate_constant",
+                    "equilibrium_constant",
+                    [   
+                        "PDB",
+                        "ihm_kinetic_rate_equilibrium_constant_determination_method_fkey"
+                    ],
+                    "equilibrium_constant_unit",
+                    {
+                        "comment": "Identifier for the multi-state scheme connectivity",
+                        "markdown_name": "Scheme Connectivity Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_kinetic_rate_ihm_multi_state_scheme_connectivity_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {
+                        "comment": "Identifier for the external file corresponding to the kinetic rate measurement",
+                        "markdown_name": "External File Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_kinetic_rate_ihm_external_files_combo2_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {
+                        "comment": "Identifier for the dataset group from which the kinetic rate is obtained",
+                        "markdown_name": "Dataset Group Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_kinetic_rate_ihm_dataset_group_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    "details"
+                ]
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "ihm_relaxation_time",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Relaxation times from Biophysical Experiments",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "ihm_relaxation_time",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    {
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_relaxation_time_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "id",
+                    "value",
+                    [   
+                        "PDB",
+                        "ihm_relaxation_time_unit_fkey"
+                    ],
+                    "amplitude", 
+                    {
+                        "comment": "Identifier for the external file corresponding to the relaxation time measurement",
+                        "markdown_name": "External File Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_relaxation_time_ihm_external_files_combo2_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {
+                        "comment": "Identifier for the dataset group from which the multi-state scheme is obtained",
+                        "markdown_name": "Dataset Group Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_relaxation_time_ihm_dataset_group_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    "details"
+                ],
+                "detailed": [
+                    "RID",
+                    {
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_relaxation_time_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "id",
+                    "value",
+                    [
+                        "PDB",
+                        "ihm_relaxation_time_unit_fkey"
+                    ],
+                    "amplitude",
+                    {
+                        "comment": "Identifier for the external file corresponding to the relaxation time measurement",
+                        "markdown_name": "External File Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_relaxation_time_ihm_external_files_combo2_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {
+                        "comment": "Identifier for the dataset group from which the multi-state scheme is obtained",
+                        "markdown_name": "Dataset Group Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_relaxation_time_ihm_dataset_group_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    "details",
+                    [
+                        "PDB",
+                        "ihm_relaxation_time_RCB_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_relaxation_time_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "PDB",
+                        "ihm_relaxation_time_Owner_fkey"
+                    ]
+                ],
+                "entry": [
+                    {
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_relaxation_time_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "id",
+                    "value",
+                    [
+                        "PDB",
+                        "ihm_relaxation_time_unit_fkey"
+                    ],
+                    "amplitude",
+                    {
+                        "comment": "Identifier for the external file corresponding to the relaxation time measurement",
+                        "markdown_name": "External File Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_relaxation_time_ihm_external_files_combo2_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {
+                        "comment": "Identifier for the dataset group from which the multi-state scheme is obtained",
+                        "markdown_name": "Dataset Group Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_relaxation_time_ihm_dataset_group_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    "details"
+                ]
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "ihm_relaxation_time",
+            "uri": "tag:isrd.isi.edu,2016:visible-foreign-keys",
+            "value": {
+                "detailed": [
+                    [
+                        "PDB",
+                        "ihm_relaxation_time_multi_state_scheme_ihm_relaxation_time_combo1_fkey"
+                    ]               
+                ],              
+                "filter": "detailed"
+            }               
+        },
+        {
+            "schema": "PDB",
+            "table": "ihm_relaxation_time_multi_state_scheme",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "Mapping experimentally measured relaxation times with multi-state schemes",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "ihm_relaxation_time_multi_state_scheme",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    {
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_relaxation_time_multi_state_scheme_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "id",
+                    {
+                        "comment": "Identifier for the multi-state scheme",
+                        "markdown_name": "Scheme Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {   
+                        "comment": "Identifier for the multi-state scheme connectivity",
+                        "markdown_name": "Scheme Connectivity Id",
+                        "source": [
+                            {   
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_connectivity_combo2_fkey"
+                                ]   
+                            },  
+                            "id"
+                        ]   
+                    },
+                    {   
+                        "comment": "Identifier for the relaxation time",
+                        "markdown_name": "Relaxation Time Id",
+                        "source": [
+                            {   
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_relaxation_time_multi_state_scheme_ihm_relaxation_time_combo1_fkey"
+                                ]   
+                            },  
+                            "id"
+                        ]   
+                    },
+                    "details"
+                ],
+                "detailed": [
+                    "RID",
+                    {
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_relaxation_time_multi_state_scheme_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "id",
+                    {
+                        "comment": "Identifier for the multi-state scheme",
+                        "markdown_name": "Scheme Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {
+                        "comment": "Identifier for the multi-state scheme connectivity",
+                        "markdown_name": "Scheme Connectivity Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_connectivity_combo2_fkey"
+                                ]   
+                            },  
+                            "id"
+                        ]   
+                    },
+                    {   
+                        "comment": "Identifier for the relaxation time",
+                        "markdown_name": "Relaxation Time Id",
+                        "source": [
+                            {   
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_relaxation_time_multi_state_scheme_ihm_relaxation_time_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]  
+                    },
+                    "details", 
+                    [
+                        "PDB",
+                        "ihm_relaxation_time_multi_state_scheme_RCB_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_relaxation_time_multi_state_scheme_RMB_fkey"
+                    ],
+                    "RCT",
+                    "RMT",
+                    [
+                        "PDB",
+                        "ihm_relaxation_time_multi_state_scheme_Owner_fkey"
+                    ]
+                ],
+                "entry": [
+                    {
+                        "comment": "A reference to table entry.id.",
+                        "markdown_name": "Structure Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_relaxation_time_multi_state_scheme_structure_id_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "id",
+                    {
+                        "comment": "Identifier for the multi-state scheme",
+                        "markdown_name": "Scheme Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]
+                    },
+                    {
+                        "comment": "Identifier for the multi-state scheme connectivity",
+                        "markdown_name": "Scheme Connectivity Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_connectivity_combo2_fkey"
+                                ]   
+                            },  
+                            "id"
+                        ]   
+                    },
+                    {   
+                        "comment": "Identifier for the relaxation time",
+                        "markdown_name": "Relaxation Time Id",
+                        "source": [
+                            {   
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_relaxation_time_multi_state_scheme_ihm_relaxation_time_combo1_fkey"
+                                ]
+                            },
+                            "id"
+                        ]  
+                    },
+                    "details"
+                ]
+            }
+        },
+#endif
         {
             "schema": "PDB",
             "table": "Curation_Log",
@@ -12432,6 +13651,14 @@
                     [
                         "PDB",
                         "ihm_localization_density_files_file_id_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_kinetic_rate_ihm_external_files_combo2_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_relaxation_time_ihm_external_files_combo2_fkey"
                     ]
                 ],
                 "filter": "detailed"
@@ -15297,6 +16524,10 @@
                         ]
                     },
                     "title",
+                    [
+                        "PDB",
+                        "struct_pdbx_structure_determination_methodology_fkey"
+                    ],
                     "pdbx_descriptor",
                     "pdbx_details",
                     "pdbx_model_details",
@@ -15322,6 +16553,10 @@
                         ]
                     },
                     "title",
+                    [   
+                        "PDB",
+                        "struct_pdbx_structure_determination_methodology_fkey"
+                    ],
                     "pdbx_descriptor",
                     "pdbx_details",
                     "pdbx_model_details",
@@ -15360,6 +16595,10 @@
                         ]
                     },
                     "title",
+                    [   
+                        "PDB",
+                        "struct_pdbx_structure_determination_methodology_fkey"
+                    ],
                     "pdbx_descriptor",
                     "pdbx_details",
                     "pdbx_model_details",
@@ -19883,11 +21122,11 @@
                     ],
                     [
                         "PDB",
-                        "ihm_ordered_ensemble_model_group_id_begin_fkey"
+                        "ihm_ordered_model_ihm_model_group_1_combo1_fkey"
                     ],
                     [
                         "PDB",
-                        "ihm_ordered_ensemble_model_group_id_end_fkey"
+                        "ihm_ordered_ensemble_model_group_id_begin_fkey"
                     ],
                     [
                         "PDB",
@@ -27626,36 +28865,36 @@
                                             "url": "/chaise/recordset/catalog_number/PDB:ihm_multi_state_modeling"
                                         },
                                         {
-                                            "name": "Ihm Ordered Ensemble",
-                                            "url": "/chaise/recordset/catalog_number/PDB:ihm_ordered_ensemble"
+                                            "name": "Ihm Ordered Model",
+                                            "url": "/chaise/recordset/catalog_number/PDB:ihm_ordered_model"
                                         }
                                     ],
-                                    "name": "Multi-state Modeling and Ordered Ensembles"
+                                    "name": "Multi-state Modeling, Ordered Models, and Ensembles"
                                 },
                                 {
                                     "children": [
                                         {
-                                            "name": "PDBX Entity Poly Na Type",
-                                            "url": "/chaise/recordset/catalog_number/PDB:pdbx_entity_poly_na_type"
+                                            "name": "ihm Multi-State Scheme",
+                                            "url": "/chaise/recordset/catalog_number/PDB:ihm_multi_state_scheme"
                                         },
                                         {
-                                            "name": "PDBX Entry Details",
-                                            "url": "/chaise/recordset/catalog_number/PDB:pdbx_entry_details"
+                                            "name": "ihm Multi-State Scheme Connectivity",
+                                            "url": "/chaise/recordset/catalog_number/PDB:ihm_multi_state_scheme_connectivity"
                                         },
                                         {
-                                            "name": "PDBX Inhibitor Info",
-                                            "url": "/chaise/recordset/catalog_number/PDB:pdbx_inhibitor_info"
+                                            "name": "ihm Kinetic Rate",
+                                            "url": "/chaise/recordset/catalog_number/PDB:ihm_kinetic_rate"
                                         },
                                         {
-                                            "name": "PDBX Ion Info",
-                                            "url": "/chaise/recordset/catalog_number/PDB:pdbx_ion_info"
+                                            "name": "ihm Relaxation Time",
+                                            "url": "/chaise/recordset/catalog_number/PDB:ihm_relaxation_time"
                                         },
                                         {
-                                            "name": "PDBX Protein Info",
-                                            "url": "/chaise/recordset/catalog_number/PDB:pdbx_protein_info"
+                                            "name": "ihm Relaxation Time Multi-State Scheme",
+                                            "url": "/chaise/recordset/catalog_number/PDB:ihm_relaxation_time_multi_state_scheme"
                                         }
                                     ],
-                                    "name": "PDBX Related"
+                                    "name": "Multi-State Schemes"
                                 },
                                 {
                                     "children": [
@@ -28084,6 +29323,14 @@
                                         {
                                             "name": "Experiment Type",
                                             "url": "/chaise/recordset/catalog_number/Vocab:ihm_multi_state_modeling_experiment_type"
+                                        },
+                                        {
+                                            "name": "Relaxation Time Unit",
+                                            "url": "/chaise/recordset/catalog_number/Vocab:ihm_relaxation_time_unit"
+                                        },
+                                        {
+                                            "name": "Equilibrium Constant Determination Methods",
+                                            "url": "/chaise/recordset/catalog_number/Vocab:ihm_kinetic_rate_equilibrium_constant_determination_method"
                                         }
                                     ],
                                     "name": "Ihm Multi State Modeling"
@@ -28219,6 +29466,10 @@
                                 },
                                 {
                                     "children": [
+                                        {   
+                                            "name": "PDBX  Structure Determination Methodology",
+                                            "url": "/chaise/recordset/catalog_number/Vocab:struct_pdbx_structure_determination_methodology"
+                                        },
                                         {
                                             "name": "PDBX  CASP Flag",
                                             "url": "/chaise/recordset/catalog_number/Vocab:struct_pdbx_CASP_flag"
@@ -28697,6 +29948,30 @@
             "value": {
                 "domain_filter_pattern": "structure_id={{structure_id}}"
             }
+        },
+        {                                   
+            "foreign_key": "ihm_ordered_model_ihm_model_group_1_combo1_fkey",
+            "foreign_key_schema": "PDB",
+            "schema": "PDB",        
+            "table": "ihm_ordered_model",
+            "uri": "tag:isrd.isi.edu,2016:foreign-key",
+            "value": {          
+                "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+                "from_name": "Ihm Model Group Id Begin",
+                "template_engine": "handlebars"
+            }                               
+        },                                  
+        {                               
+            "foreign_key": "ihm_ordered_model_ihm_model_group_2_combo1_fkey",
+            "foreign_key_schema": "PDB",    
+            "schema": "PDB",                
+            "table": "ihm_ordered_model",
+            "uri": "tag:isrd.isi.edu,2016:foreign-key",
+            "value": {                      
+                "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+                "from_name": "Ihm Model Group Id End",
+                "template_engine": "handlebars"
+            }                           
         },
         {
             "foreign_key": "ihm_ordered_ensemble_model_group_id_begin_fkey",
@@ -30633,6 +31908,140 @@
             "foreign_key_schema": "PDB",
             "schema": "PDB",
             "table": "struct_ref_seq_dif",
+            "uri": "tag:isrd.isi.edu,2016:foreign-key",
+            "value": {
+                "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+                "template_engine": "handlebars"
+            }
+        },
+        {
+            "foreign_key": "ihm_multi_state_scheme_connectivity_ihm_multi_state_scheme_combo1_fkey",
+            "foreign_key_schema": "PDB",
+            "schema": "PDB",
+            "table": "ihm_multi_state_scheme_connectivity",
+            "uri": "tag:isrd.isi.edu,2016:foreign-key",
+            "value": {
+                "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+                "template_engine": "handlebars"
+            }
+        },
+        {
+            "foreign_key": "ihm_multi_state_scheme_connectivity_ihm_multi_state_modeling_1_combo1_fkey",
+            "foreign_key_schema": "PDB",
+            "schema": "PDB",
+            "table": "ihm_multi_state_scheme_connectivity",
+            "uri": "tag:isrd.isi.edu,2016:foreign-key",
+            "value": {
+                "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+                "from_name": "Ihm Multi State Modeling Begin State",
+                "template_engine": "handlebars"
+            }
+        },
+        {
+            "foreign_key": "ihm_multi_state_scheme_connectivity_ihm_multi_state_modeling_2_combo2_fkey",
+            "foreign_key_schema": "PDB",
+            "schema": "PDB",
+            "table": "ihm_multi_state_scheme_connectivity",
+            "uri": "tag:isrd.isi.edu,2016:foreign-key",
+            "value": {
+                "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+                "from_name": "Ihm Multi State Modeling End State",
+                "template_engine": "handlebars"
+            }
+        },
+        {
+            "foreign_key": "ihm_multi_state_scheme_connectivity_ihm_dataset_group_combo1_fkey",
+            "foreign_key_schema": "PDB",
+            "schema": "PDB",
+            "table": "ihm_multi_state_scheme_connectivity",
+            "uri": "tag:isrd.isi.edu,2016:foreign-key",
+            "value": {
+                "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+                "template_engine": "handlebars"
+            }
+        },
+        {
+            "foreign_key": "ihm_kinetic_rate_ihm_multi_state_scheme_connectivity_combo1_fkey",
+            "foreign_key_schema": "PDB",
+            "schema": "PDB",
+            "table": "ihm_kinetic_rate",
+            "uri": "tag:isrd.isi.edu,2016:foreign-key",
+            "value": {
+                "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+                "template_engine": "handlebars"
+            }
+        },
+        {
+            "foreign_key": "ihm_kinetic_rate_ihm_external_files_combo2_fkey",
+            "foreign_key_schema": "PDB",
+            "schema": "PDB",
+            "table": "ihm_kinetic_rate",
+            "uri": "tag:isrd.isi.edu,2016:foreign-key",
+            "value": {
+                "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+                "template_engine": "handlebars"
+            }
+        },
+        {
+            "foreign_key": "ihm_kinetic_rate_ihm_dataset_group_combo1_fkey",
+            "foreign_key_schema": "PDB",
+            "schema": "PDB",
+            "table": "ihm_kinetic_rate",
+            "uri": "tag:isrd.isi.edu,2016:foreign-key",
+            "value": {
+                "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+                "template_engine": "handlebars"
+            }
+        },
+        {
+            "foreign_key": "ihm_relaxation_time_ihm_external_files_combo2_fkey",
+            "foreign_key_schema": "PDB",
+            "schema": "PDB",
+            "table": "ihm_relaxation_time",
+            "uri": "tag:isrd.isi.edu,2016:foreign-key",
+            "value": {
+                "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+                "template_engine": "handlebars"
+            }
+        },
+        {
+            "foreign_key": "ihm_relaxation_time_ihm_dataset_group_combo1_fkey",
+            "foreign_key_schema": "PDB",
+            "schema": "PDB",
+            "table": "ihm_relaxation_time",
+            "uri": "tag:isrd.isi.edu,2016:foreign-key",
+            "value": {
+                "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+                "template_engine": "handlebars"
+            }
+        },
+        {
+            "foreign_key": "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_connectivity_combo2_fkey",
+            "foreign_key_schema": "PDB",
+            "schema": "PDB",
+            "table": "ihm_relaxation_time_multi_state_scheme",
+            "uri": "tag:isrd.isi.edu,2016:foreign-key",
+            "value": {
+                "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+                "template_engine": "handlebars"
+            }
+        },
+        {
+            "foreign_key": "ihm_relaxation_time_multi_state_scheme_ihm_multi_state_scheme_combo1_fkey",
+            "foreign_key_schema": "PDB",
+            "schema": "PDB",
+            "table": "ihm_relaxation_time_multi_state_scheme",
+            "uri": "tag:isrd.isi.edu,2016:foreign-key",
+            "value": {
+                "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+                "template_engine": "handlebars"
+            }
+        },
+        {
+            "foreign_key": "ihm_relaxation_time_multi_state_scheme_ihm_relaxation_time_combo1_fkey",
+            "foreign_key_schema": "PDB",
+            "schema": "PDB",
+            "table": "ihm_relaxation_time_multi_state_scheme",
             "uri": "tag:isrd.isi.edu,2016:foreign-key",
             "value": {
                 "domain_filter_pattern": "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
