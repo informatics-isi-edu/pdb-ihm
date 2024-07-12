@@ -198,8 +198,10 @@ class ArchiveClient (object):
             Get the archive directories and the associated file types
             """
             self.archive_dirs = []
+            self.holding_map = {}
             for k,v in self.archive_category_dir_names.items():
                 self.archive_dirs.append(v)
+                self.holding_map[v] = k
 
             """
             Archive files
@@ -336,7 +338,7 @@ class ArchiveClient (object):
             self.current_holdings[entry_id] = {}
             for archive_dir in self.archive_dirs:
                 submitted_files[archive_dir] = []
-                self.current_holdings[entry_id][archive_dir] = []
+                self.current_holdings[entry_id][self.holding_map[archive_dir]] = []
 
             self.released_records.append(accesion_code_row)
             for file_generated in files_generated:
@@ -346,7 +348,7 @@ class ArchiveClient (object):
                 filename = file_generated['File_Name']
                 file_url = file_generated['File_URL']
                 
-                submitted_files[self.archive_category[file_type]].append(f'{filename}.gz')
+                submitted_files[self.archive_category_dir_names[self.archive_category[file_type]]].append(f'{filename}.gz')
                 if file_type == 'mmCIF':
                     if filename == f'{structure_id}.cif':
                         rel_warnings.append(rid)
@@ -555,7 +557,7 @@ class ArchiveClient (object):
                 The America/Los_Angeles time has passed 2PM. Get the Thursday of next week
                 """
                 closest_thursday += timedelta(days=7)
-        closest_thursday=closest_thursday.replace(hour=16,minute=0,second=0,microsecond=0)
+        closest_thursday=closest_thursday.replace(hour=14,minute=0,second=0,microsecond=0)
         return f'{closest_thursday}'
                 
     """
@@ -581,7 +583,7 @@ class ArchiveClient (object):
     Get the archive file directory
     """
     def getFileArchiveDirectory(self, hash, entry_id, file_type):
-        entry_dir = f'{self.archive_parent}/{self.released_entry_dir}/{hash}/{entry_id}/{self.archive_category[file_type]}'
+        entry_dir = f'{self.archive_parent}/{self.released_entry_dir}/{hash}/{entry_id}/{self.archive_category_dir_names[self.archive_category[file_type]]}'
     
         return entry_dir
 
@@ -625,8 +627,7 @@ class ArchiveClient (object):
         os.remove(filename)
         os.chdir(currentDirectory)
         
-        holding_key = self.archive_category_dir_names[self.archive_category[file_type]]
-        #holding_key = self.archive_category[file_type]
+        holding_key = self.holding_map[self.archive_category_dir_names[self.archive_category[file_type]]]
         file_path = archiveDirectory[len(self.archive_parent):]
         self.current_holdings[entry_id][holding_key].append(f'{file_path}/{filename}.gz')
 
