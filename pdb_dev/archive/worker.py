@@ -69,6 +69,7 @@ class ArchiveClient (object):
         self.holding_namespace = kwargs.get("holding_namespace")
         self.released_structures = {}
         self.current_holdings = {}
+        self.archive_category_dir_names = {}
         self.PDB_Archive_RID = None
         self.store = HatracStore(
             self.scheme, 
@@ -183,6 +184,19 @@ class ArchiveClient (object):
                 if k not in self.archive_file_types:
                    self.archive_file_types.append(k) 
 
+            """
+            Get the archive directories of the Archive_Category
+            """
+            url = f'/attribute/Vocab:Archive_Category/Directory_Name,Name'
+            self.logger.debug(f'Query for the directories names of the Archive_Category: "{url}"') 
+            
+            resp = self.catalog.get(url)
+            resp.raise_for_status()
+            rows = resp.json()
+            self.archive_category = {}
+            for row in rows:
+                self.archive_category_dir_names[row['Name']] = row['Directory_Name']
+                
             """
             Archive files
             """
@@ -502,12 +516,8 @@ class ArchiveClient (object):
     Get the file archive subdirectory 
     """
     def getFileArchiveSubDirectory(self, hash, entry_id, archive_category):
-        archive_category_dir_names = {
-          "mmcif" : "structures",
-          "validation_report": "validation_reports"
-        }   
         entry_dir = f'{self.released_entry_dir}/{hash}/{entry_id}/'
-        return f'{entry_dir}{archive_category_dir_names[archive_category]}'
+        return f'{entry_dir}{self.archive_category_dir_names[archive_category]}'
         
     """
     Get the holding subdirectory 
