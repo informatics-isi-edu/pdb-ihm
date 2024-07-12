@@ -176,11 +176,8 @@ class ArchiveClient (object):
             """
             Get the archive directories and the associated file types
             """
-            self.archive_dirs = []
             self.archive_file_types = []
             for k,v in self.archive_category.items():
-                if v not in self.archive_dirs:
-                   self.archive_dirs.append(v) 
                 if k not in self.archive_file_types:
                    self.archive_file_types.append(k) 
 
@@ -193,10 +190,17 @@ class ArchiveClient (object):
             resp = self.catalog.get(url)
             resp.raise_for_status()
             rows = resp.json()
-            self.archive_category = {}
+            self.archive_category_dir_names = {}
             for row in rows:
                 self.archive_category_dir_names[row['Name']] = row['Directory_Name']
                 
+            """
+            Get the archive directories and the associated file types
+            """
+            self.archive_dirs = []
+            for k,v in self.archive_category_dir_names.items():
+                self.archive_dirs.append(v)
+
             """
             Archive files
             """
@@ -621,7 +625,8 @@ class ArchiveClient (object):
         os.remove(filename)
         os.chdir(currentDirectory)
         
-        holding_key = self.archive_category[file_type]
+        holding_key = self.archive_category_dir_names[self.archive_category[file_type]]
+        #holding_key = self.archive_category[file_type]
         file_path = archiveDirectory[len(self.archive_parent):]
         self.current_holdings[entry_id][holding_key].append(f'{file_path}/{filename}.gz')
 
