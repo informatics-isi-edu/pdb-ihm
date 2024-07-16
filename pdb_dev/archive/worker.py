@@ -340,7 +340,6 @@ class ArchiveClient (object):
                 submitted_files[archive_dir] = []
                 self.current_holdings[entry_id][self.holding_map[archive_dir]] = []
 
-            self.released_records.append(accesion_code_row)
             for file_generated in files_generated:
                 file_type = file_generated['File_Type']
                 if file_type not in self.archive_file_types:
@@ -350,10 +349,11 @@ class ArchiveClient (object):
                 
                 submitted_files[self.archive_category_dir_names[self.archive_category[file_type]]].append(f'{filename}.gz')
                 if file_type == 'mmCIF':
-                    if filename == f'{structure_id}.cif':
+                    if filename != f'{accesion_code_row["Accession_Code"]}.cif':
                         rel_warnings.append(rid)
                     else:
                         self.released_structures[entry_id]['File_URL'] = file_generated['File_URL']
+                        self.released_records.append(accesion_code_row)
                 
                 if rid not in rel_warnings:
                     """

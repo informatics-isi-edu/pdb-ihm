@@ -7361,6 +7361,30 @@
                      ]
                   },
                     "mmCIF_URL",
+                  {
+                     "markdown_name" : "Accession Code",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Entry_Latest_Archive_Entry_fkey"
+                           ]
+                        },
+                        "Accession_Code"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "Workflow Status",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Entry_Latest_Archive_Entry_fkey"
+                           ]
+                        },
+                        "Workflow_Status"
+                     ]
+                  },
                     "Submitted_Files",
                     "Submission_Time",
                   {
@@ -7402,6 +7426,30 @@
                 "detailed": [
                     "RID",
                     "Submission_Time",
+                  {
+                     "markdown_name" : "Accession Code",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Entry_Latest_Archive_Entry_fkey"
+                           ]
+                        },
+                        "Accession_Code"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "Workflow Status",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Entry_Latest_Archive_Entry_fkey"
+                           ]
+                        },
+                        "Workflow_Status"
+                     ]
+                  },
                     "Submitted_Files",
                     "mmCIF_URL",
                   {
