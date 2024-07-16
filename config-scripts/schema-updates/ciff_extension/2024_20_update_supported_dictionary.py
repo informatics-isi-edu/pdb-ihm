@@ -7,7 +7,7 @@ import utils
 Supported_Dictionary_columns = ['Data_Dictionary_RID', 'Data_Dictionary_Category']
 
 Supported_Dictionary_rows = [
-    {'RID': '1-RE2T', 'Data_Dictionary_RID': '3-BR5W', 'Data_Dictionary_Category': 'IHM-dictionary'},
+    {'RID': '1-RE2T', 'Data_Dictionary_RID': '3-BR5W', 'Data_Dictionary_Category': 'IHMCIF dictionary'},
     {'RID': '1-RE2W', 'Data_Dictionary_RID': '3-BR5Y', 'Data_Dictionary_Category': 'PDBx/mmCIF'}
     ]
 
