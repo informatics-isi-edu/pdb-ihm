@@ -2865,6 +2865,7 @@
                      "CDI",
                      "CYS",
                      "DHSO",
+                     "DMTMM",
                      "DSA",
                      "DSBU",
                      "DSG",
@@ -2878,6 +2879,7 @@
                      "L-Photo-Leucine",
                      "LCSDA",
                      "Other",
+                     "PDH",
                      "SDA",
                      "TBDSPP",
                      "sulfo-SDA",
@@ -2924,6 +2926,10 @@
                      {
                         "value": "DHSO",
                         "detail": "dihydrazide sulfoxide crosslinker"
+                     },
+                     {
+                        "value": "DMTMM",
+                        "detail": "4-(4,6-Dimethoxy-1,3,5-triazin-2-yl)-4-methylmorpholinium chloride crosslinker"
                      },
                      {
                         "value": "DSA",
@@ -2976,6 +2982,10 @@
                      {
                         "value": "Other",
                         "detail": "Other type of crosslinker"
+                     },
+                     {
+                        "value": "PDH",
+                        "detail": "pimelic acid dihydrazide crosslinker"
                      },
                      {
                         "value": "SDA",
@@ -3788,6 +3798,7 @@
                   "type": "string",
                   "enum": [
                      "filter",
+                     "modeling",
                      "other",
                      "representation",
                      "restraint",
@@ -3799,6 +3810,10 @@
                      {
                         "value": "filter",
                         "detail": "dataset used for filtering sampled models"
+                     },
+                     {
+                        "value": "modeling",
+                        "detail": "dataset used in modeling"
                      },
                      {
                         "value": "other",
@@ -3915,6 +3930,7 @@
                      "3DEM volume",
                      "CX-MS data",
                      "Comparative model",
+                     "Crosslinking-MS data",
                      "DNA footprinting data",
                      "De Novo model",
                      "EM raw micrographs",
@@ -4037,6 +4053,7 @@
                      "PDB-Dev",
                      "PRIDE",
                      "ProXL",
+                     "ProteomeXchange",
                      "SASBDB",
                      "iProX",
                      "jPOSTrepo"
@@ -6467,6 +6484,118 @@
          "uniqueItems": true,
          "rcsb_nested_indexing": false
       },
+      "ihm_kinetic_rate": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
+               "dataset_group_id": {
+                  "$ref": "#ihm_dataset_group/id"
+               },
+               "details": {
+                  "type": "string",
+                  "description": "Additional details about the kinetic rate.",
+                  "rcsb_description": [
+                     {
+                        "text": "Additional details about the kinetic rate.",
+                        "context": "dictionary"
+                     }
+                  ]
+               },
+               "equilibrium_constant": {
+                  "type": "number",
+                  "description": "The equilibrium constant.",
+                  "rcsb_description": [
+                     {
+                        "text": "The equilibrium constant.",
+                        "context": "dictionary"
+                     }
+                  ]
+               },
+               "equilibrium_constant_determination_method": {
+                  "type": "string",
+                  "enum": [
+                     "from kinetic rates",
+                     "from population",
+                     "other"
+                  ],
+                  "description": "Method used to determine the equilibrium constant.",
+                  "rcsb_enum_annotated": [
+                     {
+                        "value": "from kinetic rates",
+                        "detail": "equilibrium constant is determined from kinetic rates, kAB/kBA"
+                     },
+                     {
+                        "value": "from population",
+                        "detail": "equilibrium constant is determined from population"
+                     },
+                     {
+                        "value": "other",
+                        "detail": "equilibrium constant is determined from another method not listed"
+                     }
+                  ],
+                  "rcsb_description": [
+                     {
+                        "text": "Method used to determine the equilibrium constant.",
+                        "context": "dictionary"
+                     }
+                  ]
+               },
+               "equilibrium_constant_unit": {
+                  "type": "string",
+                  "description": "Unit of the equilibrium constant, if applicable.\n If the kinetics describes a conformational change, then the equilibrium constant will not have a unit. \n If however a complex is involved, then a unit may be necessary.",
+                  "rcsb_description": [
+                     {
+                        "text": "Unit of the equilibrium constant, if applicable.\n If the kinetics describes a conformational change, then the equilibrium constant will not have a unit. \n If however a complex is involved, then a unit may be necessary.",
+                        "context": "dictionary"
+                     }
+                  ]
+               },
+               "external_file_id": {
+                  "$ref": "#ihm_external_files/id"
+               },
+               "id": {
+                  "type": "integer",
+                  "description": "An identifier for the kinetic rate.",
+                  "_primary_key": true,
+                  "rcsb_description": [
+                     {
+                        "text": "An identifier for the kinetic rate.",
+                        "context": "dictionary"
+                     }
+                  ]
+               },
+               "scheme_connectivity_id": {
+                  "$ref": "#ihm_multi_state_scheme_connectivity/id"
+               },
+               "transition_rate_constant": {
+                  "type": "number",
+                  "description": "The transition rate constant per second.",
+                  "rcsb_units": "reciprocal_seconds",
+                  "rcsb_description": [
+                     {
+                        "text": "The transition rate constant per second.",
+                        "context": "dictionary"
+                     }
+                  ]
+               }
+            },
+            "additionalProperties": false,
+            "required": [
+               "structure_id",
+               "dataset_group_id",
+               "id",
+               "scheme_connectivity_id"
+            ]
+         },
+         "minItems": 1,
+         "uniqueItems": true,
+         "rcsb_nested_indexing": false
+      },
       "ihm_ligand_probe": {
          "type": "array",
          "items": {
@@ -7583,6 +7712,113 @@
          "uniqueItems": true,
          "rcsb_nested_indexing": false
       },
+      "ihm_multi_state_scheme": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
+               "details": {
+                  "type": "string",
+                  "description": "Details about the multi-state scheme.",
+                  "rcsb_description": [
+                     {
+                        "text": "Details about the multi-state scheme.",
+                        "context": "dictionary"
+                     }
+                  ]
+               },
+               "id": {
+                  "type": "integer",
+                  "description": "A unique identifier for the category.",
+                  "_primary_key": true,
+                  "rcsb_description": [
+                     {
+                        "text": "A unique identifier for the category.",
+                        "context": "dictionary"
+                     }
+                  ]
+               },
+               "name": {
+                  "type": "string",
+                  "description": "Name for the multi-state scheme.",
+                  "rcsb_description": [
+                     {
+                        "text": "Name for the multi-state scheme.",
+                        "context": "dictionary"
+                     }
+                  ]
+               }
+            },
+            "additionalProperties": false,
+            "required": [
+               "structure_id",
+               "id"
+            ]
+         },
+         "minItems": 1,
+         "uniqueItems": true,
+         "rcsb_nested_indexing": false
+      },
+      "ihm_multi_state_scheme_connectivity": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
+               "begin_state_id": {
+                  "$ref": "#ihm_multi_state_modeling/state_id"
+               },
+               "dataset_group_id": {
+                  "$ref": "#ihm_dataset_group/id"
+               },
+               "details": {
+                  "type": "string",
+                  "description": "Details about the multi-state scheme connectivity.",
+                  "rcsb_description": [
+                     {
+                        "text": "Details about the multi-state scheme connectivity.",
+                        "context": "dictionary"
+                     }
+                  ]
+               },
+               "end_state_id": {
+                  "$ref": "#ihm_multi_state_modeling/state_id"
+               },
+               "id": {
+                  "type": "integer",
+                  "description": "A unique identifier for the category.",
+                  "_primary_key": true,
+                  "rcsb_description": [
+                     {
+                        "text": "A unique identifier for the category.",
+                        "context": "dictionary"
+                     }
+                  ]
+               },
+               "scheme_id": {
+                  "$ref": "#ihm_multi_state_scheme/id"
+               }
+            },
+            "additionalProperties": false,
+            "required": [
+               "structure_id",
+               "begin_state_id",
+               "dataset_group_id",
+               "id",
+               "scheme_id"
+            ]
+         },
+         "minItems": 1,
+         "uniqueItems": true,
+         "rcsb_nested_indexing": false
+      },
       "ihm_non_poly_feature": {
          "type": "array",
          "items": {
@@ -7708,6 +7944,114 @@
                   "rcsb_description": [
                      {
                         "text": "An identifier for the ordered process. \n Forms the category key together with _ihm_ordered_ensemble.edge_id.",
+                        "context": "dictionary"
+                     }
+                  ]
+               },
+               "step_description": {
+                  "type": "string",
+                  "description": "Description of the step.",
+                  "rcsb_description": [
+                     {
+                        "text": "Description of the step.",
+                        "context": "dictionary"
+                     }
+                  ]
+               },
+               "step_id": {
+                  "type": "integer",
+                  "description": "Identifier for a particular step in the ordered process.",
+                  "rcsb_description": [
+                     {
+                        "text": "Identifier for a particular step in the ordered process.",
+                        "context": "dictionary"
+                     }
+                  ]
+               }
+            },
+            "additionalProperties": false,
+            "required": [
+               "structure_id",
+               "edge_id",
+               "model_group_id_begin",
+               "model_group_id_end",
+               "process_id",
+               "step_id"
+            ]
+         },
+         "minItems": 1,
+         "uniqueItems": true,
+         "rcsb_nested_indexing": false
+      },
+      "ihm_ordered_model": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
+               "edge_description": {
+                  "type": "string",
+                  "description": "Description of the edge.",
+                  "rcsb_description": [
+                     {
+                        "text": "Description of the edge.",
+                        "context": "dictionary"
+                     }
+                  ]
+               },
+               "edge_id": {
+                  "type": "integer",
+                  "description": "An identifier that describes an edge in a directed graph, which\n represents the ordered model. \n Forms the category key together with _ihm_ordered_model.process_id.",
+                  "_primary_key": true,
+                  "rcsb_description": [
+                     {
+                        "text": "An identifier that describes an edge in a directed graph, which\n represents the ordered model. \n Forms the category key together with _ihm_ordered_model.process_id.",
+                        "context": "dictionary"
+                     }
+                  ]
+               },
+               "model_group_id_begin": {
+                  "$ref": "#ihm_model_group/id"
+               },
+               "model_group_id_end": {
+                  "$ref": "#ihm_model_group/id"
+               },
+               "ordered_by": {
+                  "type": "string",
+                  "examples": [
+                     "time steps",
+                     "steps in an assembly process",
+                     "steps in a metabolic pathway",
+                     "steps in an interaction pathway"
+                  ],
+                  "description": "The parameter based on which the ordering is carried out.",
+                  "rcsb_description": [
+                     {
+                        "text": "The parameter based on which the ordering is carried out.",
+                        "context": "dictionary"
+                     }
+                  ]
+               },
+               "process_description": {
+                  "type": "string",
+                  "description": "Description of the ordered process.",
+                  "rcsb_description": [
+                     {
+                        "text": "Description of the ordered process.",
+                        "context": "dictionary"
+                     }
+                  ]
+               },
+               "process_id": {
+                  "type": "integer",
+                  "description": "An identifier for the ordered process. \n Forms the category key together with _ihm_ordered_model.edge_id.",
+                  "_primary_key": true,
+                  "rcsb_description": [
+                     {
+                        "text": "An identifier for the ordered process. \n Forms the category key together with _ihm_ordered_model.edge_id.",
                         "context": "dictionary"
                      }
                   ]
@@ -8683,6 +9027,143 @@
                "structure_id",
                "dataset_list_id_derived",
                "dataset_list_id_primary"
+            ]
+         },
+         "minItems": 1,
+         "uniqueItems": true,
+         "rcsb_nested_indexing": false
+      },
+      "ihm_relaxation_time": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
+               "amplitude": {
+                  "type": "number",
+                  "description": "Relaxation time amplitude.",
+                  "rcsb_description": [
+                     {
+                        "text": "Relaxation time amplitude.",
+                        "context": "dictionary"
+                     }
+                  ]
+               },
+               "dataset_group_id": {
+                  "$ref": "#ihm_dataset_group/id"
+               },
+               "details": {
+                  "type": "string",
+                  "description": "Additional details regarding the relaxation time.",
+                  "rcsb_description": [
+                     {
+                        "text": "Additional details regarding the relaxation time.",
+                        "context": "dictionary"
+                     }
+                  ]
+               },
+               "external_file_id": {
+                  "$ref": "#ihm_external_files/id"
+               },
+               "id": {
+                  "type": "integer",
+                  "description": "A unique identifier for the relaxation time.",
+                  "_primary_key": true,
+                  "rcsb_description": [
+                     {
+                        "text": "A unique identifier for the relaxation time.",
+                        "context": "dictionary"
+                     }
+                  ]
+               },
+               "unit": {
+                  "type": "string",
+                  "enum": [
+                     "microseconds",
+                     "milliseconds",
+                     "seconds"
+                  ],
+                  "description": "Relaxation time unit.",
+                  "rcsb_description": [
+                     {
+                        "text": "Relaxation time unit.",
+                        "context": "dictionary"
+                     }
+                  ]
+               },
+               "value": {
+                  "type": "number",
+                  "description": "Relaxation time value.",
+                  "rcsb_description": [
+                     {
+                        "text": "Relaxation time value.",
+                        "context": "dictionary"
+                     }
+                  ]
+               }
+            },
+            "additionalProperties": false,
+            "required": [
+               "structure_id",
+               "dataset_group_id",
+               "id",
+               "unit",
+               "value"
+            ]
+         },
+         "minItems": 1,
+         "uniqueItems": true,
+         "rcsb_nested_indexing": false
+      },
+      "ihm_relaxation_time_multi_state_scheme": {
+         "type": "array",
+         "items": {
+            "type": "object",
+            "properties": {
+               "structure_id": {
+                  "$ref": "#entry/id",
+                  "_primary_key": true
+               },
+               "details": {
+                  "type": "string",
+                  "description": "Additional details about the relaxation time measurement.",
+                  "rcsb_description": [
+                     {
+                        "text": "Additional details about the relaxation time measurement.",
+                        "context": "dictionary"
+                     }
+                  ]
+               },
+               "id": {
+                  "type": "integer",
+                  "description": "A unique identifier for the category.",
+                  "_primary_key": true,
+                  "rcsb_description": [
+                     {
+                        "text": "A unique identifier for the category.",
+                        "context": "dictionary"
+                     }
+                  ]
+               },
+               "relaxation_time_id": {
+                  "$ref": "#ihm_relaxation_time/id"
+               },
+               "scheme_connectivity_id": {
+                  "$ref": "#ihm_multi_state_scheme_connectivity/id"
+               },
+               "scheme_id": {
+                  "$ref": "#ihm_multi_state_scheme/id"
+               }
+            },
+            "additionalProperties": false,
+            "required": [
+               "structure_id",
+               "id",
+               "relaxation_time_id",
+               "scheme_id"
             ]
          },
          "minItems": 1,
