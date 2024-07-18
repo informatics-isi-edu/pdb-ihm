@@ -2,12 +2,12 @@
     "ihm_non_poly_feature": [
         {
             "fk_columns": [
-                "Asym_RID",
-                "asym_id"
+                "asym_id",
+                "Asym_RID"
             ],
             "ref_columns": [
-                "RID",
-                "id"
+                "id",
+                "RID"
             ],
             "ref_table": "struct_asym",
             "fk_name": "ihm_non_poly_feature_asym_id_fkey",
@@ -22,12 +22,12 @@
     "software": [
         {
             "fk_columns": [
-                "citation_id",
-                "Citation_RID"
+                "Citation_RID",
+                "citation_id"
             ],
             "ref_columns": [
-                "id",
-                "RID"
+                "RID",
+                "id"
             ],
             "ref_table": "citation",
             "fk_name": "software_citation_id_fkey",
@@ -42,12 +42,12 @@
     "ihm_geometric_object_plane": [
         {
             "fk_columns": [
-                "transformation_id",
-                "Transformation_RID"
+                "Transformation_RID",
+                "transformation_id"
             ],
             "ref_columns": [
-                "id",
-                "RID"
+                "RID",
+                "id"
             ],
             "ref_table": "ihm_geometric_object_transformation",
             "fk_name": "ihm_geometric_object_plane_transformation_id_fkey",
@@ -80,12 +80,12 @@
         },
         {
             "fk_columns": [
-                "External_Files_RID",
-                "script_file_id"
+                "script_file_id",
+                "External_Files_RID"
             ],
             "ref_columns": [
-                "RID",
-                "id"
+                "id",
+                "RID"
             ],
             "ref_table": "ihm_external_files",
             "fk_name": "ihm_starting_computational_models_script_file_id_fkey",
@@ -100,12 +100,12 @@
     "ihm_probe_list": [
         {
             "fk_columns": [
-                "probe_chem_comp_descriptor_id",
-                "Probe_chem_comp_descriptor_RID"
+                "Probe_chem_comp_descriptor_RID",
+                "probe_chem_comp_descriptor_id"
             ],
             "ref_columns": [
-                "id",
-                "RID"
+                "RID",
+                "id"
             ],
             "ref_table": "ihm_chemical_component_descriptor",
             "fk_name": "ihm_probe_list_probe_chem_comp_descriptor_id_fkey",
@@ -118,12 +118,12 @@
         },
         {
             "fk_columns": [
-                "Reactive_probe_chem_comp_descriptor_RID",
-                "reactive_probe_chem_comp_descriptor_id"
+                "reactive_probe_chem_comp_descriptor_id",
+                "Reactive_probe_chem_comp_descriptor_RID"
             ],
             "ref_columns": [
-                "RID",
-                "id"
+                "id",
+                "RID"
             ],
             "ref_table": "ihm_chemical_component_descriptor",
             "fk_name": "ihm_probe_list_reactive_probe_chem_comp_descriptor_id_fkey",
@@ -138,12 +138,12 @@
     "ihm_poly_atom_feature": [
         {
             "fk_columns": [
-                "asym_id",
-                "Asym_RID"
+                "Asym_RID",
+                "asym_id"
             ],
             "ref_columns": [
-                "id",
-                "RID"
+                "RID",
+                "id"
             ],
             "ref_table": "struct_asym",
             "fk_name": "ihm_poly_atom_feature_asym_id_fkey",
@@ -198,12 +198,12 @@
     "ihm_interface_residue_feature": [
         {
             "fk_columns": [
-                "dataset_list_id",
-                "Dataset_List_RID"
+                "Dataset_List_RID",
+                "dataset_list_id"
             ],
             "ref_columns": [
-                "id",
-                "RID"
+                "RID",
+                "id"
             ],
             "ref_table": "ihm_dataset_list",
             "fk_name": "ihm_interface_residue_feature_dataset_list_id_fkey",
@@ -236,12 +236,12 @@
     "ihm_geometric_object_axis": [
         {
             "fk_columns": [
-                "Transformation_RID",
-                "transformation_id"
+                "transformation_id",
+                "Transformation_RID"
             ],
             "ref_columns": [
-                "RID",
-                "id"
+                "id",
+                "RID"
             ],
             "ref_table": "ihm_geometric_object_transformation",
             "fk_name": "ihm_geometric_object_axis_transformation_id_fkey",
@@ -276,12 +276,12 @@
     "ihm_modeling_protocol_details": [
         {
             "fk_columns": [
-                "software_id",
-                "Software_RID"
+                "Software_RID",
+                "software_id"
             ],
             "ref_columns": [
-                "pdbx_ordinal",
-                "RID"
+                "RID",
+                "pdbx_ordinal"
             ],
             "ref_table": "software",
             "fk_name": "ihm_modeling_protocol_details_software_id_fkey",
@@ -330,12 +330,12 @@
         },
         {
             "fk_columns": [
-                "dataset_group_id",
-                "Dataset_group_RID"
+                "Dataset_group_RID",
+                "dataset_group_id"
             ],
             "ref_columns": [
-                "id",
-                "RID"
+                "RID",
+                "id"
             ],
             "ref_table": "ihm_dataset_group",
             "fk_name": "ihm_modeling_protocol_details_dataset_group_id_fkey",
@@ -370,12 +370,12 @@
     "ihm_epr_restraint": [
         {
             "fk_columns": [
-                "fitting_method_citation_id",
-                "Fitting_method_citation_RID"
+                "Fitting_method_citation_RID",
+                "fitting_method_citation_id"
             ],
             "ref_columns": [
-                "id",
-                "RID"
+                "RID",
+                "id"
             ],
             "ref_table": "citation",
             "fk_name": "ihm_epr_restraint_fitting_method_citation_id_fkey",
@@ -390,12 +390,12 @@
     "ihm_localization_density_files": [
         {
             "fk_columns": [
-                "entity_poly_segment_id",
-                "Entity_poly_segment_RID"
+                "Entity_poly_segment_RID",
+                "entity_poly_segment_id"
             ],
             "ref_columns": [
-                "id",
-                "RID"
+                "RID",
+                "id"
             ],
             "ref_table": "ihm_entity_poly_segment",
             "fk_name": "ihm_localization_density_files_entity_poly_segment_id_fkey",
@@ -408,12 +408,12 @@
         },
         {
             "fk_columns": [
-                "Asym_RID",
-                "asym_id"
+                "asym_id",
+                "Asym_RID"
             ],
             "ref_columns": [
-                "RID",
-                "id"
+                "id",
+                "RID"
             ],
             "ref_table": "struct_asym",
             "fk_name": "ihm_localization_density_files_asym_id_fkey",
@@ -426,12 +426,12 @@
         },
         {
             "fk_columns": [
-                "entity_id",
-                "Entity_RID"
+                "Entity_RID",
+                "entity_id"
             ],
             "ref_columns": [
-                "id",
-                "RID"
+                "RID",
+                "id"
             ],
             "ref_table": "entity",
             "fk_name": "ihm_localization_density_files_entity_id_fkey",
@@ -466,12 +466,12 @@
     "ihm_poly_probe_position": [
         {
             "fk_columns": [
-                "mut_res_chem_comp_id",
-                "Mut_res_chem_comp_RID"
+                "Mut_res_chem_comp_RID",
+                "mut_res_chem_comp_id"
             ],
             "ref_columns": [
-                "id",
-                "RID"
+                "RID",
+                "id"
             ],
             "ref_table": "chem_comp",
             "fk_name": "ihm_poly_probe_position_mut_res_chem_comp_id_fkey",
@@ -484,12 +484,12 @@
         },
         {
             "fk_columns": [
-                "mod_res_chem_comp_descriptor_id",
-                "Mod_res_chem_comp_descriptor_RID"
+                "Mod_res_chem_comp_descriptor_RID",
+                "mod_res_chem_comp_descriptor_id"
             ],
             "ref_columns": [
-                "id",
-                "RID"
+                "RID",
+                "id"
             ],
             "ref_table": "ihm_chemical_component_descriptor",
             "fk_name": "ihm_poly_probe_position_mod_res_chem_comp_descriptor_id_fkey",
@@ -504,12 +504,12 @@
     "ihm_predicted_contact_restraint": [
         {
             "fk_columns": [
-                "software_id",
-                "Software_RID"
+                "Software_RID",
+                "software_id"
             ],
             "ref_columns": [
-                "pdbx_ordinal",
-                "RID"
+                "RID",
+                "pdbx_ordinal"
             ],
             "ref_table": "software",
             "fk_name": "ihm_predicted_contact_restraint_software_id_fkey",
@@ -600,12 +600,12 @@
         },
         {
             "fk_columns": [
-                "Ensemble_file_RID",
-                "ensemble_file_id"
+                "ensemble_file_id",
+                "Ensemble_file_RID"
             ],
             "ref_columns": [
-                "RID",
-                "id"
+                "id",
+                "RID"
             ],
             "ref_table": "ihm_external_files",
             "fk_name": "ihm_ensemble_info_ensemble_file_id_fkey",
@@ -618,12 +618,12 @@
         },
         {
             "fk_columns": [
-                "Post_process_RID",
-                "post_process_id"
+                "post_process_id",
+                "Post_process_RID"
             ],
             "ref_columns": [
-                "RID",
-                "id"
+                "id",
+                "RID"
             ],
             "ref_table": "ihm_modeling_post_process",
             "fk_name": "ihm_ensemble_info_post_process_id_fkey",
@@ -658,12 +658,12 @@
     "ihm_poly_probe_conjugate": [
         {
             "fk_columns": [
-                "Chem_comp_descriptor_RID",
-                "chem_comp_descriptor_id"
+                "chem_comp_descriptor_id",
+                "Chem_comp_descriptor_RID"
             ],
             "ref_columns": [
-                "RID",
-                "id"
+                "id",
+                "RID"
             ],
             "ref_table": "ihm_chemical_component_descriptor",
             "fk_name": "ihm_poly_probe_conjugate_chem_comp_descriptor_id_fkey",
@@ -696,12 +696,12 @@
         },
         {
             "fk_columns": [
-                "dataset_group_id",
-                "Dataset_group_RID"
+                "Dataset_group_RID",
+                "dataset_group_id"
             ],
             "ref_columns": [
-                "id",
-                "RID"
+                "RID",
+                "id"
             ],
             "ref_table": "ihm_dataset_group",
             "fk_name": "ihm_modeling_post_process_dataset_group_id_fkey",
@@ -714,12 +714,12 @@
         },
         {
             "fk_columns": [
-                "Software_RID",
-                "software_id"
+                "software_id",
+                "Software_RID"
             ],
             "ref_columns": [
-                "RID",
-                "pdbx_ordinal"
+                "pdbx_ordinal",
+                "RID"
             ],
             "ref_table": "software",
             "fk_name": "ihm_modeling_post_process_software_id_fkey",
@@ -732,12 +732,12 @@
         },
         {
             "fk_columns": [
-                "struct_assembly_id",
-                "Struct_assembly_RID"
+                "Struct_assembly_RID",
+                "struct_assembly_id"
             ],
             "ref_columns": [
-                "id",
-                "RID"
+                "RID",
+                "id"
             ],
             "ref_table": "ihm_struct_assembly",
             "fk_name": "ihm_modeling_post_process_struct_assembly_id_fkey",
@@ -752,12 +752,12 @@
     "ihm_starting_comparative_models": [
         {
             "fk_columns": [
-                "alignment_file_id",
-                "Alignment_file_RID"
+                "Alignment_file_RID",
+                "alignment_file_id"
             ],
             "ref_columns": [
-                "id",
-                "RID"
+                "RID",
+                "id"
             ],
             "ref_table": "ihm_external_files",
             "fk_name": "ihm_starting_comparative_models_alignment_file_id_fkey",

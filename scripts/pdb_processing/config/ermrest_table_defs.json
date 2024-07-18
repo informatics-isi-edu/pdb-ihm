@@ -3732,6 +3732,85 @@
             "ordinal_id"
         ]
     },
+    "ihm_kinetic_rate": {
+        "name": "ihm_kinetic_rate",
+        "columns": [
+            {
+                "name": "structure_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "A reference to table entry.id."
+            },
+            {
+                "name": "dataset_group_id",
+                "type": "int4",
+                "nullok": false,
+                "comment": "A reference to table ihm_dataset_group.id."
+            },
+            {
+                "name": "details",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nAdditional details about the kinetic rate."
+            },
+            {
+                "name": "equilibrium_constant",
+                "type": "float4",
+                "nullok": true,
+                "comment": "type:float4\nThe equilibrium constant."
+            },
+            {
+                "name": "equilibrium_constant_determination_method",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nMethod used to determine the equilibrium constant."
+            },
+            {
+                "name": "equilibrium_constant_unit",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nUnit of the equilibrium constant, if applicable.\n If the kinetics describes a conformational change, then the equilibrium constant will not have a unit. \n If however a complex is involved, then a unit may be necessary."
+            },
+            {
+                "name": "external_file_id",
+                "type": "int4",
+                "nullok": true,
+                "comment": "A reference to table ihm_external_files.id."
+            },
+            {
+                "name": "id",
+                "type": "int4",
+                "nullok": false,
+                "comment": "type:int4\nAn identifier for the kinetic rate."
+            },
+            {
+                "name": "scheme_connectivity_id",
+                "type": "int4",
+                "nullok": false,
+                "comment": "A reference to table ihm_multi_state_scheme_connectivity.id."
+            },
+            {
+                "name": "transition_rate_constant",
+                "type": "float4",
+                "nullok": true,
+                "comment": "type:float4\nThe transition rate constant per second."
+            }
+        ],
+        "vocab": {
+            "ihm_kinetic_rate": "equilibrium_constant_determination_method"
+        },
+        "fkeys": [
+            {
+                "column": "equilibrium_constant_determination_method",
+                "reftable": "ate_equilibrium_constant_determination_method_term",
+                "refcolumn": "ID"
+            }
+        ],
+        "pkey_columns": [
+            "structure_id",
+            "id"
+        ]
+    },
     "ihm_ligand_probe": {
         "name": "ihm_ligand_probe",
         "columns": [
@@ -4528,6 +4607,94 @@
             "state_id"
         ]
     },
+    "ihm_multi_state_scheme": {
+        "name": "ihm_multi_state_scheme",
+        "columns": [
+            {
+                "name": "structure_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "A reference to table entry.id."
+            },
+            {
+                "name": "details",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nDetails about the multi-state scheme."
+            },
+            {
+                "name": "id",
+                "type": "int4",
+                "nullok": false,
+                "comment": "type:int4\nA unique identifier for the category."
+            },
+            {
+                "name": "name",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nName for the multi-state scheme."
+            }
+        ],
+        "vocab": {},
+        "fkeys": [],
+        "pkey_columns": [
+            "structure_id",
+            "id"
+        ]
+    },
+    "ihm_multi_state_scheme_connectivity": {
+        "name": "ihm_multi_state_scheme_connectivity",
+        "columns": [
+            {
+                "name": "structure_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "A reference to table entry.id."
+            },
+            {
+                "name": "begin_state_id",
+                "type": "int4",
+                "nullok": false,
+                "comment": "A reference to table ihm_multi_state_modeling.state_id."
+            },
+            {
+                "name": "dataset_group_id",
+                "type": "int4",
+                "nullok": false,
+                "comment": "A reference to table ihm_dataset_group.id."
+            },
+            {
+                "name": "details",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nDetails about the multi-state scheme connectivity."
+            },
+            {
+                "name": "end_state_id",
+                "type": "int4",
+                "nullok": true,
+                "comment": "A reference to table ihm_multi_state_modeling.state_id."
+            },
+            {
+                "name": "id",
+                "type": "int4",
+                "nullok": false,
+                "comment": "type:int4\nA unique identifier for the category."
+            },
+            {
+                "name": "scheme_id",
+                "type": "int4",
+                "nullok": false,
+                "comment": "A reference to table ihm_multi_state_scheme.id."
+            }
+        ],
+        "vocab": {},
+        "fkeys": [],
+        "pkey_columns": [
+            "structure_id",
+            "id"
+        ]
+    },
     "ihm_non_poly_feature": {
         "name": "ihm_non_poly_feature",
         "columns": [
@@ -4631,6 +4798,78 @@
                 "type": "int4",
                 "nullok": false,
                 "comment": "type:int4\nAn identifier for the ordered process. \n Forms the category key together with _ihm_ordered_ensemble.edge_id."
+            },
+            {
+                "name": "step_description",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nDescription of the step."
+            },
+            {
+                "name": "step_id",
+                "type": "int4",
+                "nullok": false,
+                "comment": "type:int4\nIdentifier for a particular step in the ordered process."
+            }
+        ],
+        "vocab": {},
+        "fkeys": [],
+        "pkey_columns": [
+            "structure_id",
+            "edge_id",
+            "process_id"
+        ]
+    },
+    "ihm_ordered_model": {
+        "name": "ihm_ordered_model",
+        "columns": [
+            {
+                "name": "structure_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "A reference to table entry.id."
+            },
+            {
+                "name": "edge_description",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nDescription of the edge."
+            },
+            {
+                "name": "edge_id",
+                "type": "int4",
+                "nullok": false,
+                "comment": "type:int4\nAn identifier that describes an edge in a directed graph, which\n represents the ordered model. \n Forms the category key together with _ihm_ordered_model.process_id."
+            },
+            {
+                "name": "model_group_id_begin",
+                "type": "int4",
+                "nullok": false,
+                "comment": "A reference to table ihm_model_group.id."
+            },
+            {
+                "name": "model_group_id_end",
+                "type": "int4",
+                "nullok": false,
+                "comment": "A reference to table ihm_model_group.id."
+            },
+            {
+                "name": "ordered_by",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nThe parameter based on which the ordering is carried out.\nexamples:time steps,steps in an assembly process,steps in a metabolic pathway,steps in an interaction pathway"
+            },
+            {
+                "name": "process_description",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nDescription of the ordered process."
+            },
+            {
+                "name": "process_id",
+                "type": "int4",
+                "nullok": false,
+                "comment": "type:int4\nAn identifier for the ordered process. \n Forms the category key together with _ihm_ordered_model.edge_id."
             },
             {
                 "name": "step_description",
@@ -5335,6 +5574,120 @@
             "structure_id",
             "dataset_list_id_derived",
             "dataset_list_id_primary"
+        ]
+    },
+    "ihm_relaxation_time": {
+        "name": "ihm_relaxation_time",
+        "columns": [
+            {
+                "name": "structure_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "A reference to table entry.id."
+            },
+            {
+                "name": "amplitude",
+                "type": "float4",
+                "nullok": true,
+                "comment": "type:float4\nRelaxation time amplitude."
+            },
+            {
+                "name": "dataset_group_id",
+                "type": "int4",
+                "nullok": false,
+                "comment": "A reference to table ihm_dataset_group.id."
+            },
+            {
+                "name": "details",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nAdditional details regarding the relaxation time."
+            },
+            {
+                "name": "external_file_id",
+                "type": "int4",
+                "nullok": true,
+                "comment": "A reference to table ihm_external_files.id."
+            },
+            {
+                "name": "id",
+                "type": "int4",
+                "nullok": false,
+                "comment": "type:int4\nA unique identifier for the relaxation time."
+            },
+            {
+                "name": "unit",
+                "type": "text",
+                "nullok": false,
+                "comment": "type:text\nRelaxation time unit."
+            },
+            {
+                "name": "value",
+                "type": "float4",
+                "nullok": false,
+                "comment": "type:float4\nRelaxation time value."
+            }
+        ],
+        "vocab": {
+            "ihm_relaxation_time": "unit"
+        },
+        "fkeys": [
+            {
+                "column": "unit",
+                "reftable": "ihm_relaxation_time_unit_term",
+                "refcolumn": "ID"
+            }
+        ],
+        "pkey_columns": [
+            "structure_id",
+            "id"
+        ]
+    },
+    "ihm_relaxation_time_multi_state_scheme": {
+        "name": "ihm_relaxation_time_multi_state_scheme",
+        "columns": [
+            {
+                "name": "structure_id",
+                "type": "text",
+                "nullok": false,
+                "comment": "A reference to table entry.id."
+            },
+            {
+                "name": "details",
+                "type": "text",
+                "nullok": true,
+                "comment": "type:text\nAdditional details about the relaxation time measurement."
+            },
+            {
+                "name": "id",
+                "type": "int4",
+                "nullok": false,
+                "comment": "type:int4\nA unique identifier for the category."
+            },
+            {
+                "name": "relaxation_time_id",
+                "type": "int4",
+                "nullok": false,
+                "comment": "A reference to table ihm_relaxation_time.id."
+            },
+            {
+                "name": "scheme_connectivity_id",
+                "type": "int4",
+                "nullok": true,
+                "comment": "A reference to table ihm_multi_state_scheme_connectivity.id."
+            },
+            {
+                "name": "scheme_id",
+                "type": "int4",
+                "nullok": false,
+                "comment": "A reference to table ihm_multi_state_scheme.id."
+            }
+        ],
+        "vocab": {},
+        "fkeys": [],
+        "pkey_columns": [
+            "structure_id",
+            "id"
         ]
     },
     "ihm_residues_not_modeled": {

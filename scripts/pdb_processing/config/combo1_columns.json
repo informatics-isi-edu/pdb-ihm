@@ -1,4 +1,59 @@
 {
+    "ihm_multi_state_scheme_connectivity": {
+        "Scheme_RID": {
+            "ihm_multi_state_scheme": {
+                "scheme_id": "id"
+            }
+        },
+        "State_RID": {
+            "ihm_multi_state_modeling": {
+                "end_state_id": "state_id"
+            }
+        },
+        "Dataset_Group_RID": {
+            "ihm_dataset_group": {
+                "dataset_group_id": "id"
+            }
+        }
+    },
+    "ihm_kinetic_rate": {
+        "Scheme_Connectivity_RID": {
+            "ihm_multi_state_scheme_connectivity": {
+                "scheme_connectivity_id": "id"
+            }
+        },
+        "Dataset_Group_RID": {
+            "ihm_dataset_group": {
+                "dataset_group_id": "id"
+            }
+        }
+    },
+    "ihm_relaxation_time": {
+        "Dataset_Group_RID": {
+            "ihm_dataset_group": {
+                "dataset_group_id": "id"
+            }
+        }
+    },
+    "ihm_relaxation_time_multi_state_scheme": {
+        "Scheme_RID": {
+            "ihm_multi_state_scheme": {
+                "scheme_id": "id"
+            }
+        },
+        "Relaxation_Time_RID": {
+            "ihm_relaxation_time": {
+                "relaxation_time_id": "id"
+            }
+        }
+    },
+    "ihm_ordered_model": {
+        "Model_Group_RID": {
+            "ihm_model_group": {
+                "model_group_id_end": "id"
+            }
+        }
+    },
     "Conform_Dictionary": {
         "Exported_mmCIF_RID": {
             "Entry_Generated_File": {}
