@@ -30,7 +30,7 @@ def column_is_fk(fkeys, table_name, column_name, model_root, indent, vocab_table
         if debug == True:
             print('{}PDB.{}.{} is not a Foreign Key'.format(indent, table_name, column_name))
 
-args = ['/usr/bin/python3', 'testGetUcode.py', 'ihm-extension.dic']
+args = ['/usr/bin/python3', 'testGetUcode.py', 'mmcif_ihm_ext.dic']
 if debug == True:
     print('Running "{}"'.format(' '.join(args))) 
 p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -43,7 +43,7 @@ fw = open('ucode_ihm.log', 'w')
 fw.write(stdoutdata.decode('utf-8'))
 fw.close()
 
-args = ['/usr/bin/python3', 'testGetUcode.py', 'mmcif_v5.342_ihm_v1.17.dic']
+args = ['/usr/bin/python3', 'testGetUcode.py', 'mmcif_ihm.dic']
 if debug == True:
     print('Running "{}"'.format(' '.join(args))) 
 p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
