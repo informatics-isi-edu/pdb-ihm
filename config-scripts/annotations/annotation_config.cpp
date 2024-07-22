@@ -17299,6 +17299,10 @@
                         "PDB",
                         "ihm_ensemble_info_sub_sampling_type_fkey"
                     ],
+                    [
+                        "PDB",
+                        "ihm_ensemble_info_model_group_superimposed_flag_fkey"
+                    ],
                     "num_ensemble_models",
                     "num_ensemble_models_deposited",
                     "ensemble_precision_value",
@@ -17375,6 +17379,10 @@
                     [
                         "PDB",
                         "ihm_ensemble_info_sub_sampling_type_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_ensemble_info_model_group_superimposed_flag_fkey"
                     ],
                     "num_ensemble_models",
                     "num_ensemble_models_deposited",
@@ -17465,6 +17473,10 @@
                     [
                         "PDB",
                         "ihm_ensemble_info_sub_sampling_type_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_ensemble_info_model_group_superimposed_flag_fkey"
                     ],
                     "num_ensemble_models",
                     "num_ensemble_models_deposited",

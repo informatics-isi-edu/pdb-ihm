@@ -608,7 +608,7 @@ class ArchiveClient (object):
     Get the primary accession code
     """
     def get_entry_id(self, accesion_code_row):
-        return accesion_code_row['PDB_Accession_Code'][-4:]
+        return accesion_code_row['PDB_Accession_Code'][-4:].lower()
 
     """
     Generate the released zip file and move it to the archive directory
