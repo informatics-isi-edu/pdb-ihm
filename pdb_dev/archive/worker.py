@@ -335,10 +335,6 @@ class ArchiveClient (object):
                 #continue
             
             submitted_files = {}
-            self.current_holdings[entry_id] = {}
-            for archive_dir in self.archive_dirs:
-                submitted_files[archive_dir] = []
-                self.current_holdings[entry_id][self.holding_map[archive_dir]] = []
 
             for file_generated in files_generated:
                 file_type = file_generated['File_Type']
@@ -347,7 +343,6 @@ class ArchiveClient (object):
                 filename = file_generated['File_Name']
                 file_url = file_generated['File_URL']
                 
-                submitted_files[self.archive_category_dir_names[self.archive_category[file_type]]].append(f'{filename}.gz')
                 if file_type == 'mmCIF':
                     if filename != f'{accesion_code_row["Accession_Code"]}.cif':
                         rel_warnings.append(rid)
@@ -360,11 +355,20 @@ class ArchiveClient (object):
                     Extract the file from hatrac
                     """
                     file_path,error_message = self.getHatracFile(filename, file_url, self.data_scratch)
+                    
+                    manifest_key = self.get_manifest_key(accesion_code_row)
+                    if manifest_key not in self.current_holdings.keys():
+                        self.current_holdings[manifest_key] = {}
+                        for archive_dir in self.archive_dirs:
+                            submitted_files[archive_dir] = []
+                            self.current_holdings[manifest_key][self.holding_map[archive_dir]] = []
     
+                    submitted_files[self.archive_category_dir_names[self.archive_category[file_type]]].append(f'{filename}.gz')
+                    
                     """
                     Zip the file
                     """
-                    self.generateReleasedZip(filename, hash, entry_id, file_type)
+                    self.generateReleasedZip(filename, hash, entry_id, file_type, self.get_manifest_key(accesion_code_row))
 
             url = f'/attribute/PDB:entry/RID={urlquote(rid)}/PDB:Entry_Latest_Archive/RID'
             self.logger.debug(f'Query for detecting if the record exists or not in the Entry_Latest_Archive table: "{url}"') 
@@ -599,21 +603,27 @@ class ArchiveClient (object):
             except:
                 h = accesion_code_row['PDB_Accession_Code'][1:3]
             """
-            h = accesion_code_row['PDB_Accession_Code'][1:3]
+            h = accesion_code_row['PDB_Accession_Code'][1:3].lower()
         else:
-            h = '000'
+            h = accesion_code_row['PDB_Accession_Code'].replace('TEST-', '')[1:3].lower()
         return h
 
     """
     Get the primary accession code
     """
     def get_entry_id(self, accesion_code_row):
-        return accesion_code_row['PDB_Accession_Code'][-4:].lower()
+        return accesion_code_row['PDB_Accession_Code'][-4:].lower() if self.accession_code_mode == 'PDB' else accesion_code_row['Accession_Code']
+
+    """
+    Get the manifest keys
+    """
+    def get_manifest_key(self, accesion_code_row):
+        return accesion_code_row['PDB_Accession_Code'][-4:]
 
     """
     Generate the released zip file and move it to the archive directory
     """
-    def generateReleasedZip(self, filename, hash, entry_id, file_type):
+    def generateReleasedZip(self, filename, hash, entry_id, file_type, manifest_key):
         currentDirectory=os.getcwd()
         os.chdir(self.data_scratch)
         zipfile.ZipFile(f'{filename}.gz', mode='w', compression=zipfile.ZIP_DEFLATED).write(filename)
@@ -629,7 +639,7 @@ class ArchiveClient (object):
         
         holding_key = self.holding_map[self.archive_category_dir_names[self.archive_category[file_type]]]
         file_path = archiveDirectory[len(self.archive_parent):]
-        self.current_holdings[entry_id][holding_key].append(f'{file_path}/{filename}.gz')
+        self.current_holdings[manifest_key][holding_key].append(f'{file_path}/{filename}.gz')
 
     """
     Generate the holding zip file 
@@ -695,7 +705,7 @@ class ArchiveClient (object):
 
         released_structures_LMD = {}
         for row in self.released_records:
-            released_structures_LMD[row['Accession_Code']] = f'{self.submission_date}T00:00:00+00:00'
+            released_structures_LMD[self.get_manifest_key(row)] = f'{self.submission_date}T00:00:00+00:00'
         
         """
         Write the released_structures_LMD file
@@ -735,7 +745,7 @@ class ArchiveClient (object):
     Generate the released_structures_LMD file
     """
     def generate_unreleased_entries(self):
-        url = '/attribute/A:=PDB:entry/Workflow_Status=HOLD/B:=PDB:Entry_Generated_File/$A/Accession_Code,Deposit_Date'
+        url = '/attribute/A:=PDB:entry/Workflow_Status=HOLD/B:=PDB:Accession_Code/$A/Accession_Code,Deposit_Date,B:PDB_Accession_Code'
         self.logger.debug(f'Query for unreleased entries: "{url}"') 
         
         resp = self.catalog.get(url)
@@ -750,7 +760,7 @@ class ArchiveClient (object):
         
         unreleased_entries = {}
         for row in rows:
-            unreleased_entries[row['Accession_Code']] = {'status_code': 'HOLD',
+            unreleased_entries[row['PDB_Accession_Code'].replace('TEST-','')] = {'status_code': 'HOLD',
                                                          'deposit_date': row['Deposit_Date'],
                                                          'prerelease_sequence_available_flag': 'N'}
         
