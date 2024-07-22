@@ -7361,6 +7361,30 @@
                      ]
                   },
                     "mmCIF_URL",
+                  {
+                     "markdown_name" : "Accession Code",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Entry_Latest_Archive_Entry_fkey"
+                           ]
+                        },
+                        "Accession_Code"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "Workflow Status",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Entry_Latest_Archive_Entry_fkey"
+                           ]
+                        },
+                        "Workflow_Status"
+                     ]
+                  },
                     "Submitted_Files",
                     "Submission_Time",
                   {
@@ -7402,6 +7426,30 @@
                 "detailed": [
                     "RID",
                     "Submission_Time",
+                  {
+                     "markdown_name" : "Accession Code",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Entry_Latest_Archive_Entry_fkey"
+                           ]
+                        },
+                        "Accession_Code"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "Workflow Status",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Entry_Latest_Archive_Entry_fkey"
+                           ]
+                        },
+                        "Workflow_Status"
+                     ]
+                  },
                     "Submitted_Files",
                     "mmCIF_URL",
                   {
@@ -17251,6 +17299,10 @@
                         "PDB",
                         "ihm_ensemble_info_sub_sampling_type_fkey"
                     ],
+                    [
+                        "PDB",
+                        "ihm_ensemble_info_model_group_superimposed_flag_fkey"
+                    ],
                     "num_ensemble_models",
                     "num_ensemble_models_deposited",
                     "ensemble_precision_value",
@@ -17327,6 +17379,10 @@
                     [
                         "PDB",
                         "ihm_ensemble_info_sub_sampling_type_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_ensemble_info_model_group_superimposed_flag_fkey"
                     ],
                     "num_ensemble_models",
                     "num_ensemble_models_deposited",
@@ -17417,6 +17473,10 @@
                     [
                         "PDB",
                         "ihm_ensemble_info_sub_sampling_type_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "ihm_ensemble_info_model_group_superimposed_flag_fkey"
                     ],
                     "num_ensemble_models",
                     "num_ensemble_models_deposited",
@@ -27628,7 +27688,18 @@
                 "*": [
                     "RID",
                     "Name",
-                    "Archive_Category",
+	                  {
+	                     "markdown_name" : "Archive Category",
+	                     "source" : [
+	                        {
+	                           "outbound" : [
+	                              "Vocab",
+	                              "System_Generated_File_Type_Archive_Category_Name_fkey"
+	                           ]
+	                        },
+							"Name"
+	                     ]
+	                  },
                     "Description",
                     "ID",
                     "URI",
@@ -27661,6 +27732,51 @@
                     [
                         "Vocab",
                         "System_Generated_File_Type_Owner_fkey"
+                    ]
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "Archive_Category",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+					"Directory_Name",
+                    "Description",
+                    "ID",
+                    "URI",
+                  {
+                     "markdown_name" : "RCB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "Archive_Category_RCB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                  {
+                     "markdown_name" : "RMB",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "Vocab",
+                              "Archive_Category_RMB_fkey"
+                           ]
+                        },
+                        "Full_Name"
+                     ]
+                  },
+                    "RCT",
+                    "RMT",
+                    [
+                        "Vocab",
+                        "Archive_Category_Owner_fkey"
                     ]
                 ]
             }
@@ -30070,6 +30186,10 @@
                                 },
                                 {
                                     "children": [
+                                        {
+                                            "name": "Archive Category",
+                                            "url": "/chaise/recordset/catalog_number/Vocab:Archive_Category"
+                                        },
                                         {
                                             "name": "File Format",
                                             "url": "/chaise/recordset/catalog_number/Vocab:File_Format"
