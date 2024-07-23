@@ -29,7 +29,7 @@ import time
 import shutil
 import hashlib
 import smtplib
-import zipfile
+import gzip
 from email.mime.text import MIMEText
 import socket
 from socket import gaierror, EAI_AGAIN
@@ -626,12 +626,14 @@ class ArchiveClient (object):
     def generateReleasedZip(self, filename, hash, entry_id, file_type, manifest_key):
         currentDirectory=os.getcwd()
         os.chdir(self.data_scratch)
-        zipfile.ZipFile(f'{filename}.gz', mode='w', compression=zipfile.ZIP_DEFLATED).write(filename)
+        with open(filename, 'rb') as f_in:
+            with gzip.open(f'{filename}.gz', 'wb') as f_out:
+                shutil.copyfileobj(f_in, f_out)
         
         """
         Move the file to the archive directory
         """
-        archiveDirectory = self.getFileArchiveDirectory(hash, entry_id, file_type)
+        archiveDirectory = self.getFileArchiveDirectory(hash, manifest_key.lower(), file_type)
         os.makedirs(archiveDirectory, exist_ok=True)
         shutil.move(f'{filename}.gz', archiveDirectory)
         os.remove(filename)
@@ -647,7 +649,9 @@ class ArchiveClient (object):
     def generateHoldingZip(self, filename):
         currentDirectory=os.getcwd()
         os.chdir(f'{self.archive_parent}/{self.getHoldingSubDirectory()}')
-        zipfile.ZipFile(f'{filename}.gz', mode='w', compression=zipfile.ZIP_DEFLATED).write(filename)
+        with open(filename, 'rb') as f_in:
+            with gzip.open(f'{filename}.gz', 'wb') as f_out:
+                shutil.copyfileobj(f_in, f_out)
         os.remove(filename)
         os.chdir(currentDirectory)
 
