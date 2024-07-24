@@ -7,8 +7,8 @@ import utils
 Supported_Dictionary_columns = ['Data_Dictionary_RID', 'Data_Dictionary_Category']
 
 Supported_Dictionary_rows = [
-    {'RID': '1-RE2T', 'Data_Dictionary_RID': '3-BR5W', 'Data_Dictionary_Category': 'IHMCIF dictionary'},
-    {'RID': '1-RE2W', 'Data_Dictionary_RID': '3-BR5Y', 'Data_Dictionary_Category': 'PDBx/mmCIF'}
+    {'RID': '1-RE2T', 'Data_Dictionary_RID': '3-A45E', 'Data_Dictionary_Category': 'IHMCIF dictionary'},
+    {'RID': '1-RE2W', 'Data_Dictionary_RID': '3-A45G', 'Data_Dictionary_Category': 'PDBx/mmCIF'}
     ]
 
 def main(server_name, catalog_id, credentials):
@@ -26,5 +26,5 @@ if __name__ == '__main__':
     args = BaseCLI("ad-hoc table creation tool", None, 1).parse_cli()
     credentials = get_credential(args.host, args.credential_file)
 
-    main(args.host, 99, credentials)
+    main(args.host, 1, credentials)
     

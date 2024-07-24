@@ -569,5 +569,5 @@ if __name__ == '__main__':
     args = BaseCLI('ad-hoc table creation tool', None, 1).parse_cli()
     credentials = get_credential(args.host, args.credential_file)
 
-    main(args.host, 99, credentials)
+    main(args.host, 1, credentials)
     
