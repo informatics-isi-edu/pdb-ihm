@@ -363,7 +363,8 @@ class ArchiveClient (object):
                             submitted_files[archive_dir] = []
                             self.current_holdings[manifest_key][self.holding_map[archive_dir]] = []
     
-                    submitted_files[self.archive_category_dir_names[self.archive_category[file_type]]].append(f'{filename}.gz')
+                    renamed_file = filename.lower()
+                    submitted_files[self.archive_category_dir_names[self.archive_category[file_type]]].append(f'{renamed_file}.gz')
                     
                     """
                     Zip the file
@@ -603,9 +604,9 @@ class ArchiveClient (object):
             except:
                 h = accesion_code_row['PDB_Accession_Code'][1:3]
             """
-            h = accesion_code_row['PDB_Accession_Code'][1:3].lower()
+            h = accesion_code_row['Accession_Code'][1:3].lower()
         else:
-            h = accesion_code_row['PDB_Accession_Code'].replace('TEST-', '')[1:3].lower()
+            h = accesion_code_row['Accession_Code'][1:3].lower()
         return h
 
     """
@@ -618,7 +619,7 @@ class ArchiveClient (object):
     Get the manifest keys
     """
     def get_manifest_key(self, accesion_code_row):
-        return accesion_code_row['PDB_Accession_Code'][-4:]
+        return accesion_code_row['Accession_Code']
 
     """
     Generate the released zip file and move it to the archive directory
@@ -626,8 +627,10 @@ class ArchiveClient (object):
     def generateReleasedZip(self, filename, hash, entry_id, file_type, manifest_key):
         currentDirectory=os.getcwd()
         os.chdir(self.data_scratch)
-        with open(filename, 'rb') as f_in:
-            with gzip.open(f'{filename}.gz', 'wb') as f_out:
+        renamed_file = filename.lower()
+        os.rename(filename,renamed_file)
+        with open(renamed_file, 'rb') as f_in:
+            with gzip.open(f'{renamed_file}.gz', 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
         
         """
@@ -635,13 +638,13 @@ class ArchiveClient (object):
         """
         archiveDirectory = self.getFileArchiveDirectory(hash, manifest_key.lower(), file_type)
         os.makedirs(archiveDirectory, exist_ok=True)
-        shutil.move(f'{filename}.gz', archiveDirectory)
-        os.remove(filename)
+        shutil.move(f'{renamed_file}.gz', archiveDirectory)
+        os.remove(renamed_file)
         os.chdir(currentDirectory)
         
         holding_key = self.holding_map[self.archive_category_dir_names[self.archive_category[file_type]]]
         file_path = archiveDirectory[len(self.archive_parent):]
-        self.current_holdings[manifest_key][holding_key].append(f'{file_path}/{filename}.gz')
+        self.current_holdings[manifest_key][holding_key].append(f'{file_path}/{renamed_file}.gz')
 
     """
     Generate the holding zip file 
@@ -764,7 +767,7 @@ class ArchiveClient (object):
         
         unreleased_entries = {}
         for row in rows:
-            unreleased_entries[row['PDB_Accession_Code'].replace('TEST-','')] = {'status_code': 'HOLD',
+            unreleased_entries[row['Accession_Code']] = {'status_code': 'HOLD',
                                                          'deposit_date': row['Deposit_Date'],
                                                          'prerelease_sequence_available_flag': 'N'}
         
