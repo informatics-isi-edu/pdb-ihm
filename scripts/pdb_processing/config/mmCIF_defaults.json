@@ -1,4 +1,10 @@
 {
+    "Entry_Latest_Archive": [
+        "mmCIF_URL"
+    ],
+    "ihm_ordered_model": [
+        "ordered_by"
+    ],
     "ihm_starting_model_seq_dif": [
         "db_asym_id",
         "db_comp_id"

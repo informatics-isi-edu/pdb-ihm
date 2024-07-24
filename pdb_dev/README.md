@@ -31,7 +31,7 @@ The **`catalog_1_display_PDB_constraints.json`** file contains for each table th
 
 4. Generating the optional foreign keys to the **`RID`** column
 ```
-python -m pdb_dev.config.app.get_optional_fk 1 catalog_1_display_PDB_constraints.json optional_fk.json
+python -m pdb_dev.config.app.get_optional_fk data.pdb-dev.org 1 catalog_1_display_PDB_constraints.json optional_fk.json
 ```
 The tool uses as input the **`catalog_1_display_PDB_constraints.json`** file generated at step **`3`**. The output **`optional_fk.json`** file contains the foreign key names together with foreign keys and references by columns.
 
@@ -58,7 +58,6 @@ The output is the **`combo1_columns.json`** file.
 python -m pdb_dev.config.app.get_ucode_all data.pdb-dev.org 1
 ```
 The script needs to have the [testGetUcode.py](https://github.com/informatics-isi-edu/protein-database/blob/master/scripts/dictionary-api/testGetUcode.py), 
-[ihm-extension.dic](https://github.com/informatics-isi-edu/protein-database/blob/master/scripts/make-json/py-rcsb_db/CACHE/dictionaries/ihm-extension.dic) and 
-[mmcif_v5.342_ihm_v1.17.dic](https://github.com/informatics-isi-edu/protein-database/blob/master/scripts/make-json/py-rcsb_db/CACHE/dictionaries/mmcif_v5.342_ihm_v1.17.dic) files.
+and from the `py-rcsb_db` package, the `py-rcsb_db/CACHE/dictionaries/mmcif_ihm_ext.dic` and `py-rcsb_db/CACHE/dictionaries/mmcif_ihm.dic` files.
 The output **`vocab_ucode.json`** file contains the vocabulary columns whose values will be converted to upper case.
 

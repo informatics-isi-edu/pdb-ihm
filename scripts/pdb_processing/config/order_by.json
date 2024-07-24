@@ -8,6 +8,7 @@
     "ihm_ordered_ensemble": ["process_id", "edge_id"],
     "ihm_related_datasets": ["dataset_list_id_derived", "dataset_list_id_primary"],
     "ihm_struct_assembly_class_link": ["assembly_id", "class_id"],
-    "pdbx_entity_poly_na_type": ["entity_id", "type"]
+    "pdbx_entity_poly_na_type": ["entity_id", "type"],
+    "ihm_ordered_model": ["process_id", "edge_id"]
 }
 
