@@ -412,8 +412,7 @@ class ArchiveClient (object):
         """
         Generate the manifest files
         """
-        self.generate_released_structures_LMD()
-        self.generate_current_holdings()
+        self.writeManifestFiles()
         self.generate_unreleased_entries()
          
         """
@@ -523,7 +522,7 @@ class ArchiveClient (object):
     """
     def writeManifestFiles(self):
         url = '/attribute/A:=PDB:Entry_Latest_Archive/PDB:entry/B:=PDB:Accession_Code/$A/Entry,Submitted_Files,Submission_Time,B:Accession_Code'
-        print(f'Query for writing the manifest files: "{url}"') 
+        self.logger.debug(f'Query for writing the manifest files: "{url}"') 
         
         released_structures_LMD = {}
         holding_entries = {}
@@ -531,7 +530,7 @@ class ArchiveClient (object):
         resp.raise_for_status()
         entries = resp.json()
         for entry in entries:
-            released_structures_LMD[entry['Accession_Code']] = f'{entry["Submission_Time"]}T00:00:00+00:00'
+            released_structures_LMD[entry['Accession_Code']] = f'{entry["Submission_Time"]}'
             submitted_files = entry['Submitted_Files']
             rid = urlquote(entry['Entry'])
             url = f'/entity/PDB:entry/RID={rid}/Entry_Generated_File'
@@ -561,8 +560,8 @@ class ArchiveClient (object):
                         holding_entries[manifest_key][holding_key].append(f'{header}/validation_reports/{submitted_file}')
                    
             
-        print(json.dumps(holding_entries, indent=4))
-        print(json.dumps(released_structures_LMD, indent=4))
+        self.generate_current_holdings(holdings=holding_entries)
+        self.generate_released_structures_LMD(releases=released_structures_LMD)
 
     """
     Get the archive directory 
@@ -750,23 +749,25 @@ class ArchiveClient (object):
     """
     Generate the released_structures_LMD file
     """
-    def generate_released_structures_LMD(self):
-        if len(self.released_records) == 0:
+    def generate_released_structures_LMD(self, releases=None):
+        if releases == None:
+            releases = {}
+            for row in self.released_records:
+                releases[self.get_manifest_key(row)] = f'{self.submission_date}T00:00:00+00:00'
+            
+        if len(releases) == 0:
             """
             No new archived entries
             """
             return
 
-        released_structures_LMD = {}
-        for row in self.released_records:
-            released_structures_LMD[self.get_manifest_key(row)] = f'{self.submission_date}T00:00:00+00:00'
         
         """
         Write the released_structures_LMD file
         """
         os.makedirs(f'{self.archive_parent}/{self.getHoldingSubDirectory()}', exist_ok=True)
         with open(f'{self.archive_parent}/{self.getHoldingSubDirectory()}/released_structures_last_modified_dates.json', 'w') as outfile:
-            json.dump(released_structures_LMD, outfile, indent=4)
+            json.dump(dict(sorted(releases.items())), outfile, indent=4)
 
         """
         zip the JSON file
@@ -776,8 +777,11 @@ class ArchiveClient (object):
     """
     Generate the current_holdings file
     """
-    def generate_current_holdings(self):
-        if len(self.current_holdings) == 0:
+    def generate_current_holdings(self, holdings=None):
+        if holdings == None:
+            holdings = self.current_holdings
+        
+        if len(holdings) == 0:
             """
             No new holdings
             """
@@ -788,7 +792,7 @@ class ArchiveClient (object):
         """
         os.makedirs(f'{self.archive_parent}/{self.getHoldingSubDirectory()}', exist_ok=True)
         with open(f'{self.archive_parent}/{self.getHoldingSubDirectory()}/current_holdings.json', 'w') as outfile:
-            json.dump(self.current_holdings, outfile, indent=4)
+            json.dump(dict(sorted(holdings.items())), outfile, indent=4)
 
         """
         zip the JSON file
@@ -844,7 +848,7 @@ class ArchiveClient (object):
         """
         os.makedirs(f'{self.archive_parent}/{self.getHoldingSubDirectory()}', exist_ok=True)
         with open(f'{self.archive_parent}/{self.getHoldingSubDirectory()}/unreleased_entries.json', 'w') as outfile:
-            json.dump(unreleased_entries, outfile, indent=4)
+            json.dump(dict(sorted(unreleased_entries.items())), outfile, indent=4)
 
         """
         zip the JSON file
