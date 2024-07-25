@@ -230,7 +230,7 @@ class ArchiveClient (object):
          - or modified
         """
         rel_warnings = []
-        hold_warnings = []
+        self.hold_warnings = []
         
         url = '/attribute/A:=PDB:entry/Workflow_Status=REL/B:=PDB:Entry_Generated_File/File_Type=mmCIF/C:=left(A:RID)=(PDB:Entry_Latest_Archive:Entry)/Entry::null::;!B:File_URL=mmCIF_URL/$A/RID,id,Deposit_Date,Accession_Code'
         self.logger.debug(f'Query for entries to be archived: "{url}"') 
@@ -487,9 +487,10 @@ class ArchiveClient (object):
         resp.raise_for_status()
         rows = resp.json()
         for row in rows:
-            hold_warnings.append(row['RID'])
+            if row['RID'] not in self.hold_warnings:
+                self.hold_warnings.append(row['RID'])
         
-        total_warning = len(hold_warnings) + len(rel_warnings)
+        total_warning = len(self.hold_warnings) + len(rel_warnings)
         if total_warning > 0:
             subject_rids = []
             for rel_warning in rel_warnings:
@@ -497,7 +498,7 @@ class ArchiveClient (object):
                 if len(subject_rids) >= 3:
                     break
             if len(subject_rids) < 3:
-                for hold_warning in hold_warnings:
+                for hold_warning in self.hold_warnings:
                     subject_rids.append(hold_warning)
                     if len(subject_rids) >= 3:
                         break
@@ -508,7 +509,7 @@ class ArchiveClient (object):
                 rids = []
                 for rel_warning in rel_warnings:
                     rids.append(f'{rel_warning}: REL') 
-                for hold_warning in hold_warnings:
+                for hold_warning in self.hold_warnings:
                     rids.append(f'{hold_warning}: HOLD') 
             newline_char = "\n"
             rids = f'{newline_char.join(rids)}'
@@ -516,6 +517,52 @@ class ArchiveClient (object):
             self.sendMail(subject, message_body)
 
         return 0
+
+    """
+    Write manifest 
+    """
+    def writeManifestFiles(self):
+        url = '/attribute/A:=PDB:Entry_Latest_Archive/PDB:entry/B:=PDB:Accession_Code/$A/Entry,Submitted_Files,Submission_Time,B:Accession_Code'
+        print(f'Query for writing the manifest files: "{url}"') 
+        
+        released_structures_LMD = {}
+        holding_entries = {}
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        entries = resp.json()
+        for entry in entries:
+            released_structures_LMD[entry['Accession_Code']] = f'{entry["Submission_Time"]}T00:00:00+00:00'
+            submitted_files = entry['Submitted_Files']
+            rid = urlquote(entry['Entry'])
+            url = f'/entity/PDB:entry/RID={rid}/Entry_Generated_File'
+            resp = self.catalog.get(url)
+            resp.raise_for_status()
+            rows = resp.json()
+            for row in rows:
+                #header = '/pdb_ihm/data/entries/es/test-pdbdev_00000389'
+                file_type = row['File_Type']
+                if file_type not in self.archive_file_types:
+                    continue
+                manifest_key = entry['Accession_Code']
+                h = entry['Accession_Code'][1:3].lower()
+                header = f'/{self.released_entry_dir}/{h}/{manifest_key.lower()}'
+                if manifest_key not in holding_entries.keys():
+                    holding_entries[manifest_key] = {}
+                    for archive_dir in self.archive_dirs:
+                        holding_entries[manifest_key][self.holding_map[archive_dir]] = []
+                    holding_entries[manifest_key] = {}
+                holding_key = self.holding_map[self.archive_category_dir_names[self.archive_category[file_type]]]
+                if holding_key not in holding_entries[manifest_key].keys():
+                    holding_entries[manifest_key][holding_key] = []
+                if file_type == 'mmCIF':
+                    holding_entries[manifest_key][holding_key].append(f'{header}/structures/{submitted_files["structures"][0]}')
+                elif len(holding_entries[manifest_key][holding_key]) == 0:
+                    for submitted_file in submitted_files["validation_reports"]:
+                        holding_entries[manifest_key][holding_key].append(f'{header}/validation_reports/{submitted_file}')
+                   
+            
+        print(json.dumps(holding_entries, indent=4))
+        print(json.dumps(released_structures_LMD, indent=4))
 
     """
     Get the archive directory 
@@ -752,7 +799,7 @@ class ArchiveClient (object):
     Generate the released_structures_LMD file
     """
     def generate_unreleased_entries(self):
-        url = '/attribute/A:=PDB:entry/Workflow_Status=HOLD/B:=PDB:Accession_Code/$A/Accession_Code,Deposit_Date,B:PDB_Accession_Code'
+        url = '/attribute/A:=PDB:entry/Workflow_Status=HOLD/B:=PDB:Accession_Code/$A/RID,Accession_Code,Deposit_Date,B:PDB_Accession_Code'
         self.logger.debug(f'Query for unreleased entries: "{url}"') 
         
         resp = self.catalog.get(url)
@@ -767,6 +814,20 @@ class ArchiveClient (object):
         
         unreleased_entries = {}
         for row in rows:
+            rid = urlquote(row['RID'])
+            url = f'/entity/PDB:entry/RID={rid}/PDB:Entry_Generated_File/File_Type=mmCIF'
+            response = self.catalog.get(url)
+            response.raise_for_status()
+            cif_file = response.json()
+            if len(response.json()) == 0:
+                    self.hold_warnings.append(rid)
+                    continue
+            else:
+                cif_file = response.json()[0]['File_Name']
+                if cif_file != f'{row["Accession_Code"]}.cif':
+                    self.hold_warnings.append(rid)
+                    continue
+            
             unreleased_entries[row['Accession_Code']] = {'status_code': 'HOLD',
                                                          'deposit_date': row['Deposit_Date'],
                                                          'prerelease_sequence_available_flag': 'N'}
