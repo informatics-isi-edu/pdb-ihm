@@ -818,19 +818,28 @@ class ArchiveClient (object):
         
         unreleased_entries = {}
         for row in rows:
+            excluded = False
             rid = urlquote(row['RID'])
-            url = f'/entity/PDB:entry/RID={rid}/PDB:Entry_Generated_File/File_Type=mmCIF'
+            url = f'/entity/PDB:entry/RID={rid}/PDB:Entry_Generated_File'
             response = self.catalog.get(url)
             response.raise_for_status()
             cif_file = response.json()
-            if len(response.json()) == 0:
-                    self.hold_warnings.append(rid)
-                    continue
+            if len(response.json()) < 3:
+                self.hold_warnings.append(rid)
+                excluded = True
             else:
-                cif_file = response.json()[0]['File_Name']
-                if cif_file != f'{row["Accession_Code"]}.cif':
-                    self.hold_warnings.append(rid)
-                    continue
+                for cif_file in response.json():
+                    file_type = cif_file['File_Type']
+                    if file_type != 'mmCIF':
+                        continue
+                    cif_file_name = cif_file['File_Name']
+                    if cif_file_name != f'{row["Accession_Code"]}.cif':
+                        self.hold_warnings.append(rid)
+                        excluded = True
+                        break
+            
+            if excluded == True:
+                continue
             
             unreleased_entries[row['Accession_Code']] = {'status_code': 'HOLD',
                                                          'deposit_date': row['Deposit_Date'],
