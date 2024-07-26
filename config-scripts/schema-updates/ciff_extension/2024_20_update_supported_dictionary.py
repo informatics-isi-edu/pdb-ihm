@@ -7,8 +7,8 @@ import utils
 Supported_Dictionary_columns = ['Data_Dictionary_RID', 'Data_Dictionary_Category']
 
 Supported_Dictionary_rows = [
-    {'RID': '1-RE2T', 'Data_Dictionary_RID': '3-A45E', 'Data_Dictionary_Category': 'IHMCIF dictionary'},
-    {'RID': '1-RE2W', 'Data_Dictionary_RID': '3-A45G', 'Data_Dictionary_Category': 'PDBx/mmCIF'}
+    {'RID': '1-RE2T', 'Data_Dictionary_RID': '3-XP44', 'Data_Dictionary_Category': 'IHMCIF dictionary'},
+    {'RID': '1-RE2W', 'Data_Dictionary_RID': '3-XP46', 'Data_Dictionary_Category': 'PDBx/mmCIF'}
     ]
 
 def main(server_name, catalog_id, credentials):
