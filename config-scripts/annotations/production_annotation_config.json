@@ -48,15 +48,78 @@
                      "WWW",
                      "Page_Asset"
                   ]
+               },
+               {
+                  "checksum_types" : [
+                     "sha256",
+                     "md5"
+                  ],
+                  "column_map" : {
+                     "Method_Details" : "Integrative modeling",
+                     "Workflow_Status" : "DEPO",
+                     "mmCIF_File_Bytes" : "{file_size}",
+                     "mmCIF_File_MD5" : "{md5}",
+                     "mmCIF_File_Name" : "{file_name}",
+                     "mmCIF_File_URL" : "{URI}"
+                  },
+                  "create_record_before_upload" : false,
+                  "file_pattern" : "(?i)^.*/deriva/(?P<globus_ID>[^/]*)/entry/.*[.](?P<file_ext>cif)$",
+                  "hatrac_options" : {
+                     "versioned_urls" : true
+                  },
+                  "hatrac_templates" : {
+                     "content-disposition" : "filename*=UTF-8''{file_name}",
+                     "hatrac_uri" : "/hatrac/pdb/submitted/uid/{globus_ID}/entry/mmcif/{file_name}"
+                  },
+                  "metadata_query_templates" : [],
+                  "record_query_template" : "/entity/{target_table}/mmCIF_File_MD5={md5}&RCB=https%3A%2F%2Fauth.globus.org%2F{globus_ID}",
+                  "record_update_template" : "/attributegroup/{target_table}/RID;mmCIF_File_MD5,mmCIF_File_URL,mmCIF_File_Name,mmCIF_File_Bytes",
+                  "require_record_update_template" : true,
+                  "target_table" : [
+                     "PDB",
+                     "entry"
+                  ]
+               },
+               {
+                  "checksum_types" : [
+                     "sha256",
+                     "md5"
+                  ],
+                  "column_map" : {
+                     "Image_File_Bytes" : "{file_size}",
+                     "Image_File_MD5" : "{md5}",
+                     "Image_File_Name" : "{file_name}",
+                     "Image_File_URL" : "{URI}",
+                     "RID" : "{entry_rid}"
+                  },
+                  "create_record_before_upload" : false,
+                  "dir_pattern" : "(?i)^.*/deriva/(?P<globus_ID>[^/]*)/entry/(?P<base_name>[^/]*)[.](?P<file_ext>png|jpg|jpeg)",
+                  "hatrac_options" : {
+                     "versioned_urls" : true
+                  },
+                  "hatrac_templates" : {
+                     "content-disposition" : "filename*=UTF-8''{file_name}",
+                     "hatrac_uri" : "/hatrac/pdb/submitted/uid/{globus_ID}/entry/image/{file_name}"
+                  },
+                  "metadata_query_templates" : [
+                     "/attribute/{target_table}/mmCIF_File_Name={base_name}.cif&RCB=https%3A%2F%2Fauth.globus.org%2F{globus_ID}/entry_rid:=RID"
+                  ],
+                  "record_query_template" : "/entity/{target_table}/RID={entry_rid}",
+                  "record_update_template" : "/attributegroup/{target_table}/RID;Image_File_MD5,Image_File_URL,Image_File_Name,Image_File_Bytes",
+                  "require_record_update_template" : true,
+                  "target_table" : [
+                     "PDB",
+                     "entry"
+                  ]
                }
             ],
             "version_compatibility" : [
                [
-                  ">=0.4.3",
-                  "<1.0.0"
+                  ">=1.4.0",
+                  "<2.0.0"
                ]
             ],
-            "version_update_url" : "https://github.com/informatics-isi-edu/deriva-qt/releases"
+            "version_update_url" : "https://github.com/informatics-isi-edu/deriva-client"
          }
       },
       {
@@ -435,36 +498,36 @@
                                  "url" : "/chaise/recordset/#1/PDB:ihm_multi_state_modeling"
                               },
                               {
-                                 "name" : "Ihm Ordered Ensemble",
-                                 "url" : "/chaise/recordset/#1/PDB:ihm_ordered_ensemble"
+                                 "name" : "Ihm Ordered Model",
+                                 "url" : "/chaise/recordset/#1/PDB:ihm_ordered_model"
                               }
                            ],
-                           "name" : "Multi-state Modeling and Ordered Ensembles"
+                           "name" : "Multi-state Modeling, Ordered Models, and Ensembles"
                         },
                         {
                            "children" : [
                               {
-                                 "name" : "PDBX Entity Poly Na Type",
-                                 "url" : "/chaise/recordset/#1/PDB:pdbx_entity_poly_na_type"
+                                 "name" : "ihm Multi-State Scheme",
+                                 "url" : "/chaise/recordset/#1/PDB:ihm_multi_state_scheme"
                               },
                               {
-                                 "name" : "PDBX Entry Details",
-                                 "url" : "/chaise/recordset/#1/PDB:pdbx_entry_details"
+                                 "name" : "ihm Multi-State Scheme Connectivity",
+                                 "url" : "/chaise/recordset/#1/PDB:ihm_multi_state_scheme_connectivity"
                               },
                               {
-                                 "name" : "PDBX Inhibitor Info",
-                                 "url" : "/chaise/recordset/#1/PDB:pdbx_inhibitor_info"
+                                 "name" : "ihm Kinetic Rate",
+                                 "url" : "/chaise/recordset/#1/PDB:ihm_kinetic_rate"
                               },
                               {
-                                 "name" : "PDBX Ion Info",
-                                 "url" : "/chaise/recordset/#1/PDB:pdbx_ion_info"
+                                 "name" : "ihm Relaxation Time",
+                                 "url" : "/chaise/recordset/#1/PDB:ihm_relaxation_time"
                               },
                               {
-                                 "name" : "PDBX Protein Info",
-                                 "url" : "/chaise/recordset/#1/PDB:pdbx_protein_info"
+                                 "name" : "ihm Relaxation Time Multi-State Scheme",
+                                 "url" : "/chaise/recordset/#1/PDB:ihm_relaxation_time_multi_state_scheme"
                               }
                            ],
-                           "name" : "PDBX Related"
+                           "name" : "Multi-State Schemes"
                         },
                         {
                            "children" : [
@@ -558,12 +621,16 @@
                                  "url" : "/chaise/recordset/#1/PDB:Accession_Code"
                               },
                               {
+                                 "name" : "Curation Log",
+                                 "url" : "/chaise/recordset/#1/PDB:Curation_Log"
+                              },
+                              {
                                  "name" : "Entry Error File",
                                  "url" : "/chaise/recordset/#1/PDB:Entry_Error_File"
                               },
                               {
-                                 "name" : "Entry mmCIF File",
-                                 "url" : "/chaise/recordset/#1/PDB:Entry_mmCIF_File"
+                                 "name" : "Entry Generated File",
+                                 "url" : "/chaise/recordset/#1/PDB:Entry_Generated_File"
                               },
                               {
                                  "name" : "Entry Related File",
@@ -584,6 +651,19 @@
                               }
                            ],
                            "name" : "Entry Collection"
+                        },
+                        {
+                           "children" : [
+                              {
+                                 "name" : "PDB Archive",
+                                 "url" : "/chaise/recordset/#1/PDB:PDB_Archive"
+                              },
+                              {
+                                 "name" : "Entry Latest Archive",
+                                 "url" : "/chaise/recordset/#1/PDB:Entry_Latest_Archive"
+                              }
+                           ],
+                           "name" : "Archive"
                         }
                      ],
                      "name" : "Data Categories"
@@ -739,6 +819,10 @@
                               {
                                  "name" : "Database Hosted",
                                  "url" : "/chaise/recordset/#1/Vocab:ihm_dataset_list_database_hosted"
+                              },
+                              {
+                                 "name" : "Related DB Reference DB Name",
+                                 "url" : "/chaise/recordset/#1/Vocab:ihm_dataset_related_db_reference_db_name"
                               },
                               {
                                  "name" : "Group Conditionality",
@@ -899,6 +983,14 @@
                               {
                                  "name" : "Experiment Type",
                                  "url" : "/chaise/recordset/#1/Vocab:ihm_multi_state_modeling_experiment_type"
+                              },
+                              {
+                                 "name" : "Relaxation Time Unit",
+                                 "url" : "/chaise/recordset/#1/Vocab:ihm_relaxation_time_unit"
+                              },
+                              {
+                                 "name" : "Equilibrium Constant Determination Methods",
+                                 "url" : "/chaise/recordset/#1/Vocab:ihm_equilibrium_constant_determination_method"
                               }
                            ],
                            "name" : "Ihm Multi State Modeling"
@@ -1035,6 +1127,10 @@
                         {
                            "children" : [
                               {
+                                 "name" : "PDBX  Structure Determination Methodology",
+                                 "url" : "/chaise/recordset/#1/Vocab:struct_pdbx_structure_determination_methodology"
+                              },
+                              {
                                  "name" : "PDBX  CASP Flag",
                                  "url" : "/chaise/recordset/#1/Vocab:struct_pdbx_CASP_flag"
                               },
@@ -1064,8 +1160,8 @@
                                  "url" : "/chaise/recordset/#1/Vocab:Process_Status"
                               },
                               {
-                                 "name" : "Validation File Type",
-                                 "url" : "/chaise/recordset/#1/Vocab:Validation_File_Type"
+                                 "name" : "System Generated File Type",
+                                 "url" : "/chaise/recordset/#1/Vocab:System_Generated_File_Type"
                               },
                               {
                                  "name" : "Workflow Status",
@@ -1147,38 +1243,6 @@
          }
       },
       {
-         "column" : "id",
-         "schema_pattern" : "Vocab",
-         "table_pattern" : ".*",
-         "uri" : "tag:isrd.isi.edu,2016:generated",
-         "value" : null
-      },
-      {
-         "column" : "uri",
-         "schema_pattern" : "Vocab",
-         "table_pattern" : ".*",
-         "uri" : "tag:isrd.isi.edu,2016:generated",
-         "value" : null
-      },
-      {
-         "column" : "description",
-         "schema_pattern" : "Vocab",
-         "table_pattern" : ".*",
-         "uri" : "tag:misd.isi.edu,2015:display",
-         "value" : {
-            "name" : "Description"
-         }
-      },
-      {
-         "column" : "name",
-         "schema_pattern" : "Vocab",
-         "table_pattern" : ".*",
-         "uri" : "tag:misd.isi.edu,2015:display",
-         "value" : {
-            "name" : "Name"
-         }
-      },
-      {
          "column" : "synonyms",
          "schema_pattern" : "Vocab",
          "table_pattern" : ".*",
@@ -1227,13 +1291,6 @@
          }
       },
       {
-         "column" : "id",
-         "schema" : "PDB",
-         "table" : "entry",
-         "uri" : "tag:isrd.isi.edu,2016:generated",
-         "value" : null
-      },
-      {
          "column" : "Image_File_URL",
          "schema" : "PDB",
          "table" : "entry",
@@ -1242,7 +1299,8 @@
             "byte_count_column" : "Image_File_Bytes",
             "filename_column" : "Image_File_Name",
             "md5" : "Image_File_MD5",
-            "url_pattern" : "/hatrac/pdb/entry/submitted/image/{{$moment.year}}/{{{Image_File_Name}}}"
+            "template_engine" : "handlebars",
+            "url_pattern" : "/hatrac/pdb/submitted/uid/{{#if _RCB}}{{#regexFindFirst _RCB \"[^/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/image/{{{Image_File_MD5}}}{{{_Image_File_URL.filename_ext}}}"
          }
       },
       {
@@ -1252,7 +1310,7 @@
          "uri" : "tag:isrd.isi.edu,2016:column-display",
          "value" : {
             "compact" : {
-               "markdown_pattern" : "{{#if Image_File_URL }}[![{{Image_File_Name}}]({{{Image_File_URL}}}){width=auto height=200}]({{{Image_File_URL}}}){target=_blank}{{/if}}",
+               "markdown_pattern" : "{{#if Image_File_URL }}[![{{Image_File_Name}}]({{{Image_File_URL}}}){width=auto height=100}]({{{Image_File_URL}}}){target=_blank}{{/if}}",
                "template_engine" : "handlebars"
             },
             "detailed" : {
@@ -1269,8 +1327,13 @@
          "value" : {
             "byte_count_column" : "mmCIF_File_Bytes",
             "filename_column" : "mmCIF_File_Name",
+            "filename_ext_filter" : [
+               ".cif",
+               ".CIF"
+            ],
             "md5" : "mmCIF_File_MD5",
-            "url_pattern" : "/hatrac/pdb/entry/submitted/mmCIF/{{$moment.year}}/{{{mmCIF_File_Name}}}"
+            "template_engine" : "handlebars",
+            "url_pattern" : "/hatrac/pdb/submitted/uid/{{#if _RCB}}{{#regexFindFirst _RCB \"[^/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/mmCIF/{{{mmCIF_File_MD5}}}{{{_mmCIF_File_URL.filename_ext}}}"
          }
       },
       {
@@ -1351,19 +1414,20 @@
       {
          "column" : "File_URL",
          "schema" : "PDB",
-         "table" : "Entry_mmCIF_File",
+         "table" : "Entry_Generated_File",
          "uri" : "tag:isrd.isi.edu,2017:asset",
          "value" : {
             "byte_count_column" : "File_Bytes",
             "filename_column" : "File_Name",
             "md5" : "File_MD5",
-            "url_pattern" : "/hatrac/pdb/entry/{{$moment.year}}/{{{Structure_Id}}}/final_mmCIF/{{{File_Name}}}"
+            "template_engine" : "handlebars",
+            "url_pattern" : "/hatrac/pdb/generated/uid/{{#if _Entry_RCB}}{{#regexFindFirst _Entry_RCB \"[^/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/id/{{{Structure_Id}}}/final_mmCIF/{{{File_Name}}}"
          }
       },
       {
          "column" : "File_URL",
          "schema" : "PDB",
-         "table" : "Entry_mmCIF_File",
+         "table" : "Entry_Generated_File",
          "uri" : "tag:isrd.isi.edu,2016:column-display",
          "value" : {
             "*" : {
@@ -1374,7 +1438,7 @@
       {
          "column" : "File_URL",
          "schema" : "PDB",
-         "table" : "Entry_mmCIF_File",
+         "table" : "Entry_Generated_File",
          "uri" : "tag:isrd.isi.edu,2018:required",
          "value" : {}
       },
@@ -1387,7 +1451,8 @@
             "byte_count_column" : "File_Bytes",
             "filename_column" : "File_Name",
             "md5" : "File_MD5",
-            "url_pattern" : "/hatrac/pdb/entry/{{$moment.year}}/{{{Entry_RID}}}/validation_error/{{{File_Name}}}"
+            "template_engine" : "handlebars",
+            "url_pattern" : "/hatrac/pdb/generated/uid/{{#if _RCB}}{{#regexFindFirst _RCB \"[^/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/rid/{{{Entry_RID}}}/validation_error/{{{File_Name}}}"
          }
       },
       {
@@ -1417,7 +1482,8 @@
             "byte_count_column" : "mmCIF_File_Bytes",
             "filename_column" : "mmCIF_File_Name",
             "md5" : "mmCIF_File_MD5",
-            "url_pattern" : "/hatrac/pdb/entry/{{$moment.year}}/{{{structure_id}}}/submitted_starting_model/{{{mmCIF_File_Name}}}"
+            "template_engine" : "handlebars",
+            "url_pattern" : "/hatrac/pdb/submitted/uid/{{#if _RCB}}{{#regexFindFirst _RCB \"[^/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/id/{{{structure_id}}}/starting_model/{{{mmCIF_File_MD5}}}{{{_mmCIF_File_URL.filename_ext}}}"
          }
       },
       {
@@ -1429,7 +1495,8 @@
             "byte_count_column" : "File_Bytes",
             "filename_column" : "File_Name",
             "md5" : "File_MD5",
-            "url_pattern" : "/hatrac/pdb/entry/{{$moment.year}}/{{{structure_id}}}/submitted_related_file/{{{File_Name}}}"
+            "template_engine" : "handlebars",
+            "url_pattern" : "/hatrac/pdb/submitted/uid/{{#if _RCB}}{{#regexFindFirst _RCB \"[^/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/id/{{{structure_id}}}/related_file/{{{File_MD5}}}{{{_File_URL.filename_ext}}}"
          }
       },
       {
@@ -1522,12 +1589,30 @@
          }
       },
       {
-         "column" : "File_URL",
+         "column" : "Submitter_Flag_Date",
          "schema" : "PDB",
-         "table" : "Entry_mmCIF_File",
+         "table" : "entry",
          "uri" : "tag:misd.isi.edu,2015:display",
          "value" : {
-            "name" : "System Generated mmCIF File"
+            "name" : "Last Communicated"
+         }
+      },
+      {
+         "column" : "Method_Details",
+         "schema" : "PDB",
+         "table" : "entry",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "User Provided Method Details"
+         }
+      },
+      {
+         "column" : "File_URL",
+         "schema" : "PDB",
+         "table" : "Entry_Generated_File",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "name" : "System Generated File"
          }
       },
       {
@@ -2968,6 +3053,28 @@
          "uri" : "tag:isrd.isi.edu,2016:foreign-key",
          "value" : {
             "domain_filter_pattern" : "structure_id={{structure_id}}"
+         }
+      },
+      {
+         "foreign_key" : "ihm_ordered_model_ihm_model_group_1_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_ordered_model",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_ordered_model_ihm_model_group_2_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_ordered_model",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
          }
       },
       {
@@ -4904,6 +5011,138 @@
          "foreign_key_schema" : "PDB",
          "schema" : "PDB",
          "table" : "struct_ref_seq_dif",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_multi_state_scheme_connectivity_scheme_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_multi_state_scheme_connectivity",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_multi_state_scheme_connectivity_modeling_1_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_multi_state_scheme_connectivity",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_multi_state_scheme_connectivity_modeling_2_combo2_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_multi_state_scheme_connectivity",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "multi_state_scheme_connectivity_dataset_group_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_multi_state_scheme_connectivity",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_kinetic_rate_multi_state_scheme_connectivity_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_kinetic_rate",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_kinetic_rate_ihm_external_files_combo2_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_kinetic_rate",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_kinetic_rate_ihm_dataset_group_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_kinetic_rate",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_relaxation_time_ihm_external_files_combo2_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_relaxation_time",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_relaxation_time_ihm_dataset_group_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_relaxation_time",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "relaxation_time_multi_state_scheme_connectivity_combo2_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_relaxation_time_multi_state_scheme",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_relaxation_time_multi_state_scheme_scheme_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_relaxation_time_multi_state_scheme",
+         "uri" : "tag:isrd.isi.edu,2016:foreign-key",
+         "value" : {
+            "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
+            "template_engine" : "handlebars"
+         }
+      },
+      {
+         "foreign_key" : "ihm_relaxation_time_multi_state_scheme_time_combo1_fkey",
+         "foreign_key_schema" : "PDB",
+         "schema" : "PDB",
+         "table" : "ihm_relaxation_time_multi_state_scheme",
          "uri" : "tag:isrd.isi.edu,2016:foreign-key",
          "value" : {
             "domain_filter_pattern" : "{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}",
@@ -7348,24 +7587,6 @@
       },
       {
          "schema" : "PDB",
-         "table" : "Accession_Code",
-         "uri" : "tag:isrd.isi.edu,2016:generated",
-         "value" : null
-      },
-      {
-         "schema" : "PDB",
-         "table" : "audit_conform",
-         "uri" : "tag:isrd.isi.edu,2016:generated",
-         "value" : null
-      },
-      {
-         "schema" : "PDB",
-         "table" : "Conform_Dictionary",
-         "uri" : "tag:isrd.isi.edu,2016:generated",
-         "value" : null
-      },
-      {
-         "schema" : "PDB",
          "table" : "ihm_model_list",
          "uri" : "tag:isrd.isi.edu,2016:table-display",
          "value" : {
@@ -7946,6 +8167,186 @@
       },
       {
          "schema" : "PDB",
+         "table" : "ihm_ordered_model",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "comment_display" : {
+               "*" : {
+                  "table_comment_display" : "inline"
+               }
+            },
+            "name" : "Ordered Models"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_ordered_model",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_ordered_model_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "process_id",
+               "process_description",
+               "edge_id",
+               "edge_description",
+               "step_id",
+               "step_description",
+               "ordered_by",
+               {
+                  "comment" : "Model group id corresponding to the node at the origin of the directed edge",
+                  "markdown_name" : "Model Group Id Begin",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_ordered_model_ihm_model_group_1_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Model group id corresponding to the node at the end of the directed edge",
+                  "markdown_name" : "Model Group Id End",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_ordered_model_ihm_model_group_2_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               }
+            ],
+            "detailed" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_ordered_model_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "process_id",
+               "process_description",
+               "edge_id",
+               "edge_description",
+               "step_id",
+               "step_description",
+               "ordered_by",
+               {
+                  "comment" : "Model group id corresponding to the node at the origin of the directed edge",
+                  "markdown_name" : "Model Group Id Begin",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_ordered_model_ihm_model_group_1_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Model group id corresponding to the node at the end of the directed edge",
+                  "markdown_name" : "Model Group Id End",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_ordered_model_ihm_model_group_2_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               [
+                  "PDB",
+                  "ihm_ordered_model_RCB_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_ordered_model_RMB_fkey"
+               ],
+               "RCT",
+               "RMT",
+               [
+                  "PDB",
+                  "ihm_ordered_model_Owner_fkey"
+               ]
+            ],
+            "entry" : [
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_ordered_model_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "process_id",
+               "process_description",
+               "edge_id",
+               "edge_description",
+               "step_id",
+               "step_description",
+               "ordered_by",
+               {
+                  "comment" : "Model group id corresponding to the node at the origin of the directed edge",
+                  "markdown_name" : "Model Group Id Begin",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_ordered_model_ihm_model_group_1_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Model group id corresponding to the node at the end of the directed edge",
+                  "markdown_name" : "Model Group Id End",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_ordered_model_ihm_model_group_2_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               }
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
          "table" : "ihm_ordered_ensemble",
          "uri" : "tag:misd.isi.edu,2015:display",
          "value" : {
@@ -7954,7 +8355,7 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "Ordered States"
+            "name" : "Ordered Ensembles (to be deprecated and superseded by Ordered Models)"
          }
       },
       {
@@ -9540,6 +9941,10 @@
                [
                   "PDB",
                   "ihm_multi_state_model_group_link_state_id_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_multi_state_scheme_connectivity_modeling_1_combo1_fkey"
                ]
             ],
             "filter" : "detailed"
@@ -9674,6 +10079,18 @@
                [
                   "PDB",
                   "ihm_modeling_post_process_dataset_group_id_fkey"
+               ],
+               [
+                  "PDB",
+                  "multi_state_scheme_connectivity_dataset_group_combo1_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_kinetic_rate_ihm_dataset_group_combo1_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_relaxation_time_ihm_dataset_group_combo1_fkey"
                ]
             ],
             "filter" : "detailed"
@@ -9752,8 +10169,12 @@
                      {
                         "inbound" : [
                            "PDB",
-                           "Entry_mmCIF_File_Structure_Id_fkey"
+                           "Entry_Generated_File_Structure_Id_fkey"
                         ]
+                     },
+                     {
+                        "filter" : "File_Type",
+                        "operand_pattern" : "mmCIF"
                      },
                      "RID"
                   ]
@@ -9789,6 +10210,22 @@
                "Accession_Serial",
                "Accession_Code",
                {
+                  "markdown_name" : "PDBDEV Accession Code",
+                  "source" : "PDBDEV_Accession_Code"
+               },
+               {
+                  "markdown_name" : "PDB Extended Code",
+                  "source" : "PDB_Extended_Code"
+               },
+               {
+                  "markdown_name" : "PDB Code",
+                  "source" : "PDB_Code"
+               },
+               {
+                  "markdown_name" : "PDB Accession Code",
+                  "source" : "PDB_Accession_Code"
+               },
+               {
                   "markdown_name" : "Entry",
                   "source" : [
                      {
@@ -9800,6 +10237,25 @@
                      "RID"
                   ]
                },
+               {
+                  "markdown_name" : "Workflow Status",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Accession_Code_Entry_fkey"
+                        ]
+                     },
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "entry_Workflow_Status_fkey"
+                        ]
+                     },
+                     "Name"
+                  ]
+               },
+               "Notes",
                {
                   "markdown_name" : "RCB",
                   "source" : [
@@ -9860,6 +10316,23 @@
                "Accession_Serial",
                "Accession_Code",
                {
+                  "markdown_name" : "PDBDEV Accession Code",
+                  "source" : "PDBDEV_Accession_Code"
+               },
+               {
+                  "markdown_name" : "PDB Extended Code",
+                  "source" : "PDB_Extended_Code"
+               },
+               {
+                  "markdown_name" : "PDB Code",
+                  "source" : "PDB_Code"
+               },
+               {
+                  "markdown_name" : "PDB Accession Code",
+                  "source" : "PDB_Accession_Code"
+               },
+               "Notes",
+               {
                   "markdown_name" : "Entry",
                   "source" : [
                      {
@@ -9869,6 +10342,24 @@
                         ]
                      },
                      "RID"
+                  ]
+               },
+               {
+                  "markdown_name" : "Workflow Status",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Accession_Code_Entry_fkey"
+                        ]
+                     },
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "entry_Workflow_Status_fkey"
+                        ]
+                     },
+                     "Name"
                   ]
                }
             ],
@@ -9884,10 +10375,59 @@
                      },
                      "RID"
                   ]
-               }
+               },
+               "Accession_Serial",
+               "Accession_Code",
+               {
+                  "markdown_name" : "PDBDEV Accession Code",
+                  "source" : "PDBDEV_Accession_Code"
+               },
+               {
+                  "markdown_name" : "PDB Extended Code",
+                  "source" : "PDB_Extended_Code"
+               },
+               {
+                  "markdown_name" : "PDB Code",
+                  "source" : "PDB_Code"
+               },
+               {
+                  "markdown_name" : "PDB Accession Code",
+                  "source" : "PDB_Accession_Code"
+               },
+               "Notes"
             ],
             "entry/edit" : [
-               "Accession_Code"
+               {
+                  "markdown_name" : "Entry",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Accession_Code_Entry_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "Accession_Serial",
+               "Accession_Code",
+               {
+                  "markdown_name" : "PDBDEV Accession Code",
+                  "source" : "PDBDEV_Accession_Code"
+               },
+               {
+                  "markdown_name" : "PDB Extended Code",
+                  "source" : "PDB_Extended_Code"
+               },
+               {
+                  "markdown_name" : "PDB Code",
+                  "source" : "PDB_Code"
+               },
+               {
+                  "markdown_name" : "PDB Accession Code",
+                  "source" : "PDB_Accession_Code"
+               },
+               "Notes"
             ],
             "filter" : {
                "and" : [
@@ -9898,6 +10438,40 @@
                   {
                      "markdown_name" : "Accession Code",
                      "source" : "Accession_Code"
+                  },
+                  {
+                     "markdown_name" : "PDBDEV Accession Code",
+                     "source" : "PDBDEV_Accession_Code"
+                  },
+                  {
+                     "markdown_name" : "PDB Extended Code",
+                     "source" : "PDB_Extended_Code"
+                  },
+                  {
+                     "markdown_name" : "PDB Code",
+                     "source" : "PDB_Code"
+                  },
+                  {
+                     "markdown_name" : "PDB Accession Code",
+                     "source" : "PDB_Accession_Code"
+                  },
+                  {
+                     "markdown_name" : "Workflow Status",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Accession_Code_Entry_fkey"
+                           ]
+                        },
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "entry_Workflow_Status_fkey"
+                           ]
+                        },
+                        "Name"
+                     ]
                   }
                ]
             }
@@ -9912,6 +10486,7 @@
                "RID",
                "id",
                "mmCIF_File_URL",
+               "Submitter_Flag_Date",
                "Image_File_URL",
                [
                   "PDB",
@@ -9947,12 +10522,12 @@
                      "template_engine" : "handlebars"
                   },
                   "entity" : true,
-                  "markdown_name" : "System Generated mmCIF File",
+                  "markdown_name" : "System Generated Files",
                   "source" : [
                      {
                         "inbound" : [
                            "PDB",
-                           "Entry_mmCIF_File_Structure_Id_fkey"
+                           "Entry_Generated_File_Structure_Id_fkey"
                         ]
                      },
                      "RID"
@@ -9960,6 +10535,8 @@
                },
                "Deposit_Date",
                "Release_Date",
+               "Method_Details",
+               "Manual_Processing",
                {
                   "markdown_name" : "RCB",
                   "source" : [
@@ -9985,11 +10562,7 @@
                   ]
                },
                "RCT",
-               "RMT",
-               [
-                  "PDB",
-                  "entry_Owner_fkey"
-               ]
+               "RMT"
             ],
             "detailed" : [
                "RID",
@@ -10058,6 +10631,10 @@
                },
                "Deposit_Date",
                "Release_Date",
+               "Method_Details",
+               "Submitter_Flag",
+               "Submitter_Flag_Date",
+               "Manual_Processing",
                "Notes",
                [
                   "PDB",
@@ -10071,6 +10648,8 @@
                   "PDB",
                   "entry_Workflow_Status_fkey"
                ],
+               "Method_Details",
+               "Manual_Processing",
                "Notes"
             ],
             "entry/edit" : [
@@ -10080,8 +10659,12 @@
                   "PDB",
                   "entry_Workflow_Status_fkey"
                ],
+               "Method_Details",
                "Deposit_Date",
                "Release_Date",
+               "Submitter_Flag",
+               "Submitter_Flag_Date",
+               "Manual_Processing",
                "Notes"
             ],
             "export/compact" : [
@@ -10095,6 +10678,9 @@
                "Accession_Code",
                "Deposit_Date",
                "Release_Date",
+               "Method_Details",
+               "Submitter_Flag",
+               "Submitter_Flag_Date",
                "Record_Status_Detail"
             ],
             "filter" : {
@@ -10134,6 +10720,10 @@
                   {
                      "markdown_name" : "Release Date",
                      "source" : "Release_Date"
+                  },
+                  {
+                     "markdown_name" : "Last Communicated",
+                     "source" : "Submitter_Flag_Date"
                   },
                   {
                      "hide_not_null_choice" : true,
@@ -10184,6 +10774,10 @@
                         },
                         "RID"
                      ]
+                  },
+                  {
+                     "markdown_name" : "Manual Processing",
+                     "source" : "Manual_Processing"
                   }
                ]
             }
@@ -10211,12 +10805,12 @@
                         },
                         {
                            "destination" : {
-                              "name" : "Entry_mmCIF_File",
+                              "name" : "Entry_Generated_File",
                               "type" : "download"
                            },
                            "source" : {
                               "api" : "attribute",
-                              "path" : "PDB:Entry_mmCIF_File/url:=File_URL"
+                              "path" : "PDB:Entry_Generated_File/url:=File_URL"
                            }
                         }
                      ],
@@ -10234,7 +10828,7 @@
             "detailed" : [
                [
                   "PDB",
-                  "Entry_mmCIF_File_Structure_Id_fkey"
+                  "Entry_Generated_File_Structure_Id_fkey"
                ],
                [
                   "PDB",
@@ -10430,6 +11024,10 @@
                ],
                [
                   "PDB",
+                  "ihm_ordered_model_structure_id_fkey"
+               ],
+               [
+                  "PDB",
                   "ihm_ordered_ensemble_structure_id_fkey"
                ],
                [
@@ -10596,6 +11194,26 @@
                   "PDB",
                   "ihm_geometric_object_distance_restraint_structure_id_fkey"
                ],
+               [
+                  "PDB",
+                  "ihm_multi_state_scheme_structure_id_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_multi_state_scheme_connectivity_structure_id_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_kinetic_rate_structure_id_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_relaxation_time_structure_id_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_relaxation_time_multi_state_scheme_structure_id_fkey"
+               ],
                {
                   "comment" : "Collections to which the entry belongs",
                   "markdown_name" : "Entry Collections",
@@ -10610,6 +11228,18 @@
                         "outbound" : [
                            "PDB",
                            "ihm_entry_collection_mapping_collection_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "markdown_name" : "Curation Log",
+                  "source" : [
+                     {
+                        "inbound" : [
+                           "PDB",
+                           "Curation_Log_Entry_fkey"
                         ]
                      },
                      "RID"
@@ -13483,6 +14113,1155 @@
       },
       {
          "schema" : "PDB",
+         "table" : "ihm_multi_state_scheme",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "comment_display" : {
+               "*" : {
+                  "table_comment_display" : "inline"
+               }
+            },
+            "name" : "Multi-State Schemes"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_multi_state_scheme",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_multi_state_scheme_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "name",
+               "details"
+            ],
+            "detailed" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_multi_state_scheme_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "name",
+               "details",
+               [
+                  "PDB",
+                  "ihm_multi_state_scheme_RCB_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_multi_state_scheme_RMB_fkey"
+               ],
+               "RCT",
+               "RMT",
+               [
+                  "PDB",
+                  "ihm_multi_state_scheme_Owner_fkey"
+               ]
+            ],
+            "entry" : [
+               "id",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_multi_state_scheme_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "name",
+               "details"
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_multi_state_scheme",
+         "uri" : "tag:isrd.isi.edu,2016:visible-foreign-keys",
+         "value" : {
+            "detailed" : [
+               [
+                  "PDB",
+                  "ihm_multi_state_scheme_connectivity_scheme_combo1_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_relaxation_time_multi_state_scheme_scheme_combo1_fkey"
+               ]
+            ],
+            "filter" : "detailed"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_multi_state_scheme_connectivity",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "comment_display" : {
+               "*" : {
+                  "table_comment_display" : "inline"
+               }
+            },
+            "name" : "Multi-State Scheme Connectivities"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_multi_state_scheme_connectivity",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_multi_state_scheme_connectivity_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               {
+                  "comment" : "Identifier for the multi-state scheme",
+                  "markdown_name" : "Scheme Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_multi_state_scheme_connectivity_scheme_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the starting state in the multi-state scheme",
+                  "markdown_name" : "Begin State Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_multi_state_scheme_connectivity_modeling_1_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the ending state in the multi-state scheme",
+                  "markdown_name" : "End State Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_multi_state_scheme_connectivity_modeling_2_combo2_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the dataset group from which the multi-state scheme is obtained",
+                  "markdown_name" : "Dataset Group Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "multi_state_scheme_connectivity_dataset_group_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "details"
+            ],
+            "detailed" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_multi_state_scheme_connectivity_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               {
+                  "comment" : "Identifier for the multi-state scheme",
+                  "markdown_name" : "Scheme Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_multi_state_scheme_connectivity_scheme_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the starting state in the multi-state scheme",
+                  "markdown_name" : "Begin State Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_multi_state_scheme_connectivity_modeling_1_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the ending state in the multi-state scheme",
+                  "markdown_name" : "End State Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_multi_state_scheme_connectivity_modeling_2_combo2_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the dataset group from which the multi-state scheme is obtained",
+                  "markdown_name" : "Dataset Group Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "multi_state_scheme_connectivity_dataset_group_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "details",
+               [
+                  "PDB",
+                  "ihm_multi_state_scheme_connectivity_RCB_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_multi_state_scheme_connectivity_RMB_fkey"
+               ],
+               "RCT",
+               "RMT",
+               [
+                  "PDB",
+                  "ihm_multi_state_scheme_connectivity_Owner_fkey"
+               ]
+            ],
+            "entry" : [
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_multi_state_scheme_connectivity_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               {
+                  "comment" : "Identifier for the multi-state scheme",
+                  "markdown_name" : "Scheme Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_multi_state_scheme_connectivity_scheme_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the starting state in the multi-state scheme",
+                  "markdown_name" : "Begin State Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_multi_state_scheme_connectivity_modeling_1_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the ending state in the multi-state scheme",
+                  "markdown_name" : "End State Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_multi_state_scheme_connectivity_modeling_2_combo2_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the dataset group from which the multi-state scheme is obtained",
+                  "markdown_name" : "Dataset Group Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "multi_state_scheme_connectivity_dataset_group_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "details"
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_multi_state_scheme_connectivity",
+         "uri" : "tag:isrd.isi.edu,2016:visible-foreign-keys",
+         "value" : {
+            "detailed" : [
+               [
+                  "PDB",
+                  "ihm_kinetic_rate_multi_state_scheme_connectivity_combo1_fkey"
+               ],
+               [
+                  "PDB",
+                  "relaxation_time_multi_state_scheme_connectivity_combo2_fkey"
+               ]
+            ],
+            "filter" : "detailed"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_kinetic_rate",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "comment_display" : {
+               "*" : {
+                  "table_comment_display" : "inline"
+               }
+            },
+            "name" : "Kinetic Rates from Biophysical Experiments"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_kinetic_rate",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_kinetic_rate_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "transition_rate_constant",
+               "equilibrium_constant",
+               [
+                  "PDB",
+                  "ihm_equilibrium_constant_determination_method_fkey"
+               ],
+               "equilibrium_constant_unit",
+               {
+                  "comment" : "Identifier for the multi-state scheme connectivity",
+                  "markdown_name" : "Scheme Connectivity Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_kinetic_rate_multi_state_scheme_connectivity_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the external file corresponding to the kinetic rate measurement",
+                  "markdown_name" : "External File Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_kinetic_rate_ihm_external_files_combo2_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the dataset group from which the kinetic rate is obtained",
+                  "markdown_name" : "Dataset Group Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_kinetic_rate_ihm_dataset_group_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "details"
+            ],
+            "detailed" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_kinetic_rate_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "transition_rate_constant",
+               "equilibrium_constant",
+               [
+                  "PDB",
+                  "ihm_equilibrium_constant_determination_method_fkey"
+               ],
+               "equilibrium_constant_unit",
+               {
+                  "comment" : "Identifier for the multi-state scheme connectivity",
+                  "markdown_name" : "Scheme Connectivity Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_kinetic_rate_multi_state_scheme_connectivity_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the external file corresponding to the kinetic rate measurement",
+                  "markdown_name" : "External File Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_kinetic_rate_ihm_external_files_combo2_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the dataset group from which the kinetic rate is obtained",
+                  "markdown_name" : "Dataset Group Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_kinetic_rate_ihm_dataset_group_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "details",
+               [
+                  "PDB",
+                  "ihm_kinetic_rate_RCB_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_kinetic_rate_RMB_fkey"
+               ],
+               "RCT",
+               "RMT",
+               [
+                  "PDB",
+                  "ihm_kinetic_rate_Owner_fkey"
+               ]
+            ],
+            "entry" : [
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_kinetic_rate_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "transition_rate_constant",
+               "equilibrium_constant",
+               [
+                  "PDB",
+                  "ihm_equilibrium_constant_determination_method_fkey"
+               ],
+               "equilibrium_constant_unit",
+               {
+                  "comment" : "Identifier for the multi-state scheme connectivity",
+                  "markdown_name" : "Scheme Connectivity Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_kinetic_rate_multi_state_scheme_connectivity_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the external file corresponding to the kinetic rate measurement",
+                  "markdown_name" : "External File Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_kinetic_rate_ihm_external_files_combo2_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the dataset group from which the kinetic rate is obtained",
+                  "markdown_name" : "Dataset Group Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_kinetic_rate_ihm_dataset_group_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "details"
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_relaxation_time",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "comment_display" : {
+               "*" : {
+                  "table_comment_display" : "inline"
+               }
+            },
+            "name" : "Relaxation times from Biophysical Experiments"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_relaxation_time",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_relaxation_time_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "value",
+               [
+                  "PDB",
+                  "ihm_relaxation_time_unit_fkey"
+               ],
+               "amplitude",
+               {
+                  "comment" : "Identifier for the external file corresponding to the relaxation time measurement",
+                  "markdown_name" : "External File Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_relaxation_time_ihm_external_files_combo2_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the dataset group from which the multi-state scheme is obtained",
+                  "markdown_name" : "Dataset Group Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_relaxation_time_ihm_dataset_group_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "details"
+            ],
+            "detailed" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_relaxation_time_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "value",
+               [
+                  "PDB",
+                  "ihm_relaxation_time_unit_fkey"
+               ],
+               "amplitude",
+               {
+                  "comment" : "Identifier for the external file corresponding to the relaxation time measurement",
+                  "markdown_name" : "External File Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_relaxation_time_ihm_external_files_combo2_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the dataset group from which the multi-state scheme is obtained",
+                  "markdown_name" : "Dataset Group Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_relaxation_time_ihm_dataset_group_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "details",
+               [
+                  "PDB",
+                  "ihm_relaxation_time_RCB_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_relaxation_time_RMB_fkey"
+               ],
+               "RCT",
+               "RMT",
+               [
+                  "PDB",
+                  "ihm_relaxation_time_Owner_fkey"
+               ]
+            ],
+            "entry" : [
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_relaxation_time_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               "value",
+               [
+                  "PDB",
+                  "ihm_relaxation_time_unit_fkey"
+               ],
+               "amplitude",
+               {
+                  "comment" : "Identifier for the external file corresponding to the relaxation time measurement",
+                  "markdown_name" : "External File Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_relaxation_time_ihm_external_files_combo2_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the dataset group from which the multi-state scheme is obtained",
+                  "markdown_name" : "Dataset Group Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_relaxation_time_ihm_dataset_group_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "details"
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_relaxation_time",
+         "uri" : "tag:isrd.isi.edu,2016:visible-foreign-keys",
+         "value" : {
+            "detailed" : [
+               [
+                  "PDB",
+                  "ihm_relaxation_time_multi_state_scheme_time_combo1_fkey"
+               ]
+            ],
+            "filter" : "detailed"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_relaxation_time_multi_state_scheme",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "comment_display" : {
+               "*" : {
+                  "table_comment_display" : "inline"
+               }
+            },
+            "name" : "Mapping experimentally measured relaxation times with multi-state schemes"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "ihm_relaxation_time_multi_state_scheme",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_relaxation_time_multi_state_scheme_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               {
+                  "comment" : "Identifier for the multi-state scheme",
+                  "markdown_name" : "Scheme Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_relaxation_time_multi_state_scheme_scheme_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the multi-state scheme connectivity",
+                  "markdown_name" : "Scheme Connectivity Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "relaxation_time_multi_state_scheme_connectivity_combo2_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the relaxation time",
+                  "markdown_name" : "Relaxation Time Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_relaxation_time_multi_state_scheme_time_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "details"
+            ],
+            "detailed" : [
+               "RID",
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_relaxation_time_multi_state_scheme_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               {
+                  "comment" : "Identifier for the multi-state scheme",
+                  "markdown_name" : "Scheme Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_relaxation_time_multi_state_scheme_scheme_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the multi-state scheme connectivity",
+                  "markdown_name" : "Scheme Connectivity Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "relaxation_time_multi_state_scheme_connectivity_combo2_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the relaxation time",
+                  "markdown_name" : "Relaxation Time Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_relaxation_time_multi_state_scheme_time_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "details",
+               [
+                  "PDB",
+                  "ihm_relaxation_time_multi_state_scheme_RCB_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_relaxation_time_multi_state_scheme_RMB_fkey"
+               ],
+               "RCT",
+               "RMT",
+               [
+                  "PDB",
+                  "ihm_relaxation_time_multi_state_scheme_Owner_fkey"
+               ]
+            ],
+            "entry" : [
+               {
+                  "comment" : "A reference to table entry.id.",
+                  "markdown_name" : "Structure Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_relaxation_time_multi_state_scheme_structure_id_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "id",
+               {
+                  "comment" : "Identifier for the multi-state scheme",
+                  "markdown_name" : "Scheme Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_relaxation_time_multi_state_scheme_scheme_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the multi-state scheme connectivity",
+                  "markdown_name" : "Scheme Connectivity Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "relaxation_time_multi_state_scheme_connectivity_combo2_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               {
+                  "comment" : "Identifier for the relaxation time",
+                  "markdown_name" : "Relaxation Time Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "ihm_relaxation_time_multi_state_scheme_time_combo1_fkey"
+                        ]
+                     },
+                     "RID"
+                  ]
+               },
+               "details"
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "Curation_Log",
+         "uri" : "tag:misd.isi.edu,2015:display",
+         "value" : {
+            "comment_display" : {
+               "*" : {
+                  "table_comment_display" : "inline"
+               }
+            },
+            "name" : "Curation Log"
+         }
+      },
+      {
+         "schema" : "PDB",
+         "table" : "Curation_Log",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               {
+                  "comment" : "Entry Id",
+                  "markdown_name" : "Entry Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Curation_Log_Entry_fkey"
+                        ]
+                     },
+                     "id"
+                  ]
+               },
+               {
+                  "comment" : "Entry Accession Code",
+                  "markdown_name" : "Accession Code",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Curation_Log_Entry_fkey"
+                        ]
+                     },
+                     "Accession_Code"
+                  ]
+               },
+               "Log_Date",
+               "Details",
+               "Submitter_Allow",
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Curation_Log_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Curation_Log_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               "RCT",
+               "RMT"
+            ],
+            "detailed" : [
+               "RID",
+               {
+                  "comment" : "Entry Id",
+                  "markdown_name" : "Entry Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Curation_Log_Entry_fkey"
+                        ]
+                     },
+                     "id"
+                  ]
+               },
+               {
+                  "comment" : "Entry Accession Code",
+                  "markdown_name" : "Accession Code",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Curation_Log_Entry_fkey"
+                        ]
+                     },
+                     "Accession_Code"
+                  ]
+               },
+               "Log_Date",
+               "Details",
+               "Submitter_Allow",
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Curation_Log_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Curation_Log_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               "RCT",
+               "RMT"
+            ],
+            "entry" : [
+               {
+                  "comment" : "Entry Id",
+                  "markdown_name" : "Entry Id",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "PDB",
+                           "Curation_Log_Entry_fkey"
+                        ]
+                     },
+                     "id"
+                  ]
+               },
+               "Log_Date",
+               "Details",
+               "Submitter_Allow"
+            ]
+         }
+      },
+      {
+         "schema" : "PDB",
          "table" : "ihm_hdx_restraint",
          "uri" : "tag:misd.isi.edu,2015:display",
          "value" : {
@@ -15544,6 +17323,14 @@
                [
                   "PDB",
                   "ihm_localization_density_files_file_id_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_kinetic_rate_ihm_external_files_combo2_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_relaxation_time_ihm_external_files_combo2_fkey"
                ]
             ],
             "filter" : "detailed"
@@ -18407,6 +20194,10 @@
                   ]
                },
                "title",
+               [
+                  "PDB",
+                  "struct_pdbx_structure_determination_methodology_fkey"
+               ],
                "pdbx_descriptor",
                "pdbx_details",
                "pdbx_model_details",
@@ -18432,6 +20223,10 @@
                   ]
                },
                "title",
+               [
+                  "PDB",
+                  "struct_pdbx_structure_determination_methodology_fkey"
+               ],
                "pdbx_descriptor",
                "pdbx_details",
                "pdbx_model_details",
@@ -18470,6 +20265,10 @@
                   ]
                },
                "title",
+               [
+                  "PDB",
+                  "struct_pdbx_structure_determination_methodology_fkey"
+               ],
                "pdbx_descriptor",
                "pdbx_details",
                "pdbx_model_details",
@@ -18689,6 +20488,10 @@
                   "PDB",
                   "ihm_ensemble_info_sub_sampling_type_fkey"
                ],
+               [
+                  "PDB",
+                  "ihm_ensemble_info_model_group_superimposed_flag_fkey"
+               ],
                "num_ensemble_models",
                "num_ensemble_models_deposited",
                "ensemble_precision_value",
@@ -18765,6 +20568,10 @@
                [
                   "PDB",
                   "ihm_ensemble_info_sub_sampling_type_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_ensemble_info_model_group_superimposed_flag_fkey"
                ],
                "num_ensemble_models",
                "num_ensemble_models_deposited",
@@ -18855,6 +20662,10 @@
                [
                   "PDB",
                   "ihm_ensemble_info_sub_sampling_type_fkey"
+               ],
+               [
+                  "PDB",
+                  "ihm_ensemble_info_model_group_superimposed_flag_fkey"
                ],
                "num_ensemble_models",
                "num_ensemble_models_deposited",
@@ -19993,12 +21804,6 @@
       {
          "schema" : "PDB",
          "table" : "entity_poly_seq",
-         "uri" : "tag:isrd.isi.edu,2016:generated",
-         "value" : null
-      },
-      {
-         "schema" : "PDB",
-         "table" : "entity_poly_seq",
          "uri" : "tag:isrd.isi.edu,2016:visible-columns",
          "value" : {
             "*" : [
@@ -20834,12 +22639,6 @@
             },
             "markdown_name" : "Instances of Molecular Entities^*^"
          }
-      },
-      {
-         "schema" : "PDB",
-         "table" : "struct_asym",
-         "uri" : "tag:isrd.isi.edu,2016:generated",
-         "value" : null
       },
       {
          "schema" : "PDB",
@@ -22544,7 +24343,7 @@
       },
       {
          "schema" : "PDB",
-         "table" : "Entry_mmCIF_File",
+         "table" : "Entry_Generated_File",
          "uri" : "tag:misd.isi.edu,2015:display",
          "value" : {
             "comment_display" : {
@@ -22552,12 +24351,12 @@
                   "table_comment_display" : "inline"
                }
             },
-            "name" : "System Generated mmCIF File"
+            "name" : "System Generated Files"
          }
       },
       {
          "schema" : "PDB",
-         "table" : "Entry_mmCIF_File",
+         "table" : "Entry_Generated_File",
          "uri" : "tag:isrd.isi.edu,2016:table-display",
          "value" : {
             "row_name" : {
@@ -22567,12 +24366,16 @@
       },
       {
          "schema" : "PDB",
-         "table" : "Entry_mmCIF_File",
+         "table" : "Entry_Generated_File",
          "uri" : "tag:isrd.isi.edu,2016:visible-columns",
          "value" : {
             "*" : [
                "RID",
                "File_URL",
+               [
+                  "PDB",
+                  "Entry_Generated_File_System_Generated_File_Type_fkey"
+               ],
                {
                   "aggregate" : "array_d",
                   "array_options" : {
@@ -22596,7 +24399,7 @@
                      {
                         "inbound" : [
                            "PDB",
-                           "Conform_Dictionary_Entry_mmCIF_File_fkey"
+                           "Conform_Dictionary_Entry_Generated_File_fkey"
                         ]
                      },
                      {
@@ -22610,12 +24413,16 @@
                },
                [
                   "PDB",
-                  "Entry_mmCIF_File_Structure_Id_fkey"
+                  "Entry_Generated_File_Structure_Id_fkey"
                ]
             ],
             "detailed" : [
                "RID",
                "File_URL",
+               [
+                  "PDB",
+                  "Entry_Generated_File_System_Generated_File_Type_fkey"
+               ],
                {
                   "aggregate" : "array_d",
                   "array_options" : {
@@ -22639,7 +24446,7 @@
                      {
                         "inbound" : [
                            "PDB",
-                           "Conform_Dictionary_Entry_mmCIF_File_fkey"
+                           "Conform_Dictionary_Entry_Generated_File_fkey"
                         ]
                      },
                      {
@@ -22653,14 +24460,32 @@
                },
                [
                   "PDB",
-                  "Entry_mmCIF_File_Structure_Id_fkey"
+                  "Entry_Generated_File_Structure_Id_fkey"
                ],
                "File_Bytes",
                "File_MD5"
             ],
-            "entry" : [],
+            "entry" : [
+               "File_URL",
+               [
+                  "PDB",
+                  "Entry_Generated_File_System_Generated_File_Type_fkey"
+               ],
+               [
+                  "PDB",
+                  "Entry_Generated_File_Structure_Id_Entry_RCB_fkey"
+               ]
+            ],
             "entry/edit" : [
-               "File_URL"
+               "File_URL",
+               [
+                  "PDB",
+                  "Entry_Generated_File_System_Generated_File_Type_fkey"
+               ],
+               [
+                  "PDB",
+                  "Entry_Generated_File_Structure_Id_Entry_RCB_fkey"
+               ]
             ]
          }
       },
@@ -22690,12 +24515,6 @@
       {
          "schema" : "PDB",
          "table" : "Entry_Error_File",
-         "uri" : "tag:isrd.isi.edu,2016:generated",
-         "value" : null
-      },
-      {
-         "schema" : "PDB",
-         "table" : "Entry_Error_File",
          "uri" : "tag:isrd.isi.edu,2016:visible-columns",
          "value" : {
             "*" : [
@@ -22708,7 +24527,7 @@
                "File_URL",
                [
                   "PDB",
-                  "Entry_Error_File_File_Type_fkey"
+                  "Entry_Error_File_System_Generated_File_Type_fkey"
                ]
             ],
             "detailed" : [
@@ -22723,7 +24542,7 @@
                "File_URL",
                [
                   "PDB",
-                  "Entry_Error_File_File_Type_fkey"
+                  "Entry_Error_File_System_Generated_File_Type_fkey"
                ]
             ],
             "entry" : [
@@ -22734,7 +24553,7 @@
                ],
                [
                   "PDB",
-                  "Entry_Error_File_File_Type_fkey"
+                  "Entry_Error_File_System_Generated_File_Type_fkey"
                ]
             ]
          }
@@ -23018,11 +24837,11 @@
                ],
                [
                   "PDB",
-                  "ihm_ordered_ensemble_model_group_id_begin_fkey"
+                  "ihm_ordered_model_ihm_model_group_1_combo1_fkey"
                ],
                [
                   "PDB",
-                  "ihm_ordered_ensemble_model_group_id_end_fkey"
+                  "ihm_ordered_ensemble_model_group_id_begin_fkey"
                ],
                [
                   "PDB",
@@ -29085,7 +30904,7 @@
       },
       {
          "schema" : "Vocab",
-         "table" : "Validation_File_Type",
+         "table" : "System_Generated_File_Type",
          "uri" : "tag:isrd.isi.edu,2016:visible-columns",
          "value" : {
             "*" : [
@@ -29100,7 +30919,7 @@
                      {
                         "outbound" : [
                            "Vocab",
-                           "Validation_File_Type_RCB_fkey"
+                           "System_Generated_File_Type_RCB_fkey"
                         ]
                      },
                      "Full_Name"
@@ -29112,7 +30931,7 @@
                      {
                         "outbound" : [
                            "Vocab",
-                           "Validation_File_Type_RMB_fkey"
+                           "System_Generated_File_Type_RMB_fkey"
                         ]
                      },
                      "Full_Name"
@@ -29122,7 +30941,7 @@
                "RMT",
                [
                   "Vocab",
-                  "Validation_File_Type_Owner_fkey"
+                  "System_Generated_File_Type_Owner_fkey"
                ]
             ]
          }
@@ -29705,6 +31524,50 @@
       },
       {
          "schema" : "Vocab",
+         "table" : "struct_pdbx_structure_determination_methodology",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               "Name",
+               "Description",
+               "ID",
+               "URI",
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "struct_pdbx_structure_determination_methodology_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "struct_pdbx_structure_determination_methodology_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               "RCT",
+               "RMT",
+               [
+                  "Vocab",
+                  "struct_pdbx_structure_determination_methodology_term_Owner_fkey"
+               ]
+            ]
+         }
+      },
+      {
+         "schema" : "Vocab",
          "table" : "software_type",
          "uri" : "tag:isrd.isi.edu,2016:visible-columns",
          "value" : {
@@ -29755,6 +31618,94 @@
                [
                   "Vocab",
                   "ihm_multi_state_modeling_experiment_type_term_Owner_fkey"
+               ]
+            ]
+         }
+      },
+      {
+         "schema" : "Vocab",
+         "table" : "ihm_relaxation_time_unit",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               "Name",
+               "Description",
+               "ID",
+               "URI",
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_relaxation_time_unit_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_relaxation_time_unit_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               "RCT",
+               "RMT",
+               [
+                  "Vocab",
+                  "ihm_relaxation_time_unit_term_Owner_fkey"
+               ]
+            ]
+         }
+      },
+      {
+         "schema" : "Vocab",
+         "table" : "ihm_equilibrium_constant_determination_method",
+         "uri" : "tag:isrd.isi.edu,2016:visible-columns",
+         "value" : {
+            "*" : [
+               "RID",
+               "Name",
+               "Description",
+               "ID",
+               "URI",
+               {
+                  "markdown_name" : "RCB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_equilibrium_constant_determination_method_term_RCB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               {
+                  "markdown_name" : "RMB",
+                  "source" : [
+                     {
+                        "outbound" : [
+                           "Vocab",
+                           "ihm_equilibrium_constant_determination_method_term_RMB_fkey"
+                        ]
+                     },
+                     "Full_Name"
+                  ]
+               },
+               "RCT",
+               "RMT",
+               [
+                  "Vocab",
+                  "ihm_equilibrium_constant_determination_method_term_Owner_fkey"
                ]
             ]
          }

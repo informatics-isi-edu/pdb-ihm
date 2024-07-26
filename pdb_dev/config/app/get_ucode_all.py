@@ -30,7 +30,7 @@ def column_is_fk(fkeys, table_name, column_name, model_root, indent, vocab_table
         if debug == True:
             print('{}PDB.{}.{} is not a Foreign Key'.format(indent, table_name, column_name))
 
-args = ['/usr/bin/python3', 'testGetUcode.py', 'ihm-extension.dic']
+args = ['/usr/bin/python3', 'testGetUcode.py', 'mmcif_ihm_ext.dic']
 if debug == True:
     print('Running "{}"'.format(' '.join(args))) 
 p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -43,7 +43,7 @@ fw = open('ucode_ihm.log', 'w')
 fw.write(stdoutdata.decode('utf-8'))
 fw.close()
 
-args = ['/usr/bin/python3', 'testGetUcode.py', 'mmcif_v5.342_ihm_v1.17.dic']
+args = ['/usr/bin/python3', 'testGetUcode.py', 'mmcif_ihm.dic']
 if debug == True:
     print('Running "{}"'.format(' '.join(args))) 
 p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -71,6 +71,7 @@ ucode = {}
 
 vocab_tables = []
 
+missing_columns = {}
 missing_tables = []
 
 for input in ['ucode_ihm.log', 'ucode_mmCIF.log']:
@@ -101,11 +102,18 @@ for table_name,columns in ucode.items():
         table = model_root.schemas[schema_name].tables[table_name]
         fkeys = table.foreign_keys
         for column_name in columns:
-            column = table.column_definitions.__getitem__(column_name)
-            column_is_fk(fkeys, table_name, column_name, model_root, '', vocab_tables)
+            try:
+                column = table.column_definitions.__getitem__(column_name)
+                column_is_fk(fkeys, table_name, column_name, model_root, '', vocab_tables)
+            except:
+                if table_name not in missing_columns.keys():
+                    missing_columns[table_name] = []
+                missing_columns[table_name].append(column_name)
     except:
         missing_tables.append(table_name)
 
+print(json.dumps(missing_tables, indent=4))
+print(json.dumps(missing_columns, indent=4))
 if False:
     for vocab_table in vocab_tables:
         print('select count(*) as {} from "Vocab".{};'.format(vocab_table, vocab_table))
