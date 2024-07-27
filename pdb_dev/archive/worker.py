@@ -246,7 +246,6 @@ class ArchiveClient (object):
         """
         """
         Clean up the release and holding directories
-        """
         try:
             shutil.rmtree(f'{self.archive_parent}/{self.released_entry_dir}')
         except:
@@ -256,6 +255,7 @@ class ArchiveClient (object):
             shutil.rmtree(f'{self.archive_parent}/{self.holding_dir}')
         except:
             pass
+        """
 
         """
         Create the parent directories
@@ -371,7 +371,7 @@ class ArchiveClient (object):
                     """
                     self.generateReleasedZip(filename, hash, entry_id, file_type, self.get_manifest_key(accesion_code_row))
 
-            url = f'/attribute/PDB:entry/RID={urlquote(rid)}/PDB:Entry_Latest_Archive/RID'
+            url = f'/attribute/PDB:entry/RID={urlquote(rid)}/PDB:Entry_Latest_Archive/RID,mmCIF_URL'
             self.logger.debug(f'Query for detecting if the record exists or not in the Entry_Latest_Archive table: "{url}"') 
             resp = self.catalog.get(url)
             resp.raise_for_status()
@@ -398,16 +398,22 @@ class ArchiveClient (object):
                 """
                 Entry that was updated
                 """
-                updated_rows.append(
-                    {
-                        'mmCIF_URL': self.released_structures[entry_id]['File_URL'],
-                        'Submission_Time': self.submission_date,
-                        'Archive': self.PDB_Archive_RID,
-                        'RID': latest_archive_record[0]['RID']
-                    }
+                if rid not in rel_warnings and latest_archive_record[0]['mmCIF_URL'] != self.released_structures[entry_id]['File_URL']:
+                    updated_rows.append(
+                        {
+                            'mmCIF_URL': self.released_structures[entry_id]['File_URL'],
+                            'Submission_Time': self.submission_date,
+                            'Archive': self.PDB_Archive_RID,
+                            'RID': latest_archive_record[0]['RID']
+                        }
                 )
         
-        self.insert_or_update_rows(inserted_rows, updated_rows, 'Entry_Latest_Archive')
+        columns = [
+            'mmCIF_URL',
+            'Submission_Time',
+            'Archive'
+            ]
+        self.insert_or_update_rows(inserted_rows, updated_rows, 'Entry_Latest_Archive', columns)
         
         """
         Generate the manifest files
@@ -675,6 +681,7 @@ class ArchiveClient (object):
         os.chdir(self.data_scratch)
         renamed_file = filename.lower()
         os.rename(filename,renamed_file)
+
         with open(renamed_file, 'rb') as f_in:
             with gzip.open(f'{renamed_file}.gz', 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
@@ -684,6 +691,10 @@ class ArchiveClient (object):
         """
         archiveDirectory = self.getFileArchiveDirectory(hash, manifest_key.lower(), file_type)
         os.makedirs(archiveDirectory, exist_ok=True)
+        try:
+            os.remove(f'{archiveDirectory}/{renamed_file}.gz')
+        except:
+            pass
         shutil.move(f'{renamed_file}.gz', archiveDirectory)
         os.remove(renamed_file)
         os.chdir(currentDirectory)
@@ -698,6 +709,10 @@ class ArchiveClient (object):
     def generateHoldingZip(self, filename):
         currentDirectory=os.getcwd()
         os.chdir(f'{self.archive_parent}/{self.getHoldingSubDirectory()}')
+        try:
+            os.remove(f'{filename}.gz')
+        except:
+            pass
         with open(filename, 'rb') as f_in:
             with gzip.open(f'{filename}.gz', 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
@@ -734,12 +749,13 @@ class ArchiveClient (object):
     """
     Insert or update a record
     """
-    def insert_or_update_rows(self, inserted_rows, updated_rows, table, schema='PDB'):
+    def insert_or_update_rows(self, inserted_rows, updated_rows, table, columns, schema='PDB'):
         if len(inserted_rows) > 0:
             """
             The records does not exist
             """
             self.insert_rows(inserted_rows, table, schema)
+
         if len(updated_rows) > 0:
             """
             The records exist. Update them.
@@ -890,6 +906,7 @@ class ArchiveClient (object):
                 old_hexa_md5 = hashes['md5'][0]
                 os.remove(outfile)
             except:
+                os.remove(outfile)
                 old_hexa_md5 = None
             
             if hatrac_URI != None and hexa_md5 == old_hexa_md5:
