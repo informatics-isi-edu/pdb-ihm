@@ -64,7 +64,6 @@ class ArchiveClient (object):
         self.holding_dir = kwargs.get("holding_dir")
         self.data_scratch = kwargs.get("data_scratch")
         self.credentials = kwargs.get("credentials")
-        self.accession_code_mode = kwargs['accession_code_mode']
         self.hatrac_namespace = kwargs.get("hatrac_namespace")
         self.holding_namespace = kwargs.get("holding_namespace")
         self.released_structures = {}
@@ -524,6 +523,14 @@ class ArchiveClient (object):
         return 0
 
     """
+    Get UTC Submission Time 
+    """
+    def getSubmissionTimeUTC(self, submission_str):
+        submission_obj = dt.fromisoformat(submission_str)
+        submission_utc = submission_obj.replace(hour=21,tzinfo=timezone.utc).isoformat()
+        return f'{submission_utc}'
+
+    """
     Write manifest 
     """
     def writeManifestFiles(self):
@@ -536,7 +543,7 @@ class ArchiveClient (object):
         resp.raise_for_status()
         entries = resp.json()
         for entry in entries:
-            released_structures_LMD[entry['Accession_Code']] = f'{entry["Submission_Time"]}'
+            released_structures_LMD[entry['Accession_Code']] = self.getSubmissionTimeUTC(f'{entry["Submission_Time"]}')
             submitted_files = entry['Submitted_Files']
             rid = urlquote(entry['Entry'])
             url = f'/entity/PDB:entry/RID={rid}/Entry_Generated_File'
@@ -648,24 +655,26 @@ class ArchiveClient (object):
     Get the PDB_Accession_Code
     """
     def get_hash(self, accesion_code_row):
-        if self.accession_code_mode == 'PDB':
-            """
-            try:
-                r = re.search(r'^pdb_(\w{4})$', accesion_code_row['Accesssion_Code'])
-                h = r.group(1)[1:3]
-            except:
-                h = accesion_code_row['PDB_Accession_Code'][1:3]
-            """
-            h = accesion_code_row['Accession_Code'][1:3].lower()
-        else:
-            h = accesion_code_row['Accession_Code'][1:3].lower()
+        h = accesion_code_row['Accession_Code'][1:3].lower()
         return h
+
+        """
+        try:
+            r = re.search(r'^pdb_(\w{4})$', accesion_code_row['Accesssion_Code'])
+            h = r.group(1)[1:3]
+        except:
+            h = accesion_code_row['PDB_Accession_Code'][1:3]
+        """
+        """
+        h = accesion_code_row['Accession_Code'][1:3].lower()
+        return h
+        """
 
     """
     Get the primary accession code
     """
     def get_entry_id(self, accesion_code_row):
-        return accesion_code_row['PDB_Accession_Code'][-4:].lower() if self.accession_code_mode == 'PDB' else accesion_code_row['Accession_Code']
+        return accesion_code_row['Accession_Code']
 
     """
     Get the manifest keys
@@ -858,7 +867,7 @@ class ArchiveClient (object):
                 continue
             
             unreleased_entries[row['Accession_Code']] = {'status_code': 'HOLD',
-                                                         'deposit_date': row['Deposit_Date'],
+                                                         'deposit_date': f'{row["Deposit_Date"]}T00:00:00+00:00',
                                                          'prerelease_sequence_available_flag': 'N'}
         
         """

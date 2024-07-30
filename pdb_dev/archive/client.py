@@ -112,13 +112,6 @@ def get_configuration(cfg, logger):
 
     config['holding_namespace'] = holding_namespace
 
-    primary_accession_code_mode = cfg.get('primary_accession_code_mode', 'PDBDEV')
-    if primary_accession_code_mode not in ['PDBDEV', 'PDB']:
-        logger.error(f'Invalid value for the primary_accession_code_mode: {primary_accession_code_mode}.')
-        return None
-
-    config['accession_code_mode'] = primary_accession_code_mode
-
     archive_parent = cfg.get('archive_parent', None)
     if not archive_parent or not os.path.isdir(archive_parent):
         logger.error('archive parent directory must be provided and exists.')

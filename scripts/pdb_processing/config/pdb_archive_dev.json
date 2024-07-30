@@ -2,7 +2,6 @@
     "hostname": "dev-aws.pdb-dev.org",
     "catalog": 99,
     "credentials": "/home/pdbihm/.secrets/credentials.json",
-    "primary_accession_code_mode": "PDBDEV",
     "archive_parent": "/mnt/vdb1/archive",
     "data_scratch": "/mnt/vdb1/archive/scratch/dev",
     "released_entry_dir": "pdb_ihm/data/entries",
