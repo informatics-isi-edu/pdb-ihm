@@ -132,6 +132,7 @@
                 "url_pattern": "/<hatrac>/WWW/Page_Asset/{{{MD5}}}.{{#encode}}{{{Filename}}}{{/encode}}"
             }
         },
+#if defined(dev)
         {
             "column": "Current_File_Holdings_URL",
             "schema": "PDB",
@@ -168,6 +169,7 @@
                 "url_pattern": "/<hatrac>/pdb/archive/holdings/{{{Unreleased_Entries_Name}}}"
             }
         },
+#endif
         {
             "column": "Image_File_URL",
             "schema": "PDB",
@@ -402,6 +404,7 @@
             "uri": "tag:isrd.isi.edu,2018:required",
             "value": {}
         },
+#if defined(dev)
         {
             "column": "Archive_Category",
             "schema": "Vocab",
@@ -494,6 +497,7 @@
                 "name": "Released Structures LMD Name"
             }
         },
+#endif
         {
             "column": "pdbx_descriptor",
             "schema": "PDB",
@@ -1649,6 +1653,7 @@
                 }
             }
         },
+#if defined(dev)
         {
             "schema": "PDB",
             "table": "PDB_Archive",
@@ -1662,6 +1667,7 @@
                 }
             }
         },
+#endif
         {
             "schema": "PDB",
             "table": "ihm_localization_density_files",
@@ -4608,7 +4614,7 @@
                 ]
             }
         },
-#if defined(dev)
+#if 1
         {
             "schema": "PDB",
             "table": "ihm_ordered_model",
@@ -7217,6 +7223,7 @@
                 ]
             }
         },
+#if defined(dev)
         {
             "schema": "PDB",
             "table": "PDB_Archive",
@@ -7557,6 +7564,7 @@
                 ]
             }
         },
+#endif
 #if 1
 		{
 		     "schema" : "PDB",
@@ -10917,7 +10925,7 @@
             }
         },
 #endif
-#if defined(dev)
+#if 1
         {
             "schema": "PDB",
             "table": "ihm_multi_state_scheme",
@@ -27688,6 +27696,7 @@
                 "*": [
                     "RID",
                     "Name",
+#if defined(dev)
 	                  {
 	                     "markdown_name" : "Archive Category",
 	                     "source" : [
@@ -27700,6 +27709,7 @@
 							"Name"
 	                     ]
 	                  },
+#endif
                     "Description",
                     "ID",
                     "URI",
@@ -27736,6 +27746,7 @@
                 ]
             }
         },
+#if defined(dev)
         {
             "schema": "Vocab",
             "table": "Archive_Category",
@@ -27781,6 +27792,7 @@
                 ]
             }
         },
+#endif
         {
             "schema": "Vocab",
             "table": "ihm_dataset_list_data_type",
@@ -30186,10 +30198,12 @@
                                 },
                                 {
                                     "children": [
+#if defined(dev)
                                         {
                                             "name": "Archive Category",
                                             "url": "/chaise/recordset/catalog_number/Vocab:Archive_Category"
                                         },
+#endif
                                         {
                                             "name": "File Format",
                                             "url": "/chaise/recordset/catalog_number/Vocab:File_Format"
