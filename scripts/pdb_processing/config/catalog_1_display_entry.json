@@ -657,14 +657,56 @@
                             "Entry_Generated_File_Structure_Id_Entry_RCB_fkey": {
                                 "schema": "PDB",
                                 "table": "Entry_Generated_File",
-                                "columns": "(Entry_RCB,Structure_Id)",
-                                "referenced_columns": "(RCB,id)"
+                                "columns": "(Structure_Id,Entry_RCB)",
+                                "referenced_columns": "(id,RCB)"
                             },
                             "Entry_Related_File_entry_id_fkey": {
                                 "schema": "PDB",
                                 "table": "Entry_Related_File",
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
+                            },
+                            "ihm_multi_state_scheme_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_multi_state_scheme",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_multi_state_scheme_connectivity_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_multi_state_scheme_connectivity",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_kinetic_rate_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_kinetic_rate",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_relaxation_time_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_relaxation_time",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_relaxation_time_multi_state_scheme_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_relaxation_time_multi_state_scheme",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_ordered_model_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_ordered_model",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "Entry_Latest_Archive_Entry_fkey": {
+                                "schema": "PDB",
+                                "table": "Entry_Latest_Archive",
+                                "columns": "(Entry)",
+                                "referenced_columns": "(RID)"
                             }
                         },
                         "annotations": {
@@ -1291,6 +1333,10 @@
                                     ],
                                     [
                                         "PDB",
+                                        "ihm_ordered_model_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
                                         "ihm_ordered_ensemble_structure_id_fkey"
                                     ],
                                     [
@@ -1456,6 +1502,26 @@
                                     [
                                         "PDB",
                                         "ihm_geometric_object_distance_restraint_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_multi_state_scheme_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_multi_state_scheme_connectivity_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_kinetic_rate_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_relaxation_time_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_relaxation_time_multi_state_scheme_structure_id_fkey"
                                     ],
                                     {
                                         "source": [
