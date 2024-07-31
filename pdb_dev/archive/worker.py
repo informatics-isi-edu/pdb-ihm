@@ -849,6 +849,7 @@ class ArchiveClient (object):
             response = self.catalog.get(url)
             response.raise_for_status()
             cif_file = response.json()
+            """
             if len(response.json()) < 3:
                 self.hold_warnings.append(rid)
                 excluded = True
@@ -865,6 +866,7 @@ class ArchiveClient (object):
             
             if excluded == True:
                 continue
+            """
             
             unreleased_entries[row['Accession_Code']] = {'status_code': 'HOLD',
                                                          'deposit_date': f'{row["Deposit_Date"]}T00:00:00+00:00',

@@ -1,0 +1,13 @@
+{
+    "hostname": "dev-aws.pdb-dev.org",
+    "catalog": 50,
+    "credentials": "/home/pdbihm/.secrets/credentials.json",
+    "archive_parent": "/mnt/vdb1/staging/archive",
+    "data_scratch": "/mnt/vdb1/archive/scratch/staging",
+    "released_entry_dir": "pdb_ihm/data/entries",
+    "holding_dir": "pdb_ihm/holdings",
+    "holding_namespace": "generated/archive/pdb_ihm/holdings",
+    "log": "/mnt/vdb1/staging/archive/log/archive.log",
+    "loglevel": "debug",
+    "mail": "/home/pdbihm/.secrets/mail.json"
+}
