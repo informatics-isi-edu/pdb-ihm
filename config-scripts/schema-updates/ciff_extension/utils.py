@@ -357,3 +357,28 @@ def set_foreign_key_acls(catalog, schema_name, table_name, constraint_name, acls
     model.apply()
     print('Set acls for the foreign key {} of the table {}:{}'.format(constraint_name, schema_name, table_name))
 
+"""
+add rows to a table
+rows is a list of JSON objects having as keys columns names
+"""
+def insert_rows(catalog, schema_name, table_name, rows):
+    url = f'/entity/{urlquote(schema_name)}:{urlquote(table_name)}'
+    resp = catalog.post(
+        url,
+        json=rows
+    )
+    resp.raise_for_status()
+    print(f'Added rows to the {schema_name}:{table_name} table.')
+
+"""
+update rows of a table
+rows is a list of JSON objects having as keys columns names inclusive the column_key.
+columns is a list of columns to be updated. It does not contain the column_key.
+"""
+def update_rows(catalog, schema_name, table_name, columns, rows, column_key='RID'):
+    columns = ','.join([urlquote(col) for col in columns])
+    url = f'/attributegroup/{urlquote(schema_name)}:{urlquote(table_name)}/{urlquote(column_key)};{columns}'
+    resp = catalog.put(url,json=rows)
+    resp.raise_for_status()
+    print(f'Updated rows of the {schema_name}:{table_name} table.')
+
