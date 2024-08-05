@@ -22,6 +22,7 @@ DCCTX = {
     "cli": "cli",
     "cli/clear_entry" : "cli/clr_ent",
     "cli/history": "cli/history",
+    "cli/remedy": "cli/remedy",
 }
 
 class Config():

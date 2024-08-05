@@ -13,3 +13,5 @@ def add_rows_to_vocab_table(catalog, table_name, rows):
     table.insert(rows, defaults=['ID', 'URI'])
     print('Added rows to the vocabulary table {}'.format(table_name))
 
+    
+
