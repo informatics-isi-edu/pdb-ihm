@@ -65,7 +65,7 @@ class PDBDEV_CLI(BaseCLI):
             super().__init__(description, epilog, False, config_file_required)
             
         self.remove_options(['--host', '--config-file'])
-        self.parser.add_argument('--host', metavar='<host>', help="Fully qualified hostname (default=dev.pdb-dev.org)", default="dev.pdb-dev.org", required=hostname_required)
+        self.parser.add_argument('--host', metavar='<host>', help="Fully qualified deriva hostname (default=dev-aws.pdb-dev.org)", default="dev-aws.pdb-dev.org", required=hostname_required)
         self.parser.add_argument('--catalog-id', metavar='<id>', help="Deriva catalog ID (default=99)", default="99", required=catalog_id_required)
         self.parser.add_argument('--rid', type=str, metavar='<RID>', action='store', help='The RID of the record.', required=rid_required, )
         #self.parser.set_defaults(host='dev.pdb-dev.org')

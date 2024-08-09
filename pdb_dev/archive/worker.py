@@ -428,7 +428,7 @@ class ArchiveClient (object):
         submission_date = f'{submission_datetime.date()}'
         hatrac_namespace = f'/{self.hatrac_namespace}/{self.holding_namespace}/{year}/{submission_date}'
         input_dir = f'{self.archive_parent}/{self.getHoldingSubDirectory()}'
-        file_name = 'current_holdings.json.gz'
+        file_name = 'current_file_holdings.json.gz'
         
         Current_File_Holdings_URL, Current_File_Holdings_Name, Current_File_Holdings_Bytes, Current_File_Holdings_MD5 = self.storeFileInHatrac(hatrac_namespace, file_name, input_dir)
         if Current_File_Holdings_URL == None:
@@ -930,14 +930,15 @@ class ArchiveClient (object):
                     content_type = 'application/octet-stream'
                 try:
                     hatrac_URI = self.store.put_loc(new_uri,
-                                                         newFile,
-                                                         headers={'Content-Type': content_type},
-                                                         content_disposition = "filename*=UTF-8''%s" % urlquote(file_name),
-                                                         md5 = new_md5,
-                                                         sha256 = new_sha256,
-                                                         content_type = content_type,
-                                                         chunked = chunked
-                                                       )
+                                                    newFile,
+                                                    headers={'Content-Type': content_type},
+                                                    content_disposition = "filename*=UTF-8''%s" % urlquote(file_name),
+                                                    md5 = new_md5,
+                                                    sha256 = new_sha256,
+                                                    content_type = content_type,
+                                                    chunked = chunked,
+                                                    allow_versioning=False
+                                                    )
                 except:
                     et, ev, tb = sys.exc_info()
                     self.logger.error('Can not upload file "%s" in hatrac "%s". Error: "%s"' % (file_name, new_uri, str(ev)))
