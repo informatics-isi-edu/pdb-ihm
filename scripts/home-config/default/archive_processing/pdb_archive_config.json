@@ -1,0 +1,11 @@
+{
+    "credentials": "/home/hongsuda/.deriva/credential.json",    
+    "archive_parent": "/mnt/vdb1/archive",
+    "data_scratch": "/mnt/vdb1/archive/scratch/dev",
+    "log_dir": "/mnt/vdb1/archive/log",    
+    "released_entry_dir": "pdb_ihm/data/entries",
+    "holding_dir": "pdb_ihm/holdings",
+    "holding_namespace": "generated/archive/pdb_ihm/holdings",
+    "loglevel": "debug",
+    "mail": "/home/pdbihm/.secrets/mail.json"
+}
