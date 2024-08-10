@@ -2591,7 +2591,7 @@ class PDBClient (object):
             record = f'{record}{database_2_primary_accession_code}\n'
         if database_2_alternative_accession_code != None:
             record = f'{record}{database_2_alternative_accession_code}\n'
-        record = f'{record}#'
+        record = f'{record}#\n'
         return record
 
     def get_database_2_string(self, mode, accesion_code_row):
