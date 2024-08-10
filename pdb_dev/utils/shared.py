@@ -44,7 +44,7 @@ class Config():
         if host == "data.pdb-dev.org":
             self.is_www = True
             self.is_prod = True            
-        elif host == "dev.pdb-dev.org" and catalog_id == "50":
+        elif host in ["dev.pdb-dev.org", "dev-aws.pdb-dev.org"] and catalog_id == "50":
             self.is_staging = True
         else:
             self.is_dev = True
@@ -73,7 +73,8 @@ class PDBDEV_CLI(BaseCLI):
 
     def parse_cli(self):
         global env
-        args = super().parse_cli()
+        #args = super().parse_cli()
+        args = self.parser.parse_args()
 
         cfg.apply_hostname(args.host, args.catalog_id)
         

@@ -70,6 +70,7 @@ def load(config_filename):
             else:
                 logging.getLogger().addHandler(logging.NullHandler())
             logger.debug("config: %s" % config)
+            
             return config
         except ValueError as e:
             logger.error('Malformed configuration file: %s' % e)
@@ -166,8 +167,9 @@ def main():
         config = load(args.config)
         if config != None:
             archive_worker_configuration = get_configuration(config, logger)
-            print(archive_worker_configuration)
-            return 1
+            #del archive_worker_configuration['logger']
+            #print(json.dumps(archive_worker_configuration, indent=4))
+            #return 1
             if archive_worker_configuration != None:
                 try:
                     archive_worker = ArchiveClient(archive_worker_configuration)
@@ -178,13 +180,13 @@ def main():
                     et, ev, tb = sys.exc_info()
                     sys.stderr.write('got exception "%s"' % str(ev))
                     sys.stderr.write('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-                    sys.stderr.write('\nusage: deriva-imaging-client --config <config-file> --rid <rid>\n\n')
+                    sys.stderr.write('\nusage: python3 -m pdb_dev.processing.archive.client --config <config-file>\n\n')
                     return 1
     except:
         et, ev, tb = sys.exc_info()
         sys.stderr.write('got exception "%s"' % str(ev))
         sys.stderr.write('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-        sys.stderr.write('\nusage: deriva-imaging-client --config <config-file> --rid <rid>\n\n')
+        sys.stderr.write('\nusage: python3 -m pdb_dev.processing.archive.client --config /home/pdbihm/pdb/config/dev/pdb_archive.json --catalog-id 1\n\n')
         return 1
 
     
@@ -194,7 +196,7 @@ def main():
 #        pip3 install --upgrade .
 #
 # Running the script:
-#    python3 -m pdb_dev.archive.client --config /home/pdbihm/pdb/config/www/pdb_archive.json 
+#    python3 -m pdb_dev.processing.archive.client --config /home/pdbihm/pdb/config/www/pdb_archive.json --catalog-id 1
 #
 """
 

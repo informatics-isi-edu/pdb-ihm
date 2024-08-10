@@ -36,7 +36,7 @@ from socket import gaierror, EAI_AGAIN
 
 from deriva.core import PollingErmrestCatalog, HatracStore, urlquote
 from deriva.core.utils import hash_utils as hu
-from deriva.core.utils.core_utils import DEFAULT_CHUNK_SIZE
+from deriva.core.utils.core_utils import DEFAULT_CHUNK_SIZE, NotModified
 
 import re
 import math
@@ -135,11 +135,14 @@ class ArchiveClient (object):
             """
             if self.PDB_Archive_RID != None:
                 url = f'/entity/PDB:Entry_Latest_Archive/Entry={urlquote(self.PDB_Archive_RID)}'
-                resp = self.catalog.delete(
-                    url
-                )
-                resp.raise_for_status()
-                self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
+                try:
+                    resp = self.catalog.delete(
+                        url
+                    )
+                    resp.raise_for_status()
+                    self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
+                except:
+                    pass
            
                 url = f'/entity/PDB:PDB_Archive/RID={urlquote(self.PDB_Archive_RID)}'
                 resp = self.catalog.delete(
@@ -231,13 +234,44 @@ class ArchiveClient (object):
         rel_warnings = []
         self.hold_warnings = []
         
+        url = '/attribute/A:=PDB:entry/Workflow_Status=REL/B:=PDB:Entry_Generated_File/File_Type=mmCIF/$A/A:RID,A:id,A:Deposit_Date,A:Accession_Code,B:File_URL'
+        self.logger.debug(f'Query for entries with REL status: "{url}"') 
+        
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        entries = resp.json()
+
+        url = '/attribute/A:=PDB:entry/Workflow_Status=REL/C:=PDB:Entry_Latest_Archive/A:RID,C:mmCIF_URL'
+        self.logger.debug(f'Query with archived entries: "{url}"') 
+        
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        archived_rows = resp.json()
+        
+        """
+        Covert the array to a dictionary
+        """
+        archived = {}
+        for archived_row in archived_rows:
+            archived[archived_row['RID']] = archived_row
+
+        """
+        Collect entries to be archived
+        """
+        rows = []
+        for entry in entries:
+            rid = entry['RID']
+            if rid not in archived.keys() or entry['File_URL'] != archived[rid]['mmCIF_URL']:
+                rows.append(entry)
+                
+        """
         url = '/attribute/A:=PDB:entry/Workflow_Status=REL/B:=PDB:Entry_Generated_File/File_Type=mmCIF/C:=left(A:RID)=(PDB:Entry_Latest_Archive:Entry)/Entry::null::;!B:File_URL=mmCIF_URL/$A/RID,id,Deposit_Date,Accession_Code'
         self.logger.debug(f'Query for entries to be archived: "{url}"') 
         
         resp = self.catalog.get(url)
         resp.raise_for_status()
         rows = resp.json()
-        """
+
         if len(rows) == 0:
             #No new entries to archive
             return 0
@@ -577,6 +611,20 @@ class ArchiveClient (object):
         self.generate_released_structures_LMD(releases=released_structures_LMD)
 
     """
+    Sort JSON object 
+    """
+    def order_dict(self, dictionary):
+        result = {}
+        for k, v in sorted(dictionary.items()):
+            if isinstance(v, dict):
+                result[k] = self.order_dict(v)
+            elif isinstance(v, list):
+                result[k] = sorted(v)
+            else:
+                result[k] = v
+        return result
+    
+    """
     Get the archive directory 
     """
     def getArchiveDirectory(self):
@@ -615,13 +663,13 @@ class ArchiveClient (object):
             """
             hour = now.hour
             #if hour >= 21:
-            if hour >= 14:
+            if hour >= 15:
                 """
                 The UTC time has passed 9PM. Get the Thursday of next week
                 The America/Los_Angeles time has passed 2PM. Get the Thursday of next week
                 """
                 closest_thursday += timedelta(days=7)
-        closest_thursday=closest_thursday.replace(hour=14,minute=0,second=0,microsecond=0)
+        closest_thursday=closest_thursday.replace(hour=15,minute=0,second=0,microsecond=0)
         return f'{closest_thursday}'
                 
     """
@@ -784,7 +832,7 @@ class ArchiveClient (object):
             """
             No new archived entries
             """
-            return
+            releases = {}
 
         
         """
@@ -810,19 +858,20 @@ class ArchiveClient (object):
             """
             No new holdings
             """
-            return
+            holdings = {}
 
         """
         Write the generate_current_holdings file
         """
         os.makedirs(f'{self.archive_parent}/{self.getHoldingSubDirectory()}', exist_ok=True)
-        with open(f'{self.archive_parent}/{self.getHoldingSubDirectory()}/current_holdings.json', 'w') as outfile:
-            json.dump(dict(sorted(holdings.items())), outfile, indent=4)
+        ordered_holding = self.order_dict(holdings)
+        with open(f'{self.archive_parent}/{self.getHoldingSubDirectory()}/current_file_holdings.json', 'w') as outfile:
+            json.dump(ordered_holding, outfile, indent=4)
 
         """
         zip the JSON file
         """
-        self.generateHoldingZip('current_holdings.json')
+        self.generateHoldingZip('current_file_holdings.json')
 
     """
     Generate the released_structures_LMD file
@@ -892,7 +941,7 @@ class ArchiveClient (object):
         self.generateHoldingZip('unreleased_entries.json')
                 
     """
-    Store the validation error file into hatrac
+    Store the  file into hatrac
     """
     def storeFileInHatrac(self, hatrac_namespace, file_name, file_path):
         try:
@@ -913,6 +962,7 @@ class ArchiveClient (object):
                 outfile = '{}.hatrac'.format(newFile)
                 r = self.store.get_obj(new_uri, destfilename=outfile)
                 hatrac_URI = r.headers['Content-Location']
+                old_hatrac_URI = hatrac_URI
                 hashes = hu.compute_file_hashes(outfile, hashes=['md5', 'sha256'])
                 old_hexa_md5 = hashes['md5'][0]
                 os.remove(outfile)
@@ -939,6 +989,8 @@ class ArchiveClient (object):
                                                     chunked = chunked,
                                                     allow_versioning=False
                                                     )
+                except NotModified:
+                    hatrac_URI = old_hatrac_URI
                 except:
                     et, ev, tb = sys.exc_info()
                     self.logger.error('Can not upload file "%s" in hatrac "%s". Error: "%s"' % (file_name, new_uri, str(ev)))
@@ -968,7 +1020,7 @@ released_structures_last_modified_dates.json
     "PDBDEV_00000005" : "2024-04-30T00:00:00+00:00"
 }
 
-current_holdings.json
+current_file_holdings.json
 {
 "PDBDEV_00000001" : {
     "mmcif": [
