@@ -10,10 +10,10 @@ host=`uname -n`
 # lookup config_dir for complicated hostname
 case "$host" in
     docker-pdbdev-validation-o3558551)
-	config_dir=workflow-dev
+	config_dir=workflow-dev.pdb-dev.org
 	;;
     ubuntu-ihm-o999742)
-	config_dir=workflow-prod
+	config_dir=workflow-prod.pdb-dev.org
 	;;
     *)
 	config_dir="$host"

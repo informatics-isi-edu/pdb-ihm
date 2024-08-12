@@ -27,11 +27,12 @@ then
     exit 1
 fi
 
+# NOTE: Ubuntu doesn't work well with cron jobs that ends with .sh. 
 #   cron.daily/pdb_www_backup.sh
 filenames=(
     cron.hourly/manage_hatrac_acls.sh
-    cron.daily/cleanup-tmp.sh
-    cron.daily/dev-update.sh
+    cron.daily/workflow-cleanup-tmp
+    cron.daily/workflow-dev-update
     #   cron.daily/pdb_www_backup.sh
 )
 
@@ -45,10 +46,10 @@ do
 	cron.hourly/manage_hatrac_acls.sh )
 	    default_dir=default
 	    ;;
-	cron.daily/dev-update.sh )
-	    default_dir=default
+	cron.daily/workflow-dev-update )
+	    default_dir=default-workflow
 	    ;;
-	cron.daily/cleanup-tmp.sh )
+	cron.daily/workflow-cleanup-tmp )
 	    default_dir=default-workflow
 	    ;;
 	cron.daily/pdb_www_backup.sh )
