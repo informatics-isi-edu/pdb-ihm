@@ -971,7 +971,7 @@ class ArchiveClient (object):
                 old_hexa_md5 = None
             
             if hatrac_URI != None and hexa_md5 == old_hexa_md5:
-                self.logger.info('Skipping the upload of the file "%s" as it already exists hatrac.' % file_name)
+                self.logger.debug('Skipping the upload of the file "%s" as it already exists hatrac.' % file_name)
             else:
                 if mimetypes.inited == False:
                     mimetypes.init()
@@ -986,11 +986,11 @@ class ArchiveClient (object):
                                                     md5 = new_md5,
                                                     sha256 = new_sha256,
                                                     content_type = content_type,
-                                                    chunked = chunked,
-                                                    allow_versioning=False
+                                                    chunked = chunked
                                                     )
                 except NotModified:
                     hatrac_URI = old_hatrac_URI
+                    self.logger.debug(f'{file_name} NotModified')
                 except:
                     et, ev, tb = sys.exc_info()
                     self.logger.error('Can not upload file "%s" in hatrac "%s". Error: "%s"' % (file_name, new_uri, str(ev)))
