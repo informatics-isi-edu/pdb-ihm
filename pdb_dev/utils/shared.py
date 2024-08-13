@@ -44,7 +44,7 @@ class Config():
         if host == "data.pdb-dev.org":
             self.is_www = True
             self.is_prod = True            
-        elif host == "dev.pdb-dev.org" and catalog_id == "50":
+        elif host in ["dev.pdb-dev.org", "dev-aws.pdb-dev.org"] and catalog_id == "50":
             self.is_staging = True
         else:
             self.is_dev = True
@@ -65,7 +65,7 @@ class PDBDEV_CLI(BaseCLI):
             super().__init__(description, epilog, False, config_file_required)
             
         self.remove_options(['--host', '--config-file'])
-        self.parser.add_argument('--host', metavar='<host>', help="Fully qualified hostname (default=dev.pdb-dev.org)", default="dev.pdb-dev.org", required=hostname_required)
+        self.parser.add_argument('--host', metavar='<host>', help="Fully qualified deriva hostname (default=dev-aws.pdb-dev.org)", default="dev-aws.pdb-dev.org", required=hostname_required)
         self.parser.add_argument('--catalog-id', metavar='<id>', help="Deriva catalog ID (default=99)", default="99", required=catalog_id_required)
         self.parser.add_argument('--rid', type=str, metavar='<RID>', action='store', help='The RID of the record.', required=rid_required, )
         #self.parser.set_defaults(host='dev.pdb-dev.org')
@@ -73,7 +73,8 @@ class PDBDEV_CLI(BaseCLI):
 
     def parse_cli(self):
         global env
-        args = super().parse_cli()
+        #args = super().parse_cli()        # parsing the arguments + initialize logging (stdout)
+        args = self.parser.parse_args()    # parsing the arguments only
 
         cfg.apply_hostname(args.host, args.catalog_id)
         
