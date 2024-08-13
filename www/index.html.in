@@ -37,12 +37,13 @@
 <!--
   <h3 id="constructs" class="bigger">PDB-Dev Data Harvesting System</h3>
 -->
-  <div class="explorer-content">
+<!--  <div class="explorer-content"> -->
   <div class="box">
   	<p>Welcome to the <strong>PDB-Dev Data Harvesting System</strong>. </p> 
     <p align="justify">The PDB-Dev Data Harvesting System provides a web interface for depositors to assemble all the information required for archiving integrative structures in PDB-Dev and to create a compliant mmCIF file. This includes the submission of integrative structures, associated spatial restraints and starting models used, modeling protocols and metadata information (citations, authors, software, data in external repositories, reference sequence information etc.).</p>
     <p align="justify">The Data Harvesting System provides an automated mechanism for collecting diverse and heterogeneous types of integrative structures and restraint data. The system has been developed using the <a href="http://isrd.isi.edu/deriva/">DERIVA</a> scientific asset management platform and is supported by the <a href="https://mmcif.wwpdb.org">PDBx/mmCIF</a> dictionary, the <a href="https://github.com/ihmwg/IHMCIF">IHMCIF dictionary</a> and the <a href="https://github.com/ihmwg/python-ihm">python-ihm</a> software library.</p>
     <p>
+    <p align="justify"> From August 14 2024, <a href="https://pdb-dev.wwpdb.org/">PDB-Dev</a> will issue 4-character PDB accession codes as part of the unification process with the PDB archive. Integrative structures processed by PDB-Dev will be made available alongside experimental structures in the <a href="https://files.wwpdb.org/pub/">PDB archive</a>. PDB-Dev accessions that have been already issued will be supported but new integrative structures will not be issued PDB-Dev accession codes and only PDB accession codes will be issued going forward. </p>
       Use the links below to start exploring the system.
     </p>
 <div class="demo-links">
@@ -55,7 +56,7 @@
   <p>Please report problems to <a href="mailto:pdb-dev@mail.wwpdb.org">pdb-dev@mail.wwpdb.org</a>. </p>
 <br>
 </div>
-</div>
+<!-- </div> -->
 </section>
 
 
