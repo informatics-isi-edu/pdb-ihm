@@ -279,6 +279,7 @@ class ArchiveClient (object):
         """
         """
         Clean up the release and holding directories
+        """
         try:
             shutil.rmtree(f'{self.archive_parent}/{self.released_entry_dir}')
         except:
@@ -288,7 +289,6 @@ class ArchiveClient (object):
             shutil.rmtree(f'{self.archive_parent}/{self.holding_dir}')
         except:
             pass
-        """
 
         """
         Create the parent directories
