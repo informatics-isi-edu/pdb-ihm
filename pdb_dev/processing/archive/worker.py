@@ -87,6 +87,25 @@ class ArchiveClient (object):
         self.logger.debug('Client initialized.')
 
     """
+    Print the configuration
+    """
+    def printConfiguration(self):
+        config = {
+            'host': self.host,
+            'catalog_id': self.catalog_id,
+            'archive_parent': self.archive_parent,
+            'released_entry_dir': self.released_entry_dir,
+            'holding_dir': self.holding_dir,
+            'data_scratch': self.data_scratch,
+            'credentials': self.credentials,
+            'hatrac_namespace': self.hatrac_namespace,
+            'holding_namespace': self.holding_namespace,
+            'email': self.email
+            }
+        print(json.dumps(config, indent=4))
+        return 0
+
+    """
     Send email notification
     """
     def sendMail(self, subject, text):
