@@ -10,5 +10,7 @@ rsync -av --password-file=/home/pdbihm/.secrets/pdb-archive/ihm__user --delete -
 
 if [ -s ${ERROR_LOG_FILE} ] ;
 then
-	python3 -m pdb_dev.tools.send_email_notification --config /home/pdbihm/.secrets/mail.json -b ${ERROR_LOG_FILE}
+	python3 -m pdb_dev.tools.send_email_notification --config /home/pdbihm/.secrets/mail.json -s "Error rsync archive" -b ${ERROR_LOG_FILE}
+else
+	python3 -m pdb_dev.tools.send_email_notification --config /home/pdbihm/.secrets/mail.json -s "Successfully rsync archive" -b ""
 fi

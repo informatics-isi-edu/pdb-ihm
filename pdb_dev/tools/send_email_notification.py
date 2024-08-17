@@ -31,9 +31,12 @@ parser.add_argument( '-d', '--receiver', help='The mail receiver.', action='stor
 
 args = parser.parse_args()
 #print(f'config={args.config}\nsubject={args.subject}\nbody={args.body}\nsender={args.sender}\nreceiver={args.receiver}')
-f = open(args.body, 'r')
-body = f.read()
-f.close()
+if args.body != '':
+    f = open(args.body, 'r')
+    body = f.read()
+    f.close()
+else:
+    body = ''
 
 if not os.path.isfile(args.config):
     print('email configuration file must exist.')
