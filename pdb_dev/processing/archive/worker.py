@@ -253,49 +253,6 @@ class ArchiveClient (object):
         rel_warnings = []
         self.hold_warnings = []
         
-        url = '/attribute/A:=PDB:entry/Workflow_Status=REL/B:=PDB:Entry_Generated_File/File_Type=mmCIF/$A/A:RID,A:id,A:Deposit_Date,A:Accession_Code,B:File_URL'
-        self.logger.debug(f'Query for entries with REL status: "{url}"') 
-        
-        resp = self.catalog.get(url)
-        resp.raise_for_status()
-        entries = resp.json()
-
-        url = '/attribute/A:=PDB:entry/Workflow_Status=REL/C:=PDB:Entry_Latest_Archive/A:RID,C:mmCIF_URL'
-        self.logger.debug(f'Query with archived entries: "{url}"') 
-        
-        resp = self.catalog.get(url)
-        resp.raise_for_status()
-        archived_rows = resp.json()
-        
-        """
-        Covert the array to a dictionary
-        """
-        archived = {}
-        for archived_row in archived_rows:
-            archived[archived_row['RID']] = archived_row
-
-        """
-        Collect entries to be archived
-        """
-        rows = []
-        for entry in entries:
-            rid = entry['RID']
-            if rid not in archived.keys() or entry['File_URL'] != archived[rid]['mmCIF_URL']:
-                rows.append(entry)
-                
-        """
-        url = '/attribute/A:=PDB:entry/Workflow_Status=REL/B:=PDB:Entry_Generated_File/File_Type=mmCIF/C:=left(A:RID)=(PDB:Entry_Latest_Archive:Entry)/Entry::null::;!B:File_URL=mmCIF_URL/$A/RID,id,Deposit_Date,Accession_Code'
-        self.logger.debug(f'Query for entries to be archived: "{url}"') 
-        
-        resp = self.catalog.get(url)
-        resp.raise_for_status()
-        rows = resp.json()
-
-        if len(rows) == 0:
-            #No new entries to archive
-            return 0
-        
-        """
         """
         Clean up the release and holding directories
         """
@@ -319,32 +276,87 @@ class ArchiveClient (object):
         self.logger.debug(f'Submission Date: {self.submission_date}') 
         
         """
-        Create the new entry in the PDB_Archive table
+        Create the new entry in the PDB_Archive table if it does not exist
         """
-        insert_row = {'Submission_Time': self.submission_date
-                      }
-        default_columns = [
-            'Submitted_Entries',
-            'Current_File_Holdings_Name',
-            'Current_File_Holdings_URL',
-            'Current_File_Holdings_Bytes',
-            'Current_File_Holdings_MD5',
-            'Released_Structures_LMD_Name',
-            'Released_Structures_LMD_URL',
-            'Released_Structures_LMD_Bytes',
-            'Released_Structures_LMD_MD5',
-            'Unreleased_Entries_Name',
-            'Unreleased_Entries_URL',
-            'Unreleased_Entries_Bytes',
-            'Unreleased_Entries_MD5'
-        ]
-        res = self.insert_rows([insert_row], 'PDB_Archive',defaults=','.join(default_columns))
-        self.PDB_Archive_RID = res['RID']
+        url = f'/attribute/A:=PDB:PDB_Archive/Submission_Time={urlquote(self.submission_date)}/A:RID'
+        self.logger.debug(f"Query to see if the archive has been run this week: {url}") 
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        rows = resp.json()
+        if len(rows) > 0:
+            self.PDB_Archive_RID = rows[0]['RID']
+        else:
+            insert_row = {'Submission_Time': self.submission_date
+                          }
+            default_columns = [
+                'Submitted_Entries',
+                'Current_File_Holdings_Name',
+                'Current_File_Holdings_URL',
+                'Current_File_Holdings_Bytes',
+                'Current_File_Holdings_MD5',
+                'Released_Structures_LMD_Name',
+                'Released_Structures_LMD_URL',
+                'Released_Structures_LMD_Bytes',
+                'Released_Structures_LMD_MD5',
+                'Unreleased_Entries_Name',
+                'Unreleased_Entries_URL',
+                'Unreleased_Entries_Bytes',
+                'Unreleased_Entries_MD5'
+            ]
+            res = self.insert_rows([insert_row], 'PDB_Archive',defaults=','.join(default_columns))
+            self.PDB_Archive_RID = res['RID']
         
+        """
+        Get the entries that haven't been archived
+        """
+        url = f'/attribute/' + \
+            f'E:=PDB:entry/Workflow_Status=REL/' + \
+            f'F:=(id)=(PDB:Entry_Generated_File:Structure_Id)/File_Type=mmCIF/' + \
+            f'A:=left(E:RID)=(PDB:Entry_Latest_Archive:Entry)/Entry::null::;Submission_Time={urlquote(self.submission_date)}/' + \
+            f'$E/E:RID,E:id,E:Deposit_Date,E:Accession_Code,F:File_URL,A:Entry,A:Submission_Time,A:mmCIF_URL'
+            
+        self.logger.debug(f"Query for entries that haven't been archived: {url}") 
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        rows = resp.json()
+        unarchived_entries = []
+        changed_entries = []
+        changed_entries_rids = []
+        for row in rows:
+            if row['Entry'] == None:
+                unarchived_entries.append(row)
+            else:
+                changed_entries.append(row)
+                changed_entries_rids.append(row['RID'])
+        
+        self.logger.debug(f'unarchived_entries: {json.dumps(unarchived_entries, indent=4)}')
+        self.logger.debug(f'changed_entries_rids: {json.dumps(changed_entries_rids, indent=4)}')
+        """
+        Get the entries that mmCIF contents have changed
+        """
+        url = f'/attribute/' + \
+        f'A:=PDB:Entry_Latest_Archive/' + \
+        f'E:=(Entry)=(PDB:entry:RID)/Workflow_Status=REL/$A/' + \
+        f'F:=left(mmCIF_URL)=(PDB:Entry_Generated_File:File_URL)/F:File_URL::null::;A:Submission_Time={urlquote(self.submission_date)}/' + \
+        f'E:RID,E:id,E:Deposit_Date,E:Accession_Code,F:File_URL,A:Entry,A:Submission_Time,A:mmCIF_URL'
+    
+        self.logger.debug(f"Query for entries that entries that mmCIF contents have changed: {url}") 
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        rows = resp.json()
+        for row in rows:
+            if row['RID'] not in changed_entries_rids:
+                changed_entries.append(row)
+                self.logger.debug(f'appended {row["RID"]}')
+        
+        self.logger.debug(f'changed_entries: {json.dumps(changed_entries, indent=4)}')
+
         inserted_rows = []
         updated_rows = []
         self.no_validation_rids = []
         self.released_records = []
+        
+        rows = unarchived_entries + changed_entries
 
         """
         Get the new released files
@@ -450,7 +462,8 @@ class ArchiveClient (object):
                 """
                 Entry that was updated
                 """
-                if rid not in rel_warnings and latest_archive_record[0]['mmCIF_URL'] != self.released_structures[entry_id]['File_URL']:
+                #if rid not in rel_warnings and latest_archive_record[0]['mmCIF_URL'] != self.released_structures[entry_id]['File_URL']:
+                if rid not in rel_warnings:
                     updated_rows.append(
                         {
                             'mmCIF_URL': self.released_structures[entry_id]['File_URL'],
