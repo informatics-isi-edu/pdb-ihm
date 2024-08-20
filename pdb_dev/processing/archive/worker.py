@@ -83,6 +83,7 @@ class ArchiveClient (object):
         )
         self.catalog.dcctx['cid'] = 'pipeline/archive'
         self.email = kwargs.get("email")
+        self.cutoff_time = kwargs.get('cutoff_time')
         self.logger = kwargs.get("logger")
         self.logger.debug('Client initialized.')
 
@@ -272,8 +273,8 @@ class ArchiveClient (object):
         os.makedirs(f'{self.archive_parent}/{self.released_entry_dir}', exist_ok=True)
         os.makedirs(f'{self.archive_parent}/{self.holding_dir}', exist_ok=True)
 
-        self.submission_date = self.getArchiveDate()
-        self.logger.debug(f'Submission Date: {self.submission_date}') 
+        self.submission_date, self.previous_submission_date = self.getArchiveDate()
+        self.logger.debug(f'Submission Date: {self.submission_date}, {self.previous_submission_date}') 
         
         """
         Create the new entry in the PDB_Archive table if it does not exist
@@ -312,7 +313,7 @@ class ArchiveClient (object):
         url = f'/attribute/' + \
             f'E:=PDB:entry/Workflow_Status=REL/' + \
             f'F:=(id)=(PDB:Entry_Generated_File:Structure_Id)/File_Type=mmCIF/' + \
-            f'A:=left(E:RID)=(PDB:Entry_Latest_Archive:Entry)/Entry::null::;Submission_Time={urlquote(self.submission_date)}/' + \
+            f'A:=left(E:RID)=(PDB:Entry_Latest_Archive:Entry)/Entry::null::;(Submission_Time={urlquote(self.submission_date)}&A:RCT::gt::{urlquote(self.previous_submission_date)})/' + \
             f'$E/E:RID,E:id,E:Deposit_Date,E:Accession_Code,F:File_URL,A:Entry,A:Submission_Time,A:mmCIF_URL'
             
         self.logger.debug(f"Query for entries that haven't been archived: {url}") 
@@ -331,15 +332,18 @@ class ArchiveClient (object):
         
         self.logger.debug(f'unarchived_entries: {json.dumps(unarchived_entries, indent=4)}')
         self.logger.debug(f'changed_entries_rids: {json.dumps(changed_entries_rids, indent=4)}')
+        print(f'unarchived_entries: {json.dumps(unarchived_entries, indent=4)}')
+        print(f'changed_entries_rids: {json.dumps(changed_entries_rids, indent=4)}')
         """
         Get the entries that mmCIF contents have changed
         """
         url = f'/attribute/' + \
         f'A:=PDB:Entry_Latest_Archive/' + \
         f'E:=(Entry)=(PDB:entry:RID)/Workflow_Status=REL/$A/' + \
-        f'F:=left(mmCIF_URL)=(PDB:Entry_Generated_File:File_URL)/F:File_URL::null::;A:Submission_Time={urlquote(self.submission_date)}/' + \
+        f'F:=left(mmCIF_URL)=(PDB:Entry_Generated_File:File_URL)/F:File_URL::null::;A:Submission_Time={urlquote(self.submission_date)}&A:RCT::leq::{urlquote(self.previous_submission_date)})/' + \
         f'E:RID,E:id,E:Deposit_Date,E:Accession_Code,F:File_URL,A:Entry,A:Submission_Time,A:mmCIF_URL'
     
+        print(f"Query for entries that entries that mmCIF contents have changed: {url}") 
         self.logger.debug(f"Query for entries that entries that mmCIF contents have changed: {url}") 
         resp = self.catalog.get(url)
         resp.raise_for_status()
@@ -348,8 +352,11 @@ class ArchiveClient (object):
             if row['RID'] not in changed_entries_rids:
                 changed_entries.append(row)
                 self.logger.debug(f'appended {row["RID"]}')
+            else:
+                print(f'RID={row["RID"]} already found.')
         
         self.logger.debug(f'changed_entries: {json.dumps(changed_entries, indent=4)}')
+        print(f'changed_entries: {json.dumps(changed_entries, indent=4)}')
 
         inserted_rows = []
         updated_rows = []
@@ -593,7 +600,7 @@ class ArchiveClient (object):
     """
     def getSubmissionTimeUTC(self, submission_str):
         submission_obj = dt.fromisoformat(submission_str)
-        submission_utc = submission_obj.replace(hour=21,tzinfo=timezone.utc).isoformat()
+        #submission_utc = submission_obj.replace(hour=21,tzinfo=timezone.utc).isoformat()
         return f'{submission_utc}'
 
     """
@@ -694,14 +701,15 @@ class ArchiveClient (object):
             It is Thursday. Check the time.
             """
             hour = now.hour
-            """
-            if hour >= 15:
-                #The UTC time has passed 9PM. Get the Thursday of next week
-                #The America/Los_Angeles time has passed 3PM. Get the Thursday of next week
+            if hour >= self.cutoff_time:
+                """
+                The UTC time has passed 9PM. Get the Thursday of next week
+                The America/Los_Angeles time has passed 3PM. Get the Thursday of next week
+                """
                 closest_thursday += timedelta(days=7)
-            """
-        closest_thursday=closest_thursday.replace(hour=15,minute=0,second=0,microsecond=0)
-        return f'{closest_thursday}'
+        closest_thursday=closest_thursday.replace(hour=self.cutoff_time,minute=0,second=0,microsecond=0)
+        previous_closest_thursday= closest_thursday - timedelta(days=7)
+        return (f'{closest_thursday}', f'{previous_closest_thursday}')
                 
     """
     Extract the file from hatrac

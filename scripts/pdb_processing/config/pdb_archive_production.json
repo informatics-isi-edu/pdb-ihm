@@ -1,6 +1,7 @@
 {
     "hostname": "data.pdb-dev.org",
     "catalog": 1,
+    "cutoff_time": 20,
     "credentials": "/home/pdbihm/.secrets/credentials.json",
     "archive_parent": "/mnt/vdb1/archive",
     "data_scratch": "/mnt/vdb1/archive/scratch",
