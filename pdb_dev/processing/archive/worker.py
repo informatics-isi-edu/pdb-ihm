@@ -694,13 +694,12 @@ class ArchiveClient (object):
             It is Thursday. Check the time.
             """
             hour = now.hour
-            #if hour >= 21:
+            """
             if hour >= 15:
-                """
-                The UTC time has passed 9PM. Get the Thursday of next week
-                The America/Los_Angeles time has passed 2PM. Get the Thursday of next week
-                """
+                #The UTC time has passed 9PM. Get the Thursday of next week
+                #The America/Los_Angeles time has passed 3PM. Get the Thursday of next week
                 closest_thursday += timedelta(days=7)
+            """
         closest_thursday=closest_thursday.replace(hour=15,minute=0,second=0,microsecond=0)
         return f'{closest_thursday}'
                 
