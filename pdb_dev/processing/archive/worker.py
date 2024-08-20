@@ -332,18 +332,15 @@ class ArchiveClient (object):
         
         self.logger.debug(f'unarchived_entries: {json.dumps(unarchived_entries, indent=4)}')
         self.logger.debug(f'changed_entries_rids: {json.dumps(changed_entries_rids, indent=4)}')
-        print(f'unarchived_entries: {json.dumps(unarchived_entries, indent=4)}')
-        print(f'changed_entries_rids: {json.dumps(changed_entries_rids, indent=4)}')
         """
         Get the entries that mmCIF contents have changed
         """
         url = f'/attribute/' + \
         f'A:=PDB:Entry_Latest_Archive/' + \
         f'E:=(Entry)=(PDB:entry:RID)/Workflow_Status=REL/$A/' + \
-        f'F:=left(mmCIF_URL)=(PDB:Entry_Generated_File:File_URL)/F:File_URL::null::;A:Submission_Time={urlquote(self.submission_date)}&A:RCT::leq::{urlquote(self.previous_submission_date)})/' + \
+        f'F:=left(mmCIF_URL)=(PDB:Entry_Generated_File:File_URL)/F:File_URL::null::;(A:Submission_Time={urlquote(self.submission_date)}&A:RCT::leq::{urlquote(self.previous_submission_date)})/' + \
         f'E:RID,E:id,E:Deposit_Date,E:Accession_Code,F:File_URL,A:Entry,A:Submission_Time,A:mmCIF_URL'
     
-        print(f"Query for entries that entries that mmCIF contents have changed: {url}") 
         self.logger.debug(f"Query for entries that entries that mmCIF contents have changed: {url}") 
         resp = self.catalog.get(url)
         resp.raise_for_status()
@@ -352,11 +349,8 @@ class ArchiveClient (object):
             if row['RID'] not in changed_entries_rids:
                 changed_entries.append(row)
                 self.logger.debug(f'appended {row["RID"]}')
-            else:
-                print(f'RID={row["RID"]} already found.')
         
         self.logger.debug(f'changed_entries: {json.dumps(changed_entries, indent=4)}')
-        print(f'changed_entries: {json.dumps(changed_entries, indent=4)}')
 
         inserted_rows = []
         updated_rows = []
@@ -601,6 +595,7 @@ class ArchiveClient (object):
     def getSubmissionTimeUTC(self, submission_str):
         submission_obj = dt.fromisoformat(submission_str)
         #submission_utc = submission_obj.replace(hour=21,tzinfo=timezone.utc).isoformat()
+        submission_utc = submission_obj.astimezone(timezone.utc)
         return f'{submission_utc}'
 
     """
