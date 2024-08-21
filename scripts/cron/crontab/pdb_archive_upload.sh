@@ -1,5 +1,7 @@
 #!/bin/bash
 
+/home/isrddev/protein-database/scripts/cron/crontab/pdb_archive_zip.sh
+
 CURRENT_DATE=$(date +"%Y-%m-%d")
 RSYNC_DIR=/mnt/vdb1/archive/log/uploaded_pdb_ihm
 
