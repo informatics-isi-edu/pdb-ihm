@@ -122,6 +122,7 @@ def get_configuration(fcfg, logger):
     if not holding_dir:
         logger.error('The holding entry dir directory must be provided.')
         return None
+    config['holding_dir'] = holding_dir
     
     cutoff_time = fcfg.get('cutoff_time', 20)
     config['cutoff_time'] = cutoff_time
