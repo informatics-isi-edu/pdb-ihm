@@ -7226,6 +7226,8 @@
                     "RID",
                     "Submission_Time",
                     "Submitted_Entries",
+                    "New_Released_Entries",
+                    "Re_Released_Entries",
                     "Current_File_Holdings_URL",
                     "Released_Structures_LMD_URL",
                     "Unreleased_Entries_URL",
@@ -7266,6 +7268,14 @@
                   {
                      "markdown_name" : "Submitted Entries",
                      "source" : "Submitted_Entries"
+                  },
+                  {
+                     "markdown_name" : "New Released Entries",
+                     "source" : "New_Released_Entries"
+                  },
+                  {
+                     "markdown_name" : "Re-Released Entries",
+                     "source" : "Re_Released_Entries"
                   }
                 ]
                 },
@@ -7273,6 +7283,8 @@
                     "RID",
                     "Submission_Time",
                     "Submitted_Entries",
+                    "New_Released_Entries",
+                    "Re_Released_Entries",
                     "Current_File_Holdings_URL",
                     {
                         "markdown_name": "Current File Holdings Size (Bytes)",
@@ -7316,6 +7328,8 @@
                 "entry/edit": [
                     "Submission_Time",
                     "Submitted_Entries",
+                    "New_Released_Entries",
+                    "Re_Released_Entries",
                     "Current_File_Holdings_URL",
                     "Released_Structures_LMD_URL",
                     "Unreleased_Entries_URL"
@@ -7323,6 +7337,8 @@
                 "entry": [
                     "Submission_Time",
                     "Submitted_Entries",
+                    "New_Released_Entries",
+                    "Re_Released_Entries",
                     "Current_File_Holdings_URL",
                     "Released_Structures_LMD_URL",
                     "Unreleased_Entries_URL"
@@ -7387,6 +7403,7 @@
                   },
                     "Submitted_Files",
                     "Submission_Time",
+                    "Submission_History",
                   {
                      "markdown_name" : "RCB",
                      "source" : [
@@ -7452,6 +7469,7 @@
                   },
                     "Submitted_Files",
                     "mmCIF_URL",
+                    "Submission_History",
                   {
                      "markdown_name" : "Entry",
                      "source" : [
