@@ -320,6 +320,7 @@ class ArchiveClient (object):
         resp = self.catalog.get(url)
         resp.raise_for_status()
         rows = resp.json()
+        self.new_released_entries = len(rows)
         unarchived_entries = []
         changed_entries = []
         changed_entries_rids = []
@@ -345,6 +346,7 @@ class ArchiveClient (object):
         resp = self.catalog.get(url)
         resp.raise_for_status()
         rows = resp.json()
+        self.re_released_entries = len(rows)
         for row in rows:
             if row['RID'] not in changed_entries_rids:
                 changed_entries.append(row)
@@ -436,7 +438,7 @@ class ArchiveClient (object):
                     """
                     self.generateReleasedZip(filename, hash, entry_id, file_type, self.get_manifest_key(accesion_code_row))
 
-            url = f'/attribute/PDB:entry/RID={urlquote(rid)}/PDB:Entry_Latest_Archive/RID,mmCIF_URL'
+            url = f'/attribute/PDB:entry/RID={urlquote(rid)}/PDB:Entry_Latest_Archive/RID,mmCIF_URL,Submission_History'
             self.logger.debug(f'Query for detecting if the record exists or not in the Entry_Latest_Archive table: "{url}"') 
             resp = self.catalog.get(url)
             resp.raise_for_status()
@@ -450,12 +452,21 @@ class ArchiveClient (object):
                 New entry
                 """
                 if rid not in rel_warnings:
+                    submission_history = {}
+                    submission_history.update({
+                      self.submission_date: {
+                        "mmCIF_URL": self.released_structures[entry_id]['File_URL'].split('/')[-1], 
+                        "Submitted_Files": submitted_files
+                      }
+                    })
+
                     inserted_rows.append(
                         {
                             'Entry': rid,
                             'mmCIF_URL': self.released_structures[entry_id]['File_URL'],
                             'Submission_Time': self.submission_date,
                             'Archive': self.PDB_Archive_RID,
+                            'Submission_History': submission_history,
                             'Submitted_Files': submitted_files
                         }
                 )
@@ -465,11 +476,21 @@ class ArchiveClient (object):
                 """
                 #if rid not in rel_warnings and latest_archive_record[0]['mmCIF_URL'] != self.released_structures[entry_id]['File_URL']:
                 if rid not in rel_warnings:
+                    submission_history = latest_archive_record[0]['Submission_History']
+                    if submission_history == None:
+                        submission_history = {}
+                    submission_history.update({
+                      self.submission_date: {
+                        "mmCIF_URL": self.released_structures[entry_id]['File_URL'].split('/')[-1], 
+                        "Submitted_Files": submitted_files
+                      }
+                    })
                     updated_rows.append(
                         {
                             'mmCIF_URL': self.released_structures[entry_id]['File_URL'],
                             'Submission_Time': self.submission_date,
                             'Archive': self.PDB_Archive_RID,
+                            'Submission_History': submission_history,
                             'RID': latest_archive_record[0]['RID']
                         }
                 )
@@ -477,6 +498,7 @@ class ArchiveClient (object):
         columns = [
             'mmCIF_URL',
             'Submission_Time',
+            'Submission_History',
             'Archive'
             ]
         self.insert_or_update_rows(inserted_rows, updated_rows, 'Entry_Latest_Archive', columns)
@@ -518,6 +540,8 @@ class ArchiveClient (object):
         """
         columns = [
             'Submitted_Entries',
+            'New_Released_Entries',
+            'Re_Released_Entries',
             'Current_File_Holdings_Name',
             'Current_File_Holdings_URL',
             'Current_File_Holdings_Bytes',
@@ -535,6 +559,8 @@ class ArchiveClient (object):
             {
             'RID': self.PDB_Archive_RID,
             'Submitted_Entries': len(inserted_rows)+len(updated_rows),
+            'New_Released_Entries': self.new_released_entries,
+            'Re_Released_Entries': self.re_released_entries,
             'Current_File_Holdings_Name': Current_File_Holdings_Name,
             'Current_File_Holdings_URL': Current_File_Holdings_URL,
             'Current_File_Holdings_Bytes': Current_File_Holdings_Bytes,
