@@ -621,7 +621,7 @@ class ArchiveClient (object):
     def getSubmissionTimeUTC(self, submission_str):
         submission_obj = dt.fromisoformat(submission_str)
         #submission_utc = submission_obj.replace(hour=21,tzinfo=timezone.utc).isoformat()
-        submission_utc = submission_obj.astimezone(timezone.utc)
+        submission_utc = submission_obj.astimezone(timezone.utc).isoformat()
         return f'{submission_utc}'
 
     """
