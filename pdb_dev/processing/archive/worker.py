@@ -278,7 +278,7 @@ class ArchiveClient (object):
         """
         self.submission_date, self.previous_submission_date = self.getArchiveDate()
         self.logger.debug(f'Submission Dates: {self.submission_date}, {self.previous_submission_date}') 
-        url = f'/aggregate/A:=PDB:PDB_Archive/previous_submission_time:=max(Submission_Time)'
+        url = f'/aggregate/A:=PDB:PDB_Archive/Submission_Time::lt::{urlquote(self.submission_date)}/previous_submission_time:=max(Submission_Time)'
         self.logger.debug(f"Query to find the maximum submission time:\n\nhttps://{self.host}/ermrest/catalog/{self.catalog_id}{url}\n") 
         resp = self.catalog.get(url)
         resp.raise_for_status()
