@@ -331,14 +331,16 @@ class ArchiveClient (object):
         resp = self.catalog.get(url)
         resp.raise_for_status()
         rows = resp.json()
-        self.new_released_entries = len(rows)
+        self.new_released_entries = 0
         unarchived_entries = []
+        unarchived_entries_rids = []
         changed_entries = []
         changed_entries_rids = []
         for row in rows:
-            if row['Entry'] == None:
+            if row['Entry'] == None and row['RID'] not in unarchived_entries_rids:
+                unarchived_entries_rids.append(row['RID'])
                 unarchived_entries.append(row)
-            else:
+            elif row['RID'] not in changed_entries_rids:
                 changed_entries.append(row)
                 changed_entries_rids.append(row['RID'])
         
@@ -357,9 +359,10 @@ class ArchiveClient (object):
         resp = self.catalog.get(url)
         resp.raise_for_status()
         rows = resp.json()
-        self.re_released_entries = len(rows)
+        self.re_released_entries = 0
         for row in rows:
             if row['RID'] not in changed_entries_rids:
+                changed_entries_rids.append(row['RID'])
                 changed_entries.append(row)
                 self.logger.debug(f'appended {row["RID"]}')
         
@@ -463,6 +466,7 @@ class ArchiveClient (object):
                 New entry
                 """
                 if rid not in rel_warnings:
+                    self.new_released_entries += 1
                     submission_history = {}
                     submission_history.update({
                       self.submission_date: {
@@ -487,6 +491,7 @@ class ArchiveClient (object):
                 """
                 #if rid not in rel_warnings and latest_archive_record[0]['mmCIF_URL'] != self.released_structures[entry_id]['File_URL']:
                 if rid not in rel_warnings:
+                    self.re_released_entries += 1
                     submission_history = latest_archive_record[0]['Submission_History']
                     if submission_history == None:
                         submission_history = {}
