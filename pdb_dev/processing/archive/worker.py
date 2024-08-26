@@ -273,8 +273,19 @@ class ArchiveClient (object):
         os.makedirs(f'{self.archive_parent}/{self.released_entry_dir}', exist_ok=True)
         os.makedirs(f'{self.archive_parent}/{self.holding_dir}', exist_ok=True)
 
+        """
+        Get the current and previous submission date
+        """
         self.submission_date, self.previous_submission_date = self.getArchiveDate()
-        self.logger.debug(f'Submission Date: {self.submission_date}, {self.previous_submission_date}') 
+        self.logger.debug(f'Submission Dates: {self.submission_date}, {self.previous_submission_date}') 
+        url = f'/aggregate/A:=PDB:PDB_Archive/previous_submission_time:=max(Submission_Time)'
+        self.logger.debug(f"Query to find the maximum submission time:\n\nhttps://{self.host}/ermrest/catalog/{self.catalog_number}{url}\n") 
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        rows = resp.json()
+        self.logger.debug(f'Previous submission time\n\n{json.dumps(rows, indent=4)}\n')
+        if len(rows) > 0 and rows[0]['previous_submission_time'] != None:
+            self.previous_submission_date = rows[0]['previous_submission_time']
         
         """
         Create the new entry in the PDB_Archive table if it does not exist
