@@ -353,7 +353,7 @@ class ArchiveClient (object):
         f'A:=PDB:Entry_Latest_Archive/' + \
         f'E:=(Entry)=(PDB:entry:RID)/Workflow_Status=REL/$A/' + \
         f'F:=left(mmCIF_URL)=(PDB:Entry_Generated_File:File_URL)/F:File_URL::null::;(A:Submission_Time={urlquote(self.submission_date)}&A:RCT::leq::{urlquote(self.previous_submission_date)})/' + \
-        f'E:RID,E:id,E:Deposit_Date,E:Accession_Code,F:File_URL,A:Entry,A:Submission_Time,A:mmCIF_URL'
+        f'$A/E:RID,E:id,E:Deposit_Date,E:Accession_Code,F:File_URL,A:Entry,A:Submission_Time,A:mmCIF_URL'
     
         self.logger.debug(f"Query for entries that entries that mmCIF contents have changed: {url}") 
         resp = self.catalog.get(url)
