@@ -370,7 +370,7 @@ class ArchiveClient (object):
                 self.sendMail(subject, f'Duplicate record to archive: {row["RID"]} for URL(s):\n{url1}\nand/or:\n{url2}')
                 return 1
         
-        self.re_released_entries = 0
+        self.re_released_entries = len(rows)
         self.logger.debug(f'unarchived_entries: {json.dumps(unarchived_entries, indent=4)}')
 
         inserted_rows = []
