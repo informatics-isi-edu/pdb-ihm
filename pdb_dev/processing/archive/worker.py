@@ -83,7 +83,8 @@ class ArchiveClient (object):
         )
         self.catalog.dcctx['cid'] = 'pipeline/archive'
         self.email = kwargs.get("email")
-        self.cutoff_time = kwargs.get('cutoff_time')
+        self.cutoff_time_pacific = kwargs.get('cutoff_time_pacific')
+        self.cutoff_day_of_week = time.strptime(kwargs.get('cutoff_day_of_week'), "%A").tm_wday
         self.logger = kwargs.get("logger")
         self.logger.debug('Client initialized.')
 
@@ -321,59 +322,63 @@ class ArchiveClient (object):
         """
         Get the entries that haven't been archived
         """
-        url = f'/attribute/' + \
+        url1 = f'/attribute/' + \
             f'E:=PDB:entry/Workflow_Status=REL/' + \
             f'F:=(id)=(PDB:Entry_Generated_File:Structure_Id)/File_Type=mmCIF/' + \
-            f'A:=left(E:RID)=(PDB:Entry_Latest_Archive:Entry)/Entry::null::;(Submission_Time={urlquote(self.submission_date)}&A:RCT::gt::{urlquote(self.previous_submission_date)})/' + \
+            f'A:=left(E:RID)=(PDB:Entry_Latest_Archive:Entry)/A:RID::null::;(A:RCT::gt::{urlquote(self.previous_submission_date)}&A:Submission_Time={urlquote(self.submission_date)})/' + \
             f'$E/E:RID,E:id,E:Deposit_Date,E:Accession_Code,F:File_URL,A:Entry,A:Submission_Time,A:mmCIF_URL'
             
-        self.logger.debug(f"Query for entries that haven't been archived: {url}") 
-        resp = self.catalog.get(url)
+        self.logger.debug(f"Query for entries that haven't been archived: {url1}") 
+        resp = self.catalog.get(url1)
         resp.raise_for_status()
         rows = resp.json()
-        self.new_released_entries = 0
         unarchived_entries = []
         unarchived_entries_rids = []
-        changed_entries = []
-        changed_entries_rids = []
         for row in rows:
-            if row['Entry'] == None and row['RID'] not in unarchived_entries_rids:
+            if row['RID'] not in unarchived_entries_rids:
                 unarchived_entries_rids.append(row['RID'])
                 unarchived_entries.append(row)
-            elif row['RID'] not in changed_entries_rids:
-                changed_entries.append(row)
-                changed_entries_rids.append(row['RID'])
+            else:
+                subject = f'PDB-Dev {row["RID"]} Duplicate record to archive'
+                self.sendMail(subject, f'Duplicate record to archive: {row["RID"]} for URL:\n{url1}')
+                return 1
         
-        self.logger.debug(f'unarchived_entries: {json.dumps(unarchived_entries, indent=4)}')
-        self.logger.debug(f'changed_entries_rids: {json.dumps(changed_entries_rids, indent=4)}')
+        self.new_released_entries = len(rows)
+        
         """
         Get the entries that mmCIF contents have changed
         """
-        url = f'/attribute/' + \
-        f'A:=PDB:Entry_Latest_Archive/' + \
-        f'E:=(Entry)=(PDB:entry:RID)/Workflow_Status=REL/$A/' + \
-        f'F:=left(mmCIF_URL)=(PDB:Entry_Generated_File:File_URL)/F:File_URL::null::;(A:Submission_Time={urlquote(self.submission_date)}&A:RCT::leq::{urlquote(self.previous_submission_date)})/' + \
+        url2 = f'/attribute/' + \
+        f'A:=PDB:Entry_Latest_Archive/A:RCT::leq::{urlquote(self.previous_submission_date)}/' + \
+        f'E:=(A:Entry)=(PDB:entry:RID)/Workflow_Status=REL/' + \
+        f'F:=left(A:mmCIF_URL)=(PDB:Entry_Generated_File:File_URL)/F:RID::null::;(F:File_Type=mmCIF&A:Submission_Time={urlquote(self.submission_date)})/' + \
         f'$A/E:RID,E:id,E:Deposit_Date,E:Accession_Code,F:File_URL,A:Entry,A:Submission_Time,A:mmCIF_URL'
     
-        self.logger.debug(f"Query for entries that entries that mmCIF contents have changed: {url}") 
-        resp = self.catalog.get(url)
+        self.logger.debug(f"Query for entries that entries that mmCIF contents have changed: {url2}") 
+        resp = self.catalog.get(url2)
         resp.raise_for_status()
         rows = resp.json()
-        self.re_released_entries = 0
+        re_released_entries_rids = []
         for row in rows:
-            if row['RID'] not in changed_entries_rids:
-                changed_entries_rids.append(row['RID'])
-                changed_entries.append(row)
+            if row['RID'] not in unarchived_entries_rids:
+                unarchived_entries_rids.append(row['RID'])
+                unarchived_entries.append(row)
+                re_released_entries_rids.append(row['RID'])
                 self.logger.debug(f'appended {row["RID"]}')
+            else:
+                subject = f'PDB-Dev {row["RID"]} Duplicate record to archive'
+                self.sendMail(subject, f'Duplicate record to archive: {row["RID"]} for URL(s):\n{url1}\nand/or:\n{url2}')
+                return 1
         
-        self.logger.debug(f'changed_entries: {json.dumps(changed_entries, indent=4)}')
+        self.re_released_entries = 0
+        self.logger.debug(f'unarchived_entries: {json.dumps(unarchived_entries, indent=4)}')
 
         inserted_rows = []
         updated_rows = []
         self.no_validation_rids = []
         self.released_records = []
         
-        rows = unarchived_entries + changed_entries
+        rows = unarchived_entries
 
         """
         Get the new released files
@@ -466,22 +471,12 @@ class ArchiveClient (object):
                 New entry
                 """
                 if rid not in rel_warnings:
-                    self.new_released_entries += 1
-                    submission_history = {}
-                    submission_history.update({
-                      self.submission_date: {
-                        "mmCIF_URL": self.released_structures[entry_id]['File_URL'].split('/')[-1], 
-                        "Submitted_Files": submitted_files
-                      }
-                    })
-
                     inserted_rows.append(
                         {
                             'Entry': rid,
                             'mmCIF_URL': self.released_structures[entry_id]['File_URL'],
                             'Submission_Time': self.submission_date,
                             'Archive': self.PDB_Archive_RID,
-                            'Submission_History': submission_history,
                             'Submitted_Files': submitted_files
                         }
                 )
@@ -491,16 +486,18 @@ class ArchiveClient (object):
                 """
                 #if rid not in rel_warnings and latest_archive_record[0]['mmCIF_URL'] != self.released_structures[entry_id]['File_URL']:
                 if rid not in rel_warnings:
-                    self.re_released_entries += 1
                     submission_history = latest_archive_record[0]['Submission_History']
-                    if submission_history == None:
-                        submission_history = {}
-                    submission_history.update({
-                      self.submission_date: {
-                        "mmCIF_URL": self.released_structures[entry_id]['File_URL'].split('/')[-1], 
-                        "Submitted_Files": submitted_files
-                      }
-                    })
+                    if rid in re_released_entries_rids:
+                        if submission_history == None:
+                            submission_history = {}
+                        submission_history.update({
+                          self.submission_date: {
+                            "mmCIF_URL": self.released_structures[entry_id]['File_URL'].split('/')[-1], 
+                            "Submitted_Files": submitted_files
+                          }
+                        })
+                    else:
+                        submission_history = None
                     updated_rows.append(
                         {
                             'mmCIF_URL': self.released_structures[entry_id]['File_URL'],
@@ -731,22 +728,25 @@ class ArchiveClient (object):
         """
         #now = dt.now(timezone.utc)
         now = dt.now(pytz.timezone('America/Los_Angeles'))
-        closest_thursday = now + timedelta(days=(3 - now.weekday())%7)
+        closed_day_of_week = now + timedelta(days=(self.cutoff_day_of_week - now.weekday())%7)
         weekday = now.weekday()
-        if weekday == 3:
+        cutoff_hour_pacific = time.strptime(self.cutoff_time_pacific, "%H:%M").tm_hour
+        cutoff_minute_pacific = time.strptime(self.cutoff_time_pacific, "%H:%M").tm_min
+        if weekday == self.cutoff_day_of_week:
             """
             It is Thursday. Check the time.
             """
             hour = now.hour
-            if hour >= self.cutoff_time:
+            minute = now.minute
+            if hour > cutoff_hour_pacific or hour == cutoff_hour_pacific and minute > cutoff_minute_pacific:
                 """
                 The UTC time has passed 9PM. Get the Thursday of next week
                 The America/Los_Angeles time has passed 3PM. Get the Thursday of next week
                 """
-                closest_thursday += timedelta(days=7)
-        closest_thursday=closest_thursday.replace(hour=self.cutoff_time,minute=0,second=0,microsecond=0)
-        previous_closest_thursday= closest_thursday - timedelta(days=7)
-        return (f'{closest_thursday}', f'{previous_closest_thursday}')
+                closed_day_of_week += timedelta(days=7)
+        closed_day_of_week=closed_day_of_week.replace(hour=cutoff_hour_pacific,minute=cutoff_minute_pacific,second=0,microsecond=0)
+        previous_closed_day_of_week= closed_day_of_week - timedelta(days=7)
+        return (f'{closed_day_of_week}', f'{previous_closed_day_of_week}')
                 
     """
     Extract the file from hatrac

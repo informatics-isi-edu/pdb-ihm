@@ -124,8 +124,11 @@ def get_configuration(fcfg, logger):
         return None
     config['holding_dir'] = holding_dir
     
-    cutoff_time = fcfg.get('cutoff_time', 20)
-    config['cutoff_time'] = cutoff_time
+    cutoff_time_pacific = fcfg.get('cutoff_time_pacific', '20:00')
+    config['cutoff_time_pacific'] = cutoff_time_pacific
+    
+    cutoff_day_of_week = fcfg.get('cutoff_day_of_week', 'Thursday')
+    config['cutoff_day_of_week'] = cutoff_day_of_week
     
     released_entry_dir = fcfg.get('released_entry_dir', None)
     if not released_entry_dir:

@@ -1,7 +1,8 @@
 {
     "hostname": "data.pdb-dev.org",
     "catalog": 1,
-    "cutoff_time": 20,
+    "cutoff_time_pacific": "20:00",
+    "cutoff_day_of_week": "Thursday",
     "credentials": "/home/pdbihm/.secrets/credentials.json",
     "archive_parent": "/mnt/vdb1/archive",
     "data_scratch": "/mnt/vdb1/archive/scratch",
