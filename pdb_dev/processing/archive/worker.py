@@ -457,7 +457,7 @@ class ArchiveClient (object):
                     """
                     self.generateReleasedZip(filename, hash, entry_id, file_type, self.get_manifest_key(accesion_code_row))
 
-            url = f'/attribute/PDB:entry/RID={urlquote(rid)}/PDB:Entry_Latest_Archive/RID,mmCIF_URL,Submission_History'
+            url = f'/attribute/PDB:entry/RID={urlquote(rid)}/PDB:Entry_Latest_Archive/RID,mmCIF_URL,Submission_Time,Submitted_Files,Submission_History'
             self.logger.debug(f'Query for detecting if the record exists or not in the Entry_Latest_Archive table: "{url}"') 
             resp = self.catalog.get(url)
             resp.raise_for_status()
@@ -491,9 +491,9 @@ class ArchiveClient (object):
                         if submission_history == None:
                             submission_history = {}
                         submission_history.update({
-                          self.submission_date: {
-                            "mmCIF_URL": self.released_structures[entry_id]['File_URL'].split('/')[-1], 
-                            "Submitted_Files": submitted_files
+                          latest_archive_record[0]['Submission_Time']: {
+                            "mmCIF_URL": latest_archive_record[0]['mmCIF_URL'].split('/')[-1], 
+                            "Submitted_Files": latest_archive_record[0]['Submitted_Files']
                           }
                         })
                     else:
@@ -503,6 +503,7 @@ class ArchiveClient (object):
                             'mmCIF_URL': self.released_structures[entry_id]['File_URL'],
                             'Submission_Time': self.submission_date,
                             'Archive': self.PDB_Archive_RID,
+                            'Submitted_Files': submitted_files,
                             'Submission_History': submission_history,
                             'RID': latest_archive_record[0]['RID']
                         }
@@ -511,8 +512,9 @@ class ArchiveClient (object):
         columns = [
             'mmCIF_URL',
             'Submission_Time',
-            'Submission_History',
-            'Archive'
+            'Archive',
+            'Submitted_Files',
+            'Submission_History'
             ]
         self.insert_or_update_rows(inserted_rows, updated_rows, 'Entry_Latest_Archive', columns)
         
