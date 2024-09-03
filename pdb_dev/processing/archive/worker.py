@@ -84,7 +84,6 @@ class ArchiveClient (object):
         self.catalog.dcctx['cid'] = 'pipeline/archive'
         self.email = kwargs.get("email")
         self.cutoff_time_pacific = kwargs.get('cutoff_time_pacific')
-        self.cutoff_day_of_week = time.strptime(kwargs.get('cutoff_day_of_week'), "%A").tm_wday
         self.logger = kwargs.get("logger")
         self.logger.debug('Client initialized.')
 
@@ -729,11 +728,12 @@ class ArchiveClient (object):
             else return the Thursday of the next week
         """
         #now = dt.now(timezone.utc)
+        self.cutoff_day_of_week = time.strptime(self.cutoff_time_pacific, "%A %H:%M").tm_wday
         now = dt.now(pytz.timezone('America/Los_Angeles'))
         closed_day_of_week = now + timedelta(days=(self.cutoff_day_of_week - now.weekday())%7)
         weekday = now.weekday()
-        cutoff_hour_pacific = time.strptime(self.cutoff_time_pacific, "%H:%M").tm_hour
-        cutoff_minute_pacific = time.strptime(self.cutoff_time_pacific, "%H:%M").tm_min
+        cutoff_hour_pacific = time.strptime(self.cutoff_time_pacific, "%A %H:%M").tm_hour
+        cutoff_minute_pacific = time.strptime(self.cutoff_time_pacific, "%A %H:%M").tm_min
         if weekday == self.cutoff_day_of_week:
             """
             It is Thursday. Check the time.
