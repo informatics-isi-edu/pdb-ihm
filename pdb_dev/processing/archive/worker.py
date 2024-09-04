@@ -449,7 +449,8 @@ class ArchiveClient (object):
                             self.current_holdings[manifest_key][self.holding_map[archive_dir]] = []
     
                     renamed_file = filename.lower()
-                    submitted_files[self.archive_category_dir_names[self.archive_category[file_type]]].append(f'{renamed_file}.gz')
+                    #submitted_files[self.archive_category_dir_names[self.archive_category[file_type]]].append(f'{renamed_file}.gz')
+                    submitted_files[self.archive_category_dir_names[self.archive_category[file_type]]].append(file_url)
                     
                     """
                     Zip the file
@@ -491,7 +492,7 @@ class ArchiveClient (object):
                             submission_history = {}
                         submission_history.update({
                           latest_archive_record[0]['Submission_Time']: {
-                            "mmCIF_URL": latest_archive_record[0]['mmCIF_URL'].split('/')[-1], 
+                            "mmCIF_URL": latest_archive_record[0]['mmCIF_URL'], 
                             "Submitted_Files": latest_archive_record[0]['Submitted_Files']
                           }
                         })
