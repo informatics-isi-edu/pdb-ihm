@@ -1,10 +1,11 @@
 {
-    "credentials": "/home/hongsuda/.deriva/credential.json",    
+    "cutoff_time_pacific": "Thursday 20:00",
     "archive_parent": "/mnt/vdb1/archive",
     "data_scratch": "/mnt/vdb1/archive/scratch/dev",
     "log_dir": "/mnt/vdb1/archive/log",    
     "released_entry_dir": "pdb_ihm/data/entries",
     "holding_dir": "pdb_ihm/holdings",
+    "hatrac_namespace": "dev",
     "holding_namespace": "generated/archive/pdb_ihm/holdings",
     "loglevel": "debug",
     "mail": "/home/pdbihm/.secrets/mail.json"
