@@ -30,6 +30,8 @@ fi
 
 filenames=(
     archive_processing/pdb_archive_config.json
+    archive_processing/pdb_archive_config_dev.json
+    archive_processing/pdb_archive_config_staging.json
 )
 
 mkdir -p "${target_dir}/archive_processing/"
@@ -54,4 +56,6 @@ do
 	chmod u=rw,og=r "${target_dir}/${f}"
     fi
 done
+
+chown -R pdbihm:pdbihm "${target_dir}"
 
