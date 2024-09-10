@@ -4656,7 +4656,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_ordered_model_ihm_model_group_1_combo1_fkey"
+                                    "ihm_ordered_model_ihm_model_group_begin_combo1_fkey"
                                 ]
                             },
                             "RID"
@@ -4669,7 +4669,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_ordered_model_ihm_model_group_2_combo1_fkey"
+                                    "ihm_ordered_model_ihm_model_group_end_combo1_fkey"
                                 ]
                             },
                             "RID"
@@ -4705,7 +4705,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_ordered_model_ihm_model_group_1_combo1_fkey"
+                                    "ihm_ordered_model_ihm_model_group_begin_combo1_fkey"
                                 ]
                             },
                             "RID"
@@ -4718,7 +4718,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_ordered_model_ihm_model_group_2_combo1_fkey"
+                                    "ihm_ordered_model_ihm_model_group_end_combo1_fkey"
                                 ]
                             },
                             "RID"
@@ -4767,7 +4767,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_ordered_model_ihm_model_group_1_combo1_fkey"
+                                    "ihm_ordered_model_ihm_model_group_begin_combo1_fkey"
                                 ]
                             },
                             "RID"
@@ -4780,7 +4780,7 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_ordered_model_ihm_model_group_2_combo1_fkey"
+                                    "ihm_ordered_model_ihm_model_group_end_combo1_fkey"
                                 ]
                             },
                             "RID"
@@ -21633,7 +21633,7 @@
                     ],
                     [
                         "PDB",
-                        "ihm_ordered_model_ihm_model_group_1_combo1_fkey"
+                        "ihm_ordered_model_ihm_model_group_begin_combo1_fkey"
                     ],
                     [
                         "PDB",
@@ -30671,7 +30671,7 @@
             }
         },
         {                                   
-            "foreign_key": "ihm_ordered_model_ihm_model_group_1_combo1_fkey",
+            "foreign_key": "ihm_ordered_model_ihm_model_group_begin_combo1_fkey",
             "foreign_key_schema": "PDB",
             "schema": "PDB",        
             "table": "ihm_ordered_model",
@@ -30683,7 +30683,7 @@
             }                               
         },                                  
         {                               
-            "foreign_key": "ihm_ordered_model_ihm_model_group_2_combo1_fkey",
+            "foreign_key": "ihm_ordered_model_ihm_model_group_end_combo1_fkey",
             "foreign_key_schema": "PDB",    
             "schema": "PDB",                
             "table": "ihm_ordered_model",
