@@ -32,6 +32,9 @@ filenames=(
     archive_processing/pdb_archive_config.json
     archive_processing/pdb_archive_config_dev.json
     archive_processing/pdb_archive_config_staging.json
+    pdb_processing/pdb_conf_dev.json
+    pdb_processing/pdb_conf_staging.json
+    pdb_processing/pdb_conf.json
 )
 
 mkdir -p "${target_dir}/archive_processing/"
