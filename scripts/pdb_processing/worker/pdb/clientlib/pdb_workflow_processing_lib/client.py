@@ -1388,8 +1388,7 @@ class PDBClient (object):
             Insert the data
             """
             try:
-                #res = table.insert(entities).fetch()
-                res = table.insert(entities)
+                res = table.insert(entities).fetch()
                 inserted_records.append({'name': tname, 'rows': res})
                 inserted_rows = len(entities)
                 self.logger.debug('File {}: inserted {} rows into table {}'.format(fpath, inserted_rows, tname))
