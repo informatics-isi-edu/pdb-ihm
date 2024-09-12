@@ -33,18 +33,22 @@ def get_entities(catalog, schema_name, table_name, constraints=None, keys=["RID"
             limit = limit - n
     return(payload)
 
+
 # released entries
+# change the name assignment in attr_list before ":=" symbol
 def get_released_entries(catalog):
     constraints="Workflow_Status=REL/LA:=(RID)=(PDB:Entry_Latest_Archive:Entry)/$M/S:=left(id)=(PDB:struct:entry_id)/$M/C:=left(id)=(PDB:citation:structure_id)/C:RID::null::;C:id=1/$M/A:=left(id)=(PDB:audit_author:structure_id)/$M"
-    attr_list="M:Accession_Code,M:Workflow_Status,M:Deposit_Date,M:Release_Date,LA:Submission_Time,S:title,C:pdbx_database_id_DOI,authors:=array(A:name)"
+    attr_list="entry.id:=M:id,entry.Accession_Code:=M:Accession_Code,entry.Workflow_Status:=M:Workflow_Status,entry.Deposit_Date:=M:Deposit_Date,entry.Release_Date:=M:Release_Date,Entry_Latest_Archive.Submission_Time:=LA:Submission_Time,struct.title:=S:title,citation.pdbx_database_id_DOI:=C:pdbx_database_id_DOI,audit_author.name:=array(A:name)"
     payload = get_entities(catalog, "PDB", "entry", constraints, keys=["RID", "id"], attr_list=attr_list)
     print(json.dumps(payload, indent=4))
     return payload
 
+
 # hold entries
+# change the name assignment in attr_list before ":=" symbol
 def get_hold_entries(catalog):
     constraints="Workflow_Status=HOLD/S:=left(id)=(PDB:struct:entry_id)/$M/A:=left(id)=(PDB:audit_author:structure_id)/$M"
-    attr_list="M:Accession_Code,M:Workflow_Status,M:Deposit_Date,S:title,authors:=array(A:name)"
+    attr_list="entry.id:=M:id,entry.Accession_Code:=M:Accession_Code,entry.Workflow_Status:=M:Workflow_Status,entry.Deposit_Date:=M:Deposit_Date,struct.title:=S:title,audit_author.name:=array(A:name)"
     payload = get_entities(catalog, "PDB", "entry", constraints, keys=["RID", "id"], attr_list=attr_list)
     print(json.dumps(payload, indent=4))
     return payload
@@ -60,7 +64,7 @@ def main(server_name, catalog_id, credentials, args):
     elif args.workflow_status == "HOLD":
         hold_payload = get_hold_entries(catalog)
         
-
+# =====================================================================
 # python upload_entry_remedy_files.py --host <host> --catalog-id <id> --workflow-status <workflow-status>
 # Defaults: --host data.pdb-dev.org --catalog-id 1 --workflow-status REL
 if __name__ == "__main__":
