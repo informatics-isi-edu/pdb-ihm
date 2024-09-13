@@ -5,8 +5,11 @@
                 "tables": {
                     "entry": {
                         "keys": {
-                            "entry_id_primary_key": {
-                                "unique_columns": "(id)"
+                            "Entry_id_RCB_key": {
+                                "unique_columns": "(id,RCB)"
+                            },
+                            "entry_Accession_Code_primary_key": {
+                                "unique_columns": "(Accession_Code)"
                             },
                             "entry_combo2_key": {
                                 "unique_columns": "(RCB,mmCIF_File_MD5)"
@@ -14,11 +17,8 @@
                             "entry_RCB_mmCIF_File_Name_key": {
                                 "unique_columns": "(RCB,mmCIF_File_Name)"
                             },
-                            "entry_Accession_Code_primary_key": {
-                                "unique_columns": "(Accession_Code)"
-                            },
-                            "Entry_id_RCB_key": {
-                                "unique_columns": "(id,RCB)"
+                            "entry_id_primary_key": {
+                                "unique_columns": "(id)"
                             }
                         },
                         "foreign_keys": {
@@ -30,14 +30,6 @@
                                     "columns": "(Accession_Code)"
                                 }
                             },
-                            "entry_Workflow_Status_fkey": {
-                                "columns": "(Workflow_Status)",
-                                "referenced_columns": {
-                                    "schema": "PDB",
-                                    "table": "Workflow_Status",
-                                    "columns": "(Name)"
-                                }
-                            },
                             "entry_Process_Status_fkey": {
                                 "columns": "(Process_Status)",
                                 "referenced_columns": {
@@ -45,390 +37,26 @@
                                     "table": "Process_Status",
                                     "columns": "(Name)"
                                 }
+                            },
+                            "entry_Workflow_Status_fkey": {
+                                "columns": "(Workflow_Status)",
+                                "referenced_columns": {
+                                    "schema": "PDB",
+                                    "table": "Workflow_Status",
+                                    "columns": "(Name)"
+                                }
                             }
                         },
                         "referenced_by": {
-                            "ihm_related_datasets_structure_id_fkey": {
+                            "Entry_Latest_Archive_Entry_fkey": {
                                 "schema": "PDB",
-                                "table": "ihm_related_datasets",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_ordered_ensemble_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_ordered_ensemble",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_pseudo_site_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_pseudo_site",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "entity_name_com_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "entity_name_com",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_geometric_object_transformation_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_geometric_object_transformation",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_ensemble_sub_sample_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_ensemble_sub_sample",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "chem_comp_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "chem_comp",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "Entry_Error_File_Entry_RID_fkey": {
-                                "schema": "PDB",
-                                "table": "Entry_Error_File",
-                                "columns": "(Entry_RID)",
+                                "table": "Entry_Latest_Archive",
+                                "columns": "(Entry)",
                                 "referenced_columns": "(RID)"
                             },
-                            "pdbx_entity_poly_na_type_structure_id_fkey": {
+                            "ihm_modeling_protocol_structure_id_fkey": {
                                 "schema": "PDB",
-                                "table": "pdbx_entity_poly_na_type",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_chemical_component_descriptor_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_chemical_component_descriptor",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_entry_collection_mapping_entry_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_entry_collection_mapping",
-                                "columns": "(entry_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_cross_link_result_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_cross_link_result",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "entity_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "entity",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "audit_conform_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "audit_conform",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_model_group_link_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_model_group_link",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_geometric_object_torus_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_geometric_object_torus",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_geometric_object_center_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_geometric_object_center",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_starting_model_seq_dif_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_starting_model_seq_dif",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_dataset_external_reference_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_dataset_external_reference",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_external_files_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_external_files",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_geometric_object_plane_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_geometric_object_plane",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "entity_src_gen_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "entity_src_gen",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_poly_residue_feature_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_poly_residue_feature",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_multi_state_modeling_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_multi_state_modeling",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_derived_dihedral_restraint_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_derived_dihedral_restraint",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_predicted_contact_restraint_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_predicted_contact_restraint",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_dataset_list_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_dataset_list",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_residues_not_modeled_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_residues_not_modeled",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "entity_poly_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "entity_poly",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_dataset_related_db_reference_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_dataset_related_db_reference",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "pdbx_entry_details_entry_id_fkey": {
-                                "schema": "PDB",
-                                "table": "pdbx_entry_details",
-                                "columns": "(entry_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "Entry_Generated_File_Structure_Id_Entry_RCB_fkey": {
-                                "schema": "PDB",
-                                "table": "Entry_Generated_File",
-                                "columns": "(Structure_Id,Entry_RCB)",
-                                "referenced_columns": "(id,RCB)"
-                            },
-                            "Entry_Generated_File_Structure_Id_fkey": {
-                                "schema": "PDB",
-                                "table": "Entry_Generated_File",
-                                "columns": "(Structure_Id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "pdbx_ion_info_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "pdbx_ion_info",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_3dem_restraint_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_3dem_restraint",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "struct_ref_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "struct_ref",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_model_list_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_model_list",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "struct_ref_seq_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "struct_ref_seq",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_data_transformation_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_data_transformation",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "Entry_Related_File_entry_id_fkey": {
-                                "schema": "PDB",
-                                "table": "Entry_Related_File",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_cross_link_pseudo_site_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_cross_link_pseudo_site",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_2dem_class_average_fitting_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_2dem_class_average_fitting",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "audit_author_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "audit_author",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "pdbx_inhibitor_info_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "pdbx_inhibitor_info",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_probe_list_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_probe_list",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_dataset_group_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_dataset_group",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_model_group_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_model_group",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_pseudo_site_feature_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_pseudo_site_feature",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_multi_state_model_group_link_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_multi_state_model_group_link",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_model_representation_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_model_representation",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_hydroxyl_radical_fp_restraint_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_hydroxyl_radical_fp_restraint",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_model_representative_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_model_representative",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_ligand_probe_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_ligand_probe",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "struct_entry_id_fkey": {
-                                "schema": "PDB",
-                                "table": "struct",
-                                "columns": "(entry_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_geometric_object_list_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_geometric_object_list",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_poly_probe_conjugate_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_poly_probe_conjugate",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "pdbx_entity_nonpoly_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "pdbx_entity_nonpoly",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_cross_link_result_parameters_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_cross_link_result_parameters",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_starting_computational_models_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_starting_computational_models",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_struct_assembly_details_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_struct_assembly_details",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_non_poly_feature_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_non_poly_feature",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_cross_link_restraint_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_cross_link_restraint",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_cross_link_list_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_cross_link_list",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_geometric_object_sphere_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_geometric_object_sphere",
+                                "table": "ihm_modeling_protocol",
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             },
@@ -438,33 +66,57 @@
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             },
-                            "struct_asym_structure_id_fkey": {
+                            "ihm_model_group_structure_id_fkey": {
                                 "schema": "PDB",
-                                "table": "struct_asym",
+                                "table": "ihm_model_group",
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             },
-                            "struct_ref_seq_dif_structure_id_fkey": {
+                            "ihm_geometric_object_transformation_structure_id_fkey": {
                                 "schema": "PDB",
-                                "table": "struct_ref_seq_dif",
+                                "table": "ihm_geometric_object_transformation",
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             },
-                            "ihm_model_representation_details_structure_id_fkey": {
+                            "ihm_poly_atom_feature_structure_id_fkey": {
                                 "schema": "PDB",
-                                "table": "ihm_model_representation_details",
+                                "table": "ihm_poly_atom_feature",
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             },
-                            "ihm_epr_restraint_structure_id_fkey": {
+                            "ihm_cross_link_restraint_structure_id_fkey": {
                                 "schema": "PDB",
-                                "table": "ihm_epr_restraint",
+                                "table": "ihm_cross_link_restraint",
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             },
-                            "ihm_2dem_class_average_restraint_structure_id_fkey": {
+                            "ihm_ensemble_sub_sample_structure_id_fkey": {
                                 "schema": "PDB",
-                                "table": "ihm_2dem_class_average_restraint",
+                                "table": "ihm_ensemble_sub_sample",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "Entry_Generated_File_Structure_Id_fkey": {
+                                "schema": "PDB",
+                                "table": "Entry_Generated_File",
+                                "columns": "(Structure_Id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "Entry_Generated_File_Structure_Id_Entry_RCB_fkey": {
+                                "schema": "PDB",
+                                "table": "Entry_Generated_File",
+                                "columns": "(Structure_Id,Entry_RCB)",
+                                "referenced_columns": "(id,RCB)"
+                            },
+                            "chem_comp_atom_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "chem_comp_atom",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "pdbx_entity_poly_na_type_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "pdbx_entity_poly_na_type",
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             },
@@ -474,141 +126,33 @@
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             },
-                            "ihm_dataset_group_link_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_dataset_group_link",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_modeling_protocol_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_modeling_protocol",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "pdbx_protein_info_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "pdbx_protein_info",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_struct_assembly_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_struct_assembly",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_starting_comparative_models_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_starting_comparative_models",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_poly_probe_position_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_poly_probe_position",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_localization_density_files_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_localization_density_files",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
                             "ihm_hdx_restraint_structure_id_fkey": {
                                 "schema": "PDB",
                                 "table": "ihm_hdx_restraint",
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             },
-                            "ihm_external_reference_info_structure_id_fkey": {
+                            "ihm_epr_restraint_structure_id_fkey": {
                                 "schema": "PDB",
-                                "table": "ihm_external_reference_info",
+                                "table": "ihm_epr_restraint",
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             },
-                            "Curation_Log_Entry_fkey": {
+                            "struct_asym_structure_id_fkey": {
                                 "schema": "PDB",
-                                "table": "Curation_Log",
-                                "columns": "(Entry)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_geometric_object_half_torus_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_geometric_object_half_torus",
+                                "table": "struct_asym",
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             },
-                            "software_structure_id_fkey": {
+                            "ihm_multi_state_model_group_link_structure_id_fkey": {
                                 "schema": "PDB",
-                                "table": "software",
+                                "table": "ihm_multi_state_model_group_link",
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             },
-                            "ihm_derived_distance_restraint_structure_id_fkey": {
+                            "ihm_kinetic_rate_structure_id_fkey": {
                                 "schema": "PDB",
-                                "table": "ihm_derived_distance_restraint",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_modeling_protocol_details_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_modeling_protocol_details",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "Accession_Code_Entry_fkey": {
-                                "schema": "PDB",
-                                "table": "Accession_Code",
-                                "columns": "(Entry)",
-                                "referenced_columns": "(RID)"
-                            },
-                            "entity_poly_seq_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "entity_poly_seq",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_entity_poly_segment_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_entity_poly_segment",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_derived_angle_restraint_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_derived_angle_restraint",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_starting_model_details_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_starting_model_details",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_modeling_post_process_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_modeling_post_process",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_interface_residue_feature_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_interface_residue_feature",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_geometric_object_distance_restraint_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_geometric_object_distance_restraint",
-                                "columns": "(structure_id)",
-                                "referenced_columns": "(id)"
-                            },
-                            "ihm_feature_list_structure_id_fkey": {
-                                "schema": "PDB",
-                                "table": "ihm_feature_list",
+                                "table": "ihm_kinetic_rate",
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             },
@@ -618,39 +162,171 @@
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             },
-                            "ihm_geometric_object_axis_structure_id_fkey": {
+                            "ihm_modeling_post_process_structure_id_fkey": {
                                 "schema": "PDB",
-                                "table": "ihm_geometric_object_axis",
+                                "table": "ihm_modeling_post_process",
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             },
-                            "entity_name_sys_structure_id_fkey": {
+                            "entity_structure_id_fkey": {
                                 "schema": "PDB",
-                                "table": "entity_name_sys",
+                                "table": "entity",
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             },
-                            "ihm_ensemble_info_structure_id_fkey": {
+                            "ihm_model_representative_structure_id_fkey": {
                                 "schema": "PDB",
-                                "table": "ihm_ensemble_info",
+                                "table": "ihm_model_representative",
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             },
-                            "chem_comp_atom_structure_id_fkey": {
+                            "ihm_interface_residue_feature_structure_id_fkey": {
                                 "schema": "PDB",
-                                "table": "chem_comp_atom",
+                                "table": "ihm_interface_residue_feature",
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             },
-                            "ihm_sas_restraint_structure_id_fkey": {
+                            "ihm_related_datasets_structure_id_fkey": {
                                 "schema": "PDB",
-                                "table": "ihm_sas_restraint",
+                                "table": "ihm_related_datasets",
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             },
-                            "ihm_struct_assembly_class_structure_id_fkey": {
+                            "ihm_cross_link_pseudo_site_structure_id_fkey": {
                                 "schema": "PDB",
-                                "table": "ihm_struct_assembly_class",
+                                "table": "ihm_cross_link_pseudo_site",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "Entry_Error_File_Entry_RID_fkey": {
+                                "schema": "PDB",
+                                "table": "Entry_Error_File",
+                                "columns": "(Entry_RID)",
+                                "referenced_columns": "(RID)"
+                            },
+                            "ihm_modeling_protocol_details_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_modeling_protocol_details",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_derived_dihedral_restraint_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_derived_dihedral_restraint",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_dataset_related_db_reference_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_dataset_related_db_reference",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "Curation_Log_Entry_fkey": {
+                                "schema": "PDB",
+                                "table": "Curation_Log",
+                                "columns": "(Entry)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_model_group_link_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_model_group_link",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_ordered_model_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_ordered_model",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_2dem_class_average_restraint_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_2dem_class_average_restraint",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_probe_list_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_probe_list",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_poly_probe_conjugate_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_poly_probe_conjugate",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_cross_link_result_parameters_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_cross_link_result_parameters",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_predicted_contact_restraint_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_predicted_contact_restraint",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_geometric_object_distance_restraint_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_geometric_object_distance_restraint",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "pdbx_protein_info_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "pdbx_protein_info",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_3dem_restraint_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_3dem_restraint",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "pdbx_inhibitor_info_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "pdbx_inhibitor_info",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_external_files_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_external_files",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_dataset_list_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_dataset_list",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_chemical_component_descriptor_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_chemical_component_descriptor",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "struct_ref_seq_dif_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "struct_ref_seq_dif",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_derived_distance_restraint_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_derived_distance_restraint",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "entity_src_gen_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "entity_src_gen",
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             },
@@ -660,9 +336,375 @@
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             },
-                            "ihm_poly_atom_feature_structure_id_fkey": {
+                            "ihm_residues_not_modeled_structure_id_fkey": {
                                 "schema": "PDB",
-                                "table": "ihm_poly_atom_feature",
+                                "table": "ihm_residues_not_modeled",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_model_representation_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_model_representation",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_ensemble_info_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_ensemble_info",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_struct_assembly_details_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_struct_assembly_details",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_starting_computational_models_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_starting_computational_models",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_sas_restraint_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_sas_restraint",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_non_poly_feature_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_non_poly_feature",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_hydroxyl_radical_fp_restraint_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_hydroxyl_radical_fp_restraint",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_geometric_object_half_torus_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_geometric_object_half_torus",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_geometric_object_list_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_geometric_object_list",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_geometric_object_center_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_geometric_object_center",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_data_transformation_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_data_transformation",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "struct_ref_seq_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "struct_ref_seq",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "entity_poly_seq_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "entity_poly_seq",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "entity_name_sys_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "entity_name_sys",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "pdbx_ion_info_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "pdbx_ion_info",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_cross_link_result_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_cross_link_result",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_multi_state_scheme_connectivity_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_multi_state_scheme_connectivity",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_geometric_object_torus_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_geometric_object_torus",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "Accession_Code_Entry_fkey": {
+                                "schema": "PDB",
+                                "table": "Accession_Code",
+                                "columns": "(Entry)",
+                                "referenced_columns": "(RID)"
+                            },
+                            "audit_author_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "audit_author",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_poly_probe_position_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_poly_probe_position",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "Entry_Related_File_entry_id_fkey": {
+                                "schema": "PDB",
+                                "table": "Entry_Related_File",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_dataset_external_reference_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_dataset_external_reference",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "software_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "software",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_geometric_object_plane_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_geometric_object_plane",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_entry_collection_mapping_entry_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_entry_collection_mapping",
+                                "columns": "(entry_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_starting_model_seq_dif_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_starting_model_seq_dif",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_entity_poly_segment_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_entity_poly_segment",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "struct_ref_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "struct_ref",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_starting_model_details_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_starting_model_details",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_struct_assembly_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_struct_assembly",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_model_representation_details_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_model_representation_details",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_multi_state_scheme_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_multi_state_scheme",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "pdbx_entry_details_entry_id_fkey": {
+                                "schema": "PDB",
+                                "table": "pdbx_entry_details",
+                                "columns": "(entry_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "entity_poly_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "entity_poly",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_localization_density_files_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_localization_density_files",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_multi_state_modeling_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_multi_state_modeling",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "struct_entry_id_fkey": {
+                                "schema": "PDB",
+                                "table": "struct",
+                                "columns": "(entry_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_cross_link_list_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_cross_link_list",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_relaxation_time_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_relaxation_time",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_struct_assembly_class_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_struct_assembly_class",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_pseudo_site_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_pseudo_site",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_dataset_group_link_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_dataset_group_link",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_relaxation_time_multi_state_scheme_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_relaxation_time_multi_state_scheme",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_2dem_class_average_fitting_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_2dem_class_average_fitting",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "audit_conform_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "audit_conform",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_geometric_object_sphere_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_geometric_object_sphere",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_external_reference_info_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_external_reference_info",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_model_list_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_model_list",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_starting_comparative_models_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_starting_comparative_models",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_pseudo_site_feature_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_pseudo_site_feature",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_ordered_ensemble_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_ordered_ensemble",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_dataset_group_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_dataset_group",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_ligand_probe_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_ligand_probe",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "entity_name_com_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "entity_name_com",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_feature_list_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_feature_list",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_derived_angle_restraint_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_derived_angle_restraint",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_geometric_object_axis_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_geometric_object_axis",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "chem_comp_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "chem_comp",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "pdbx_entity_nonpoly_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "pdbx_entity_nonpoly",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_poly_residue_feature_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_poly_residue_feature",
                                 "columns": "(structure_id)",
                                 "referenced_columns": "(id)"
                             }
@@ -1291,6 +1333,10 @@
                                     ],
                                     [
                                         "PDB",
+                                        "ihm_ordered_model_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
                                         "ihm_ordered_ensemble_structure_id_fkey"
                                     ],
                                     [
@@ -1456,6 +1502,26 @@
                                     [
                                         "PDB",
                                         "ihm_geometric_object_distance_restraint_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_multi_state_scheme_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_multi_state_scheme_connectivity_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_kinetic_rate_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_relaxation_time_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_relaxation_time_multi_state_scheme_structure_id_fkey"
                                     ],
                                     {
                                         "source": [
@@ -1665,8 +1731,7 @@
                                 "acls": {
                                     "insert": [
                                         "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
-                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
-                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"
                                     ]
                                 },
                                 "acl_bindings": {
@@ -1709,8 +1774,7 @@
                                 "acls": {
                                     "insert": [
                                         "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
-                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
-                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"
                                     ]
                                 },
                                 "acl_bindings": {
@@ -1750,23 +1814,19 @@
                                 "acls": {
                                     "insert": [
                                         "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
-                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
-                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"
                                     ],
                                     "select": [
                                         "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
-                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
-                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"
                                     ],
                                     "update": [
                                         "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
-                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
-                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"
                                     ],
                                     "enumerate": [
                                         "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
-                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
-                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"
                                     ]
                                 },
                                 "acl_bindings": {
@@ -1782,8 +1842,7 @@
                                 "acls": {
                                     "insert": [
                                         "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
-                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
-                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"
                                     ],
                                     "select": [
                                         "https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1",
@@ -1801,8 +1860,7 @@
                                 "acls": {
                                     "insert": [
                                         "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
-                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
-                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"
                                     ],
                                     "select": [
                                         "https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1",
@@ -1825,8 +1883,7 @@
                                 "acls": {
                                     "insert": [
                                         "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
-                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
-                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"
                                     ],
                                     "select": [
                                         "https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1",
@@ -1855,23 +1912,19 @@
                                 "acls": {
                                     "insert": [
                                         "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
-                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
-                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"
                                     ],
                                     "select": [
                                         "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
-                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
-                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"
                                     ],
                                     "update": [
                                         "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
-                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
-                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"
                                     ],
                                     "enumerate": [
                                         "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
-                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
-                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"
                                     ]
                                 },
                                 "acl_bindings": {
