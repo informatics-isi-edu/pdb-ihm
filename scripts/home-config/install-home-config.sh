@@ -30,11 +30,20 @@ fi
 
 filenames=(
     archive_processing/pdb_archive_config.json
-    archive_processing/pdb_archive_config_dev.json
-    archive_processing/pdb_archive_config_staging.json
-    pdb_processing/pdb_conf_dev.json
-    pdb_processing/pdb_conf_staging.json
     pdb_processing/pdb_conf.json
+    pdb_processing/catalog_1_display_entry.json
+    pdb_processing/catalog_50_display_entry.json
+    pdb_processing/catalog_99_display_entry.json
+    pdb_processing/combo1_columns.json
+    pdb_processing/ermrest_table_defs.json
+    pdb_processing/exported_vocab.pickle
+    pdb_processing/json-full-db-ihm_dev_full-col-ihm_dev_full.json
+    pdb_processing/mmCIF_defaults.json
+    pdb_processing/mmcif_tables_input2output.json
+    pdb_processing/optional_fk.json
+    pdb_processing/order_by.json
+    pdb_processing/tables_groups.json
+    pdb_processing/vocab_ucode.json
 )
 
 mkdir -p "${target_dir}/archive_processing/"
