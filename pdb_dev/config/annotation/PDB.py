@@ -7,7 +7,7 @@ from deriva.utils.extras.model import print_catalog_model_extras, print_schema_m
 
 # -- =================================================================================
 # -- schema level annotation
-
+# TODO: In progress. Still need to be tested
 def update_PDB(model):
     schema = model.schemas["PDB"]
     print("update_PDB")
