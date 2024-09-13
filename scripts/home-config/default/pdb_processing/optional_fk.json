@@ -1,0 +1,852 @@
+{
+    "pdbx_entity_nonpoly": [
+        {
+            "fk_columns": [
+                "comp_id",
+                "Comp_RID"
+            ],
+            "ref_columns": [
+                "id",
+                "RID"
+            ],
+            "ref_table": "chem_comp",
+            "fk_name": "pdbx_entity_nonpoly_comp_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Comp_RID",
+            "fk_other_column_name": "comp_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_hydroxyl_radical_fp_restraint": [
+        {
+            "fk_columns": [
+                "software_id",
+                "Software_RID"
+            ],
+            "ref_columns": [
+                "pdbx_ordinal",
+                "RID"
+            ],
+            "ref_table": "software",
+            "fk_name": "ihm_hydroxyl_radical_fp_restraint_software_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "pdbx_ordinal",
+            "fk_RID_column_name": "Software_RID",
+            "fk_other_column_name": "software_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_non_poly_feature": [
+        {
+            "fk_columns": [
+                "Asym_RID",
+                "asym_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "id"
+            ],
+            "ref_table": "struct_asym",
+            "fk_name": "ihm_non_poly_feature_asym_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Asym_RID",
+            "fk_other_column_name": "asym_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_model_representation_details": [
+        {
+            "fk_columns": [
+                "Entity_poly_segment_RID",
+                "entity_poly_segment_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "id"
+            ],
+            "ref_table": "ihm_entity_poly_segment",
+            "fk_name": "ihm_model_representation_details_entity_poly_segment_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Entity_poly_segment_RID",
+            "fk_other_column_name": "entity_poly_segment_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        },
+        {
+            "fk_columns": [
+                "starting_model_id",
+                "Starting_model_RID"
+            ],
+            "ref_columns": [
+                "starting_model_id",
+                "RID"
+            ],
+            "ref_table": "ihm_starting_model_details",
+            "fk_name": "ihm_model_representation_details_starting_model_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "starting_model_id",
+            "fk_RID_column_name": "Starting_model_RID",
+            "fk_other_column_name": "starting_model_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_poly_probe_conjugate": [
+        {
+            "fk_columns": [
+                "chem_comp_descriptor_id",
+                "Chem_comp_descriptor_RID"
+            ],
+            "ref_columns": [
+                "id",
+                "RID"
+            ],
+            "ref_table": "ihm_chemical_component_descriptor",
+            "fk_name": "ihm_poly_probe_conjugate_chem_comp_descriptor_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Chem_comp_descriptor_RID",
+            "fk_other_column_name": "chem_comp_descriptor_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_ensemble_info": [
+        {
+            "fk_columns": [
+                "model_group_id",
+                "Model_group_RID"
+            ],
+            "ref_columns": [
+                "id",
+                "RID"
+            ],
+            "ref_table": "ihm_model_group",
+            "fk_name": "ihm_ensemble_info_model_group_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Model_group_RID",
+            "fk_other_column_name": "model_group_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        },
+        {
+            "fk_columns": [
+                "Post_process_RID",
+                "post_process_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "id"
+            ],
+            "ref_table": "ihm_modeling_post_process",
+            "fk_name": "ihm_ensemble_info_post_process_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Post_process_RID",
+            "fk_other_column_name": "post_process_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        },
+        {
+            "fk_columns": [
+                "ensemble_file_id",
+                "Ensemble_file_RID"
+            ],
+            "ref_columns": [
+                "id",
+                "RID"
+            ],
+            "ref_table": "ihm_external_files",
+            "fk_name": "ihm_ensemble_info_ensemble_file_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Ensemble_file_RID",
+            "fk_other_column_name": "ensemble_file_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_localization_density_files": [
+        {
+            "fk_columns": [
+                "asym_id",
+                "Asym_RID"
+            ],
+            "ref_columns": [
+                "id",
+                "RID"
+            ],
+            "ref_table": "struct_asym",
+            "fk_name": "ihm_localization_density_files_asym_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Asym_RID",
+            "fk_other_column_name": "asym_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        },
+        {
+            "fk_columns": [
+                "entity_id",
+                "Entity_RID"
+            ],
+            "ref_columns": [
+                "id",
+                "RID"
+            ],
+            "ref_table": "entity",
+            "fk_name": "ihm_localization_density_files_entity_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Entity_RID",
+            "fk_other_column_name": "entity_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        },
+        {
+            "fk_columns": [
+                "Entity_poly_segment_RID",
+                "entity_poly_segment_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "id"
+            ],
+            "ref_table": "ihm_entity_poly_segment",
+            "fk_name": "ihm_localization_density_files_entity_poly_segment_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Entity_poly_segment_RID",
+            "fk_other_column_name": "entity_poly_segment_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_predicted_contact_restraint": [
+        {
+            "fk_columns": [
+                "software_id",
+                "Software_RID"
+            ],
+            "ref_columns": [
+                "pdbx_ordinal",
+                "RID"
+            ],
+            "ref_table": "software",
+            "fk_name": "ihm_predicted_contact_restraint_software_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "pdbx_ordinal",
+            "fk_RID_column_name": "Software_RID",
+            "fk_other_column_name": "software_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_geometric_object_sphere": [
+        {
+            "fk_columns": [
+                "Transformation_RID",
+                "transformation_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "id"
+            ],
+            "ref_table": "ihm_geometric_object_transformation",
+            "fk_name": "ihm_geometric_object_sphere_transformation_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Transformation_RID",
+            "fk_other_column_name": "transformation_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_epr_restraint": [
+        {
+            "fk_columns": [
+                "Fitting_method_citation_RID",
+                "fitting_method_citation_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "id"
+            ],
+            "ref_table": "citation",
+            "fk_name": "ihm_epr_restraint_fitting_method_citation_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Fitting_method_citation_RID",
+            "fk_other_column_name": "fitting_method_citation_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_modeling_protocol_details": [
+        {
+            "fk_columns": [
+                "Struct_assembly_RID",
+                "struct_assembly_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "id"
+            ],
+            "ref_table": "ihm_struct_assembly",
+            "fk_name": "ihm_modeling_protocol_details_struct_assembly_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Struct_assembly_RID",
+            "fk_other_column_name": "struct_assembly_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        },
+        {
+            "fk_columns": [
+                "Software_RID",
+                "software_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "pdbx_ordinal"
+            ],
+            "ref_table": "software",
+            "fk_name": "ihm_modeling_protocol_details_software_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "pdbx_ordinal",
+            "fk_RID_column_name": "Software_RID",
+            "fk_other_column_name": "software_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        },
+        {
+            "fk_columns": [
+                "Script_file_RID",
+                "script_file_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "id"
+            ],
+            "ref_table": "ihm_external_files",
+            "fk_name": "ihm_modeling_protocol_details_script_file_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Script_file_RID",
+            "fk_other_column_name": "script_file_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        },
+        {
+            "fk_columns": [
+                "dataset_group_id",
+                "Dataset_group_RID"
+            ],
+            "ref_columns": [
+                "id",
+                "RID"
+            ],
+            "ref_table": "ihm_dataset_group",
+            "fk_name": "ihm_modeling_protocol_details_dataset_group_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Dataset_group_RID",
+            "fk_other_column_name": "dataset_group_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_starting_computational_models": [
+        {
+            "fk_columns": [
+                "script_file_id",
+                "External_Files_RID"
+            ],
+            "ref_columns": [
+                "id",
+                "RID"
+            ],
+            "ref_table": "ihm_external_files",
+            "fk_name": "ihm_starting_computational_models_script_file_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "External_Files_RID",
+            "fk_other_column_name": "script_file_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        },
+        {
+            "fk_columns": [
+                "Software_RID",
+                "software_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "pdbx_ordinal"
+            ],
+            "ref_table": "software",
+            "fk_name": "ihm_starting_computational_models_software_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "pdbx_ordinal",
+            "fk_RID_column_name": "Software_RID",
+            "fk_other_column_name": "software_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_starting_comparative_models": [
+        {
+            "fk_columns": [
+                "alignment_file_id",
+                "Alignment_file_RID"
+            ],
+            "ref_columns": [
+                "id",
+                "RID"
+            ],
+            "ref_table": "ihm_external_files",
+            "fk_name": "ihm_starting_comparative_models_alignment_file_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Alignment_file_RID",
+            "fk_other_column_name": "alignment_file_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_poly_residue_feature": [
+        {
+            "fk_columns": [
+                "asym_id",
+                "Asym_RID"
+            ],
+            "ref_columns": [
+                "id",
+                "RID"
+            ],
+            "ref_table": "struct_asym",
+            "fk_name": "ihm_poly_residue_feature_asym_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Asym_RID",
+            "fk_other_column_name": "asym_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_geometric_object_distance_restraint": [
+        {
+            "fk_columns": [
+                "Dataset_List_RID",
+                "dataset_list_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "id"
+            ],
+            "ref_table": "ihm_dataset_list",
+            "fk_name": "ihm_geometric_object_distance_restraint_dataset_list_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Dataset_List_RID",
+            "fk_other_column_name": "dataset_list_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_probe_list": [
+        {
+            "fk_columns": [
+                "Probe_chem_comp_descriptor_RID",
+                "probe_chem_comp_descriptor_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "id"
+            ],
+            "ref_table": "ihm_chemical_component_descriptor",
+            "fk_name": "ihm_probe_list_probe_chem_comp_descriptor_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Probe_chem_comp_descriptor_RID",
+            "fk_other_column_name": "probe_chem_comp_descriptor_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        },
+        {
+            "fk_columns": [
+                "Reactive_probe_chem_comp_descriptor_RID",
+                "reactive_probe_chem_comp_descriptor_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "id"
+            ],
+            "ref_table": "ihm_chemical_component_descriptor",
+            "fk_name": "ihm_probe_list_reactive_probe_chem_comp_descriptor_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Reactive_probe_chem_comp_descriptor_RID",
+            "fk_other_column_name": "reactive_probe_chem_comp_descriptor_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_modeling_post_process": [
+        {
+            "fk_columns": [
+                "struct_assembly_id",
+                "Struct_assembly_RID"
+            ],
+            "ref_columns": [
+                "id",
+                "RID"
+            ],
+            "ref_table": "ihm_struct_assembly",
+            "fk_name": "ihm_modeling_post_process_struct_assembly_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Struct_assembly_RID",
+            "fk_other_column_name": "struct_assembly_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        },
+        {
+            "fk_columns": [
+                "Dataset_group_RID",
+                "dataset_group_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "id"
+            ],
+            "ref_table": "ihm_dataset_group",
+            "fk_name": "ihm_modeling_post_process_dataset_group_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Dataset_group_RID",
+            "fk_other_column_name": "dataset_group_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        },
+        {
+            "fk_columns": [
+                "Software_RID",
+                "software_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "pdbx_ordinal"
+            ],
+            "ref_table": "software",
+            "fk_name": "ihm_modeling_post_process_software_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "pdbx_ordinal",
+            "fk_RID_column_name": "Software_RID",
+            "fk_other_column_name": "software_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        },
+        {
+            "fk_columns": [
+                "script_file_id",
+                "Script_file_RID"
+            ],
+            "ref_columns": [
+                "id",
+                "RID"
+            ],
+            "ref_table": "ihm_external_files",
+            "fk_name": "ihm_modeling_post_process_script_file_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Script_file_RID",
+            "fk_other_column_name": "script_file_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_cross_link_list": [
+        {
+            "fk_columns": [
+                "linker_chem_comp_descriptor_id",
+                "Linker_chem_comp_descriptor_RID"
+            ],
+            "ref_columns": [
+                "id",
+                "RID"
+            ],
+            "ref_table": "ihm_chemical_component_descriptor",
+            "fk_name": "ihm_cross_link_list_linker_chem_comp_descriptor_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Linker_chem_comp_descriptor_RID",
+            "fk_other_column_name": "linker_chem_comp_descriptor_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_poly_probe_position": [
+        {
+            "fk_columns": [
+                "Mod_res_chem_comp_descriptor_RID",
+                "mod_res_chem_comp_descriptor_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "id"
+            ],
+            "ref_table": "ihm_chemical_component_descriptor",
+            "fk_name": "ihm_poly_probe_position_mod_res_chem_comp_descriptor_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Mod_res_chem_comp_descriptor_RID",
+            "fk_other_column_name": "mod_res_chem_comp_descriptor_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        },
+        {
+            "fk_columns": [
+                "Mut_res_chem_comp_RID",
+                "mut_res_chem_comp_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "id"
+            ],
+            "ref_table": "chem_comp",
+            "fk_name": "ihm_poly_probe_position_mut_res_chem_comp_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Mut_res_chem_comp_RID",
+            "fk_other_column_name": "mut_res_chem_comp_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_geometric_object_axis": [
+        {
+            "fk_columns": [
+                "Transformation_RID",
+                "transformation_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "id"
+            ],
+            "ref_table": "ihm_geometric_object_transformation",
+            "fk_name": "ihm_geometric_object_axis_transformation_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Transformation_RID",
+            "fk_other_column_name": "transformation_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_struct_assembly_details": [
+        {
+            "fk_columns": [
+                "entity_poly_segment_id",
+                "Entity_poly_segment_RID"
+            ],
+            "ref_columns": [
+                "id",
+                "RID"
+            ],
+            "ref_table": "ihm_entity_poly_segment",
+            "fk_name": "ihm_struct_assembly_details_entity_poly_segment_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Entity_poly_segment_RID",
+            "fk_other_column_name": "entity_poly_segment_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_poly_atom_feature": [
+        {
+            "fk_columns": [
+                "Asym_RID",
+                "asym_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "id"
+            ],
+            "ref_table": "struct_asym",
+            "fk_name": "ihm_poly_atom_feature_asym_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Asym_RID",
+            "fk_other_column_name": "asym_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_interface_residue_feature": [
+        {
+            "fk_columns": [
+                "Binding_partner_asym_RID",
+                "binding_partner_asym_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "id"
+            ],
+            "ref_table": "struct_asym",
+            "fk_name": "ihm_interface_residue_feature_binding_partner_asym_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Binding_partner_asym_RID",
+            "fk_other_column_name": "binding_partner_asym_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        },
+        {
+            "fk_columns": [
+                "Dataset_List_RID",
+                "dataset_list_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "id"
+            ],
+            "ref_table": "ihm_dataset_list",
+            "fk_name": "ihm_interface_residue_feature_dataset_list_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Dataset_List_RID",
+            "fk_other_column_name": "dataset_list_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "software": [
+        {
+            "fk_columns": [
+                "Citation_RID",
+                "citation_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "id"
+            ],
+            "ref_table": "citation",
+            "fk_name": "software_citation_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Citation_RID",
+            "fk_other_column_name": "citation_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_geometric_object_plane": [
+        {
+            "fk_columns": [
+                "transformation_id",
+                "Transformation_RID"
+            ],
+            "ref_columns": [
+                "id",
+                "RID"
+            ],
+            "ref_table": "ihm_geometric_object_transformation",
+            "fk_name": "ihm_geometric_object_plane_transformation_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Transformation_RID",
+            "fk_other_column_name": "transformation_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_derived_distance_restraint": [
+        {
+            "fk_columns": [
+                "dataset_list_id",
+                "Dataset_List_RID"
+            ],
+            "ref_columns": [
+                "id",
+                "RID"
+            ],
+            "ref_table": "ihm_dataset_list",
+            "fk_name": "ihm_derived_distance_restraint_dataset_list_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Dataset_List_RID",
+            "fk_other_column_name": "dataset_list_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_starting_model_details": [
+        {
+            "fk_columns": [
+                "entity_poly_segment_id",
+                "Entity_poly_segment_RID"
+            ],
+            "ref_columns": [
+                "id",
+                "RID"
+            ],
+            "ref_table": "ihm_entity_poly_segment",
+            "fk_name": "ihm_starting_model_details_entity_poly_segment_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Entity_poly_segment_RID",
+            "fk_other_column_name": "entity_poly_segment_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_geometric_object_torus": [
+        {
+            "fk_columns": [
+                "Transformation_RID",
+                "transformation_id"
+            ],
+            "ref_columns": [
+                "RID",
+                "id"
+            ],
+            "ref_table": "ihm_geometric_object_transformation",
+            "fk_name": "ihm_geometric_object_torus_transformation_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Transformation_RID",
+            "fk_other_column_name": "transformation_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ],
+    "ihm_3dem_restraint": [
+        {
+            "fk_columns": [
+                "fitting_method_citation_id",
+                "Fitting_method_citation_RID"
+            ],
+            "ref_columns": [
+                "id",
+                "RID"
+            ],
+            "ref_table": "citation",
+            "fk_name": "ihm_3dem_restraint_fitting_method_citation_id_fkey",
+            "ref_RID_column_name": "RID",
+            "ref_other_column_name": "id",
+            "fk_RID_column_name": "Fitting_method_citation_RID",
+            "fk_other_column_name": "fitting_method_citation_id",
+            "url_structure_pattern": "/attribute/PDB:{}/{}={}&structure_id={}/RID?limit=1",
+            "url_pattern": "/attribute/PDB:{}/{}={}/RID?limit=1"
+        }
+    ]
+}

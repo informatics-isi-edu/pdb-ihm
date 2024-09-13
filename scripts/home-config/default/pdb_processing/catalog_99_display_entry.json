@@ -1,0 +1,1954 @@
+{
+    "Catalog 99": {
+        "schemas": {
+            "PDB": {
+                "tables": {
+                    "entry": {
+                        "keys": {
+                            "entry_RCB_mmCIF_File_Name_key": {
+                                "unique_columns": "(RCB,mmCIF_File_Name)"
+                            },
+                            "entry_combo2_key": {
+                                "unique_columns": "(RCB,mmCIF_File_MD5)"
+                            },
+                            "entry_id_primary_key": {
+                                "unique_columns": "(id)"
+                            },
+                            "entry_Accession_Code_primary_key": {
+                                "unique_columns": "(Accession_Code)"
+                            },
+                            "Entry_id_RCB_key": {
+                                "unique_columns": "(id,RCB)"
+                            }
+                        },
+                        "foreign_keys": {
+                            "entry_Workflow_Status_fkey": {
+                                "columns": "(Workflow_Status)",
+                                "referenced_columns": {
+                                    "schema": "PDB",
+                                    "table": "Workflow_Status",
+                                    "columns": "(Name)"
+                                }
+                            },
+                            "entry_Process_Status_fkey": {
+                                "columns": "(Process_Status)",
+                                "referenced_columns": {
+                                    "schema": "PDB",
+                                    "table": "Process_Status",
+                                    "columns": "(Name)"
+                                }
+                            },
+                            "entry_Accession_Code_fkey": {
+                                "columns": "(Accession_Code)",
+                                "referenced_columns": {
+                                    "schema": "PDB",
+                                    "table": "Accession_Code",
+                                    "columns": "(Accession_Code)"
+                                }
+                            }
+                        },
+                        "referenced_by": {
+                            "Entry_Latest_Archive_Entry_fkey": {
+                                "schema": "PDB",
+                                "table": "Entry_Latest_Archive",
+                                "columns": "(Entry)",
+                                "referenced_columns": "(RID)"
+                            },
+                            "citation_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "citation",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_model_group_link_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_model_group_link",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_feature_list_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_feature_list",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_dataset_group_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_dataset_group",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_starting_model_seq_dif_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_starting_model_seq_dif",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "pdbx_entity_nonpoly_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "pdbx_entity_nonpoly",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_hydroxyl_radical_fp_restraint_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_hydroxyl_radical_fp_restraint",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_kinetic_rate_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_kinetic_rate",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "pdbx_ion_info_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "pdbx_ion_info",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_non_poly_feature_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_non_poly_feature",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_derived_dihedral_restraint_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_derived_dihedral_restraint",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_model_group_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_model_group",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_geometric_object_transformation_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_geometric_object_transformation",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_model_representation_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_model_representation",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_dataset_related_db_reference_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_dataset_related_db_reference",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_ordered_ensemble_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_ordered_ensemble",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "pdbx_entity_poly_na_type_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "pdbx_entity_poly_na_type",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_external_files_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_external_files",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "struct_ref_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "struct_ref",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_model_representation_details_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_model_representation_details",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "struct_asym_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "struct_asym",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_relaxation_time_multi_state_scheme_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_relaxation_time_multi_state_scheme",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_poly_probe_conjugate_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_poly_probe_conjugate",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_entry_collection_mapping_entry_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_entry_collection_mapping",
+                                "columns": "(entry_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "entity_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "entity",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "atom_type_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "atom_type",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "struct_ref_seq_dif_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "struct_ref_seq_dif",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_ensemble_info_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_ensemble_info",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_localization_density_files_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_localization_density_files",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_derived_angle_restraint_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_derived_angle_restraint",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "struct_ref_seq_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "struct_ref_seq",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_predicted_contact_restraint_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_predicted_contact_restraint",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_2dem_class_average_restraint_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_2dem_class_average_restraint",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_geometric_object_sphere_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_geometric_object_sphere",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "entity_name_sys_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "entity_name_sys",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "citation_author_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "citation_author",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_pseudo_site_feature_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_pseudo_site_feature",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "entity_poly_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "entity_poly",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_multi_state_model_group_link_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_multi_state_model_group_link",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_epr_restraint_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_epr_restraint",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_modeling_protocol_details_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_modeling_protocol_details",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_geometric_object_list_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_geometric_object_list",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_starting_computational_models_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_starting_computational_models",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_dataset_external_reference_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_dataset_external_reference",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_relaxation_time_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_relaxation_time",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_starting_comparative_models_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_starting_comparative_models",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "entity_src_gen_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "entity_src_gen",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_ligand_probe_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_ligand_probe",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_model_list_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_model_list",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_ordered_model_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_ordered_model",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "pdbx_entry_details_entry_id_fkey": {
+                                "schema": "PDB",
+                                "table": "pdbx_entry_details",
+                                "columns": "(entry_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_geometric_object_center_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_geometric_object_center",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_2dem_class_average_fitting_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_2dem_class_average_fitting",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_cross_link_restraint_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_cross_link_restraint",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_dataset_list_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_dataset_list",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_multi_state_modeling_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_multi_state_modeling",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_cross_link_result_parameters_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_cross_link_result_parameters",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "entity_name_com_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "entity_name_com",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "pdbx_inhibitor_info_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "pdbx_inhibitor_info",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_hdx_restraint_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_hdx_restraint",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "audit_author_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "audit_author",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "Entry_Related_File_entry_id_fkey": {
+                                "schema": "PDB",
+                                "table": "Entry_Related_File",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_ensemble_sub_sample_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_ensemble_sub_sample",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_sas_restraint_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_sas_restraint",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_poly_residue_feature_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_poly_residue_feature",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "chem_comp_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "chem_comp",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_multi_state_scheme_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_multi_state_scheme",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_model_representative_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_model_representative",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_cross_link_result_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_cross_link_result",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_pseudo_site_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_pseudo_site",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_geometric_object_distance_restraint_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_geometric_object_distance_restraint",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "Entry_Generated_File_Structure_Id_fkey": {
+                                "schema": "PDB",
+                                "table": "Entry_Generated_File",
+                                "columns": "(Structure_Id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "Entry_Generated_File_Structure_Id_Entry_RCB_fkey": {
+                                "schema": "PDB",
+                                "table": "Entry_Generated_File",
+                                "columns": "(Structure_Id,Entry_RCB)",
+                                "referenced_columns": "(id,RCB)"
+                            },
+                            "ihm_chemical_component_descriptor_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_chemical_component_descriptor",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_probe_list_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_probe_list",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "entity_poly_seq_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "entity_poly_seq",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_struct_assembly_class_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_struct_assembly_class",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_modeling_post_process_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_modeling_post_process",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "Entry_Error_File_Entry_RID_fkey": {
+                                "schema": "PDB",
+                                "table": "Entry_Error_File",
+                                "columns": "(Entry_RID)",
+                                "referenced_columns": "(RID)"
+                            },
+                            "ihm_cross_link_list_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_cross_link_list",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_struct_assembly_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_struct_assembly",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_multi_state_scheme_connectivity_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_multi_state_scheme_connectivity",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_poly_probe_position_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_poly_probe_position",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_geometric_object_axis_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_geometric_object_axis",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_external_reference_info_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_external_reference_info",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "pdbx_protein_info_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "pdbx_protein_info",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_entity_poly_segment_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_entity_poly_segment",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "audit_conform_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "audit_conform",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_struct_assembly_details_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_struct_assembly_details",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_struct_assembly_class_link_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_struct_assembly_class_link",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "Curation_Log_Entry_fkey": {
+                                "schema": "PDB",
+                                "table": "Curation_Log",
+                                "columns": "(Entry)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_poly_atom_feature_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_poly_atom_feature",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_related_datasets_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_related_datasets",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_dataset_group_link_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_dataset_group_link",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_interface_residue_feature_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_interface_residue_feature",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "software_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "software",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_geometric_object_plane_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_geometric_object_plane",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_derived_distance_restraint_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_derived_distance_restraint",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "struct_entry_id_fkey": {
+                                "schema": "PDB",
+                                "table": "struct",
+                                "columns": "(entry_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_starting_model_details_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_starting_model_details",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_cross_link_pseudo_site_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_cross_link_pseudo_site",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "chem_comp_atom_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "chem_comp_atom",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_modeling_protocol_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_modeling_protocol",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_data_transformation_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_data_transformation",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "Accession_Code_Entry_fkey": {
+                                "schema": "PDB",
+                                "table": "Accession_Code",
+                                "columns": "(Entry)",
+                                "referenced_columns": "(RID)"
+                            },
+                            "ihm_geometric_object_torus_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_geometric_object_torus",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_3dem_restraint_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_3dem_restraint",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_geometric_object_half_torus_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_geometric_object_half_torus",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            },
+                            "ihm_residues_not_modeled_structure_id_fkey": {
+                                "schema": "PDB",
+                                "table": "ihm_residues_not_modeled",
+                                "columns": "(structure_id)",
+                                "referenced_columns": "(id)"
+                            }
+                        },
+                        "annotations": {
+                            "tag:isrd.isi.edu,2019:export": {
+                                "compact": {
+                                    "templates": [
+                                        {
+                                            "type": "BAG",
+                                            "outputs": [
+                                                {
+                                                    "source": {
+                                                        "api": "entity",
+                                                        "table": "PDB:entry"
+                                                    },
+                                                    "destination": {
+                                                        "name": "entry",
+                                                        "type": "csv"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "api": "attribute",
+                                                        "path": "PDB:Entry_Generated_File/url:=File_URL"
+                                                    },
+                                                    "destination": {
+                                                        "name": "Entry_Generated_File",
+                                                        "type": "download"
+                                                    }
+                                                }
+                                            ],
+                                            "displayname": "BDBag"
+                                        }
+                                    ]
+                                }
+                            },
+                            "tag:misd.isi.edu,2015:display": {
+                                "markdown_name": "Entry^*^"
+                            },
+                            "tag:isrd.isi.edu,2016:table-display": {
+                                "compact": {
+                                    "row_order": [
+                                        {
+                                            "column": "RCT",
+                                            "descending": true
+                                        }
+                                    ]
+                                },
+                                "row_name": {
+                                    "row_markdown_pattern": "{{{id}}}"
+                                }
+                            },
+                            "tag:isrd.isi.edu,2016:visible-columns": {
+                                "*": [
+                                    "RID",
+                                    "id",
+                                    "mmCIF_File_URL",
+                                    "Submitter_Flag_Date",
+                                    "Image_File_URL",
+                                    [
+                                        "PDB",
+                                        "entry_Accession_Code_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "entry_Workflow_Status_fkey"
+                                    ],
+                                    "Process_Status",
+                                    {
+                                        "entity": true,
+                                        "source": [
+                                            {
+                                                "inbound": [
+                                                    "PDB",
+                                                    "Entry_Error_File_Entry_RID_fkey"
+                                                ]
+                                            },
+                                            "RID"
+                                        ],
+                                        "display": {
+                                            "template_engine": "handlebars",
+                                            "markdown_pattern": "{{#if _Record_Status_Detail}}{{{Record_Status_Detail}}}\n{{#each $self}}- [{{{this.rowName}}}]({{{this.uri.detailed}}}) \n{{/each}}{{/if}}"
+                                        },
+                                        "aggregate": "array_d",
+                                        "markdown_name": "Record Status Detail"
+                                    },
+                                    {
+                                        "entity": true,
+                                        "source": [
+                                            {
+                                                "inbound": [
+                                                    "PDB",
+                                                    "Entry_Generated_File_Structure_Id_fkey"
+                                                ]
+                                            },
+                                            "RID"
+                                        ],
+                                        "display": {
+                                            "template_engine": "handlebars",
+                                            "markdown_pattern": "{{#each $self}}- {{{this.rowName}}} \n{{/each}}"
+                                        },
+                                        "aggregate": "array_d",
+                                        "markdown_name": "System Generated Files"
+                                    },
+                                    "Deposit_Date",
+                                    "Release_Date",
+                                    "Method_Details",
+                                    "Manual_Processing",
+                                    {
+                                        "source": [
+                                            {
+                                                "outbound": [
+                                                    "PDB",
+                                                    "entry_RCB_fkey"
+                                                ]
+                                            },
+                                            "Full_Name"
+                                        ],
+                                        "markdown_name": "RCB"
+                                    },
+                                    {
+                                        "source": [
+                                            {
+                                                "outbound": [
+                                                    "PDB",
+                                                    "entry_RMB_fkey"
+                                                ]
+                                            },
+                                            "Full_Name"
+                                        ],
+                                        "markdown_name": "RMB"
+                                    },
+                                    "RCT",
+                                    "RMT"
+                                ],
+                                "entry": [
+                                    "mmCIF_File_URL",
+                                    "Image_File_URL",
+                                    [
+                                        "PDB",
+                                        "entry_Workflow_Status_fkey"
+                                    ],
+                                    "Method_Details",
+                                    "Manual_Processing",
+                                    "Notes"
+                                ],
+                                "filter": {
+                                    "and": [
+                                        {
+                                            "source": [
+                                                {
+                                                    "outbound": [
+                                                        "PDB",
+                                                        "entry_Accession_Code_fkey"
+                                                    ]
+                                                },
+                                                "RID"
+                                            ],
+                                            "markdown_name": "Accession Code",
+                                            "hide_null_choice": true,
+                                            "hide_not_null_choice": true
+                                        },
+                                        {
+                                            "source": [
+                                                {
+                                                    "outbound": [
+                                                        "PDB",
+                                                        "entry_RCB_fkey"
+                                                    ]
+                                                },
+                                                "Full_Name"
+                                            ],
+                                            "markdown_name": "Created By",
+                                            "hide_null_choice": true,
+                                            "hide_not_null_choice": true
+                                        },
+                                        {
+                                            "source": "Deposit_Date",
+                                            "markdown_name": "Deposit Date"
+                                        },
+                                        {
+                                            "source": "Release_Date",
+                                            "markdown_name": "Release Date"
+                                        },
+                                        {
+                                            "source": "Submitter_Flag_Date",
+                                            "markdown_name": "Last Communicated"
+                                        },
+                                        {
+                                            "source": [
+                                                {
+                                                    "outbound": [
+                                                        "PDB",
+                                                        "entry_Workflow_Status_fkey"
+                                                    ]
+                                                },
+                                                "RID"
+                                            ],
+                                            "markdown_name": "Workflow Status",
+                                            "hide_null_choice": true,
+                                            "hide_not_null_choice": true
+                                        },
+                                        {
+                                            "source": [
+                                                {
+                                                    "inbound": [
+                                                        "PDB",
+                                                        "citation_author_structure_id_fkey"
+                                                    ]
+                                                },
+                                                "RID"
+                                            ],
+                                            "markdown_name": "Authors"
+                                        },
+                                        {
+                                            "source": [
+                                                {
+                                                    "inbound": [
+                                                        "PDB",
+                                                        "citation_structure_id_fkey"
+                                                    ]
+                                                },
+                                                "RID"
+                                            ],
+                                            "markdown_name": "Citations"
+                                        },
+                                        {
+                                            "source": [
+                                                {
+                                                    "inbound": [
+                                                        "PDB",
+                                                        "software_structure_id_fkey"
+                                                    ]
+                                                },
+                                                "RID"
+                                            ],
+                                            "markdown_name": "Software"
+                                        },
+                                        {
+                                            "source": "Manual_Processing",
+                                            "markdown_name": "Manual Processing"
+                                        }
+                                    ]
+                                },
+                                "detailed": [
+                                    "RID",
+                                    "id",
+                                    {
+                                        "sourcekey": "entry_RCB"
+                                    },
+                                    {
+                                        "source": [
+                                            {
+                                                "outbound": [
+                                                    "PDB",
+                                                    "entry_RMB_fkey"
+                                                ]
+                                            },
+                                            "Full_Name"
+                                        ],
+                                        "markdown_name": "RMB"
+                                    },
+                                    "mmCIF_File_URL",
+                                    {
+                                        "source": "mmCIF_File_Bytes",
+                                        "markdown_name": "mmCIF File Size (Bytes)"
+                                    },
+                                    "Image_File_URL",
+                                    {
+                                        "display": {
+                                            "wait_for": [
+                                                "molstar_image"
+                                            ],
+                                            "template_engine": "handlebars",
+                                            "markdown_pattern": "{{#if (or (eq Workflow_Status \"mmCIF CREATED\") (eq Workflow_Status \"SUBMISSION COMPLETE\") (eq Workflow_Status \"HOLD\") (eq Workflow_Status \"REL\") (eq Workflow_Status \"REL\"))}} {{#each molstar_image}}::: iframe [](/molstar/embedded.html?url={{this.values.File_URL}}){style=\"min-width:800px; min-height:700px; height:70vh;\" class=chaise-autofill  } \n :::{{/each}}{{else}}Not Available{{/if}}"
+                                        },
+                                        "markdown_name": "3D Visualization"
+                                    },
+                                    {
+                                        "source": "Image_File_Bytes",
+                                        "markdown_name": "Image File Size (Bytes)"
+                                    },
+                                    [
+                                        "PDB",
+                                        "entry_Accession_Code_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "entry_Workflow_Status_fkey"
+                                    ],
+                                    "Process_Status",
+                                    {
+                                        "entity": true,
+                                        "source": [
+                                            {
+                                                "inbound": [
+                                                    "PDB",
+                                                    "Entry_Error_File_Entry_RID_fkey"
+                                                ]
+                                            },
+                                            "RID"
+                                        ],
+                                        "display": {
+                                            "template_engine": "handlebars",
+                                            "markdown_pattern": "{{#if _Record_Status_Detail}}{{{Record_Status_Detail}}}\n{{#each $self}}- [{{{this.rowName}}}]({{{this.uri.detailed}}}) \n{{/each}}{{/if}}"
+                                        },
+                                        "aggregate": "array_d",
+                                        "markdown_name": "Record Status Detail"
+                                    },
+                                    "Deposit_Date",
+                                    "Release_Date",
+                                    "Method_Details",
+                                    "Submitter_Flag",
+                                    "Submitter_Flag_Date",
+                                    "Manual_Processing",
+                                    "Notes",
+                                    [
+                                        "PDB",
+                                        "entry_Owner_fkey"
+                                    ]
+                                ],
+                                "entry/edit": [
+                                    "mmCIF_File_URL",
+                                    "Image_File_URL",
+                                    [
+                                        "PDB",
+                                        "entry_Workflow_Status_fkey"
+                                    ],
+                                    "Method_Details",
+                                    "Deposit_Date",
+                                    "Release_Date",
+                                    "Submitter_Flag",
+                                    "Submitter_Flag_Date",
+                                    "Manual_Processing",
+                                    "Notes"
+                                ],
+                                "export/compact": [
+                                    "RID",
+                                    "id",
+                                    "mmCIF_File_Name",
+                                    "mmCIF_File_URL",
+                                    "Image_File_Name",
+                                    "Image_File_URL",
+                                    "Workflow_Status",
+                                    "Accession_Code",
+                                    "Deposit_Date",
+                                    "Release_Date",
+                                    "Method_Details",
+                                    "Submitter_Flag",
+                                    "Submitter_Flag_Date",
+                                    "Record_Status_Detail"
+                                ]
+                            },
+                            "tag:isrd.isi.edu,2019:source-definitions": {
+                                "fkeys": [],
+                                "columns": true,
+                                "sources": {
+                                    "entry_RCB": {
+                                        "entity": true,
+                                        "source": [
+                                            {
+                                                "outbound": [
+                                                    "PDB",
+                                                    "entry_RCB_fkey"
+                                                ]
+                                            },
+                                            "RID"
+                                        ],
+                                        "display": {
+                                            "template_engine": "handlebars",
+                                            "markdown_pattern": "{{{$self.values.Full_Name}}} ({{{$self.values.Email}}})"
+                                        },
+                                        "markdown_name": "RCB"
+                                    },
+                                    "entry_RMB": {
+                                        "entity": true,
+                                        "source": [
+                                            {
+                                                "outbound": [
+                                                    "PDB",
+                                                    "entry_RMB_fkey"
+                                                ]
+                                            },
+                                            "RID"
+                                        ],
+                                        "display": {
+                                            "template_engine": "handlebars",
+                                            "markdown_pattern": "{{{$self.values.Full_Name}}} ({{{$self.values.Email}}})"
+                                        },
+                                        "markdown_name": "RMB"
+                                    },
+                                    "molstar_image": {
+                                        "entity": true,
+                                        "source": [
+                                            {
+                                                "inbound": [
+                                                    "PDB",
+                                                    "Entry_Generated_File_Structure_Id_fkey"
+                                                ]
+                                            },
+                                            {
+                                                "filter": "File_Type",
+                                                "operand_pattern": "mmCIF"
+                                            },
+                                            "RID"
+                                        ]
+                                    },
+                                    "Accession_Code_RCB": {
+                                        "entity": true,
+                                        "source": [
+                                            {
+                                                "outbound": [
+                                                    "PDB",
+                                                    "Accession_Code_RCB_fkey"
+                                                ]
+                                            },
+                                            "RID"
+                                        ],
+                                        "display": {
+                                            "template_engine": "handlebars",
+                                            "markdown_pattern": "{{{$self.values.Full_Name}}} ({{{$self.values.Email}}})"
+                                        },
+                                        "markdown_name": "RCB"
+                                    }
+                                }
+                            },
+                            "tag:isrd.isi.edu,2016:visible-foreign-keys": {
+                                "filter": "detailed",
+                                "detailed": [
+                                    [
+                                        "PDB",
+                                        "Entry_Generated_File_Structure_Id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "struct_entry_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "audit_author_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "citation_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "citation_author_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "software_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "chem_comp_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "entity_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "entity_name_com_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "entity_name_sys_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "entity_src_gen_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "struct_ref_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "struct_ref_seq_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "struct_ref_seq_dif_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "entity_poly_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "pdbx_entity_nonpoly_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "entity_poly_seq_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "atom_type_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "struct_asym_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_dataset_list_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_dataset_group_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_dataset_group_link_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_data_transformation_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_related_datasets_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_dataset_related_db_reference_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_external_reference_info_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_external_files_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_dataset_external_reference_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_entity_poly_segment_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_struct_assembly_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_struct_assembly_details_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_struct_assembly_class_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_struct_assembly_class_link_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_starting_model_details_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_starting_comparative_models_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_starting_computational_models_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_starting_model_seq_dif_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_model_representation_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_model_representation_details_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_modeling_protocol_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_modeling_protocol_details_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_modeling_post_process_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_model_list_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_model_group_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_model_group_link_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_model_representative_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_residues_not_modeled_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_multi_state_modeling_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_multi_state_model_group_link_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_ordered_model_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_ordered_ensemble_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_ensemble_info_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_ensemble_sub_sample_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_localization_density_files_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_2dem_class_average_restraint_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_2dem_class_average_fitting_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_3dem_restraint_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_sas_restraint_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_epr_restraint_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_chemical_component_descriptor_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_probe_list_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_poly_probe_position_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_poly_probe_conjugate_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_ligand_probe_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_geometric_object_list_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_geometric_object_center_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_geometric_object_transformation_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_geometric_object_sphere_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_geometric_object_torus_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_geometric_object_half_torus_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_geometric_object_axis_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_geometric_object_plane_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "Entry_Related_File_entry_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_pseudo_site_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_cross_link_list_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_cross_link_restraint_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_cross_link_pseudo_site_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_cross_link_result_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_cross_link_result_parameters_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_predicted_contact_restraint_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_hydroxyl_radical_fp_restraint_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_hdx_restraint_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_feature_list_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_poly_atom_feature_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_poly_residue_feature_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_non_poly_feature_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_interface_residue_feature_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_pseudo_site_feature_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_derived_distance_restraint_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_derived_angle_restraint_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_derived_dihedral_restraint_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_geometric_object_distance_restraint_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_multi_state_scheme_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_multi_state_scheme_connectivity_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_kinetic_rate_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_relaxation_time_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "ihm_relaxation_time_multi_state_scheme_structure_id_fkey"
+                                    ],
+                                    {
+                                        "source": [
+                                            {
+                                                "inbound": [
+                                                    "PDB",
+                                                    "ihm_entry_collection_mapping_entry_id_fkey"
+                                                ]
+                                            },
+                                            {
+                                                "outbound": [
+                                                    "PDB",
+                                                    "ihm_entry_collection_mapping_collection_id_fkey"
+                                                ]
+                                            },
+                                            "RID"
+                                        ],
+                                        "comment": "Collections to which the entry belongs",
+                                        "markdown_name": "Entry Collections"
+                                    },
+                                    {
+                                        "source": [
+                                            {
+                                                "inbound": [
+                                                    "PDB",
+                                                    "Curation_Log_Entry_fkey"
+                                                ]
+                                            },
+                                            "RID"
+                                        ],
+                                        "markdown_name": "Curation Log"
+                                    },
+                                    [
+                                        "PDB",
+                                        "audit_conform_structure_id_fkey"
+                                    ],
+                                    [
+                                        "PDB",
+                                        "pdbx_entity_poly_na_type_structure_id_fkey"
+                                    ]
+                                ]
+                            }
+                        },
+                        "comment": "List of user owned entries in PDB-Dev; mmCIF category: entry",
+                        "acls": {
+                            "insert": [
+                                "https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1",
+                                "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
+                                "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"
+                            ]
+                        },
+                        "acl_bindings": {
+                            "submitters_read_own_entries": {
+                                "types": [
+                                    "select"
+                                ],
+                                "scope_acl": [
+                                    "https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1"
+                                ],
+                                "projection": [
+                                    "RCB"
+                                ],
+                                "projection_type": "acl"
+                            },
+                            "submitters_modify_based_on_workflow_status": {
+                                "types": [
+                                    "update",
+                                    "delete"
+                                ],
+                                "scope_acl": [
+                                    "https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1"
+                                ],
+                                "projection": [
+                                    {
+                                        "or": [
+                                            {
+                                                "filter": "Workflow_Status",
+                                                "operand": "DRAFT",
+                                                "operator": "="
+                                            },
+                                            {
+                                                "filter": "Workflow_Status",
+                                                "operand": "DEPO",
+                                                "operator": "="
+                                            },
+                                            {
+                                                "filter": "Workflow_Status",
+                                                "operand": "RECORD READY",
+                                                "operator": "="
+                                            },
+                                            {
+                                                "filter": "Process_Status",
+                                                "operand": "Error: generating mmCIF file",
+                                                "operator": "="
+                                            },
+                                            {
+                                                "filter": "Process_Status",
+                                                "operand": "Error: processing uploaded mmCIF file",
+                                                "operator": "="
+                                            },
+                                            {
+                                                "filter": "Process_Status",
+                                                "operand": "Error: processing uploaded restraint files",
+                                                "operator": "="
+                                            }
+                                        ]
+                                    },
+                                    "RCB"
+                                ],
+                                "projection_type": "acl"
+                            }
+                        },
+                        "columns": {
+                            "id": {
+                                "type": "text",
+                                "Nullable": "NOT NULL",
+                                "comment": "- Description: The value of _entry.id identifies the data block.\n Note that this item need not be a number; it can be any unique\n identifier.\n- Type: text",
+                                "acls": {
+                                    "insert": [],
+                                    "update": []
+                                }
+                            },
+                            "Image_File_URL": {
+                                "type": "text",
+                                "annotations": {
+                                    "tag:isrd.isi.edu,2017:asset": {
+                                        "md5": "Image_File_MD5",
+                                        "url_pattern": "/hatrac/dev/pdb/submitted/uid/{{#if _RCB}}{{#regexFindFirst _RCB \"[^/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/image/{{{Image_File_MD5}}}{{{_Image_File_URL.filename_ext}}}",
+                                        "filename_column": "Image_File_Name",
+                                        "template_engine": "handlebars",
+                                        "byte_count_column": "Image_File_Bytes"
+                                    },
+                                    "tag:misd.isi.edu,2015:display": {
+                                        "name": "User Provided Image File"
+                                    },
+                                    "tag:isrd.isi.edu,2016:column-display": {
+                                        "compact": {
+                                            "template_engine": "handlebars",
+                                            "markdown_pattern": "{{#if Image_File_URL }}[![{{Image_File_Name}}]({{{Image_File_URL}}}){width=auto height=100}]({{{Image_File_URL}}}){target=_blank}{{/if}}"
+                                        },
+                                        "detailed": {
+                                            "template_engine": "handlebars",
+                                            "markdown_pattern": "{{#if Image_File_URL }}[![{{Image_File_Name}}]({{{Image_File_URL}}}){width=auto height=200}]({{{Image_File_URL}}}){target=_blank}{{/if}}"
+                                        }
+                                    }
+                                },
+                                "comment": "Uploaded image file. Image provided will be used for displaying the entry on the PDB-Dev website"
+                            },
+                            "Image_File_Name": {
+                                "type": "text"
+                            },
+                            "Image_File_MD5": {
+                                "type": "text"
+                            },
+                            "Image_File_Bytes": {
+                                "type": "int8",
+                                "comment": "- Description: Size of the uploaded image file in bytes"
+                            },
+                            "mmCIF_File_URL": {
+                                "type": "text",
+                                "Nullable": "NOT NULL",
+                                "annotations": {
+                                    "tag:isrd.isi.edu,2017:asset": {
+                                        "md5": "mmCIF_File_MD5",
+                                        "url_pattern": "/hatrac/dev/pdb/submitted/uid/{{#if _RCB}}{{#regexFindFirst _RCB \"[^/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/mmCIF/{{{mmCIF_File_MD5}}}{{{_mmCIF_File_URL.filename_ext}}}",
+                                        "filename_column": "mmCIF_File_Name",
+                                        "template_engine": "handlebars",
+                                        "byte_count_column": "mmCIF_File_Bytes",
+                                        "filename_ext_filter": [
+                                            ".cif",
+                                            ".CIF"
+                                        ]
+                                    },
+                                    "tag:misd.isi.edu,2015:display": {
+                                        "name": "User Provided mmCIF File"
+                                    }
+                                },
+                                "comment": "Uploaded mmCIF file. Use MAXIT or python-ihm to convert PDB to mmCIF. Using other tools may not provide compliant files"
+                            },
+                            "mmCIF_File_Name": {
+                                "type": "text"
+                            },
+                            "mmCIF_File_MD5": {
+                                "type": "text"
+                            },
+                            "mmCIF_File_Bytes": {
+                                "type": "int8",
+                                "comment": "- Description: Size of the uploaded mmCIF file in bytes"
+                            },
+                            "Workflow_Status": {
+                                "type": "text",
+                                "Nullable": "NOT NULL",
+                                "default": "DRAFT",
+                                "comment": "- Description: Workflow status corresponding to the entry"
+                            },
+                            "Process_Status": {
+                                "type": "text",
+                                "default": "New (trigger backend process)"
+                            },
+                            "Record_Status_Detail": {
+                                "type": "text",
+                                "comment": "- Description: Captures error messages obtained while processing the uploaded mmCIF files; remain empty if process is success"
+                            },
+                            "Accession_Code": {
+                                "type": "text",
+                                "comment": "- Description: Accession code issued by the archive after processing the entry",
+                                "acls": {
+                                    "insert": [
+                                        "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
+                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                    ]
+                                },
+                                "acl_bindings": {
+                                    "submitters_read_own_entries": false,
+                                    "submitters_read_based_on_workflow_status": {
+                                        "types": [
+                                            "select"
+                                        ],
+                                        "scope_acl": [
+                                            "https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1"
+                                        ],
+                                        "projection": [
+                                            {
+                                                "or": [
+                                                    {
+                                                        "filter": "Workflow_Status",
+                                                        "operand": "REL",
+                                                        "operator": "="
+                                                    },
+                                                    {
+                                                        "filter": "Workflow_Status",
+                                                        "operand": "HOLD",
+                                                        "operator": "="
+                                                    }
+                                                ]
+                                            },
+                                            "RID"
+                                        ],
+                                        "projection_type": "nonnull"
+                                    },
+                                    "submitters_modify_based_on_workflow_status": false
+                                }
+                            },
+                            "Last_mmCIF_File_MD5": {
+                                "type": "text"
+                            },
+                            "Release_Date": {
+                                "type": "date",
+                                "comment": "The Release Date.",
+                                "acls": {
+                                    "insert": [
+                                        "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
+                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                    ]
+                                },
+                                "acl_bindings": {
+                                    "submitters_read_own_entries": false,
+                                    "submitters_read_based_on_workflow_status": {
+                                        "types": [
+                                            "select"
+                                        ],
+                                        "scope_acl": [
+                                            "https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1"
+                                        ],
+                                        "projection": [
+                                            {
+                                                "or": [
+                                                    {
+                                                        "filter": "Workflow_Status",
+                                                        "operand": "REL",
+                                                        "operator": "="
+                                                    },
+                                                    {
+                                                        "filter": "Workflow_Status",
+                                                        "operand": "HOLD",
+                                                        "operator": "="
+                                                    }
+                                                ]
+                                            },
+                                            "RID"
+                                        ],
+                                        "projection_type": "nonnull"
+                                    },
+                                    "submitters_modify_based_on_workflow_status": false
+                                }
+                            },
+                            "Notes": {
+                                "type": "markdown",
+                                "comment": "Notes for the Release.",
+                                "acls": {
+                                    "insert": [
+                                        "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
+                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                    ],
+                                    "select": [
+                                        "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
+                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                    ],
+                                    "update": [
+                                        "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
+                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                    ],
+                                    "enumerate": [
+                                        "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
+                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                    ]
+                                },
+                                "acl_bindings": {
+                                    "submitters_read_own_entries": false,
+                                    "submitters_modify_based_on_workflow_status": false
+                                }
+                            },
+                            "Deposit_Date": {
+                                "type": "date",
+                                "Nullable": "NOT NULL",
+                                "default": "CURRENT_DATE",
+                                "comment": "The Deposit Date.",
+                                "acls": {
+                                    "insert": [
+                                        "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
+                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                    ],
+                                    "select": [
+                                        "https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1",
+                                        "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"
+                                    ]
+                                },
+                                "acl_bindings": {
+                                    "submitters_modify_based_on_workflow_status": false
+                                }
+                            },
+                            "Submitter_Flag": {
+                                "type": "boolean",
+                                "comment": "This flag is set to \"true\" when the entry is waiting for input from user.",
+                                "acls": {
+                                    "insert": [
+                                        "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
+                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                    ],
+                                    "select": [
+                                        "https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1",
+                                        "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"
+                                    ]
+                                },
+                                "acl_bindings": {
+                                    "submitters_modify_based_on_workflow_status": false
+                                }
+                            },
+                            "Submitter_Flag_Date": {
+                                "type": "date",
+                                "annotations": {
+                                    "tag:misd.isi.edu,2015:display": {
+                                        "name": "Last Communicated"
+                                    }
+                                },
+                                "comment": "Date last communicated with the submitter. Waiting for response from submitter. This date can only be set when Submitter_Flag is True.",
+                                "acls": {
+                                    "insert": [
+                                        "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
+                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                    ],
+                                    "select": [
+                                        "https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1",
+                                        "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"
+                                    ]
+                                },
+                                "acl_bindings": {
+                                    "submitters_modify_based_on_workflow_status": false
+                                }
+                            },
+                            "Method_Details": {
+                                "type": "text",
+                                "Nullable": "NOT NULL",
+                                "annotations": {
+                                    "tag:misd.isi.edu,2015:display": {
+                                        "name": "User Provided Method Details"
+                                    }
+                                },
+                                "comment": "PDB-Dev is a repository for integrative structures determined by combining information from different types experimental and computational methods. Please provide specific details regarding types of experimental data, starting structural models, and computational methods used in the modeling process."
+                            },
+                            "Manual_Processing": {
+                                "type": "boolean",
+                                "default": false,
+                                "comment": "True indicates that the entry processing including generated files will be handled by curators.",
+                                "acls": {
+                                    "insert": [
+                                        "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
+                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                    ],
+                                    "select": [
+                                        "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
+                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                    ],
+                                    "update": [
+                                        "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
+                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                    ],
+                                    "enumerate": [
+                                        "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6",
+                                        "https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b",
+                                        "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"
+                                    ]
+                                },
+                                "acl_bindings": {
+                                    "submitters_read_own_entries": false,
+                                    "submitters_modify_based_on_workflow_status": false
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
