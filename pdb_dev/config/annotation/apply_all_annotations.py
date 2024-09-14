@@ -10,9 +10,9 @@ from ...utils.shared import DCCTX, PDBDEV_CLI
 from deriva.utils.extras.model import print_catalog_model_extras, print_schema_model_extras, print_table_model_extras, get_schemas, get_tables, get_columns, check_model_acl_types
 
 from . import catalog_annotations
+from . import export
 '''
 from . import google_dataset
-from . import export
 from . import bulk_upload
 from . import asset
 from . import citation
@@ -49,7 +49,8 @@ def main(server_name, catalog_id, credentials, args):
     #model.clear(clear_comment=False, clear_annotations=True, clear_acls=False, clear_acl_bindings=False)
     
     # -- per schema annotations
-    PDB.update_PDB_annotations(model)
+    #PDB.update_PDB_annotations(model)
+    export.update_export_annotations(model)
     
     '''
     # -- catalog annotation (chaise_config, bulk_upload)
@@ -58,7 +59,7 @@ def main(server_name, catalog_id, credentials, args):
     catalog_annotations.update_catalog_wide_annotations(model)
     
     # -- tag specifics annotations
-    export.update_export_annotations(model)
+
     asset.update_asset_annotations(model)
     viz_3d_display.update_viz_3d_display_annotations(model)
     citation.update_citation_annotations(model)

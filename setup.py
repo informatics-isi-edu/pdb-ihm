@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 
 url = "https://github.com/informatics-isi-edu/protein-database"
 author = 'USC Information Sciences Institute, Informatics Systems Research Division'
@@ -29,7 +29,7 @@ setup(
     author_email=author_email,
     maintainer=author,
     maintainer_email=author_email,
-    packages=find_packages(exclude=["tests", "tmp"]),
+    packages=find_namespace_packages(exclude=["tests", "tmp"]),
     entry_points={
         'console_scripts': [
             'pdb_dev_clear_entry_record = pdb_dev.tools.clear_entry_record:main',

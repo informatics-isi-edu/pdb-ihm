@@ -3,7 +3,24 @@ from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key,
 from deriva.core import urlquote, urlunquote
 import requests.exceptions
 from ...utils.shared import DCCTX, PDBDEV_CLI
-from deriva.utils.extras.model import print_catalog_model_extras, print_schema_model_extras, print_table_model_extras, get_schemas, get_tables, get_columns, check_model_acl_types
+from deriva.utils.extras.model import print_catalog_model_extras, print_schema_model_extras, print_table_model_extras, get_schemas, get_tables, get_columns, check_model_acl_types, tag2name, clear_all_schema_annotations, clear_schema_annotations
+
+per_schema_annotation_tags = [
+    tag["visible_foreign_keys"],
+#    tag["source_definitions"], tag["visible_columns"],  tag["display"],
+#    tag["table_display"], tag["column_display"], tag["foreign_key"], tag["column_defaults"],
+#    tag["key_display"], tag["app_links"], tag["indexing_preferences"], tag["table_alternatives"],
+]
+
+
+# these tags are handled in per-tag script or in catalog_annotation.py
+per_tag_annotation_tags = [
+    tag['asset'], tag['google_dataset'], tag['viz_3d_display'], tag['bulk_upload'],    
+    tag['export'], tag['export_2019'], tag['export_fragment_definitions'],
+    tag['generated'], tag['immutable'], tag['non_deletable'], tag['required'],
+    tag["citation"],     
+]
+
 
 # -- =================================================================================
 # -- schema level annotation
@@ -48,17 +65,16 @@ def main(server_name, catalog_id, credentials, args):
     catalog = server.connect_ermrest(catalog_id)
     catalog.dcctx['cid'] = DCCTX["annotation"]
     model = catalog.getCatalogModel()
-    '''
+
     if args.pre_print:
         print_schema_annotations(model, schema_name)
-    '''
-    #clear_schema_annotations(model, schema_name, per_schema_annotation_tags)
+
+    clear_schema_annotations(model, schema_name, per_schema_annotation_tags)
     update_PDB_annotations(model)
 
-    '''
     if args.post_print:
         print_schema_annotations(model, schema_name)
-    '''
+
     if not args.dry_run:
         #model.apply()
         pass
@@ -67,7 +83,7 @@ def main(server_name, catalog_id, credentials, args):
 # -- =================================================================================
 
 if __name__ == '__main__':
-    cli = AtlasD2KCLI("ATLAS-D2K", None, 1)
+    cli = PDBDEV_CLI("PDB_Dev", None, 1)
     cli.parser.add_argument('--schema', metavar='<schema>', help="print catalog acl script without applying", default=False)
     cli.parser.add_argument('--table', metavar='<table>', help="print catalog acl script without applying", default=False)
     args = cli.parse_cli()

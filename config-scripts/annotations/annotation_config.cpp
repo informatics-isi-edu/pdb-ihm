@@ -7,7 +7,6 @@
             "tag:isrd.isi.edu,2016:column-display",
             "tag:isrd.isi.edu,2016:display",
             "tag:isrd.isi.edu,2016:foreign-key",
-            "tag:isrd.isi.edu,2016:export",
             "tag:isrd.isi.edu,2016:generated",
             "tag:misd.isi.edu,2016:generated",
             "tag:isrd.isi.edu,2016:ignore",
@@ -21,7 +20,6 @@
             "tag:isrd.isi.edu,2017:bulk-upload",
             "tag:isrd.isi.edu,2018:citation",
             "tag:isrd.isi.edu,2018:required",
-            "tag:isrd.isi.edu,2019:export",
             "tag:isrd.isi.edu,2019:source-definitions",
             "tag:isrd.isi.edu,2019:chaise-config",
             "tag:isrd.isi.edu,2019:catalog-config",
@@ -7575,7 +7573,7 @@
                 ]
             }
         },
-#if 1
+#if 0
 		{
 		     "schema" : "PDB",
 		     "table" : "entry",
