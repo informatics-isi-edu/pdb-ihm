@@ -640,6 +640,17 @@ class ArchiveClient (object):
         return f'{submission_utc}'
 
     """
+    Get the corresponding Zip file of the hatrac filename  
+    """
+    def getSubmittedZipFile(self, filename):
+        if 'hatrac' not in filename:
+            return filename
+        parts = filename.split('/')
+        name = f'{parts[-1].split(":")[0].lower()}.gz'
+        ret='/'.join(parts[0:7]+[name])
+        return ret
+
+    """
     Write manifest 
     """
     def writeManifestFiles(self):
@@ -676,10 +687,10 @@ class ArchiveClient (object):
                 if holding_key not in holding_entries[manifest_key].keys():
                     holding_entries[manifest_key][holding_key] = []
                 if file_type == 'mmCIF':
-                    holding_entries[manifest_key][holding_key].append(f'{header}/structures/{submitted_files["structures"][0]}')
+                    holding_entries[manifest_key][holding_key].append(self.getSubmittedZipFile(f'{header}/structures/{submitted_files["structures"][0]}'))
                 elif len(holding_entries[manifest_key][holding_key]) == 0:
                     for submitted_file in submitted_files["validation_reports"]:
-                        holding_entries[manifest_key][holding_key].append(f'{header}/validation_reports/{submitted_file}')
+                        holding_entries[manifest_key][holding_key].append(self.getSubmittedZipFile(f'{header}/validation_reports/{submitted_file}'))
                    
             
         self.generate_current_holdings(holdings=holding_entries)
