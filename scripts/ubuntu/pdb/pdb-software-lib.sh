@@ -132,6 +132,16 @@ git_pull_checkout()
     require su -c "cd \"${_repodir}\" && git checkout -f $args" - ${DEVUSER}
 }
 
+deriva_extras_pull_checkout()
+{
+    git_pull_checkout /home/${DEVUSER}/deriva-extras "$@"
+}
+
+deriva_extras_install()
+{
+    python_install /home/${DEVUSER}/deriva-extras
+}
+
 pdb_www_pull_checkout()
 {
     git_pull_checkout /home/${DEVUSER}/protein-database "$@"
