@@ -38,7 +38,7 @@ setup(
     # move all image processing to requires if downloading lots of dependencies is a concern. 
     install_requires=[
         'deriva',
-        #'deriva-extras',
+        'deriva-extras',
     ],
     license='Apache 2.0',
     classifiers=[
