@@ -36,12 +36,22 @@ def update_PDB_entry(model):
 			},
 			{
 			    "source": {
+				"api": "Entry_Generated_File",
+				"table": "PDB:entry"
+			    },
+			    "destination": {
+				"name": "entry",
+				"type": "csv"
+			    }
+			},
+			{
+			    "source": {
 				"api": "attribute",
 				"table": "PDB:entry",                              
                                 "path": "id,url:=Image_File_URL,length:=Image_File_Bytes,filename:=Image_File_Name,md5:=Image_File_MD5"
 			    },
 			    "destination": {
-				"name": "Related_Files",
+				"name": "Images",
 				"type": "download",
                                 #"params:" {
                                 #    "output_path": "Related_Files",
@@ -55,7 +65,7 @@ def update_PDB_entry(model):
 				"path": "PDB:Entry_Generated_File/url:=File_URL"
 			    },
 			    "destination": {
-				"name": "Related_Files",
+				"name": "Entry_Generated_Files",
 				"type": "download"
 			    }
 			}

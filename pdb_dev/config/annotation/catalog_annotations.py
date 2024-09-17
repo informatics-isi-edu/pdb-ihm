@@ -116,11 +116,15 @@ def update_catalog_column_defaults(model):
                     }
 	        },
             },
-            "Release_Date": {
+            "Accession_Code": {
                 "tag:isrd.isi.edu,2016:generated": True,
                 "tag:isrd.isi.edu,2016:immutable": True,
             },
-            "Record_Status": {
+            #"Release_Date": {
+            #    "tag:isrd.isi.edu,2016:generated": True,
+            #    "tag:isrd.isi.edu,2016:immutable": True,
+            #},
+            "Processing_Status": {
                 "tag:isrd.isi.edu,2016:generated": True,
                 "tag:isrd.isi.edu,2016:immutable": True,
             },
@@ -138,58 +142,11 @@ def update_catalog_column_defaults(model):
                     }
 	        },
             },
-            "Accession_ID": {
-                "tag:isrd.isi.edu,2016:generated": True,
-                "tag:isrd.isi.edu,2016:immutable": True,
-            },
-            # in Common:Collection, Common:Instructional_Video
-            "Persistent_ID": {
-                "tag:isrd.isi.edu,2016:generated": True,
-                "tag:isrd.isi.edu,2016:immutable": True,
-                "tag:isrd.isi.edu,2016:column-display": {
-                    "*" : {
-                        "template_engine": "handlebars",    
-                        "markdown_pattern": "[{{{Persistent_ID}}}]({{{Persistent_ID}}})"
-                    }
-	        },
-            },
-            "Processing_Status": {
-                "tag:isrd.isi.edu,2016:generated": True,
-                "tag:isrd.isi.edu,2016:immutable": True,
-            },
-            "Processing_Status_Detail": {
-                "tag:isrd.isi.edu,2016:generated": True,
-                "tag:isrd.isi.edu,2016:immutable": True,
-            },
-            "NCBI_Symbol": {
-                "tag:misd.isi.edu,2015:display" : {
-                    "name": "Gene Symbol"                    
-                },
-                "tag:isrd.isi.edu,2016:generated": True,
-                "tag:isrd.isi.edu,2016:immutable": True,
-            },
-            "NCBI_GeneID": {
-                "tag:misd.isi.edu,2015:display" : {
-                    "name": "Gene ID"                    
-                },
-                "tag:isrd.isi.edu,2016:column-display": {
-                    "*" : {
-                        "pre_format": { "format": "%u" }
-                    }
-                },
-            },
             "File_Bytes": {
                 "tag:misd.isi.edu,2015:display" : {
                     "name": "File Size"                    
                 },
             },
-            "Principal_Investigator": {
-                "tag:isrd.isi.edu,2018:required": True,
-            }, 
-            "Consortium": {
-                "tag:isrd.isi.edu,2018:required": True,
-            },
-            
         },
     })
             
@@ -344,11 +301,6 @@ def main(server_name, catalog_id, credentials, args):
     catalog.dcctx['cid'] = DCCTX["annotation"]        
     model = catalog.getCatalogModel()
 
-    '''
-    # -- enable to explicitly remove catalog-evel generated annotations 
-    if cfg.host == "www.atlas-d2k.org":
-        remove_catalog_generated(model)
-    '''
     
     if args.pre_print:
         print_isolated_tables(model)

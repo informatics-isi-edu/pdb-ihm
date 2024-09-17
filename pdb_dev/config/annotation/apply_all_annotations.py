@@ -86,6 +86,12 @@ def main(server_name, catalog_id, credentials, args):
     
 
 # -- =================================================================================
+'''
+To run the annotation updates:
+> python -m pdb_dev.config.annotation.apply_all_annotations --host dev-aws.pdb-dev.org --catalog-id 99
+
+Note: This script doesn't clean up existing annotations in the database, and has to run after .cpp file.
+'''
 
 if __name__ == '__main__':
     cli = PDBDEV_CLI("PDB_Dev", None, "1.0")
