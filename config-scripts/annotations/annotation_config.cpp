@@ -23,6 +23,7 @@
             "tag:isrd.isi.edu,2019:source-definitions",
             "tag:isrd.isi.edu,2019:chaise-config",
             "tag:isrd.isi.edu,2019:catalog-config",
+            "tag:isrd.isi.edu,2019:export",
             "comment",
             "description",
             "facetOrder"
@@ -6758,6 +6759,20 @@
                      "source" : "PDB_Accession_Code"
                   },
                   {
+                     "markdown_name" : "Entry",
+					  "hide_null_choice": true, 
+					  "hide_not_null_choice": true,
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Accession_Code_Entry_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  },
+                  {
                      "markdown_name" : "Workflow Status",
                      "source" : [
                         {
@@ -7139,16 +7154,6 @@
                         "source": "mmCIF_File_Bytes"
                     },
                     "Image_File_URL",
-			      {
-			        "display": {
-			          "wait_for": [
-			            "molstar_image"
-			          ],
-			          "template_engine": "handlebars",
-			          "markdown_pattern": "{{#if (or (eq Workflow_Status \"mmCIF CREATED\") (eq Workflow_Status \"SUBMISSION COMPLETE\") (eq Workflow_Status \"HOLD\") (eq Workflow_Status \"REL\") (eq Workflow_Status \"REL\"))}} {{#each molstar_image}}::: iframe [](/molstar/embedded.html?url={{this.values.File_URL}}){style=\"min-width:800px; min-height:700px; height:70vh;\" class=chaise-autofill  } \n :::{{/each}}{{else}}Not Available{{/if}}"
-			        },
-			        "markdown_name": "3D Visualization"
-			      },
                      {
                         "markdown_name": "Image File Size (Bytes)",
                         "source": "Image_File_Bytes"
@@ -7182,6 +7187,16 @@
                     "Submitter_Flag_Date",
                     "Manual_Processing",
                     "Notes",
+			      {
+			        "display": {
+			          "wait_for": [
+			            "molstar_image"
+			          ],
+			          "template_engine": "handlebars",
+			          "markdown_pattern": "{{#if (or (eq Workflow_Status \"mmCIF CREATED\") (eq Workflow_Status \"SUBMISSION COMPLETE\") (eq Workflow_Status \"HOLD\") (eq Workflow_Status \"REL\") (eq Workflow_Status \"REL\"))}} {{#each molstar_image}}::: iframe [](/molstar/embedded.html?url={{this.values.File_URL}}){style=\"min-width:800px; min-height:700px; height:70vh;\" class=chaise-autofill  } \n :::{{/each}}{{else}}Not Available{{/if}}"
+			        },
+			        "markdown_name": "3D Visualization"
+			      },
                     [
                         "PDB",
                         "entry_Owner_fkey"
@@ -7518,7 +7533,6 @@
                   }
                 ],
                 "entry/edit": [
-                    "Submission_Time",
                   {
                      "markdown_name" : "Entry",
                      "source" : [
@@ -7573,7 +7587,7 @@
                 ]
             }
         },
-#if 0
+#if 1
 		{
 		     "schema" : "PDB",
 		     "table" : "entry",
@@ -21226,7 +21240,9 @@
                     [
                         "PDB",
                         "Entry_Generated_File_Structure_Id_fkey"
-                    ]
+                    ],
+                    "RCT",
+                    "RMT"
                 ],
                 "detailed": [
                     "RID",
@@ -21257,7 +21273,9 @@
                         "Entry_Generated_File_Structure_Id_fkey"
                     ],
                     "File_Bytes",
-                    "File_MD5"
+                    "File_MD5",
+                    "RCT",
+                    "RMT"
                 ],
                 "entry/edit": [
                     "File_URL",
