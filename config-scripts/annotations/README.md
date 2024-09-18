@@ -93,3 +93,31 @@ or just for a table:
 deriva-annotation-config --host pdb.isrd.isi.edu --config-file dev_annotation_config.json -s <schema_name> -t <table_name> <catalog_number>
 
 ```
+
+## Applying the annotations
+
+Execute the following script:
+
+```
+./apply_annotations.sh <host> <catalog>
+```
+
+### Examples
+
+For dev:
+
+```
+./apply_annotations.sh dev-aws.pdb-dev.org 99
+```
+
+For staging:
+
+```
+./apply_annotations.sh dev-aws.pdb-dev.org 50
+```
+
+For production:
+
+```
+./apply_annotations.sh data.pdb-dev.org 1
+```
