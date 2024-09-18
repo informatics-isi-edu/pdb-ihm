@@ -7,8 +7,6 @@
 host=$1
 catalog_id=$2
 
-make
-
 if [ ${catalog_id} -eq 99 ]
 then
 	prefix="dev"
@@ -20,5 +18,6 @@ then
 	prefix="production"
 fi
 
+make
 deriva-annotation-config --host ${host} --config-file ${prefix}_annotation_config.json ${catalog_id}
 python3 -m pdb_dev.config.annotation.apply_all_annotations --host ${host} --catalog-id ${catalog_id}
