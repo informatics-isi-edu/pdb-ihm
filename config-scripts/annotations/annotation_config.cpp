@@ -1,6 +1,6 @@
 {
     "known_attributes": {
-        "ignore_all_unmanaged": false,
+        "ignore_all_unmanaged": true,
         "managed": [
             "tag:misd.isi.edu,2015:display",
             "tag:misd.isi.edu,2015:url",
@@ -23,7 +23,6 @@
             "tag:isrd.isi.edu,2019:source-definitions",
             "tag:isrd.isi.edu,2019:chaise-config",
             "tag:isrd.isi.edu,2019:catalog-config",
-            "tag:isrd.isi.edu,2019:export",
             "comment",
             "description",
             "facetOrder"
@@ -6760,8 +6759,8 @@
                   },
                   {
                      "markdown_name" : "Entry",
-					  "hide_null_choice": true, 
-					  "hide_not_null_choice": true,
+					  "hide_null_choice": false, 
+					  "hide_not_null_choice": false,
                      "source" : [
                         {
                            "outbound" : [
@@ -7020,8 +7019,8 @@
                 	[
                   {
                      "markdown_name" : "Accession Code",
-					  "hide_null_choice": true, 
-					  "hide_not_null_choice": true,
+					  "hide_null_choice": false, 
+					  "hide_not_null_choice": false,
                      "source" : [
                         {
                            "outbound" : [
@@ -7587,7 +7586,7 @@
                 ]
             }
         },
-#if 1
+#if 0
 		{
 		     "schema" : "PDB",
 		     "table" : "entry",
