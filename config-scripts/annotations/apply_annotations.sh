@@ -7,7 +7,7 @@
 host=$1
 catalog_id=$2
 
-echo make
+make
 
 if [ ${catalog_id} -eq 99 ]
 then
@@ -20,5 +20,5 @@ then
 	prefix="production"
 fi
 
-echo deriva-annotation-config --host ${host} --config-file ${prefix}_annotation_config.json ${catalog_id}
-echo python3 -m pdb_dev.config.annotation.apply_all_annotations --host ${host} --catalog-id ${catalog_id}
+deriva-annotation-config --host ${host} --config-file ${prefix}_annotation_config.json ${catalog_id}
+python3 -m pdb_dev.config.annotation.apply_all_annotations --host ${host} --catalog-id ${catalog_id}
