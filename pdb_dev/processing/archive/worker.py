@@ -484,30 +484,26 @@ class ArchiveClient (object):
                 """
                 Entry that was updated
                 """
-                #if rid not in rel_warnings and latest_archive_record[0]['mmCIF_URL'] != self.released_structures[entry_id]['File_URL']:
                 if rid not in rel_warnings:
-                    submission_history = latest_archive_record[0]['Submission_History']
-                    if rid in re_released_entries_rids:
-                        if latest_archive_record[0]['Submission_Time'] < self.submission_date:
-                            if submission_history == None:
-                                submission_history = {}
-                            submission_history.update({
-                              latest_archive_record[0]['Submission_Time']: {
-                                "mmCIF_URL": latest_archive_record[0]['mmCIF_URL'], 
-                                "Submitted_Files": latest_archive_record[0]['Submitted_Files']
-                              }
-                            })
-                    else:
-                        submission_history = None
-                    updated_rows.append(
-                        {
-                            'mmCIF_URL': self.released_structures[entry_id]['File_URL'],
-                            'Submission_Time': self.submission_date,
-                            'Archive': self.PDB_Archive_RID,
-                            'Submitted_Files': submitted_files,
-                            'Submission_History': submission_history,
-                            'RID': latest_archive_record[0]['RID']
-                        }
+                    if latest_archive_record[0]['mmCIF_URL'] != self.released_structures[entry_id]['File_URL']:
+                        submission_history = latest_archive_record[0]['Submission_History']
+                        if submission_history == None:
+                            submission_history = {}
+                        submission_history.update({
+                          latest_archive_record[0]['Submission_Time']: {
+                            "mmCIF_URL": latest_archive_record[0]['mmCIF_URL'], 
+                            "Submitted_Files": latest_archive_record[0]['Submitted_Files']
+                          }
+                        })
+                        updated_rows.append(
+                            {
+                                'mmCIF_URL': self.released_structures[entry_id]['File_URL'],
+                                'Submission_Time': self.submission_date,
+                                'Archive': self.PDB_Archive_RID,
+                                'Submitted_Files': submitted_files,
+                                'Submission_History': submission_history,
+                                'RID': latest_archive_record[0]['RID']
+                            }
                 )
         
         columns = [
@@ -574,7 +570,7 @@ class ArchiveClient (object):
         rows = [
             {
             'RID': self.PDB_Archive_RID,
-            'Submitted_Entries': len(inserted_rows)+len(updated_rows),
+            'Submitted_Entries': len(self.new_released_entries) + self.re_released_entries,
             'New_Released_Entries': self.new_released_entries,
             'Re_Released_Entries': self.re_released_entries,
             'Current_File_Holdings_Name': Current_File_Holdings_Name,
