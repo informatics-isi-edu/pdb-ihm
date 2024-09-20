@@ -488,14 +488,15 @@ class ArchiveClient (object):
                 if rid not in rel_warnings:
                     submission_history = latest_archive_record[0]['Submission_History']
                     if rid in re_released_entries_rids:
-                        if submission_history == None:
-                            submission_history = {}
-                        submission_history.update({
-                          latest_archive_record[0]['Submission_Time']: {
-                            "mmCIF_URL": latest_archive_record[0]['mmCIF_URL'], 
-                            "Submitted_Files": latest_archive_record[0]['Submitted_Files']
-                          }
-                        })
+                        if latest_archive_record[0]['Submission_Time'] < self.submission_date:
+                            if submission_history == None:
+                                submission_history = {}
+                            submission_history.update({
+                              latest_archive_record[0]['Submission_Time']: {
+                                "mmCIF_URL": latest_archive_record[0]['mmCIF_URL'], 
+                                "Submitted_Files": latest_archive_record[0]['Submitted_Files']
+                              }
+                            })
                     else:
                         submission_history = None
                     updated_rows.append(
