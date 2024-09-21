@@ -570,7 +570,7 @@ class ArchiveClient (object):
         rows = [
             {
             'RID': self.PDB_Archive_RID,
-            'Submitted_Entries': len(self.new_released_entries) + self.re_released_entries,
+            'Submitted_Entries': self.new_released_entries + self.re_released_entries,
             'New_Released_Entries': self.new_released_entries,
             'Re_Released_Entries': self.re_released_entries,
             'Current_File_Holdings_Name': Current_File_Holdings_Name,
