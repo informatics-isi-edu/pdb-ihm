@@ -54,19 +54,19 @@ https://dev-aws.pdb-dev.org/ermrest/catalog/99/attribute/A:=PDB:entry/Workflow_S
 
 class ArchiveClient (object):
     # HT: initialize with ermrest query
-    self.submission_date = None
-    self.previous_submission_date = None
+    submission_date = None
+    previous_submission_date = None
 
-    self.system_generated_file_types = {}
-    self.entry_latest_archive = {}
-    self.new_releases = {}
-    self.re_releases = {}
-    self.entry_generated_files = {}
-    self.released_entries = {}
-    self.hold_entries = {}    
-    self.entry_id2rid = {}
-    self.entry_archive_insert_rids = ()
-    self.entry_archive_update_rids = ()
+    system_generated_file_types = {}
+    entry_latest_archive = {}
+    new_releases = {}
+    re_releases = {}
+    entry_generated_files = {}
+    released_entries = {}
+    hold_entries = {}    
+    entry_id2rid = {}
+    entry_archive_insert_rids = ()
+    entry_archive_update_rids = ()
     
     """
     Network client for archiving mmCIF files.
