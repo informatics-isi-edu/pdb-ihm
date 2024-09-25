@@ -37,6 +37,7 @@ from socket import gaierror, EAI_AGAIN
 from deriva.core import PollingErmrestCatalog, HatracStore, urlquote
 from deriva.core.utils import hash_utils as hu
 from deriva.core.utils.core_utils import DEFAULT_CHUNK_SIZE, NotModified
+from deriva.utils.extras.data import get_key2rows, get_entities
 
 import re
 import math
@@ -149,21 +150,21 @@ class ArchiveClient (object):
             self.re_releases[row["RID"]] = row
 
     """
-      HOLD and REL entries
+      REL entries
     """
     def set_released_entries(self, entry_rids):
         constraints = "RID=ANY(%s)" %  ",".join([ urlquote(v) for v in entry_rids ])
-        rows = get_entities(self.catalog, "PDB", "entry", constraints, attr_list="RID,id,Accession_Code")
+        rows = get_entities(self.catalog, "PDB", "entry", constraints, attr_list=["RID","id","Accession_Code"])
         for row in rows:
-            self.entries[row["RID"]] = row
-            self.entryid2rid[row["id"]] = row["RID"]
+            self.released_entries[row["RID"]] = row
+            self.entry_id2rid[row["id"]] = row["RID"]
 
     """
     Information about system generated file types
     """
     def set_system_generated_file_types(self):
         constraints = "A:=Vocab:Archive_Category/$M"
-        attr_list = "M:RID,File_Type:=M:Name,Archive_Category:=A:Name,A:Directory_Name"
+        attr_list = ["M:RID","File_Type:=M:Name","Archive_Category:=A:Name","A:Directory_Name"]
         rows = get_entities(self.catalog, "Vocab", "System_Generated_File_Type", constraints, attr_list=attr_list)
         for row in rows:
             self.system_generated_file_types["File_Type"] = row
@@ -175,18 +176,19 @@ class ArchiveClient (object):
       }
     """
     def set_entry_generated_files(self, entry_rids):
-        constraints = "Structure_Id=ANY(%s)" %  ",".join([ urlquote(v) for self.entries[v]["id"] in entry_rids ])
+        constraints = "Structure_Id=ANY(%s)/T:=Vocab:System_Generated_File_Type/A:=Vocab:Archive_Category/$M" % ",".join([ urlquote(v) for self.entries[v]["id"] in entry_rids ])
+        attr_list = ["M:Structure_Id","M:File_Type","Archive_Category:=A:Name","A:Directory_Name"]
         rows = get_entities(self.catalog, "PDB", "Entry_Generated_File", constraints)        
         for row in rows:
             file_type = row["File_Type"]
-            row["Archive_Category"] = self.system_generated_file_types[file_type]["Archive_Category"]
-            row["Directory_Name"] = self.system_generated_file_types[file_type]["Directory_Name"]
+            #row["Archive_Category"] = self.system_generated_file_types[file_type]["Archive_Category"]
+            #row["Directory_Name"] = self.system_generated_file_types[file_type]["Directory_Name"]
             self.entry_generated_files.update(row["RID"], {})
             self.entry_generated_files[row["RID"]]["File_Type"] = row
 
     def set_entry_archive_lists(self):
         for rid in self.new_releases.keys():
-            if rid in self.entry_latest_archive.keys():
+            if rid not in self.entry_latest_archive.keys():
                 self.entry_archive_insert_rids.append(rid)
             else:
                 self.entry_archive_update_rids.append(rid)
@@ -289,6 +291,13 @@ class ArchiveClient (object):
             Delete the self.PDB_Archive_RID record
             """
             if self.PDB_Archive_RID != None:
+                url = f'/entity/PDB:PDB_Archive/RID={urlquote(self.PDB_Archive_RID)}'
+                resp = self.catalog.delete(
+                    url
+                )
+                resp.raise_for_status()
+                self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
+                
                 # HT: The filter should be "Archive"
                 url = f'/entity/PDB:Entry_Latest_Archive/Archive={urlquote(self.PDB_Archive_RID)}'
                 try:
@@ -299,13 +308,8 @@ class ArchiveClient (object):
                     self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
                 except:
                     pass
+                
            
-                url = f'/entity/PDB:PDB_Archive/RID={urlquote(self.PDB_Archive_RID)}'
-                resp = self.catalog.delete(
-                    url
-                )
-                resp.raise_for_status()
-                self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
         except:
             et, ev, tb = sys.exc_info()
             self.logger.error('got exception "%s"' % str(ev))
@@ -386,7 +390,7 @@ class ArchiveClient (object):
     HT:
       - Prepare directory of files
       - Create manifest files
-      - Update PDB:PDB_Archive
+      - insert/Update PDB:PDB_Archive
       - Update PDB:Entry_Latest_Archive -> update "Archive" field with the PDB:Archive RID before performing updates
     """
     def archiveFiles(self):
