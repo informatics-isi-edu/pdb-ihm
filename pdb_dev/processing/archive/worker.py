@@ -37,7 +37,7 @@ from socket import gaierror, EAI_AGAIN
 from deriva.core import PollingErmrestCatalog, HatracStore, urlquote
 from deriva.core.utils import hash_utils as hu
 from deriva.core.utils.core_utils import DEFAULT_CHUNK_SIZE, NotModified
-from deriva.utils.extras.data import get_key2rows, get_entities
+from deriva.utils.extras.data import get_key2rows, get_ermrest_query
 
 import re
 import math
@@ -117,7 +117,7 @@ class ArchiveClient (object):
         self.set_entry_archive_lists()
 
     def set_entry_latest_archive(self):
-        rows = get_entities(self.catalog, "PDB", "Entry_Latest_Archive", None)
+        rows = get_ermrest_query(self.catalog, "PDB", "Entry_Latest_Archive", None)
         for row in rows:
             self.entry_latest_archive[row["RID"]] = row
         
@@ -154,7 +154,7 @@ class ArchiveClient (object):
     """
     def set_released_entries(self, entry_rids):
         constraints = "RID=ANY(%s)" %  ",".join([ urlquote(v) for v in entry_rids ])
-        rows = get_entities(self.catalog, "PDB", "entry", constraints, attr_list=["RID","id","Accession_Code"])
+        rows = get_ermrest_query(self.catalog, "PDB", "entry", constraints, attributes=["RID","id","Accession_Code"])
         for row in rows:
             self.released_entries[row["RID"]] = row
             self.entry_id2rid[row["id"]] = row["RID"]
@@ -164,8 +164,8 @@ class ArchiveClient (object):
     """
     def set_system_generated_file_types(self):
         constraints = "A:=Vocab:Archive_Category/$M"
-        attr_list = ["M:RID","File_Type:=M:Name","Archive_Category:=A:Name","A:Directory_Name"]
-        rows = get_entities(self.catalog, "Vocab", "System_Generated_File_Type", constraints, attr_list=attr_list)
+        attributes = ["M:RID","File_Type:=M:Name","Archive_Category:=A:Name","A:Directory_Name"]
+        rows = get_ermrest_query(self.catalog, "Vocab", "System_Generated_File_Type", constraints, attributes=attributes)
         for row in rows:
             self.system_generated_file_types["File_Type"] = row
 
@@ -177,8 +177,8 @@ class ArchiveClient (object):
     """
     def set_entry_generated_files(self, entry_rids):
         constraints = "Structure_Id=ANY(%s)/T:=Vocab:System_Generated_File_Type/A:=Vocab:Archive_Category/$M" % ",".join([ urlquote(v) for self.entries[v]["id"] in entry_rids ])
-        attr_list = ["M:Structure_Id","M:File_Type","Archive_Category:=A:Name","A:Directory_Name"]
-        rows = get_entities(self.catalog, "PDB", "Entry_Generated_File", constraints)        
+        attributes = ["M:Structure_Id","M:File_Type","Archive_Category:=A:Name","A:Directory_Name"]
+        rows = get_ermrest_query(self.catalog, "PDB", "Entry_Generated_File", constraints)        
         for row in rows:
             file_type = row["File_Type"]
             #row["Archive_Category"] = self.system_generated_file_types[file_type]["Archive_Category"]
@@ -297,7 +297,8 @@ class ArchiveClient (object):
                 )
                 resp.raise_for_status()
                 self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
-                
+
+                # Need another flag to indicate that insertion has been performed. Then delete using RID from self.entry_archive_insert
                 # HT: The filter should be "Archive"
                 url = f'/entity/PDB:Entry_Latest_Archive/Archive={urlquote(self.PDB_Archive_RID)}'
                 try:
@@ -308,9 +309,14 @@ class ArchiveClient (object):
                     self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
                 except:
                     pass
-                
-           
+
+                # Need another flag to indicate that update has been performed. Then perform an update to restore the previous state.
+                # I am not sure whether this will ever happen if update is the last thing we do.
+                # ...
+
         except:
+            # HT: TODO: If failed to roll back, we should output the self.entry_archive_insert and self.entry_archive_update into a file.
+            # 
             et, ev, tb = sys.exc_info()
             self.logger.error('got exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
