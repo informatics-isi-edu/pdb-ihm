@@ -103,7 +103,6 @@ class ArchiveClient (object):
         self.logger = kwargs.get("logger")
         self.logger.debug('Client initialized.')
         
-        # HT: initialize entry_latest_archive, new_release, re_releases with the queries
         self.submission_date = self.getArchiveDate()
         self.previous_submission_date = self.getPreviousArchiveDate(self.submission_date) 
         
