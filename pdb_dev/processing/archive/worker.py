@@ -104,8 +104,8 @@ class ArchiveClient (object):
         self.logger.debug('Client initialized.')
         
         # HT: initialize entry_latest_archive, new_release, re_releases with the queries
-        (self.submission_date, self.previous_submission_date) = self.getArchiveDate()
-        #self.previous_submission_date = self.getPreviousArchiveDate(self.submission_date) # overwrite with what's in the database
+        self.submission_date = self.getArchiveDate()
+        self.previous_submission_date = self.getPreviousArchiveDate(self.submission_date) 
         
         self.set_entry_latest_archive()
         self.set_new_releases()
@@ -437,7 +437,6 @@ class ArchiveClient (object):
         Get the current and previous submission date
         HT: Move to its own function and init
         """
-        self.submission_date, self.previous_submission_date = self.getArchiveDate()
         self.logger.debug(f'Submission Dates: {self.submission_date}, {self.previous_submission_date}') 
         url = f'/aggregate/A:=PDB:PDB_Archive/Submission_Time::lt::{urlquote(self.submission_date)}/previous_submission_time:=max(Submission_Time)'
         self.logger.debug(f"Query to find the maximum submission time:\n\nhttps://{self.host}/ermrest/catalog/{self.catalog_id}{url}\n") 
@@ -918,8 +917,7 @@ class ArchiveClient (object):
                 """
                 closed_day_of_week += timedelta(days=7)
         closed_day_of_week=closed_day_of_week.replace(hour=cutoff_hour_pacific,minute=cutoff_minute_pacific,second=0,microsecond=0)
-        previous_closed_day_of_week= closed_day_of_week - timedelta(days=7)
-        return (f'{closed_day_of_week}', f'{previous_closed_day_of_week}')
+        return f'{closed_day_of_week}'
 
     """
     HT: TODO
@@ -928,7 +926,7 @@ class ArchiveClient (object):
         """
         Get the latest Submission_Date that is less than the current submission Date. Otherwise, use Current_Submission_Date - 7 days
         """
-        previous_submission_time = current_submission_time - timedelta(days=7)
+        previous_submission_time = f'{dt.fromisoformat(current_submission_time) - timedelta(days=7)}'
         self.logger.debug(f'Submission Dates: {current_submission_time}, {previous_submission_time}') 
         url = f'/aggregate/A:=PDB:PDB_Archive/Submission_Time::lt::{urlquote(current_submission_time)}/previous_submission_time:=max(Submission_Time)'
         self.logger.debug(f"Query to find the maximum submission time:\n\nhttps://{self.host}/ermrest/catalog/{self.catalog_id}{url}\n") 
