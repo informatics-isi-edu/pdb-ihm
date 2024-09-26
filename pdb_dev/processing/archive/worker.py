@@ -189,7 +189,7 @@ class ArchiveClient (object):
             #row["Archive_Category"] = self.system_generated_file_types[file_type]["Archive_Category"]
             #row["Directory_Name"] = self.system_generated_file_types[file_type]["Directory_Name"]
             self.entry_generated_files.setdefault(rid, {})
-            self.entry_generated_files[rid]["File_Type"] = row
+            self.entry_generated_files[rid][row["File_Type"]] = row
 
     def set_entry_archive_lists(self):
         for rid in self.new_releases.keys():
