@@ -65,8 +65,8 @@ class ArchiveClient (object):
     released_entries = {}
     hold_entries = {}    
     entry_id2rid = {}
-    entry_archive_insert_rids = ()
-    entry_archive_update_rids = ()
+    entry_archive_insert_rids = []
+    entry_archive_update_rids = []
     
     """
     Network client for archiving mmCIF files.
@@ -105,12 +105,12 @@ class ArchiveClient (object):
         
         # HT: initialize entry_latest_archive, new_release, re_releases with the queries
         (self.submission_date, self.previous_submission_date) = self.getArchiveDate()
-        self.previous_submission_date = self.getPreviousArchiveDate() # overwrite with what's in the database
+        #self.previous_submission_date = self.getPreviousArchiveDate(self.submission_date) # overwrite with what's in the database
         
         self.set_entry_latest_archive()
         self.set_new_releases()
         self.set_re_releases()
-        entry_rids = self.new_releases.keys() + self.re_releases.keys() 
+        entry_rids = list(self.new_releases.keys()) + list(self.re_releases.keys()) 
         self.set_released_entries(entry_rids)
         self.set_system_generated_file_types()
         self.set_entry_generated_files(entry_rids)
@@ -153,21 +153,26 @@ class ArchiveClient (object):
       REL entries
     """
     def set_released_entries(self, entry_rids):
+        """
         constraints = "RID=ANY(%s)" %  ",".join([ urlquote(v) for v in entry_rids ])
-        rows = get_ermrest_query(self.catalog, "PDB", "entry", constraints, attributes=["RID","id","Accession_Code"])
+        rows = get_ermrest_query(self.catalog, "PDB", "entry", constraints, attributes=["id","Accession_Code"])
         for row in rows:
             self.released_entries[row["RID"]] = row
             self.entry_id2rid[row["id"]] = row["RID"]
-
+        """
+        for row in list(self.new_releases.values()) + list(self.re_releases.values()):
+            self.released_entries[row["RID"]] = row
+            self.entry_id2rid[row["id"]] = row["RID"]
+            
     """
     Information about system generated file types
     """
     def set_system_generated_file_types(self):
         constraints = "A:=Vocab:Archive_Category/$M"
-        attributes = ["M:RID","File_Type:=M:Name","Archive_Category:=A:Name","A:Directory_Name"]
+        attributes = ["File_Type:=M:Name","Archive_Category:=A:Name","A:Directory_Name"]
         rows = get_ermrest_query(self.catalog, "Vocab", "System_Generated_File_Type", constraints, attributes=attributes)
         for row in rows:
-            self.system_generated_file_types["File_Type"] = row
+            self.system_generated_file_types[row["File_Type"]] = row
 
     """
     query based on released RIDs
@@ -176,15 +181,16 @@ class ArchiveClient (object):
       }
     """
     def set_entry_generated_files(self, entry_rids):
-        constraints = "Structure_Id=ANY(%s)/T:=Vocab:System_Generated_File_Type/A:=Vocab:Archive_Category/$M" % ",".join([ urlquote(v) for self.entries[v]["id"] in entry_rids ])
+        constraints = "Structure_Id=ANY(%s)/T:=Vocab:System_Generated_File_Type/A:=Vocab:Archive_Category/$M" % ",".join([ urlquote(self.released_entries[rid]["id"]) for rid  in entry_rids ])
         attributes = ["M:Structure_Id","M:File_Type","Archive_Category:=A:Name","A:Directory_Name"]
         rows = get_ermrest_query(self.catalog, "PDB", "Entry_Generated_File", constraints)        
         for row in rows:
+            rid = self.entry_id2rid[row["Structure_Id"]]
             file_type = row["File_Type"]
             #row["Archive_Category"] = self.system_generated_file_types[file_type]["Archive_Category"]
             #row["Directory_Name"] = self.system_generated_file_types[file_type]["Directory_Name"]
-            self.entry_generated_files.update(row["RID"], {})
-            self.entry_generated_files[row["RID"]]["File_Type"] = row
+            self.entry_generated_files.setdefault(rid, {})
+            self.entry_generated_files[rid]["File_Type"] = row
 
     def set_entry_archive_lists(self):
         for rid in self.new_releases.keys():
@@ -207,7 +213,7 @@ class ArchiveClient (object):
                 "Entry" : rid,
                 "Submission_Time" : self.submission_date,
                 "mmCIF_URL" : self.entry_generated_files[rid]["mmCIF"]["File_URL"],
-                "Submitted_Files" = submitted_files,
+                "Submitted_Files": submitted_files,
                 "Archive" : self.Archive_RID,
                 "Submission_History": None,
             }
