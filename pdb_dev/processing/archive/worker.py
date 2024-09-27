@@ -334,42 +334,19 @@ class ArchiveClient (object):
     def processArchive(self):
         try:
             """
-            Get the the file types with Archive_Category
-            HT: Move to init
+            Get the:
+                - file types with Archive_Category
+                - archive directories and the associated file types
+                - archive directories of the Archive_Category
             """
-            url = f'/attribute/Vocab:System_Generated_File_Type/!Archive_Category::null::/Archive_Category,Name'
-            self.logger.debug(f'Query for the the file types with Archive_Category: "{url}"') 
-            
-            resp = self.catalog.get(url)
-            resp.raise_for_status()
-            rows = resp.json()
             self.archive_category = {}
-            for row in rows:
-                self.archive_category[row['Name']] = row['Archive_Category']
-                
-            """
-            Get the archive directories and the associated file types
-            HT: Move to init            
-            """
             self.archive_file_types = []
-            for k,v in self.archive_category.items():
-                if k not in self.archive_file_types:
-                   self.archive_file_types.append(k) 
-
-            """
-            Get the archive directories of the Archive_Category
-            HT: Move to init            
-            """
-            url = f'/attribute/Vocab:Archive_Category/Directory_Name,Name'
-            self.logger.debug(f'Query for the directories names of the Archive_Category: "{url}"') 
-            
-            resp = self.catalog.get(url)
-            resp.raise_for_status()
-            rows = resp.json()
             self.archive_category_dir_names = {}
-            for row in rows:
-                self.archive_category_dir_names[row['Name']] = row['Directory_Name']
-                
+            for k,v in self.system_generated_file_types.items():
+                self.archive_category[k] = v['Archive_Category']
+                self.archive_file_types.append(k)
+                self.archive_category_dir_names[v['Archive_Category']] = v['Directory_Name']
+
             """
             Get the archive directories and the associated file types
             """
