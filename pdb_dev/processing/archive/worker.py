@@ -111,6 +111,7 @@ class ArchiveClient (object):
         self.previous_submission_date = self.getPreviousArchiveDate(self.submission_date) 
         
         self.set_entry_latest_archive()
+        self.set_pdb_archive()
         self.set_new_releases()
         self.set_re_releases()
         entry_rids = list(self.new_releases.keys()) + list(self.re_releases.keys()) 
