@@ -67,6 +67,8 @@ class ArchiveClient (object):
     entry_id2rid = {}
     entry_archive_insert_rids = []
     entry_archive_update_rids = []
+    entry_archive_inserted = []    # update this variable after successfully inserting to entry_latest_archive
+    entry_archive_updated = []     # update this variable after successfully update to entry_latest_archive
     
     """
     Network client for archiving mmCIF files.
@@ -86,6 +88,8 @@ class ArchiveClient (object):
         self.current_holdings = {}
         self.archive_category_dir_names = {}
         self.PDB_Archive_RID = None
+        self.PDB_Archive_row_before = None  # Read at the beginning of the script for rollback        
+        self.PDB_Archive_row = None   # This contains the payload for insert/update to PDB_Archive table
         self.store = HatracStore(
             self.scheme, 
             self.host,
@@ -119,7 +123,16 @@ class ArchiveClient (object):
         rows = get_ermrest_query(self.catalog, "PDB", "Entry_Latest_Archive", None)
         for row in rows:
             self.entry_latest_archive[row["RID"]] = row
-        
+
+    # read PDB_Archive at the beginning in case it needs to roll back
+    def set_pdb_archive(self):
+        constraints = "Submission_Date=%s" % (urlquote(self.submission_date))
+        rows = get_ermrest_query(self.catalog, "PDB", "PDB_Archive", constraints=constraints)
+        if rows:
+            self.PDB_Archive_row_before = rows[0]
+            self.PDB_Archive_RID = row[0]["RID"]
+            self.PDB_Archive_row = rows[0].copy()  # make a copy, so the content can be changed
+            
     def set_new_releases(self):
         url1 = f'/attribute/' + \
             f'E:=PDB:entry/Workflow_Status=REL/' + \
@@ -289,39 +302,43 @@ class ArchiveClient (object):
     1. Delete PDB.Archive row if the row was inserted
     2. Delete Entry_Latest_Archive with RIDs from self.entry_archive_insert 
     3. Update modified Entry_Latest_Archive with the original version from self.entry_latest_archive
+    Note: the delete_table_rows address 404 (which is returned if the constraints are not found)
     """
     def rollbackArchive(self):
+        entry_archive_rollback_payload = []
         try:
             """
-            Delete the self.PDB_Archive_RID record
             """
-            if self.PDB_Archive_RID != None:
-                url = f'/entity/PDB:PDB_Archive/RID={urlquote(self.PDB_Archive_RID)}'
-                resp = self.catalog.delete(
-                    url
-                )
-                resp.raise_for_status()
-                self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
+            # delete the self.PDB_Archive_RID if inserted, otherwise update to original state
+            if self.PDB_Archive_RID:
+                if self.PDB_Archive_before:
+                    pdb_archive_rollback_payload = update_table_rows(self.catalog, "PDB", "PDB_Archive", keys=["RID"], payload=[self.PDB_Archive_before])
+                    self.logger.debug('SUCCEEDED updated the PDB_Archive row with RID = %s' % (self.PDB_Archive_RID))                    
+                else:
+                    delete_table_rows(self.catalog, "PDB", "PDB_Archive", key="RID", values=["self.PDB_Archive_RID"])                
+                    self.logger.debug('SUCCEEDED deleted the PDB_Archive row with RID = %s' % (self.PDB_Archive_RID))
 
+            # delete inserted Entry_Latest_Archive
+            if self.entry_archive_inserted:
                 # Need another flag to indicate that insertion has been performed. Then delete using RID from self.entry_archive_insert
-                # HT: The filter should be "Archive"
-                url = f'/entity/PDB:Entry_Latest_Archive/Archive={urlquote(self.PDB_Archive_RID)}'
-                try:
-                    resp = self.catalog.delete(
-                        url
-                    )
-                    resp.raise_for_status()
-                    self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
-                except:
-                    pass
+                # These rids should be exactly the same list as self.entry_archive_insert_rids, but let's get it from what returns from ermrest
+                rids = [ row["RID"] for row in self.entry_archive_inserted ]
+                delete_table_rows(self.catalog, "PDB", "Entry_Latest_Archive", key="RID", values=rids)
+                self.logger.debug('SUCCEEDED deleted the newly inserted rows in the Entry_Latest_Archive')
 
-                # Need another flag to indicate that update has been performed. Then perform an update to restore the previous state.
-                # I am not sure whether this will ever happen if update is the last thing we do.
-                # ...
-
+            # Update Entry_Latest_Archive to its original state
+            if self.entry_archive_updated:
+                update_archive_payload = [ self.entry_latest_archive[row["RID"]] for row in self.entry_archive_updated ]
+                updated = update_table_rows(self.catalog, "PDB", "Entry_Latest_Archive", keys=["RID"], payload=entry_archive_rollback_payload) 
+                self.logger.debug('SUCCEEDED updating the Entry_Latest_Archive rows to the original sate')
         except:
-            # HT: TODO: If failed to roll back, we should output the self.entry_archive_insert and self.entry_archive_update into a file.
-            # 
+            # HT: TODO: If failed to roll back, we should output the following into a file: archive_error_<date>
+            #  1. self.PDB_Archive_row
+            #  2. self.PDB_Archive_row_before
+            #  2. self.entry_archive_inserted --> new rows added to the table
+            #  3. self.entry_archive_updated --> new rows update to the table
+            #  4. entry_archive_rollback_payload --> the payload attempt to roll back to
+            #
             et, ev, tb = sys.exc_info()
             self.logger.error('got exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
