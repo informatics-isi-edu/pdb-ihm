@@ -52,6 +52,12 @@ https://dev-aws.pdb-dev.org/ermrest/catalog/99/attribute/Vocab:System_Generated_
 https://dev-aws.pdb-dev.org/ermrest/catalog/99/attribute/A:=PDB:entry/Workflow_Status=REL/B:=PDB:Entry_Generated_File/File_Type=mmCIF/C:=left(A:RID)=(PDB:Entry_Latest_Archive:Entry)/Entry::null::;!B:File_URL=mmCIF_URL/$A/RID
 """
 
+def dumpJSON(fileneme, json_object):
+    fw = open(f'/home/pdbihm/tmp/{fileneme}.json', 'w')
+    json.dump(json_object, fw, indent=4)
+    fw.write(f'\n')
+    fw.close()
+    
 class ArchiveClient (object):
     # HT: initialize with ermrest query
     submission_date = None
@@ -516,11 +522,7 @@ class ArchiveClient (object):
             """
             Get the Entry_Generated_File
             """
-            url = f'/attribute/PDB:entry/RID={urlquote(rid)}/PDB:Entry_Generated_File/File_Name,File_URL,File_MD5,File_Type,RMT'
-            self.logger.debug(f'Query for the associated Entry_Generated_File: "{url}"') 
-            resp = self.catalog.get(url)
-            resp.raise_for_status()
-            files_generated = resp.json()
+            files_generated = self.entry_generated_files[rid]
             if len(files_generated) < 3:
                 """
                 We are in the REL status but the report validation was not run
@@ -530,10 +532,7 @@ class ArchiveClient (object):
             
             submitted_files = {}
 
-            for file_generated in files_generated:
-                file_type = file_generated['File_Type']
-                if file_type not in self.archive_file_types:
-                    continue
+            for file_type,file_generated in files_generated.items():
                 filename = file_generated['File_Name']
                 file_url = file_generated['File_URL']
                 
@@ -585,7 +584,6 @@ class ArchiveClient (object):
                             'Entry': rid,
                             'mmCIF_URL': self.released_structures[entry_id]['File_URL'],
                             'Submission_Time': self.submission_date,
-                            'Archive': self.PDB_Archive_RID,
                             'Submitted_Files': submitted_files
                         }
                 )
@@ -609,7 +607,6 @@ class ArchiveClient (object):
                                 'Entry': rid,
                                 'mmCIF_URL': self.released_structures[entry_id]['File_URL'],
                                 'Submission_Time': self.submission_date,
-                                'Archive': self.PDB_Archive_RID,
                                 'Submitted_Files': submitted_files,
                                 'Submission_History': submission_history,
                                 'RID': latest_archive_record[0]['RID']
@@ -688,7 +685,7 @@ class ArchiveClient (object):
             'Unreleased_Entries_MD5': Unreleased_Entries_MD5
             }
         ]
-
+        
         url = f'/attribute/A:=PDB:PDB_Archive/Submission_Time={urlquote(self.submission_date)}/A:RID'
         self.logger.debug(f"Query to see if the archive has been run this week: {url}") 
         resp = self.catalog.get(url)
@@ -709,7 +706,7 @@ class ArchiveClient (object):
             """
             for row in rows:
                 row['Submission_Time'] = self.submission_date
-            res = self.insert_rows([rows], 'PDB_Archive')
+            res = self.insert_rows(rows, 'PDB_Archive')
             self.PDB_Archive_RID = res[0]['RID']
 
         columns = [
@@ -722,6 +719,7 @@ class ArchiveClient (object):
         
         for row in inserted_rows + updated_rows:
             row['Archive'] = self.PDB_Archive_RID
+
         self.insert_or_update_rows(inserted_rows, updated_rows, 'Entry_Latest_Archive', columns)
         
         url = '/attribute/A:=PDB:entry/Workflow_Status=HOLD/B:=left(A:id)=(PDB:Entry_Generated_File:Structure_Id)/Structure_Id::null::/$A/RID'
@@ -794,7 +792,7 @@ class ArchiveClient (object):
             new_inserted_row['Accession_Code'] = self.new_releases[new_inserted_row['Entry']]['Accession_Code']
             
         for re_updated_row in re_updated_rows:
-            re_updated_row['Accession_Code'] = self.re_releases[re_updated_row['RID']]['Accession_Code']
+            re_updated_row['Accession_Code'] = self.re_releases[re_updated_row['Entry']]['Accession_Code']
             re_updated_rows_dict[re_updated_row['Entry']] = re_updated_row
             
         url = '/attribute/A:=PDB:Entry_Latest_Archive/B:=PDB:entry/$A/Entry,Submitted_Files,Submission_Time,B:Accession_Code'
@@ -1043,7 +1041,7 @@ class ArchiveClient (object):
        )
        resp.raise_for_status()
        self.logger.debug('SUCCEEDED created in the table "%s" the rows "%s".' % (url, json.dumps(rows, indent=4))) 
-       return resp.json()[0]
+       return resp.json()
 
     """
     Update a record
