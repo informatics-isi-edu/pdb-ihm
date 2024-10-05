@@ -37,7 +37,7 @@ from socket import gaierror, EAI_AGAIN
 from deriva.core import PollingErmrestCatalog, HatracStore, urlquote, get_credential
 from deriva.core.utils import hash_utils as hu
 from deriva.core.utils.core_utils import DEFAULT_CHUNK_SIZE, NotModified
-from deriva.utils.extras.data import get_key2rows, get_ermrest_query
+from deriva.utils.extras.data import get_key2rows, get_ermrest_query, insert_if_not_exist, update_table_rows
 
 import re
 import math
@@ -52,6 +52,14 @@ https://dev-aws.pdb-dev.org/ermrest/catalog/99/attribute/Vocab:System_Generated_
 https://dev-aws.pdb-dev.org/ermrest/catalog/99/attribute/A:=PDB:entry/Workflow_Status=REL/B:=PDB:Entry_Generated_File/File_Type=mmCIF/C:=left(A:RID)=(PDB:Entry_Latest_Archive:Entry)/Entry::null::;!B:File_URL=mmCIF_URL/$A/RID
 """
 
+
+def dump_json_to_file(file_path, json_object):
+    print("dump_json_to_file: file_path %s" % (file_path))
+    fw = open(file_path, 'w')
+    json.dump(json_object, fw, indent=4)
+    fw.write(f'\n')
+    fw.close()
+    
 def dumpJSON(fileneme, json_object):
     fw = open(f'/home/pdbihm/tmp/{fileneme}.json', 'w')
     json.dump(json_object, fw, indent=4)
@@ -75,6 +83,10 @@ class ArchiveClient (object):
     entry_archive_update_rids = []
     entry_archive_inserted = []    # update this variable after successfully inserting to entry_latest_archive
     entry_archive_updated = []     # update this variable after successfully update to entry_latest_archive
+    pdb_archive_rid = None
+    pdb_archive = None  # Read at the beginning of the script for rollback
+    pdb_archive_inserted = None
+    pdb_archive_updated = None
     
     """
     Network client for archiving mmCIF files.
@@ -90,12 +102,7 @@ class ArchiveClient (object):
         self.credentials = kwargs.get("credentials")
         self.hatrac_namespace = kwargs.get("hatrac_namespace")
         self.holding_namespace = kwargs.get("holding_namespace")
-        self.released_structures = {}
-        self.current_holdings = {}
         self.archive_category_dir_names = {}
-        self.PDB_Archive_RID = None
-        self.PDB_Archive_row_before = None  # Read at the beginning of the script for rollback        
-        self.PDB_Archive_row = None   # This contains the payload for insert/update to PDB_Archive table
         self.credentials = get_credential(self.host)
         self.store = HatracStore(
             self.scheme, 
@@ -116,12 +123,12 @@ class ArchiveClient (object):
 
         self.printConfiguration()
         self.submission_date = self.getArchiveDate()
-        self.previous_submission_date = self.getPreviousArchiveDate(self.submission_date) 
+        self.previous_submission_date = self.getPreviousArchiveDate(self.submission_date)
+
+        
         
         self.set_entry_latest_archive()
         self.set_pdb_archive()
-        #self.set_new_releases()
-        #self.set_re_releases()
         self.set_archive_entries()
         #self.set_released_entries()
         self.set_system_generated_file_types()
@@ -130,18 +137,21 @@ class ArchiveClient (object):
         self.set_current_holdings()
 
     def set_entry_latest_archive(self):
-        rows = get_ermrest_query(self.catalog, "PDB", "Entry_Latest_Archive", None)
+        constraints = "E:=PDB:entry/$M"
+        attributes = ["M:Entry","M:Submission_Time","M:mmCIF_URL","M:Submitted_Files","M:Archive","M:Submission_History","M:RCT","Structure_Id:=E:id","E:Accession_Code"]
+        rows = get_ermrest_query(self.catalog, "PDB", "Entry_Latest_Archive", constraints=constraints, attributes=attributes)
         for row in rows:
             self.entry_latest_archive[row["Entry"]] = row
+        print("entry_latest_archive[:10]: %s" % (json.dumps(list(self.entry_latest_archive.values())[:3], indent=4)))
 
-    # read PDB_Archive at the beginning in case it needs to roll back
+    # read pdb_archive at the beginning in case it needs to roll back
     def set_pdb_archive(self):
         constraints = "Submission_Time=%s" % (urlquote(self.submission_date))
         rows = get_ermrest_query(self.catalog, "PDB", "PDB_Archive", constraints=constraints)
         if rows:
-            self.PDB_Archive_row_before = rows[0]
-            self.PDB_Archive_RID = rows[0]["RID"]
-            self.PDB_Archive_row = rows[0].copy()  # make a copy, so the content can be changed
+            self.pdb_archive = rows[0]
+            self.pdb_archive_rid = rows[0]["RID"]
+        print("pdb_archive: %s" % (json.dumps(self.pdb_archive, indent=4)))
 
     def set_new_releases(self):
         url1 = f'/attribute/' + \
@@ -157,7 +167,6 @@ class ArchiveClient (object):
         # Note: A:* might be null
         for row in rows:
             row["accession_code_hash"] = self.get_hash(row["Accession_Code"])
-            row["manifest_key"] = row["Accession_Code"]
             # TODO: check mmCIF filename
             if row["File_Name"].startswith(row["Accession_Code"]):
                 self.new_releases[row["RID"]] = row
@@ -181,7 +190,6 @@ class ArchiveClient (object):
         #print(json.dumps(rows, indent=4))
         for row in rows:
             row["accession_code_hash"] = self.get_hash(row["Accession_Code"])
-            row["manifest_key"] = row["Accession_Code"]
             # TODO: check mmCIF filename
             if row["File_Name"] and not row["File_Name"].startswith(row["Accession_Code"]):
                 # TODO: add to warning list
@@ -200,7 +208,7 @@ class ArchiveClient (object):
         print("archive_entries: %s" % (json.dumps(self.archive_entries, indent=4)))
 
     """
-      REL entries
+      REL entries. No longer needed?
     """
     def set_released_entries(self):
         """
@@ -216,7 +224,27 @@ class ArchiveClient (object):
         print("released_entries: %s" % (json.dumps(self.released_entries, indent=4)))
         print("entry_id2rid: %s" % (json.dumps(self.entry_id2rid, indent=4)))        
         # TODO: check duplicate RIDs?
-            
+
+    """
+      HOLD entries
+    """
+    def get_hold_status_entries(self):
+        constraints = "Workflow_Status=HOLD"
+        rows = get_ermrest_query(self.catalog, "PDB", "entry", constraints=constraints, attributes=["Accession_Code","Deposit_Date","Workflow_Status"])
+        entries = {}
+        hold_entries = {}
+        for row in rows:
+            entries[row["Accession_Code"]] = row
+        for accession_code in sorted(entries.keys()):
+            r = {
+                "status_code" : row["Workflow_Status"],
+                "deposit_date" : f'{row["Deposit_Date"]}T00:00:00+00:00',
+                #"deposit_date_org" : dt.strptime(row["Deposit_Date"], '%Y-%m-%d %H:%M:%S%z'),
+                "prerelease_sequence_available_flag" : "N",
+            }
+            hold_entries[accession_code] = r
+        return hold_entries
+    
     """
     Information about system generated file types
     """
@@ -236,24 +264,24 @@ class ArchiveClient (object):
     """
     def set_entry_generated_files(self):
         entry_rids = list(self.new_releases.keys()) + list(self.re_releases.keys())        
-        constraints = "Structure_Id=ANY(%s)/T:=Vocab:System_Generated_File_Type/A:=Vocab:Archive_Category/$M" % ",".join([ urlquote(self.released_entries[rid]["id"]) for rid  in entry_rids ])
+        constraints = "Structure_Id=ANY(%s)/T:=Vocab:System_Generated_File_Type/A:=Vocab:Archive_Category/$M" % ",".join([ urlquote(self.archive_entries[rid]["id"]) for rid  in entry_rids ])
         attributes = ["M:Structure_Id","M:File_Type","M:File_Name","M:File_URL","M:File_Bytes","M:File_MD5","Archive_Category:=A:Name","A:Directory_Name"]
         rows = get_ermrest_query(self.catalog, "PDB", "Entry_Generated_File", constraints=constraints, attributes=attributes)
         incorrect_filename_entry_rids = set()
         for row in rows:
             rid = self.entry_id2rid[row["Structure_Id"]]
-            accession_code = self.released_entries[rid]["Accession_Code"]
+            accession_code = self.archive_entries[rid]["Accession_Code"]
             file_type = row["File_Type"]
             row["Accession_Code"] = accession_code            
             row["archive_dir"] =  self.getFileArchiveSubDirectory2(accession_code, row["Directory_Name"])
-            #row["Archive_Category"] = self.system_generated_file_types[file_type]["Archive_Category"]
-            #row["Directory_Name"] = self.system_generated_file_types[file_type]["Directory_Name"]
+            row["archive_path"] = "%s/%s.gz" % (row["archive_dir"], row["File_Name"].lower())
             self.entry_generated_files.setdefault(rid, {})
             self.entry_generated_files[rid][row["File_Type"]] = row
             if row["File_Type"] == "mmCIF":
                 self.archive_entries[rid]["File_URL"] = row["File_URL"]
                 self.archive_entries[rid]["File_Name"] = row["File_Name"]
                 self.archive_entries[rid]["archive_dir"] = row["archive_dir"]
+                self.archive_entries[rid]["archive_path"] = row["archive_path"]                
             # check filenames
             if not row["File_Name"].startswith(accession_code):
                 incorrect_filename_entry_rids.add(rid)
@@ -285,24 +313,30 @@ class ArchiveClient (object):
     
     def set_current_holdings(self):
         #curent_holdings = self.entry_latest_archive.copy()
-        print("entry_latest_archive rids: %s" % (self.entry_latest_archive.keys()))
+        #print("entry_latest_archive rids: %s" % (self.entry_latest_archive.keys()))
         current_holdings = {}
         for rid, row in self.archive_entries.items():
             submitted_files = {}
+            manifests = {}
             for file_type, generated_file in self.entry_generated_files[rid].items():
                 submitted_files.setdefault(generated_file["Directory_Name"], [])
                 submitted_files[generated_file["Directory_Name"]].append(generated_file["File_URL"])
+                manifests.setdefault(generated_file["Archive_Category"], [])                
+                manifests[generated_file["Archive_Category"]].append("/"+generated_file["archive_path"])
             current_holdings[rid] = {
                 "Entry" : rid,
                 "Submission_Time" : self.submission_date,
                 "mmCIF_URL" : self.entry_generated_files[rid]["mmCIF"]["File_URL"],
                 "Submitted_Files": submitted_files,
-                "Archive" : self.PDB_Archive_RID,
+                "Archive" : self.pdb_archive_rid,
                 "Submission_History": None,
+                "archive_manifest": manifests,
+                "Accession_Code": row["Accession_Code"],
             }
+            # TODO: Fix history with incomplete submitted files
             if rid in self.entry_archive_update_rids: 
                 submission_history = {
-                    self.submission_date : {
+                    self.entry_latest_archive[rid]["Submission_Time"] : {
                         "mmCIF_URL": self.entry_latest_archive[rid]["mmCIF_URL"],
                         "Submission_Files": self.entry_latest_archive[rid]["Submitted_Files"],
                     }
@@ -314,8 +348,9 @@ class ArchiveClient (object):
                     current_holdings[rid]["Submission_History"].update(submission_history)
                     
         print("current_holdings: %s" % (json.dumps(current_holdings, indent=4)))
-        # generate manifest from current holdings
-        #...
+        self.current_entry_latest_archive = current_holdings
+        
+
         
     """
     Print the configuration
@@ -387,11 +422,11 @@ class ArchiveClient (object):
         try:
             """
             """
-            # delete the self.PDB_Archive_RID if inserted, otherwise update to original state
-            if self.PDB_Archive_RID:
-                if self.PDB_Archive_before:
-                    pdb_archive_rollback_payload = update_table_rows(self.catalog, "PDB", "PDB_Archive", keys=["RID"], payload=[self.PDB_Archive_before])
-                    self.logger.debug('SUCCEEDED updated the PDB_Archive row with RID = %s' % (self.PDB_Archive_RID))                    
+            # delete the self.pdb_archive_RID if inserted, otherwise update to original state
+            if self.pdb_archive_rid:
+                if self.pdb_archive:
+                    pdb_archive_rollback_payload = update_table_rows(self.catalog, "PDB", "Pdb_Archive", keys=["RID"], payload=[self.pdb_archive])
+                    self.logger.debug('SUCCEEDED updated the PDB_Archive row with RID = %s' % (self.pdb_archive_rid))                    
                 else:
                     delete_table_rows(self.catalog, "PDB", "PDB_Archive", key="RID", values=["self.PDB_Archive_RID"])                
                     self.logger.debug('SUCCEEDED deleted the PDB_Archive row with RID = %s' % (self.PDB_Archive_RID))
@@ -427,8 +462,7 @@ class ArchiveClient (object):
     Process Archiving Files 
     """
     def processArchive(self):
-        print("ProcessArchive")
-        return 0
+        print("processArchive")
         try:
             """
             Get the:
@@ -456,12 +490,14 @@ class ArchiveClient (object):
             """
             Archive files
             """
+            print("calling archiveFiles")            
             return_code = self.archiveFiles()
             if return_code != 0:
                 self.rollbackArchive()
             return return_code
         except:
             et, ev, tb = sys.exc_info()
+            print('%s' % ''.join(traceback.format_exception(et, ev, tb)))
             self.logger.error('got exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
             subject = 'PDB-Dev Error archiving files.'
@@ -479,6 +515,7 @@ class ArchiveClient (object):
       - Update PDB:Entry_Latest_Archive -> update "Archive" field with the PDB:Archive RID before performing updates
     """
     def archiveFiles(self):
+
         """
         Get the new entries to be released:
          - not released
@@ -503,141 +540,61 @@ class ArchiveClient (object):
         """
         Create archive sub directories
         """
-        os.makedirs(f'{self.archive_parent}/{self.released_entry_dir}', exist_ok=True)
-        os.makedirs(f'{self.archive_parent}/{self.holding_dir}', exist_ok=True)
+        data_archive_dir = f'{self.archive_parent}/{self.released_entry_dir}'
+        manifest_dir = f'{self.archive_parent}/{self.holding_dir}'
+        os.makedirs(data_archive_dir, exist_ok=True)
+        os.makedirs(manifest_dir, exist_ok=True)
 
-        inserted_rows = []
-        updated_rows = []
         self.no_validation_rids = []
-        self.released_records = []
         
-        unarchived_entries = list(self.new_releases.values()) + list(self.re_releases.values())
-
         """
         Get the new released files
         """
-        for row in self.archive_entries.items():
-            structure_id = row['id']
-            rid = row['RID']
-            entry_id = row['Entry']
-            accession_code_hash = row['accession_code_hash']
-            manifest_key = row['manifest_key']
-            
-            self.released_structures[entry_id] = {}
-            for file_type,file_generated in self.entry_generated_files[entry_rid].items():
+        for rid, row in self.archive_entries.items():
+            accession_code = row['Accession_Code']
+            for file_type,file_generated in self.entry_generated_files[rid].items():
                 filename = file_generated['File_Name']
                 file_url = file_generated['File_URL']
                 renamed_file = filename.lower()
-                file_path,error_message = self.getHatracFile(filename, file_url, self.data_scratch)
-                #submitted_files[self.archive_category_dir_names[self.archive_category[file_type]]].append(f'{renamed_file}.gz')
-                submitted_files[self.archive_category_dir_names[self.archive_category[file_type]]].append(file_url)
-                    
-                """
-                Zip the file
-                """
-                self.generateReleasedZip(filename, accession_code_hash, entry_id, file_type, manifest_key)
-                
-                
-            """
-            Get the Entry_Generated_File
-            """
-            files_generated = self.entry_generated_files[rid]
-            if len(files_generated) < 3:
-                """
-                We are in the REL status but the report validation was not run
-                """
-                self.no_validation_rids.append({"Accession_Code": row['Accession_Code'], "Deposit_Date": row['Deposit_Date']})
-                #continue
-            
-            submitted_files = {}
+                file_path,error_message = self.getHatracFile(renamed_file, file_url, self.data_scratch)
+                print("accession_code: %s, file_path: %s" % (accession_code, file_path))
+                # Zip the file
+                self.generateGzip(file_path, output_dir=data_archive_dir)
 
-            for file_type,file_generated in files_generated.items():
-                filename = file_generated['File_Name']
-                file_url = file_generated['File_URL']
-                
-                if file_type == 'mmCIF':
-                    if filename != f'{accesion_code_row["Accession_Code"]}.cif':
-                        rel_warnings.append(rid)
-                    else:
-                        self.released_structures[entry_id]['File_URL'] = file_generated['File_URL']
-                        self.released_records.append(accesion_code_row)
-                
-                if rid not in rel_warnings:
-                    """
-                    Extract the file from hatrac
-                    """
-                    file_path,error_message = self.getHatracFile(filename, file_url, self.data_scratch)
-                    
-                    manifest_key = self.get_manifest_key(accesion_code_row)
-                    if manifest_key not in self.current_holdings.keys():
-                        self.current_holdings[manifest_key] = {}
-                        for archive_dir in self.archive_dirs:
-                            submitted_files[archive_dir] = []
-                            self.current_holdings[manifest_key][self.holding_map[archive_dir]] = []
-    
-                    renamed_file = filename.lower()
-                    #submitted_files[self.archive_category_dir_names[self.archive_category[file_type]]].append(f'{renamed_file}.gz')
-                    submitted_files[self.archive_category_dir_names[self.archive_category[file_type]]].append(file_url)
-                    
-                    """
-                    Zip the file
-                    """
-                    self.generateReleasedZip(filename, hash, entry_id, file_type, self.get_manifest_key(accesion_code_row))
+                # TODO: warning about validation reports?
+                #self.no_validation_rids.append({"Accession_Code": row['Accession_Code'], "Deposit_Date": row['Deposit_Date']})
 
-            url = f'/attribute/PDB:entry/RID={urlquote(rid)}/PDB:Entry_Latest_Archive/RID,mmCIF_URL,Submission_Time,Submitted_Files,Submission_History'
-            self.logger.debug(f'Query for detecting if the record exists or not in the Entry_Latest_Archive table: "{url}"') 
-            resp = self.catalog.get(url)
-            resp.raise_for_status()
-            latest_archive_record = resp.json()
-            
-            """
-            Insert or update the record in the Entry_Latest_Archive table
-            """    
-            if len(latest_archive_record) == 0:
-                """
-                New entry
-                """
-                if rid not in rel_warnings:
-                    inserted_rows.append(
-                        {
-                            'Entry': rid,
-                            'mmCIF_URL': self.released_structures[entry_id]['File_URL'],
-                            'Submission_Time': self.submission_date,
-                            'Submitted_Files': submitted_files
-                        }
-                )
-            elif len(latest_archive_record) == 1:
-                """
-                Entry that was updated
-                """
-                if rid not in rel_warnings:
-                    if latest_archive_record[0]['mmCIF_URL'] != self.released_structures[entry_id]['File_URL']:
-                        submission_history = latest_archive_record[0]['Submission_History']
-                        if submission_history == None:
-                            submission_history = {}
-                        submission_history.update({
-                          latest_archive_record[0]['Submission_Time']: {
-                            "mmCIF_URL": latest_archive_record[0]['mmCIF_URL'], 
-                            "Submitted_Files": latest_archive_record[0]['Submitted_Files']
-                          }
-                        })
-                        updated_rows.append(
-                            {
-                                'Entry': rid,
-                                'mmCIF_URL': self.released_structures[entry_id]['File_URL'],
-                                'Submission_Time': self.submission_date,
-                                'Submitted_Files': submitted_files,
-                                'Submission_History': submission_history,
-                                'RID': latest_archive_record[0]['RID']
-                            }
-                )
-        
         """
         Generate the manifest files
         """
-        self.writeManifestFiles(inserted_rows, updated_rows)
-        self.generate_unreleased_entries()
-         
+        print("current_entry_latest_archive: %s" % (self.current_entry_latest_archive))
+        current_holdings = {}
+        lmd_dict = {}        
+        current_holding_fpath = "%s/current_file_holdings.json" % (self.data_scratch)
+        lmd_fpath = "%s/released_structures_last_modified_dates.json" % (self.data_scratch)        
+
+        for row in self.current_entry_latest_archive.values():
+            #print("setting holdings: %s - %s \n" % (row["Accession_Code"], row["archive_manifest"]))
+            current_holdings[row["Accession_Code"]] = row["archive_manifest"]
+            #dt.strptime(row["Submission_Time", '%Y-%m-%d %H:%M:%S%z'),                
+            lmd_dict[row["Accession_Code"]] = self.getTimeUTC(row["Submission_Time"])
+        current_holding_payload = self.order_dict(current_holdings)
+        lmd_payload = self.order_dict(lmd_dict)
+
+        dump_json_to_file(current_holding_fpath, current_holding_payload)
+        dump_json_to_file(lmd_fpath, lmd_payload)        
+        self.generateGzip(current_holding_fpath, output_dir=manifest_dir)
+        self.generateGzip(lmd_fpath, output_dir=manifest_dir)
+
+        hold_entries_payload = self.get_hold_status_entries()
+        hold_entries_fpath = "%s/unreleased_entries.json" % (self.data_scratch)
+        dump_json_to_file(hold_entries_fpath, hold_entries_payload)
+        self.generateGzip(hold_entries_fpath, output_dir=manifest_dir)
+
+        print("current_holding_payload: %s" % (json.dumps(current_holding_payload, indent=4)))
+        print("released_structures_last_modified_dates: %s" % (json.dumps(lmd_payload, indent=4)))
+        print("hold_entries: %s" % (json.dumps(hold_entries_payload, indent=4)))        
+
         """
         Store in hatrac the manifest files
         """
@@ -645,48 +602,34 @@ class ArchiveClient (object):
         year = submission_datetime.year
         submission_date = f'{submission_datetime.date()}'
         hatrac_namespace = f'/{self.hatrac_namespace}/{self.holding_namespace}/{year}/{submission_date}'
-        input_dir = f'{self.archive_parent}/{self.getHoldingSubDirectory()}'
-        file_name = 'current_file_holdings.json.gz'
+        input_dir = manifest_dir
         
+        file_name = "%s.gz" % (current_holding_fpath.rsplit("/", 1)[1])
         Current_File_Holdings_URL, Current_File_Holdings_Name, Current_File_Holdings_Bytes, Current_File_Holdings_MD5 = self.storeFileInHatrac(hatrac_namespace, file_name, input_dir)
         if Current_File_Holdings_URL == None:
             return 1
  
-        file_name = 'released_structures_last_modified_dates.json.gz'
-        
+        file_name = "%s.gz" % (lmd_fpath.rsplit("/", 1)[1])        
         Released_Structures_LMD_URL, Released_Structures_LMD_Name, Released_Structures_LMD_Bytes, Released_Structures_LMD_MD5 = self.storeFileInHatrac(hatrac_namespace, file_name, input_dir)
         if Released_Structures_LMD_URL == None:
             return 1
  
-        file_name = 'unreleased_entries.json.gz'
-        
+        file_name = "%s.gz" % (hold_entries_fpath.rsplit("/", 1)[1])                
         Unreleased_Entries_URL, Unreleased_Entries_Name, Unreleased_Entries_Bytes, Unreleased_Entries_MD5 = self.storeFileInHatrac(hatrac_namespace, file_name, input_dir)
         if Unreleased_Entries_URL == None:
             return 1
- 
+
         """
         Create or update the entry in the PDB_Archive table 
         """
-        columns = [
-            'Submitted_Entries',
-            'New_Released_Entries',
-            'Re_Released_Entries',
-            'Current_File_Holdings_Name',
-            'Current_File_Holdings_URL',
-            'Current_File_Holdings_Bytes',
-            'Current_File_Holdings_MD5',
-            'Released_Structures_LMD_Name',
-            'Released_Structures_LMD_URL',
-            'Released_Structures_LMD_Bytes',
-            'Released_Structures_LMD_MD5',
-            'Unreleased_Entries_Name',
-            'Unreleased_Entries_URL',
-            'Unreleased_Entries_Bytes',
-            'Unreleased_Entries_MD5'
-        ]
-
-        rows = [{
-            'Submitted_Entries': len(self.new_releases) + len(self.re_releases),
+        if not self.pdb_archive:
+            current_pdb_archive = {
+                "Submission_Time": self.submission_date,
+            }
+        else:
+            current_pdb_archive = self.pdb_archive.copy()
+        current_pdb_archive.update({
+            'Submitted_Entries': len(self.archive_entries),
             'New_Released_Entries': len(self.new_releases),
             'Re_Released_Entries': len(self.re_releases),
             'Current_File_Holdings_Name': Current_File_Holdings_Name,
@@ -701,53 +644,33 @@ class ArchiveClient (object):
             'Unreleased_Entries_URL': Unreleased_Entries_URL,
             'Unreleased_Entries_Bytes': Unreleased_Entries_Bytes,
             'Unreleased_Entries_MD5': Unreleased_Entries_MD5
-        }]
-        
-        url = f'/attribute/A:=PDB:PDB_Archive/Submission_Time={urlquote(self.submission_date)}/A:RID'
-        self.logger.debug(f"Query to see if the archive has been run this week: {url}") 
-        resp = self.catalog.get(url)
-        resp.raise_for_status()
-        archive_rows = resp.json()
+        })
 
-        if len(archive_rows) > 0:
-            """
-            Update operation
-            """
-            self.PDB_Archive_RID = archive_rows[0]['RID']
-            for row in rows:
-                row['RID'] = self.PDB_Archive_RID
-            self.update_rows(columns, rows, 'PDB_Archive')
+        if not self.pdb_archive:
+            print("inserting pdb_archive_payload: %s" % (json.dumps(current_pdb_archive, indent=4)))
+            #self.pdb_archive_inserted = insert_row_if_not_exist(self.catalog, "PDB", "PDB_Archive", payload=[pdb_archive])
         else:
-            """
-            Insert operation
-            """
-            for row in rows:
-                row['Submission_Time'] = self.submission_date
-            res = self.insert_rows(rows, 'PDB_Archive')
-            self.PDB_Archive_RID = res[0]['RID']
+            print("updating pdb_archive_payload: %s" % (json.dumps(current_pdb_archive, indent=4)))            
+            #self.pdb_archive_updated = update_table_row(self.catalog, "PDB", "PDB_Archive", payload=[pdb_archive])
+        
+        """
+        Create or update the entry in the Entry_Latest_Archive table
+        """
 
-        columns = [
-            'mmCIF_URL',
-            'Submission_Time',
-            'Archive',
-            'Submitted_Files',
-            'Submission_History'
-            ]
-        
-        for row in inserted_rows + updated_rows:
-            row['Archive'] = self.PDB_Archive_RID
+        payload = []
+        for rid in self.entry_archive_insert_rids:
+            payload.append(self.current_entry_latest_archive[rid])
+        print("inserting entry_latest_archive_payload: %s" % (json.dumps(payload, indent=4)))            
+        #self.archive_entries_inserted = insert_if_not_exist(self.catalog, "PDB", "Entry_Latest_Archive", payload=payload)
 
-        self.insert_or_update_rows(inserted_rows, updated_rows, 'Entry_Latest_Archive', columns)
+        payload = []
+        for rid in self.entry_archive_update_rids:
+            payload.append(self.current_entry_latest_archive[rid])            
+        print("updating entry_latest_archive_payload: %s" % (json.dumps(payload, indent=4)))                        
+        #self.archive_entries_updated = update_table_rows(self.catalog, "PDB", "Entry_Latest_Archive", payload=payload)
+
         
-        url = '/attribute/A:=PDB:entry/Workflow_Status=HOLD/B:=left(A:id)=(PDB:Entry_Generated_File:Structure_Id)/Structure_Id::null::/$A/RID'
-        self.logger.debug(f'Query for unreleased entries w/o a system mmCIF generated file: "{url}"') 
-        
-        resp = self.catalog.get(url)
-        resp.raise_for_status()
-        rows = resp.json()
-        for row in rows:
-            if row['RID'] not in self.hold_warnings:
-                self.hold_warnings.append(row['RID'])
+        return 0
         
         total_warning = len(self.hold_warnings) + len(rel_warnings)
         if total_warning > 0:
@@ -780,7 +703,7 @@ class ArchiveClient (object):
     """
     Get UTC Submission Time 
     """
-    def getSubmissionTimeUTC(self, submission_str):
+    def getTimeUTC(self, submission_str):
         submission_obj = dt.fromisoformat(submission_str)
         #submission_utc = submission_obj.replace(hour=21,tzinfo=timezone.utc).isoformat()
         submission_utc = submission_obj.astimezone(timezone.utc).isoformat()
@@ -798,65 +721,6 @@ class ArchiveClient (object):
         return ret
 
     """
-    Write manifest 
-    """
-    def writeManifestFiles(self, inserted_rows, updated_rows):
-        new_inserted_rows = [v.copy() for v in inserted_rows]
-        re_updated_rows = [v.copy() for v in updated_rows]
-        re_updated_rows_dict = {}
-        
-        for new_inserted_row in new_inserted_rows:
-            new_inserted_row['Accession_Code'] = self.new_releases[new_inserted_row['Entry']]['Accession_Code']
-            
-        for re_updated_row in re_updated_rows:
-            re_updated_row['Accession_Code'] = self.re_releases[re_updated_row['Entry']]['Accession_Code']
-            re_updated_rows_dict[re_updated_row['Entry']] = re_updated_row
-            
-        url = '/attribute/A:=PDB:Entry_Latest_Archive/B:=PDB:entry/$A/Entry,Submitted_Files,Submission_Time,B:Accession_Code'
-        self.logger.debug(f'Query for writing the manifest files: "{url}"') 
-        
-        released_structures_LMD = {}
-        holding_entries = {}
-        resp = self.catalog.get(url)
-        resp.raise_for_status()
-        entries = resp.json() + new_inserted_rows
-        for entry in entries:
-            if entry['Entry'] in re_updated_rows_dict.keys():
-                entry = re_updated_rows_dict[entry['Entry']]
-            released_structures_LMD[entry['Accession_Code']] = self.getSubmissionTimeUTC(f'{entry["Submission_Time"]}')
-            submitted_files = entry['Submitted_Files']
-            rid = urlquote(entry['Entry'])
-            url = f'/entity/PDB:entry/RID={rid}/Entry_Generated_File'
-            resp = self.catalog.get(url)
-            resp.raise_for_status()
-            rows = resp.json()
-            for row in rows:
-                #header = '/pdb_ihm/data/entries/es/test-pdbdev_00000389'
-                file_type = row['File_Type']
-                if file_type not in self.archive_file_types:
-                    continue
-                manifest_key = entry['Accession_Code']
-                h = entry['Accession_Code'][1:3].lower()
-                header = f'/{self.released_entry_dir}/{h}/{manifest_key.lower()}'
-                if manifest_key not in holding_entries.keys():
-                    holding_entries[manifest_key] = {}
-                    for archive_dir in self.archive_dirs:
-                        holding_entries[manifest_key][self.holding_map[archive_dir]] = []
-                    holding_entries[manifest_key] = {}
-                holding_key = self.holding_map[self.archive_category_dir_names[self.archive_category[file_type]]]
-                if holding_key not in holding_entries[manifest_key].keys():
-                    holding_entries[manifest_key][holding_key] = []
-                if file_type == 'mmCIF':
-                    holding_entries[manifest_key][holding_key].append(self.getSubmittedZipFile(f'{header}/structures/{submitted_files["structures"][0]}'))
-                elif len(holding_entries[manifest_key][holding_key]) == 0:
-                    for submitted_file in submitted_files["validation_reports"]:
-                        holding_entries[manifest_key][holding_key].append(self.getSubmittedZipFile(f'{header}/validation_reports/{submitted_file}'))
-                   
-            
-        self.generate_current_holdings(holdings=holding_entries)
-        self.generate_released_structures_LMD(releases=released_structures_LMD)
-
-    """
     Sort JSON object 
     """
     def order_dict(self, dictionary):
@@ -871,12 +735,6 @@ class ArchiveClient (object):
         return result
     
     """
-    Get the archive directory 
-    """
-    def getArchiveDirectory(self):
-        return self.archive_parent
-        
-    """
     Get the file archive subdirectory 
     """
     def getFileArchiveSubDirectory(self, hash, entry_id, archive_category):
@@ -888,12 +746,6 @@ class ArchiveClient (object):
         entry_dir = f'{self.released_entry_dir}/{hash}/{accession_code.lower()}'
         return f'{entry_dir}/{category_dir_name}'
     
-    """
-    Get the holding subdirectory 
-    """
-    def getHoldingSubDirectory(self):
-        return self.holding_dir
-        
     """
     Get the archive date
     HT: Turn to class method?
@@ -928,7 +780,7 @@ class ArchiveClient (object):
         return f'{closed_day_of_week}'
 
     """
-    HT: TODO
+    Get previous archive date
     """
     def getPreviousArchiveDate(self, current_submission_time):
         """
@@ -974,7 +826,7 @@ class ArchiveClient (object):
         return entry_dir
 
     """
-    Get the PDB_Accession_Code
+    Get the PDB_Accession_Code hash
     """
     def get_hash(self, accession_code):
         if len(accession_code) == 4:
@@ -982,7 +834,6 @@ class ArchiveClient (object):
             return h            
         else:
             raise Exception("ERROR: Accession_Code %s is not a PDB accession code. Expect legnth of 4" % (accession_code))
-        
         """
         try:
             r = re.search(r'^pdb_(\w{4})$', accesion_code_row['Accesssion_Code'])
@@ -996,63 +847,17 @@ class ArchiveClient (object):
         """
 
     """
-    Get the primary accession code
-    """
-    def get_entry_id(self, accesion_code_row):
-        return accesion_code_row['Accession_Code']
-
-    """
-    Get the manifest keys
-    """
-    def get_manifest_key(self, accesion_code_row):
-        return accesion_code_row['Accession_Code']
-
-    """
-    Generate the released zip file and move it to the archive directory
-    """
-    def generateReleasedZip(self, filename, hash, entry_id, file_type, manifest_key):
-        currentDirectory=os.getcwd()
-        os.chdir(self.data_scratch)
-        renamed_file = filename.lower()
-        os.rename(filename,renamed_file)
-
-        with open(renamed_file, 'rb') as f_in:
-            with gzip.open(f'{renamed_file}.gz', 'wb') as f_out:
-                shutil.copyfileobj(f_in, f_out)
-        
-        """
-        Move the file to the archive directory
-        """
-        archiveDirectory = self.getFileArchiveDirectory(hash, manifest_key.lower(), file_type)
-        os.makedirs(archiveDirectory, exist_ok=True)
-        try:
-            os.remove(f'{archiveDirectory}/{renamed_file}.gz')
-        except:
-            pass
-        shutil.move(f'{renamed_file}.gz', archiveDirectory)
-        os.remove(renamed_file)
-        os.chdir(currentDirectory)
-        
-        holding_key = self.holding_map[self.archive_category_dir_names[self.archive_category[file_type]]]
-        file_path = archiveDirectory[len(self.archive_parent):]
-        self.current_holdings[manifest_key][holding_key].append(f'{file_path}/{renamed_file}.gz')
-
-    """
     Generate the holding zip file 
     """
-    def generateHoldingZip(self, filename):
-        currentDirectory=os.getcwd()
-        os.chdir(f'{self.archive_parent}/{self.getHoldingSubDirectory()}')
-        try:
-            os.remove(f'{filename}.gz')
-        except:
-            pass
-        with open(filename, 'rb') as f_in:
-            with gzip.open(f'{filename}.gz', 'wb') as f_out:
+    def generateGzip(self, input_file_path, output_dir=None, delete_input=True):
+        input_dir, filename = input_file_path.rsplit("/", 1)
+        print("generateGzip: %s %s" % (input_dir, filename))
+        if not output_dir: output_dir = input_dir
+        with open(input_file_path, 'rb') as f_in:
+            with gzip.open(f'{output_dir}/{filename}.gz', 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
-        os.remove(filename)
-        os.chdir(currentDirectory)
-
+        if delete_input: os.remove(input_file_path)
+        
     """
     Insert a record
     """
@@ -1096,126 +901,6 @@ class ArchiveClient (object):
             """
             self.update_rows(columns, updated_rows, table, schema)
 
-    """
-    Generate the released_structures_LMD file
-    """
-    def generate_released_structures_LMD(self, releases=None):
-        if releases == None:
-            releases = {}
-            for row in self.released_records:
-                releases[self.get_manifest_key(row)] = f'{self.submission_date}T00:00:00+00:00'
-            
-        if len(releases) == 0:
-            """
-            No new archived entries
-            """
-            releases = {}
-
-        
-        """
-        Write the released_structures_LMD file
-        """
-        os.makedirs(f'{self.archive_parent}/{self.getHoldingSubDirectory()}', exist_ok=True)
-        with open(f'{self.archive_parent}/{self.getHoldingSubDirectory()}/released_structures_last_modified_dates.json', 'w') as outfile:
-            json.dump(dict(sorted(releases.items())), outfile, indent=4)
-
-        """
-        zip the JSON file
-        """
-        self.generateHoldingZip('released_structures_last_modified_dates.json')
-                
-    """
-    Generate the current_holdings file
-    """
-    def generate_current_holdings(self, holdings=None):
-        if holdings == None:
-            holdings = self.current_holdings
-        
-        if len(holdings) == 0:
-            """
-            No new holdings
-            """
-            holdings = {}
-
-        """
-        Write the generate_current_holdings file
-        """
-        os.makedirs(f'{self.archive_parent}/{self.getHoldingSubDirectory()}', exist_ok=True)
-        ordered_holding = self.order_dict(holdings)
-        with open(f'{self.archive_parent}/{self.getHoldingSubDirectory()}/current_file_holdings.json', 'w') as outfile:
-            json.dump(ordered_holding, outfile, indent=4)
-
-        """
-        zip the JSON file
-        """
-        self.generateHoldingZip('current_file_holdings.json')
-
-    """
-    Generate the released_structures_LMD file
-    """
-    def generate_unreleased_entries(self):
-        url = '/attribute/A:=PDB:entry/Workflow_Status=HOLD/B:=PDB:Accession_Code/$A/RID,Accession_Code,Deposit_Date,B:PDB_Accession_Code'
-        self.logger.debug(f'Query for unreleased entries: "{url}"') 
-        
-        resp = self.catalog.get(url)
-        resp.raise_for_status()
-        rows = resp.json()
-        
-        if len(rows) == 0:
-            """
-            No new unreleased entries
-            """
-            return
-        
-        unreleased_entries = {}
-        for row in rows:
-            excluded = False
-            rid = urlquote(row['RID'])
-            url = f'/entity/PDB:entry/RID={rid}/PDB:Entry_Generated_File'
-            response = self.catalog.get(url)
-            response.raise_for_status()
-            cif_file = response.json()
-            """
-            if len(response.json()) < 3:
-                self.hold_warnings.append(rid)
-                excluded = True
-            else:
-                for cif_file in response.json():
-                    file_type = cif_file['File_Type']
-                    if file_type != 'mmCIF':
-                        continue
-                    cif_file_name = cif_file['File_Name']
-                    if cif_file_name != f'{row["Accession_Code"]}.cif':
-                        self.hold_warnings.append(rid)
-                        excluded = True
-                        break
-            
-            if excluded == True:
-                continue
-            """
-            
-            unreleased_entries[row['Accession_Code']] = {'status_code': 'HOLD',
-                                                         'deposit_date': f'{row["Deposit_Date"]}T00:00:00+00:00',
-                                                         'prerelease_sequence_available_flag': 'N'}
-        
-        """
-        for row in self.no_validation_rids:
-            unreleased_entries[row['Accession_Code']] = {'status_code': 'REL',
-                                                         'deposit_date': row['Deposit_Date'],
-                                                         'prerelease_sequence_available_flag': 'N'}
-        """
-        
-        """
-        Write the unreleased_entries file
-        """
-        os.makedirs(f'{self.archive_parent}/{self.getHoldingSubDirectory()}', exist_ok=True)
-        with open(f'{self.archive_parent}/{self.getHoldingSubDirectory()}/unreleased_entries.json', 'w') as outfile:
-            json.dump(dict(sorted(unreleased_entries.items())), outfile, indent=4)
-
-        """
-        zip the JSON file
-        """
-        self.generateHoldingZip('unreleased_entries.json')
                 
     """
     Store the  file into hatrac
