@@ -13,11 +13,11 @@
   <link rel="stylesheet" href="./assets/css/main.css">
   <link rel="icon" href="/favicon.ico" type="image/x-icon" />
   %INCLUDES%
-  <script src="/chaise/lib/navbar/navbar.app.js"></script>
+  <script src="/chaise/lib/navbar/navbar.dependencies.js"></script>
 
 </head>
 <body>
-  <navbar></navbar> 
+  <navbar></navbar>
   <div class="wrap">
 
 <header id="header">
@@ -25,7 +25,7 @@
   <span class="titlewrap">
   <h1><span>PDB-Dev Data Harvesting System</span></h1>
   </span>
-    
+
 </header>
 
 
@@ -39,7 +39,7 @@
 -->
 <!--  <div class="explorer-content"> -->
   <div class="box">
-  	<p>Welcome to the <strong>PDB-Dev Data Harvesting System</strong>. </p> 
+  	<p>Welcome to the <strong>PDB-Dev Data Harvesting System</strong>. </p>
     <p align="justify">The PDB-Dev Data Harvesting System provides a web interface for depositors to assemble all the information required for archiving integrative structures in PDB-Dev and to create a compliant mmCIF file. This includes the submission of integrative structures, associated spatial restraints and starting models used, modeling protocols and metadata information (citations, authors, software, data in external repositories, reference sequence information etc.).</p>
     <p align="justify">The Data Harvesting System provides an automated mechanism for collecting diverse and heterogeneous types of integrative structures and restraint data. The system has been developed using the <a href="http://isrd.isi.edu/deriva/">DERIVA</a> scientific asset management platform and is supported by the <a href="https://mmcif.wwpdb.org">PDBx/mmCIF</a> dictionary, the <a href="https://github.com/ihmwg/IHMCIF">IHMCIF dictionary</a> and the <a href="https://github.com/ihmwg/python-ihm">python-ihm</a> software library.</p>
     <p>
@@ -47,8 +47,8 @@
       Use the links below to start exploring the system.
     </p>
 <div class="demo-links">
-  
-  <p class="demo">New Account: <a href="https://app.globus.org/groups/99da042e-64a6-11ea-ad5f-0ef992ed7ca1/about">Register using Globus</a> </p>           
+
+  <p class="demo">New Account: <a href="https://app.globus.org/groups/99da042e-64a6-11ea-ad5f-0ef992ed7ca1/about">Register using Globus</a> </p>
   <p class="demo">Submit Data: <a href="https://data.pdb-dev.org/chaise/recordset/#1/PDB:entry@sort(RID)">Create a New Entry</a> </p>
   <p class="demo">Documentation: <a href="https://docs.google.com/document/d/1577tJoeXxY5MtolMHzJ5000b-dz2M8JrONAyhZRvXVc/">User Guide</a> </p>
 
