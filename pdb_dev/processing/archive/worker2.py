@@ -37,7 +37,7 @@ from socket import gaierror, EAI_AGAIN
 from deriva.core import PollingErmrestCatalog, HatracStore, urlquote, get_credential
 from deriva.core.utils import hash_utils as hu
 from deriva.core.utils.core_utils import DEFAULT_CHUNK_SIZE, NotModified
-from deriva.utils.extras.data import get_key2rows, get_ermrest_query, insert_if_not_exist, update_table_rows
+from deriva.utils.extras.data import get_key2rows, get_ermrest_query, insert_if_not_exist, update_table_rows, delete_table_rows
 
 import re
 import math
@@ -98,6 +98,7 @@ class ArchiveClient (object):
         self.archive_parent = kwargs.get("archive_parent")
         self.released_entry_dir = kwargs.get("released_entry_dir")
         self.holding_dir = kwargs.get("holding_dir")
+        self.log_dir = kwargs.get("log_dir")        
         self.data_scratch = kwargs.get("data_scratch")
         self.credentials = kwargs.get("credentials")
         self.hatrac_namespace = kwargs.get("hatrac_namespace")
@@ -121,43 +122,38 @@ class ArchiveClient (object):
         self.logger = kwargs.get("logger")
         self.logger.debug('Client initialized.')
 
-        self.printConfiguration()
-        self.submission_date = self.getArchiveDate()
-        self.previous_submission_date = self.getPreviousArchiveDate(self.submission_date)
+        #self.printConfiguration()
+        self.submission_time = self.getArchiveDate()
+        self.previous_submission_time = self.getPreviousArchiveDate(self.submission_time)
 
-        
-        
-        self.set_entry_latest_archive()
-        self.set_pdb_archive()
-        self.set_archive_entries()
-        #self.set_released_entries()
-        self.set_system_generated_file_types()
-        self.set_entry_generated_files()   # validate filename and update new_releases and re_releases
-        self.set_entry_archive_lists()
-        self.set_current_holdings()
-
-    def set_entry_latest_archive(self):
-        constraints = "E:=PDB:entry/$M"
-        attributes = ["M:Entry","M:Submission_Time","M:mmCIF_URL","M:Submitted_Files","M:Archive","M:Submission_History","M:RCT","Structure_Id:=E:id","E:Accession_Code"]
-        rows = get_ermrest_query(self.catalog, "PDB", "Entry_Latest_Archive", constraints=constraints, attributes=attributes)
-        for row in rows:
-            self.entry_latest_archive[row["Entry"]] = row
-        print("entry_latest_archive[:10]: %s" % (json.dumps(list(self.entry_latest_archive.values())[:3], indent=4)))
 
     # read pdb_archive at the beginning in case it needs to roll back
     def set_pdb_archive(self):
-        constraints = "Submission_Time=%s" % (urlquote(self.submission_date))
+        constraints = "Submission_Time=%s" % (urlquote(self.submission_time))
         rows = get_ermrest_query(self.catalog, "PDB", "PDB_Archive", constraints=constraints)
         if rows:
             self.pdb_archive = rows[0]
             self.pdb_archive_rid = rows[0]["RID"]
         print("pdb_archive: %s" % (json.dumps(self.pdb_archive, indent=4)))
 
+    def set_entry_latest_archive(self):
+        constraints = "E:=PDB:entry/$M"
+        attributes = ["M:Entry","M:Submission_Time","M:mmCIF_URL","M:Submitted_Files","M:Archive","M:Submission_History","M:RCT","Structure_Id:=E:id","E:Accession_Code"]
+        rows = get_ermrest_query(self.catalog, "PDB", "Entry_Latest_Archive", constraints=constraints, attributes=attributes)
+        current_cycle_rids = []
+        for row in rows:
+            self.entry_latest_archive[row["Entry"]] = row
+            if self.getTimeUTC(row["Submission_Time"]) == self.getTimeUTC(self.submission_time): current_cycle_rids.append(row["Entry"])
+
+        #["4-3YG6"]            
+        print("entry_latest_archive: %s" % (json.dumps({ rid: self.entry_latest_archive[rid] for rid in current_cycle_rids }, indent=4)))
+        #raise Exception("STOP HERE")
+
     def set_new_releases(self):
         url1 = f'/attribute/' + \
             f'E:=PDB:entry/Workflow_Status=REL/' + \
             f'F:=(id)=(PDB:Entry_Generated_File:Structure_Id)/File_Type=mmCIF/' + \
-            f'A:=left(E:RID)=(PDB:Entry_Latest_Archive:Entry)/A:RID::null::;(A:RCT::gt::{urlquote(self.previous_submission_date)}&A:Submission_Time={urlquote(self.submission_date)})/' + \
+            f'A:=left(E:RID)=(PDB:Entry_Latest_Archive:Entry)/A:RID::null::;(A:RCT::gt::{urlquote(self.previous_submission_time)}&A:Submission_Time={urlquote(self.submission_time)})/' + \
             f'$E/E:RID,E:id,E:Deposit_Date,E:Accession_Code,F:File_Name,F:File_URL,Latest_Archive_RID:=A:RID,A:Entry,A:Submission_Time,A:mmCIF_URL'
             
         self.logger.debug(f"Query for entries that haven't been archived: {url1}") 
@@ -177,9 +173,9 @@ class ArchiveClient (object):
         
     def set_re_releases(self):
         url2 = f'/attribute/' + \
-            f'A:=PDB:Entry_Latest_Archive/A:RCT::leq::{urlquote(self.previous_submission_date)}/' + \
+            f'A:=PDB:Entry_Latest_Archive/A:RCT::leq::{urlquote(self.previous_submission_time)}/' + \
             f'E:=(A:Entry)=(PDB:entry:RID)/Workflow_Status=REL/' + \
-            f'F:=left(A:mmCIF_URL)=(PDB:Entry_Generated_File:File_URL)/F:RID::null::;(F:File_Type=mmCIF&A:Submission_Time={urlquote(self.submission_date)})/' + \
+            f'F:=left(A:mmCIF_URL)=(PDB:Entry_Generated_File:File_URL)/F:RID::null::;(F:File_Type=mmCIF&A:Submission_Time={urlquote(self.submission_time)})/' + \
             f'$A/E:RID,E:id,E:Deposit_Date,E:Accession_Code,F:File_Name,F:File_URL,Latest_Archive_RID:=A:RID,A:Entry,A:Submission_Time,A:mmCIF_URL'
         
         self.logger.debug(f"Query for entries that entries that mmCIF contents have changed: {url2}") 
@@ -275,17 +271,22 @@ class ArchiveClient (object):
             row["Accession_Code"] = accession_code            
             row["archive_dir"] =  self.getFileArchiveSubDirectory2(accession_code, row["Directory_Name"])
             row["archive_path"] = "%s/%s.gz" % (row["archive_dir"], row["File_Name"].lower())
-            self.entry_generated_files.setdefault(rid, {})
-            self.entry_generated_files[rid][row["File_Type"]] = row
             if row["File_Type"] == "mmCIF":
                 self.archive_entries[rid]["File_URL"] = row["File_URL"]
                 self.archive_entries[rid]["File_Name"] = row["File_Name"]
                 self.archive_entries[rid]["archive_dir"] = row["archive_dir"]
-                self.archive_entries[rid]["archive_path"] = row["archive_path"]                
+                self.archive_entries[rid]["archive_path"] = row["archive_path"]
             # check filenames
-            if not row["File_Name"].startswith(accession_code):
+            if row["File_Name"].startswith(accession_code):
+                self.entry_generated_files.setdefault(rid, {})
+                self.entry_generated_files[rid][row["File_Type"]] = row
+            else:
                 incorrect_filename_entry_rids.add(rid)
-        # TODO: remove these entries with incorrect filenames from the lists
+
+        # TODO: check validation reports and throw a warning if missing
+        #
+        
+        # remove these entries with incorrect filenames from the lists
         to_delete = set(self.new_releases.keys()).intersection(incorrect_filename_entry_rids)
         print("incorrect_filename: %s" % (incorrect_filename_entry_rids))
         print("to_delete_new_releases: %s" % (to_delete))
@@ -302,14 +303,19 @@ class ArchiveClient (object):
         print("archive_entries: %s" % (json.dumps(self.archive_entries, indent=4)))
         #print("re_releases: %s" % (json.dumps(self.re_releases, indent=4)))                
         
-    def set_entry_archive_lists(self):
-        for rid in self.new_releases.keys():
+    def set_entry_archive_insert_update_lists(self):
+        unchanged_rids = []
+        for rid in list(self.new_releases.keys()) + list(self.re_releases.keys()):
             if rid not in self.entry_latest_archive.keys():
                 self.entry_archive_insert_rids.append(rid)
             else:
+                before = self.entry_latest_archive[rid]
+                after = self.current_entry_latest_archive[rid]
+                if after["mmCIF_URL"] == before["mmCIF_URL"] and after["Archive"] == before["Archive"]:
+                    unchanged_rids.append(rid)
+                    continue
                 self.entry_archive_update_rids.append(rid)
-        self.entry_archive_update_rids.extend(self.re_releases.keys())
-
+        print("insert_rids: %s \nupdate_rids: %s \nunchanged_rids: %s" % (self.entry_archive_insert_rids, self.entry_archive_update_rids, unchanged_rids))
     
     def set_current_holdings(self):
         #curent_holdings = self.entry_latest_archive.copy()
@@ -324,8 +330,9 @@ class ArchiveClient (object):
                 manifests.setdefault(generated_file["Archive_Category"], [])                
                 manifests[generated_file["Archive_Category"]].append("/"+generated_file["archive_path"])
             current_holdings[rid] = {
+                "RID" : row["Latest_Archive_RID"],
                 "Entry" : rid,
-                "Submission_Time" : self.submission_date,
+                "Submission_Time" : self.submission_time,
                 "mmCIF_URL" : self.entry_generated_files[rid]["mmCIF"]["File_URL"],
                 "Submitted_Files": submitted_files,
                 "Archive" : self.pdb_archive_rid,
@@ -334,11 +341,13 @@ class ArchiveClient (object):
                 "Accession_Code": row["Accession_Code"],
             }
             # TODO: Fix history with incomplete submitted files
-            if rid in self.entry_archive_update_rids: 
+            if rid in self.entry_latest_archive.keys():
+
+                
                 submission_history = {
                     self.entry_latest_archive[rid]["Submission_Time"] : {
-                        "mmCIF_URL": self.entry_latest_archive[rid]["mmCIF_URL"],
-                        "Submission_Files": self.entry_latest_archive[rid]["Submitted_Files"],
+                        #"mmCIF_URL": self.entry_latest_archive[rid]["mmCIF_URL"],
+                        "Submitted_Files": self.entry_latest_archive[rid]["Submitted_Files"],
                     }
                 }
                 print("submission_history [%s] : %s" % (rid, json.dumps(current_holdings, indent=4)))            
@@ -346,11 +355,10 @@ class ArchiveClient (object):
                     current_holdings[rid]["Submission_History"] = submission_history
                 else: 
                     current_holdings[rid]["Submission_History"].update(submission_history)
-                    
+        
         print("current_holdings: %s" % (json.dumps(current_holdings, indent=4)))
         self.current_entry_latest_archive = current_holdings
         
-
         
     """
     Print the configuration
@@ -410,6 +418,46 @@ class ArchiveClient (object):
                     self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
                     ready = True
 
+    def reset_db(self):
+        print("Resetting database")
+
+        # new url: "File_URL": "/hatrac/dev/pdb/generated/uid/4eb033c5-0ea4-48ce-b5b9-a8ef6cd00519/entry/id/D_4-3YG6/final_mmCIF/9A8S.cif:ERJV77IOLNUF6RPHB2F4AII53Q",
+        entry_latest_archive_payload = [
+            {
+                "RID": "4-E2QC",
+                "Entry": "4-3YG6",
+                "Submission_Time": "2024-09-19T20:00:00-07:00",
+                "mmCIF_URL": "/hatrac/pdb/generated/uid/4eb033c5-0ea4-48ce-b5b9-a8ef6cd00519/entry/id/D_4-3YG6/final_mmCIF/9A8S.cif:GSTZ5MF5LRPB6OY4LQP4RDBLVI",
+                "Submitted_Files": {
+                    "structures": [
+                        "/hatrac/pdb/generated/uid/4eb033c5-0ea4-48ce-b5b9-a8ef6cd00519/entry/id/D_4-3YG6/final_mmCIF/9A8S.cif:GSTZ5MF5LRPB6OY4LQP4RDBLVI",
+                    ],
+                    "validation_reports": [
+                        "/hatrac/pdb/generated/uid/4eb033c5-0ea4-48ce-b5b9-a8ef6cd00519/entry/id/D_4-3YG6/validation_report/9A8S_full_validation.pdf:DBI3RHYC3ALNCYC7ERX5GRWPOQ",
+                        "/hatrac/pdb/generated/uid/4eb033c5-0ea4-48ce-b5b9-a8ef6cd00519/entry/id/D_4-3YG6/validation_report/9A8S_summary_validation.pdf:6NHGZ4QWI4Z42B5VQLHNFP33GE"
+                    ]
+                },
+                "Archive": "4-E2QA",
+                "Submission_History": None,
+                "RCT": "2024-09-19T19:00:04.721724-07:00",
+                "Structure_Id": "D_4-3YG6",
+                "Accession_Code": "9A8S"
+            }
+        ]
+        update_table_rows(self.catalog, "PDB", "Entry_Latest_Archive", keys=["RID"], payload=entry_latest_archive_payload)
+
+        to_delete = get_ermrest_query(self.catalog, "PDB", "Entry_Latest_Archive", constraints="Submission_Time=%s" % (urlquote(self.submission_time)))
+        print("reset_db: Entry_Latest_Archive to_delete: %s" % (json.dumps(to_delete)))
+        if len(to_delete) > 0:
+            delete_table_rows(self.catalog, "PDB", "Entry_Latest_Archive", key="RID", values=[ row["RID"] for row in to_delete ])
+
+        pdb_archive_payload = [
+            delete_table_rows(self.catalog, "PDB", "PDB_Archive", key="Submission_Time", values=[self.submission_time])            
+        ]
+
+        self.set_pdb_archive()
+        self.set_entry_latest_archive()
+        
     """
     Rollback the database depending on exceptions or book keeping?: HT: TODO
     1. Delete PDB.Archive row if the row was inserted
@@ -418,32 +466,43 @@ class ArchiveClient (object):
     Note: the delete_table_rows address 404 (which is returned if the constraints are not found)
     """
     def rollbackArchive(self):
-        entry_archive_rollback_payload = []
         try:
+            """ TO WRITE
             """
-            """
-            # delete the self.pdb_archive_RID if inserted, otherwise update to original state
-            if self.pdb_archive_rid:
-                if self.pdb_archive:
-                    pdb_archive_rollback_payload = update_table_rows(self.catalog, "PDB", "Pdb_Archive", keys=["RID"], payload=[self.pdb_archive])
-                    self.logger.debug('SUCCEEDED updated the PDB_Archive row with RID = %s' % (self.pdb_archive_rid))                    
-                else:
-                    delete_table_rows(self.catalog, "PDB", "PDB_Archive", key="RID", values=["self.PDB_Archive_RID"])                
-                    self.logger.debug('SUCCEEDED deleted the PDB_Archive row with RID = %s' % (self.PDB_Archive_RID))
-
-            # delete inserted Entry_Latest_Archive
+            # update entry_latest_archive table first before deleting pdb_archive due to fkey constraint
+            # -- Entry_Latest_Archive
+            # delete inserted Entry_Latest_Archive 
             if self.entry_archive_inserted:
+                print("rollback: deleting entry_latest_archive with rid:%s " % ([rid for rid in self.entry_archive_inserted]))
                 # Need another flag to indicate that insertion has been performed. Then delete using RID from self.entry_archive_insert
                 # These rids should be exactly the same list as self.entry_archive_insert_rids, but let's get it from what returns from ermrest
                 rids = [ row["RID"] for row in self.entry_archive_inserted ]
                 delete_table_rows(self.catalog, "PDB", "Entry_Latest_Archive", key="RID", values=rids)
+                print('SUCCEEDED deleted the newly inserted rows in the Entry_Latest_Archive')                
                 self.logger.debug('SUCCEEDED deleted the newly inserted rows in the Entry_Latest_Archive')
 
             # Update Entry_Latest_Archive to its original state
             if self.entry_archive_updated:
+                print("rollback: recovering entry_latest_archive with rid:%s " % ([rid for rid in self.entry_archive_updated]))
                 update_archive_payload = [ self.entry_latest_archive[row["RID"]] for row in self.entry_archive_updated ]
-                updated = update_table_rows(self.catalog, "PDB", "Entry_Latest_Archive", keys=["RID"], payload=entry_archive_rollback_payload) 
+                updated = update_table_rows(self.catalog, "PDB", "Entry_Latest_Archive", keys=["RID"], payload=update_archive_payload)
+                print('SUCCEEDED updating the Entry_Latest_Archive rows to the original sate')                
                 self.logger.debug('SUCCEEDED updating the Entry_Latest_Archive rows to the original sate')
+
+            # -- PDB_Archive
+            # delete the self.pdb_archive_RID if inserted, otherwise update to original state
+            if self.pdb_archive_inserted:
+                print("rollback: deleting pdb_archive with rid:%s " % (self.pdb_archive_rid))
+                delete_table_rows(self.catalog, "PDB", "PDB_Archive", key="RID", values=[self.pdb_archive_rid])
+                print('SUCCEEDED deleted the PDB_Archive row with RID = %s' % (self.pdb_archive_rid))
+                self.logger.debug('SUCCEEDED deleted the PDB_Archive row with RID = %s' % (self.pdb_archive_rid))
+
+            if self.pdb_archive_updated:
+                print("rollback: recovering pdb_archive with rid:%s " % (self.pdb_archive_rid))                
+                pdb_archive_rollback_payload = update_table_rows(self.catalog, "PDB", "PDB_Archive", keys=["RID"], payload=[self.pdb_archive])
+                print('SUCCEEDED updated the PDB_Archive row with RID = %s' % (self.pdb_archive_rid))                                    
+                self.logger.debug('SUCCEEDED updated the PDB_Archive row with RID = %s' % (self.pdb_archive_rid))                    
+
         except:
             # HT: TODO: If failed to roll back, we should output the following into a file: archive_error_<date>
             #  1. self.PDB_Archive_row
@@ -452,6 +511,17 @@ class ArchiveClient (object):
             #  3. self.entry_archive_updated --> new rows update to the table
             #  4. entry_archive_rollback_payload --> the payload attempt to roll back to
             #
+            dump_object = {
+                "PDB_Archive_before": self.pdb_archive,
+                "PDB_Archive_after" : self.current_pdb_archive,
+                "Entry_Archive_inserted" : self.entry_archive_inserted,
+                "Entry_Archive_updated" : self.entry_archive_updated,
+                "Entry_Archive_update_rollback": [ self.entry_latest_archive[row["RID"]] for row in self.entry_archive_updated ]
+            }
+            submission_date = dt.strptime(self.submission_time, '%Y-%m-%d %H:%M:%S%z').date()
+            #rollback_fpath = f'{self.log_dir}/rollback_dump_{submission_date}.json'
+            rollback_fpath = f'rollback_dump_{submission_date}.json'
+            dump_json_to_file(rollback_fpath, dump_object)
             et, ev, tb = sys.exc_info()
             self.logger.error('got exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
@@ -463,30 +533,21 @@ class ArchiveClient (object):
     """
     def processArchive(self):
         print("processArchive")
+        #self.reset_db()
+        #return 0
         try:
             """
-            Get the:
-                - file types with Archive_Category
-                - archive directories and the associated file types
-                - archive directories of the Archive_Category
+            initilize
             """
-            self.archive_category = {}
-            self.archive_file_types = []
-            self.archive_category_dir_names = {}
-            for k,v in self.system_generated_file_types.items():
-                self.archive_category[k] = v['Archive_Category']
-                self.archive_file_types.append(k)
-                self.archive_category_dir_names[v['Archive_Category']] = v['Directory_Name']
-
-            """
-            Get the archive directories and the associated file types
-            """
-            self.archive_dirs = []
-            self.holding_map = {}
-            for k,v in self.archive_category_dir_names.items():
-                self.archive_dirs.append(v)
-                self.holding_map[v] = k
-
+            self.set_pdb_archive()        
+            self.set_entry_latest_archive()
+            self.set_archive_entries()
+            #self.set_released_entries()
+            self.set_system_generated_file_types()
+            self.set_entry_generated_files()   # validate filename and update new_releases and re_releases
+            self.set_current_holdings()
+            self.set_entry_archive_insert_update_lists()
+            
             """
             Archive files
             """
@@ -496,14 +557,13 @@ class ArchiveClient (object):
                 self.rollbackArchive()
             return return_code
         except:
+            self.rollbackArchive()
             et, ev, tb = sys.exc_info()
             print('%s' % ''.join(traceback.format_exception(et, ev, tb)))
             self.logger.error('got exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
             subject = 'PDB-Dev Error archiving files.'
             self.sendMail(subject, '%s\n' % (''.join(traceback.format_exception(et, ev, tb))))
-            self.rollbackArchive()
-           
             return 1
 
     """
@@ -567,7 +627,6 @@ class ArchiveClient (object):
         """
         Generate the manifest files
         """
-        print("current_entry_latest_archive: %s" % (self.current_entry_latest_archive))
         current_holdings = {}
         lmd_dict = {}        
         current_holding_fpath = "%s/current_file_holdings.json" % (self.data_scratch)
@@ -593,12 +652,12 @@ class ArchiveClient (object):
 
         print("current_holding_payload: %s" % (json.dumps(current_holding_payload, indent=4)))
         print("released_structures_last_modified_dates: %s" % (json.dumps(lmd_payload, indent=4)))
-        print("hold_entries: %s" % (json.dumps(hold_entries_payload, indent=4)))        
+        print("hold_entries[:3]: %s" % (json.dumps(hold_entries_payload, indent=4)))        
 
         """
         Store in hatrac the manifest files
         """
-        submission_datetime = dt.strptime(self.submission_date, '%Y-%m-%d %H:%M:%S%z')
+        submission_datetime = dt.strptime(self.submission_time, '%Y-%m-%d %H:%M:%S%z')
         year = submission_datetime.year
         submission_date = f'{submission_datetime.date()}'
         hatrac_namespace = f'/{self.hatrac_namespace}/{self.holding_namespace}/{year}/{submission_date}'
@@ -622,13 +681,10 @@ class ArchiveClient (object):
         """
         Create or update the entry in the PDB_Archive table 
         """
-        if not self.pdb_archive:
-            current_pdb_archive = {
-                "Submission_Time": self.submission_date,
-            }
-        else:
-            current_pdb_archive = self.pdb_archive.copy()
-        current_pdb_archive.update({
+        self.current_pdb_archive = self.pdb_archive.copy() if self.pdb_archive else {}
+        # update content
+        self.current_pdb_archive.update({
+            "Submission_Time": self.submission_time,
             'Submitted_Entries': len(self.archive_entries),
             'New_Released_Entries': len(self.new_releases),
             'Re_Released_Entries': len(self.re_releases),
@@ -645,13 +701,21 @@ class ArchiveClient (object):
             'Unreleased_Entries_Bytes': Unreleased_Entries_Bytes,
             'Unreleased_Entries_MD5': Unreleased_Entries_MD5
         })
-
+    
         if not self.pdb_archive:
-            print("inserting pdb_archive_payload: %s" % (json.dumps(current_pdb_archive, indent=4)))
-            #self.pdb_archive_inserted = insert_row_if_not_exist(self.catalog, "PDB", "PDB_Archive", payload=[pdb_archive])
+            print("inserting pdb_archive: %s" % (json.dumps(self.current_pdb_archive, indent=4)))                                    
+            self.pdb_archive_inserted = insert_if_not_exist(self.catalog, "PDB", "PDB_Archive", payload=[self.current_pdb_archive])[0]
+            print("pdb_archive_inserted: %s" % (json.dumps(self.pdb_archive_inserted, indent=4)))
+            self.pdb_archive_rid = self.pdb_archive_inserted["RID"]
+            # Update "Archive" in archive_entries
+            for row in self.current_entry_latest_archive.values():
+                row["Archive"] = self.pdb_archive_rid
         else:
-            print("updating pdb_archive_payload: %s" % (json.dumps(current_pdb_archive, indent=4)))            
-            #self.pdb_archive_updated = update_table_row(self.catalog, "PDB", "PDB_Archive", payload=[pdb_archive])
+            print("updating pdb_archive: %s" % (json.dumps(self.current_pdb_archive, indent=4)))
+            self.pdb_archive_updated = update_table_rows(self.catalog, "PDB", "PDB_Archive", payload=[self.current_pdb_archive])
+            print("pdb_archive_updated: %s" % (json.dumps(self.pdb_archive_updated, indent=4)))                        
+
+        print("current_entry_latest_archive: %s" % (json.dumps(self.current_entry_latest_archive, indent=4)))
         
         """
         Create or update the entry in the Entry_Latest_Archive table
@@ -660,15 +724,16 @@ class ArchiveClient (object):
         payload = []
         for rid in self.entry_archive_insert_rids:
             payload.append(self.current_entry_latest_archive[rid])
-        print("inserting entry_latest_archive_payload: %s" % (json.dumps(payload, indent=4)))            
-        #self.archive_entries_inserted = insert_if_not_exist(self.catalog, "PDB", "Entry_Latest_Archive", payload=payload)
-
+        print("inserting entry_latest_archive_payload: %s" % (json.dumps(payload, indent=4)))
+        self.entry_archive_inserted = insert_if_not_exist(self.catalog, "PDB", "Entry_Latest_Archive", payload=payload)
+        print("entry_archive_inserted: %s" % (json.dumps(self.entry_archive_inserted, indent=4)))
+        
         payload = []
         for rid in self.entry_archive_update_rids:
             payload.append(self.current_entry_latest_archive[rid])            
         print("updating entry_latest_archive_payload: %s" % (json.dumps(payload, indent=4)))                        
-        #self.archive_entries_updated = update_table_rows(self.catalog, "PDB", "Entry_Latest_Archive", payload=payload)
-
+        self.entry_archive_updated = update_table_rows(self.catalog, "PDB", "Entry_Latest_Archive", payload=payload)
+        print("entry_archive_updated: %s" % (json.dumps(self.entry_archive_updated, indent=4)))
         
         return 0
         
@@ -834,17 +899,6 @@ class ArchiveClient (object):
             return h            
         else:
             raise Exception("ERROR: Accession_Code %s is not a PDB accession code. Expect legnth of 4" % (accession_code))
-        """
-        try:
-            r = re.search(r'^pdb_(\w{4})$', accesion_code_row['Accesssion_Code'])
-            h = r.group(1)[1:3]
-        except:
-            h = accesion_code_row['PDB_Accession_Code'][1:3]
-        """
-        """
-        h = accesion_code_row['Accession_Code'][1:3].lower()
-        return h
-        """
 
     """
     Generate the holding zip file 
