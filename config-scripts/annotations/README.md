@@ -10,6 +10,14 @@ annotation_patterns.json : a file that contains just the pattern annotations
 annotations_known_attributes.json : a files that contains the names of the known annotations.
 ```
 
+## Table of contents
+- [Dump the latest definitions of the annotations from a catalog](#dump-the-latest-definitions-of-the-annotations-from-a-catalog)
+- [Extend the pattern annotations file with the rest of the annotations from the catalog](#extend-the-pattern-annotations-file-with-the-rest-of-the-annotations-from-the-catalog)
+- [Update the annotations](#update-the-annotations)
+- [Generate the updated JSON file with the annotations](#generate-the-updated-json-file-with-the-annotations)
+- [Update the annotations in the database](#update-the-annotations-in-the-database)
+- [Applying the annotations](#applying-the-annotations)
+
 ## Dump the latest definitions of the annotations from a catalog
 
 Execute:
@@ -36,7 +44,7 @@ The script generates the `annotation_config.cpp` file with all the annotations f
 Update the annotations from the `annotation_config.cpp` file. You can use macro statements like:
 
 ```
-#ifdef dev    
+#ifdef dev
                 "url_pattern": "/hatrac/resources/protocol/{{$moment.year}}/{{{File_MD5}}}"
 #else
                 "url_pattern": "/hatrac/resources/protocol/2018/{{{File_MD5}}}"
@@ -49,7 +57,7 @@ or adding also comments like:
 ```
 #if defined(dev) or defined(hatrac)
                 "url_pattern": "/hatrac/resources/protocol/{{$moment.year}}/{{{File_MD5}}}"
-#else		  
+#else
                 "url_pattern": "/hatrac/resources/protocol/2018/{{{File_MD5}}}"
 #endif
 
@@ -96,11 +104,13 @@ deriva-annotation-config --host pdb.isrd.isi.edu --config-file dev_annotation_co
 
 ## Applying the annotations
 
-Execute the following script:
+Currently the annotations for PDB are defined using two different methods. The `*_annotation_config.json` files that are in this directory, and the `pdb_dev.config.annotation.apply_all_annotations` python module. Instead of manually calling each one, use the `apply_annotatons.sh` script:
 
 ```
 ./apply_annotations.sh <host> <catalog>
 ```
+
+This might also generate new `*_annotation_config.json` files. If that's the case, please push them to the repository.
 
 ### Examples
 

@@ -3188,7 +3188,7 @@
          }
       },
       {
-         "foreign_key" : "ihm_ordered_model_ihm_model_group_1_combo1_fkey",
+         "foreign_key" : "ihm_ordered_model_ihm_model_group_begin_combo1_fkey",
          "foreign_key_schema" : "PDB",
          "schema" : "PDB",
          "table" : "ihm_ordered_model",
@@ -3199,7 +3199,7 @@
          }
       },
       {
-         "foreign_key" : "ihm_ordered_model_ihm_model_group_2_combo1_fkey",
+         "foreign_key" : "ihm_ordered_model_ihm_model_group_end_combo1_fkey",
          "foreign_key_schema" : "PDB",
          "schema" : "PDB",
          "table" : "ihm_ordered_model",
@@ -5283,14 +5283,13 @@
       }
    ],
    "known_attributes" : {
-      "ignore_all_unmanaged" : false,
+      "ignore_all_unmanaged" : true,
       "managed" : [
          "tag:misd.isi.edu,2015:display",
          "tag:misd.isi.edu,2015:url",
          "tag:isrd.isi.edu,2016:column-display",
          "tag:isrd.isi.edu,2016:display",
          "tag:isrd.isi.edu,2016:foreign-key",
-         "tag:isrd.isi.edu,2016:export",
          "tag:isrd.isi.edu,2016:generated",
          "tag:misd.isi.edu,2016:generated",
          "tag:isrd.isi.edu,2016:ignore",
@@ -5304,7 +5303,6 @@
          "tag:isrd.isi.edu,2017:bulk-upload",
          "tag:isrd.isi.edu,2018:citation",
          "tag:isrd.isi.edu,2018:required",
-         "tag:isrd.isi.edu,2019:export",
          "tag:isrd.isi.edu,2019:source-definitions",
          "tag:isrd.isi.edu,2019:chaise-config",
          "tag:isrd.isi.edu,2019:catalog-config",
@@ -8357,7 +8355,7 @@
                      {
                         "outbound" : [
                            "PDB",
-                           "ihm_ordered_model_ihm_model_group_1_combo1_fkey"
+                           "ihm_ordered_model_ihm_model_group_begin_combo1_fkey"
                         ]
                      },
                      "RID"
@@ -8370,7 +8368,7 @@
                      {
                         "outbound" : [
                            "PDB",
-                           "ihm_ordered_model_ihm_model_group_2_combo1_fkey"
+                           "ihm_ordered_model_ihm_model_group_end_combo1_fkey"
                         ]
                      },
                      "RID"
@@ -8406,7 +8404,7 @@
                      {
                         "outbound" : [
                            "PDB",
-                           "ihm_ordered_model_ihm_model_group_1_combo1_fkey"
+                           "ihm_ordered_model_ihm_model_group_begin_combo1_fkey"
                         ]
                      },
                      "RID"
@@ -8419,7 +8417,7 @@
                      {
                         "outbound" : [
                            "PDB",
-                           "ihm_ordered_model_ihm_model_group_2_combo1_fkey"
+                           "ihm_ordered_model_ihm_model_group_end_combo1_fkey"
                         ]
                      },
                      "RID"
@@ -8468,7 +8466,7 @@
                      {
                         "outbound" : [
                            "PDB",
-                           "ihm_ordered_model_ihm_model_group_1_combo1_fkey"
+                           "ihm_ordered_model_ihm_model_group_begin_combo1_fkey"
                         ]
                      },
                      "RID"
@@ -8481,7 +8479,7 @@
                      {
                         "outbound" : [
                            "PDB",
-                           "ihm_ordered_model_ihm_model_group_2_combo1_fkey"
+                           "ihm_ordered_model_ihm_model_group_end_combo1_fkey"
                         ]
                      },
                      "RID"
@@ -10601,6 +10599,20 @@
                      "source" : "PDB_Accession_Code"
                   },
                   {
+                     "hide_not_null_choice" : false,
+                     "hide_null_choice" : false,
+                     "markdown_name" : "Entry",
+                     "source" : [
+                        {
+                           "outbound" : [
+                              "PDB",
+                              "Accession_Code_Entry_fkey"
+                           ]
+                        },
+                        "RID"
+                     ]
+                  },
+                  {
                      "markdown_name" : "Workflow Status",
                      "source" : [
                         {
@@ -10734,16 +10746,6 @@
                },
                "Image_File_URL",
                {
-                  "display" : {
-                     "markdown_pattern" : "{{#if (or (eq Workflow_Status \"mmCIF CREATED\") (eq Workflow_Status \"SUBMISSION COMPLETE\") (eq Workflow_Status \"HOLD\") (eq Workflow_Status \"REL\") (eq Workflow_Status \"REL\"))}} {{#each molstar_image}}::: iframe [](/molstar/embedded.html?url={{this.values.File_URL}}){style=\"min-width:800px; min-height:700px; height:70vh;\" class=chaise-autofill  } \n :::{{/each}}{{else}}Not Available{{/if}}",
-                     "template_engine" : "handlebars",
-                     "wait_for" : [
-                        "molstar_image"
-                     ]
-                  },
-                  "markdown_name" : "3D Visualization"
-               },
-               {
                   "markdown_name" : "Image File Size (Bytes)",
                   "source" : "Image_File_Bytes"
                },
@@ -10781,6 +10783,16 @@
                "Submitter_Flag_Date",
                "Manual_Processing",
                "Notes",
+               {
+                  "display" : {
+                     "markdown_pattern" : "{{#if (or (eq Workflow_Status \"mmCIF CREATED\") (eq Workflow_Status \"SUBMISSION COMPLETE\") (eq Workflow_Status \"HOLD\") (eq Workflow_Status \"REL\") (eq Workflow_Status \"REL\"))}} {{#each molstar_image}}::: iframe [](/molstar/embedded.html?url={{this.values.File_URL}}){style=\"min-width:800px; min-height:700px; height:70vh;\" class=chaise-autofill  } \n :::{{/each}}{{else}}Not Available{{/if}}",
+                     "template_engine" : "handlebars",
+                     "wait_for" : [
+                        "molstar_image"
+                     ]
+                  },
+                  "markdown_name" : "3D Visualization"
+               },
                [
                   "PDB",
                   "entry_Owner_fkey"
@@ -10831,8 +10843,8 @@
             "filter" : {
                "and" : [
                   {
-                     "hide_not_null_choice" : true,
-                     "hide_null_choice" : true,
+                     "hide_not_null_choice" : false,
+                     "hide_null_choice" : false,
                      "markdown_name" : "Accession Code",
                      "source" : [
                         {
@@ -10937,6 +10949,8 @@
                "RID",
                "Submission_Time",
                "Submitted_Entries",
+               "New_Released_Entries",
+               "Re_Released_Entries",
                "Current_File_Holdings_URL",
                "Released_Structures_LMD_URL",
                "Unreleased_Entries_URL",
@@ -10971,6 +10985,8 @@
                "RID",
                "Submission_Time",
                "Submitted_Entries",
+               "New_Released_Entries",
+               "Re_Released_Entries",
                "Current_File_Holdings_URL",
                {
                   "markdown_name" : "Current File Holdings Size (Bytes)",
@@ -11014,6 +11030,8 @@
             "entry" : [
                "Submission_Time",
                "Submitted_Entries",
+               "New_Released_Entries",
+               "Re_Released_Entries",
                "Current_File_Holdings_URL",
                "Released_Structures_LMD_URL",
                "Unreleased_Entries_URL"
@@ -11021,6 +11039,8 @@
             "entry/edit" : [
                "Submission_Time",
                "Submitted_Entries",
+               "New_Released_Entries",
+               "Re_Released_Entries",
                "Current_File_Holdings_URL",
                "Released_Structures_LMD_URL",
                "Unreleased_Entries_URL"
@@ -11034,6 +11054,14 @@
                   {
                      "markdown_name" : "Submitted Entries",
                      "source" : "Submitted_Entries"
+                  },
+                  {
+                     "markdown_name" : "New Released Entries",
+                     "source" : "New_Released_Entries"
+                  },
+                  {
+                     "markdown_name" : "Re-Released Entries",
+                     "source" : "Re_Released_Entries"
                   }
                ]
             }
@@ -11097,6 +11125,7 @@
                },
                "Submitted_Files",
                "Submission_Time",
+               "Submission_History",
                {
                   "markdown_name" : "RCB",
                   "source" : [
@@ -11153,6 +11182,7 @@
                },
                "Submitted_Files",
                "mmCIF_URL",
+               "Submission_History",
                {
                   "markdown_name" : "Entry",
                   "source" : [
@@ -11230,7 +11260,6 @@
                }
             ],
             "entry/edit" : [
-               "Submission_Time",
                {
                   "markdown_name" : "Entry",
                   "source" : [
@@ -11261,43 +11290,6 @@
                   {
                      "markdown_name" : "Submission Date",
                      "source" : "Submission_Time"
-                  }
-               ]
-            }
-         }
-      },
-      {
-         "schema" : "PDB",
-         "table" : "entry",
-         "uri" : "tag:isrd.isi.edu,2019:export",
-         "value" : {
-            "compact" : {
-               "templates" : [
-                  {
-                     "displayname" : "BDBag",
-                     "outputs" : [
-                        {
-                           "destination" : {
-                              "name" : "entry",
-                              "type" : "csv"
-                           },
-                           "source" : {
-                              "api" : "entity",
-                              "table" : "PDB:entry"
-                           }
-                        },
-                        {
-                           "destination" : {
-                              "name" : "Entry_Generated_File",
-                              "type" : "download"
-                           },
-                           "source" : {
-                              "api" : "attribute",
-                              "path" : "PDB:Entry_Generated_File/url:=File_URL"
-                           }
-                        }
-                     ],
-                     "type" : "BAG"
                   }
                ]
             }
@@ -24897,7 +24889,9 @@
                [
                   "PDB",
                   "Entry_Generated_File_Structure_Id_fkey"
-               ]
+               ],
+               "RCT",
+               "RMT"
             ],
             "detailed" : [
                "RID",
@@ -24946,7 +24940,9 @@
                   "Entry_Generated_File_Structure_Id_fkey"
                ],
                "File_Bytes",
-               "File_MD5"
+               "File_MD5",
+               "RCT",
+               "RMT"
             ],
             "entry" : [
                "File_URL",
@@ -25320,7 +25316,7 @@
                ],
                [
                   "PDB",
-                  "ihm_ordered_model_ihm_model_group_1_combo1_fkey"
+                  "ihm_ordered_model_ihm_model_group_begin_combo1_fkey"
                ],
                [
                   "PDB",
