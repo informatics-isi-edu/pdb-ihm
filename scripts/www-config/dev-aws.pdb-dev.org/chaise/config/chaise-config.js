@@ -12,6 +12,5 @@ var chaiseConfig = {
 		defaultCatalog: '99',
 		deleteRecord: true,
 		editRecord: true,
-		resolverImplicitCatalog: '99',
 		maxRecordsetRowHeight: 235
 };
