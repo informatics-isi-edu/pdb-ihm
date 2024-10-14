@@ -94,6 +94,7 @@ def get_configuration(fcfg, logger, args):
     config['catalog_id'] = cfg.catalog_id
     config['hatrac_namespace'] = "/hatrac/pdb" if not cfg.is_dev else '/hatrac/dev/pdb'
     config['verbose'] = args.verbose
+    config['rollback'] = args.rollback
 
     credentials_file = fcfg.get('credentials', None)
     credentials = get_credential(cfg.host, credentials_file)
@@ -119,7 +120,6 @@ def get_configuration(fcfg, logger, args):
         return None
     config['data_scratch'] = data_scratch
 
-
     holding_dir = fcfg.get('holding_dir', None)
     if not holding_dir:
         logger.error('The holding entry dir directory must be provided.')
@@ -135,11 +135,12 @@ def get_configuration(fcfg, logger, args):
         return None
     config['released_entry_dir'] = released_entry_dir
 
-    holding_namespace = fcfg.get('holding_namespace', None)
-    if holding_namespace == None:
-        logger.error(f'The holding namespace must be provided.')
+    holding_hatrac_namespace = fcfg.get('holding_hatrac_namespace', None)
+    if holding_hatrac_namespace == None:
+        logger.error(f'The holding hatrac namespace must be provided.')
         return None
-    config['holding_namespace'] = holding_namespace
+    config['holding_hatrac_namespace'] = holding_hatrac_namespace.replace('/hatrac/pdb', '/hatrac/dev/pdb') if cfg.is_dev else holding_hatrac_namespace
+    print("holding_hatrac_namespace: %s" % (config['holding_hatrac_namespace']))
     
     email_file = fcfg.get('mail', None)
     if not email_file or not os.path.isfile(email_file):
@@ -157,11 +158,12 @@ def get_configuration(fcfg, logger, args):
 def main():
     cli = PDBDEV_CLI("pdbdev", None, 1)
     cli.parser.add_argument( '--config', action='store', type=str, help='The JSON configuration file.', required=True)
-    cli.parser.add_argument( '--verbose', action='store_true', help='Print status to stdout', default=False, required=False)        
+    cli.parser.add_argument( '--verbose', action='store_true', help='Print status to stdout', default=False, required=False)
+    cli.parser.add_argument( '--rollback', action='store_true', help='Rollback ermrest update', default=False, required=False)    
     args = cli.parse_cli()
 
-    credentials = get_credential(args.host, args.credential_file)
-    print("credentials = %s" % (credentials))
+    #credentials = get_credential(args.host, args.credential_file)
+    #print("credentials = %s" % (credentials))
 
     try:
         config = load(args.config)
