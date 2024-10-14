@@ -6,5 +6,4 @@
 # -------   
 
 cd /home/pdbihm
-#sudo -u pdbihm python3 -m pdb_dev.archive.client --config /home/pdbihm/pdb/config/staging/pdb_archive.json
-sudo -u pdbihm python3 -m pdb_dev.processing.archive.client --config /home/pdbihm/pdb/config/staging/pdb_archive.json --catalog-id 50
+sudo -u pdbihm python3 -m pdb_dev.processing.archive.client --config /home/pdbihm/config/archive_processing/pdb_archive_config.json --catalog-id 50

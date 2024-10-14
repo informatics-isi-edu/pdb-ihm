@@ -26,10 +26,10 @@ import sys
 import traceback
 import argparse
 
-from worker2 import ArchiveClient
 from deriva.core import init_logging, get_credential
-#from ...utils.shared import PDBDEV_CLI, cfg
-from pdb_dev.utils.shared import PDBDEV_CLI, cfg
+from ...utils.shared import PDBDEV_CLI, cfg
+#from pdb_dev.utils.shared import PDBDEV_CLI, cfg
+from .worker2 import ArchiveClient
 
 FORMAT = '%(asctime)s: %(levelname)s <%(module)s>: %(message)s'
 logger = logging.getLogger(__name__)
