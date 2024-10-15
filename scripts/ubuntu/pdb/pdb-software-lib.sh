@@ -158,6 +158,9 @@ pdb_processing_install()
     python_install /home/${DEVUSER}/protein-database/scripts/pdb_processing/worker/pdb/client
     python_install /home/${DEVUSER}/protein-database/scripts/pdb_processing
     python_install /home/${DEVUSER}/protein-database
+
+    require cd /home/$DEVUSER/protein-database/scripts/home-config
+    require sh ./install-home-config.sh    
 }
 
 derivapy_pull_checkout()
