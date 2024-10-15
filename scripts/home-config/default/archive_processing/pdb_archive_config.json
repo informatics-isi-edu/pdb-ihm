@@ -1,6 +1,6 @@
 {
     "cutoff_time_pacific": "Thursday 20:00",
-    "credentials": "/home/pdbihm/.deriva/credential.json",
+    "credentials": "/home/pdbihm/.secrets/credentials.json",
     "data_scratch": "/mnt/vdb1/archive/scratch",
     "archive_parent": "/mnt/vdb1/archive",
     "released_entry_dir": "pdb_ihm/data/entries",
