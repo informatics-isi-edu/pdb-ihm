@@ -95,6 +95,7 @@ def get_configuration(fcfg, logger, args):
     config['hatrac_namespace'] = "/hatrac/pdb" if not cfg.is_dev else '/hatrac/dev/pdb'
     config['verbose'] = args.verbose
     config['rollback'] = args.rollback
+    config['dry_run'] = args.dry_run    
 
     credentials_file = fcfg.get('credentials', None)
     credentials = get_credential(cfg.host, credentials_file)
@@ -159,12 +160,12 @@ def main():
     cli = PDBDEV_CLI("pdbdev", None, 1)
     cli.parser.add_argument( '--config', action='store', type=str, help='The JSON configuration file.', required=True)
     cli.parser.add_argument( '--verbose', action='store_true', help='Print status to stdout', default=False, required=False)
-    cli.parser.add_argument( '--rollback', action='store_true', help='Rollback ermrest update', default=False, required=False)    
+    cli.parser.add_argument( '--rollback', action='store_true', help='Rollback ermrest update', default=False, required=False)
     args = cli.parse_cli()
 
     #credentials = get_credential(args.host, args.credential_file)
     #print("credentials = %s" % (credentials))
-
+    
     try:
         config = load(args.config)
         if config != None:

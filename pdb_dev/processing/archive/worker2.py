@@ -104,7 +104,8 @@ class ArchiveClient (object):
         self.hatrac_namespace = kwargs.get("hatrac_namespace")
         self.holding_hatrac_namespace = kwargs.get("holding_hatrac_namespace")
         self.verbose = kwargs.get("verbose")
-        self.rollback = kwargs.get("rollback")        
+        self.rollback = kwargs.get("rollback")
+        self.dry_run = kwargs.get("dry_run")
         self.archive_category_dir_names = {}
         self.archive_dir_names_category = {}
         self.store = HatracStore(
@@ -268,6 +269,7 @@ class ArchiveClient (object):
             self.archive_entries[row["RID"]] = row
             self.entry_id2rid[row["id"]] = row["RID"]            
         #print("archive_entries: %s" % (json.dumps(self.archive_entries, indent=4)))
+        if self.verbose: print("existing entry_latest_archives: %s" % (json.dumps({ rid: self.entry_latest_archive[rid] for rid in self.archive_entries.keys() }, indent=4)))        
         
 
     """
@@ -326,16 +328,16 @@ class ArchiveClient (object):
         # remove these entries with incorrect filenamess from the lists
         to_delete = set(self.new_releases.keys()).intersection(incorrect_filename_entry_rids)
         if self.verbose: print("incorrect_filename: %s" % (incorrect_filename_entry_rids))
-        if self.verbose: print("to_delete_new_releases: %s" % (to_delete))
+        if self.verbose: print("to_remove_from_new_releases: %s" % (to_delete))
         for rid in to_delete:
             del self.new_releases[rid]
             del self.archive_entries[rid]
         to_delete = set(self.re_releases.keys()).intersection(incorrect_filename_entry_rids)
-        if self.verbose: print("to_delete_re_releases: %s" % (to_delete))        
+        if self.verbose: print("to_remove_from_re_releases: %s" % (to_delete))        
         for rid in to_delete:
             del self.re_releases[rid]
             del self.archive_entries[rid]
-        #print("entry_generated_files: %s" % (json.dumps(self.entry_generated_files, indent=4)))
+        if self.verbose: print("entry_generated_files: %s" % (json.dumps(self.entry_generated_files, indent=4)))
         #print("archive_entries: %s" % (json.dumps(self.archive_entries, indent=4)))
 
 
@@ -394,10 +396,12 @@ class ArchiveClient (object):
                 }
                 if not self.entry_latest_archive[rid]["Submission_History"]:
                     self.current_entry_latest_archive[rid]["Submission_History"] = submission_history
-                else:
-                    self.current_entry_latest_archive[rid]["Submission_History"] = self.entry_latest_archive[rid]["Submission_History"].copy()
-                    self.current_entry_latest_archive[rid]["Submission_History"].update(submission_history)
-                #print("+++++ rid:%s entry_submission_history:%s \n --> current_history:%s " % (rid, self.entry_latest_archive[rid]["Submission_History"], self.current_entry_latest_archive[rid]["Submission_History"]))
+                else:  # update the history in descending order (e.g. creating a new dict with the current submission at the beginning, following by old history)
+                    if self.submission_time in self.entry_latest_archive[rid]["Submission_History"].keys():
+                        self.current_entry_latest_archive[rid]["Submission_History"] = self.entry_latest_archive[rid]["Submission_History"].update(submission_history)
+                    else: 
+                        self.current_entry_latest_archive[rid]["Submission_History"] = dict(submission_history, **self.entry_latest_archive[rid]["Submission_History"])
+                #print("+++++ rid:%s entry_submission_history:%s + %s \n --> current_history:%s " % (rid, self.entry_latest_archive[rid]["Submission_History"], submission_history, self.current_entry_latest_archive[rid]["Submission_History"]))
         #print("current_entry_latest_archive (archive): %s" % (json.dumps({ k:self.current_entry_latest_archive[k] for k in self.archive_entries.keys() }, indent=4)))
         #print("current_entry_latest_archive: %s" % (json.dumps({ k:self.current_entry_latest_archive[k] for k in list(self.current_entry_latest_archive.keys())[:2] }, indent=4)))
         
@@ -800,20 +804,25 @@ class ArchiveClient (object):
                 'Unreleased_Entries_Unzip_MD5': hold_entries_md5_hex,                
             })
 
-        # - check whether the pdb_archive is modified to only perform updates if needed
-        if not self.pdb_archive:
-            #print("inserting pdb_archive: %s" % (json.dumps(self.current_pdb_archive, indent=4)))                                    
-            self.pdb_archive_inserted = insert_if_not_exist(self.catalog, "PDB", "PDB_Archive", payload=[self.current_pdb_archive])[0]
-            if self.verbose: print("pdb_archive_inserted: %s" % (json.dumps(self.pdb_archive_inserted, indent=4)))
-            self.pdb_archive_rid = self.pdb_archive_inserted["RID"]
-            # Update "Archive" in archive_entries
-            for row in self.current_entry_latest_archive.values():
-                row["Archive"] = self.pdb_archive_rid
+        # Note: if dry_run is true, do not execute the ermrest changes
+        if not self.pdb_archive: # there is no existing pdb_archive record
+            if self.dry_run:
+                print("inserting pdb_archive: %s" % (json.dumps(self.current_pdb_archive, indent=4)))
+            else:
+                self.pdb_archive_inserted = insert_if_not_exist(self.catalog, "PDB", "PDB_Archive", payload=[self.current_pdb_archive])[0]
+                if self.verbose: print("pdb_archive_inserted: %s" % (json.dumps(self.pdb_archive_inserted, indent=4)))
+                self.pdb_archive_rid = self.pdb_archive_inserted["RID"]
+                # Update "Archive" in archive_entries
+                for row in self.current_entry_latest_archive.values():
+                    row["Archive"] = self.pdb_archive_rid
         else:
-            #print("updating pdb_archive: %s" % (json.dumps(self.current_pdb_archive, indent=4)))
+            # - check whether the pdb_archive is modified to only perform updates if needed
             if released_entries_modified or hold_entries_modified:
-                self.pdb_archive_updated = update_table_rows(self.catalog, "PDB", "PDB_Archive", payload=[self.current_pdb_archive])
-                if self.verbose: print("pdb_archive_updated: %s" % (json.dumps(self.pdb_archive_updated, indent=4)))
+                if self.dry_run:
+                    print("updating pdb_archive: %s" % (json.dumps(self.current_pdb_archive, indent=4)))
+                else:
+                    self.pdb_archive_updated = update_table_rows(self.catalog, "PDB", "PDB_Archive", payload=[self.current_pdb_archive])
+                    if self.verbose: print("pdb_archive_updated: %s" % (json.dumps(self.pdb_archive_updated, indent=4)))
             else:
                 if self.verbose: print("pdb_archive_updated: []")
 
@@ -825,16 +834,20 @@ class ArchiveClient (object):
         payload = []
         for rid in self.entry_archive_insert_rids:
             payload.append(self.current_entry_latest_archive[rid])
-        #print("inserting entry_latest_archive_payload: %s" % (json.dumps(payload, indent=4)))
-        self.entry_archive_inserted = insert_if_not_exist(self.catalog, "PDB", "Entry_Latest_Archive", payload=payload)
-        if self.verbose: print("entry_archive_inserted: %s" % (json.dumps(self.entry_archive_inserted, indent=4)))
+        if self.dry_run:
+            print("inserting entry_latest_archive_payload: %s" % (json.dumps(payload, indent=4)))
+        else:
+            self.entry_archive_inserted = insert_if_not_exist(self.catalog, "PDB", "Entry_Latest_Archive", payload=payload)
+            if self.verbose: print("entry_archive_inserted: %s" % (json.dumps(self.entry_archive_inserted, indent=4)))
         
         payload = []
         for rid in self.entry_archive_update_rids:
-            payload.append(self.current_entry_latest_archive[rid])            
-        #print("updating entry_latest_archive_payload: %s" % (json.dumps(payload, indent=4)))                        
-        self.entry_archive_updated = update_table_rows(self.catalog, "PDB", "Entry_Latest_Archive", payload=payload)
-        if self.verbose: print("entry_archive_updated: %s" % (json.dumps(self.entry_archive_updated, indent=4)))
+            payload.append(self.current_entry_latest_archive[rid])
+        if self.dry_run:
+            print("updating entry_latest_archive_payload: %s" % (json.dumps(payload, indent=4)))
+        else:
+            self.entry_archive_updated = update_table_rows(self.catalog, "PDB", "Entry_Latest_Archive", payload=payload)
+            if self.verbose: print("entry_archive_updated: %s" % (json.dumps(self.entry_archive_updated, indent=4)))
 
         # send email or warning entries
         if self.processing_issues["incorrect filenames"] or self.processing_issues["missing files"]:
