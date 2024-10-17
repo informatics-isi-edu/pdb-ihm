@@ -149,17 +149,23 @@ derivaextras_install()
 
 pdb_www_pull_checkout()
 {
-    git_pull_checkout /home/${DEVUSER}/protein-database "$@"
+    git_pull_checkout /home/${DEVUSER}/pdb-ihm "$@"
+}
+
+pdb_ihm_ops_pull_checkout()
+{
+    git_pull_checkout /home/${DEVUSER}/pdb-ihm-ops "$@"
 }
 
 pdb_processing_install()
 {
-    python_install /home/${DEVUSER}/protein-database/scripts/pdb_processing/worker/pdb/clientlib
-    python_install /home/${DEVUSER}/protein-database/scripts/pdb_processing/worker/pdb/client
-    python_install /home/${DEVUSER}/protein-database/scripts/pdb_processing
-    python_install /home/${DEVUSER}/protein-database
-
-    require cd /home/$DEVUSER/protein-database/scripts/home-config
+    python_install /home/${DEVUSER}/pdb-ihm/scripts/pdb_processing/worker/pdb/clientlib
+    python_install /home/${DEVUSER}/pdb-ihm/scripts/pdb_processing/worker/pdb/client
+    python_install /home/${DEVUSER}/pdb-ihm/scripts/pdb_processing
+    python_install /home/${DEVUSER}/pdb-ihm
+    #python_install /home/${DEVUSER}/pdb-ihm-ops
+    
+    require cd /home/$DEVUSER/pdb-ihm/scripts/home-config
     require ./install-home-config.sh    
 }
 
