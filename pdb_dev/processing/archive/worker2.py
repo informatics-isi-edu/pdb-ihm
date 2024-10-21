@@ -268,21 +268,21 @@ class ArchiveClient (object):
         for row in list(self.new_releases.values()) + list(self.re_releases.values()):
             self.archive_entries[row["RID"]] = row
             self.entry_id2rid[row["id"]] = row["RID"]            
-        #print("archive_entries: %s" % (json.dumps(self.archive_entries, indent=4)))
-        if self.verbose: print("existing entry_latest_archives: %s" % (json.dumps({ rid: self.entry_latest_archive[rid] for rid in self.archive_entries.keys() }, indent=4)))        
+        if self.verbose: print("archive_entries: %s" % (json.dumps(self.archive_entries, indent=4)))
+        if self.verbose: print("existing entry_latest_archives: %s" % (json.dumps({ rid: self.entry_latest_archive[rid] for rid in self.re_releases.keys() }, indent=4)))
         
-
     """
     HOLD entries
     """
     def get_hold_status_entries(self):
-        constraints = "Workflow_Status=HOLD"
+        constraints = "Workflow_Status=HOLD/!Accession_Code::null::"
         rows = get_ermrest_query(self.catalog, "PDB", "entry", constraints=constraints, attributes=["Accession_Code","Deposit_Date","Workflow_Status"])
         entries = {}
-        hold_entries = {}
         for row in rows:
             entries[row["Accession_Code"]] = row
+        hold_entries = {}
         for accession_code in sorted(entries.keys()):
+            row = entries[accession_code]
             r = {
                 "status_code" : row["Workflow_Status"],
                 "deposit_date" : f'{row["Deposit_Date"]}T00:00:00+00:00',
@@ -290,6 +290,7 @@ class ArchiveClient (object):
                 "prerelease_sequence_available_flag" : "N",
             }
             hold_entries[accession_code] = r
+        if self.verbose: print("HOLD entries: %s" % (hold_entries))
         return hold_entries
     
     """

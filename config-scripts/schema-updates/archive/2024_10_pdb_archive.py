@@ -12,7 +12,6 @@ def main(server_name, catalog_id, credentials):
     catalog.dcctx['cid'] = DCCTX["model"]
     model = catalog.getCatalogModel()
 
-    """
     model.schemas["PDB"].tables["PDB_Archive"].create_column(
         Column.define(
             'Unreleased_Entries',
@@ -29,14 +28,14 @@ def main(server_name, catalog_id, credentials):
             comment="MD5 of uncompressed Unreleased_Entries.json"
         )
     )
-    """
-    
-    model.schemas["PDB"].tables["PDB_Archive"].columns["Current_File_Holdings_URL"].alter(default=None)
-    model.schemas["PDB"].tables["PDB_Archive"].columns["Current_File_Holdings_MD5"].alter(default=None)
-    model.schemas["PDB"].tables["PDB_Archive"].columns["Released_Structures_LMD_URL"].alter(default=None)
-    model.schemas["PDB"].tables["PDB_Archive"].columns["Released_Structures_LMD_MD5"].alter(default=None)
-    model.schemas["PDB"].tables["PDB_Archive"].columns["Unreleased_Entries_URL"].alter(default=None)
-    model.schemas["PDB"].tables["PDB_Archive"].columns["Unreleased_Entries_MD5"].alter(default=None)
+
+    if False:
+        model.schemas["PDB"].tables["PDB_Archive"].columns["Current_File_Holdings_URL"].alter(default=None)
+        model.schemas["PDB"].tables["PDB_Archive"].columns["Current_File_Holdings_MD5"].alter(default=None)
+        model.schemas["PDB"].tables["PDB_Archive"].columns["Released_Structures_LMD_URL"].alter(default=None)
+        model.schemas["PDB"].tables["PDB_Archive"].columns["Released_Structures_LMD_MD5"].alter(default=None)
+        model.schemas["PDB"].tables["PDB_Archive"].columns["Unreleased_Entries_URL"].alter(default=None)
+        model.schemas["PDB"].tables["PDB_Archive"].columns["Unreleased_Entries_MD5"].alter(default=None)
     
 # ===================================================    
 
