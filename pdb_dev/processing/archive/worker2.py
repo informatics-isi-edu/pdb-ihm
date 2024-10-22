@@ -268,8 +268,10 @@ class ArchiveClient (object):
         for row in list(self.new_releases.values()) + list(self.re_releases.values()):
             self.archive_entries[row["RID"]] = row
             self.entry_id2rid[row["id"]] = row["RID"]            
-        if self.verbose: print("archive_entries: %s" % (json.dumps(self.archive_entries, indent=4)))
-        if self.verbose: print("existing entry_latest_archives: %s" % (json.dumps({ rid: self.entry_latest_archive[rid] for rid in self.re_releases.keys() }, indent=4)))
+        #if self.verbose: print("archive_entries: %s" % (json.dumps(self.archive_entries, indent=4)))
+        if self.verbose: print("existing entry_latest_archives: %s" % (json.dumps(
+                { rid: self.entry_latest_archive[rid] for rid in set(self.archive_entries.keys()).intersection(set(self.entry_latest_archive.keys())) },
+                indent=4)))
         
     """
     HOLD entries
