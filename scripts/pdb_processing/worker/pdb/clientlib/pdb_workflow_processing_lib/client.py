@@ -155,6 +155,7 @@ class PDBClient (object):
             self.path.split('/')[-1],
             self.credentials
         )
+        self.hostname = socket.gethostname()
         self.catalog.dcctx['cid'] = 'pipeline/pdb'
         self.email = kwargs.get("email")
         self.logger = kwargs.get("logger")
@@ -280,6 +281,7 @@ class PDBClient (object):
                 subject = 'DEV {}'.format(subject)
                 #self.sendLinuxMail(subject, text, receivers)
                 #return
+            text = f'Backend hostname: {self.hostname}, catalog: {self.catalog_number}\n\n{text}'
             retry = 0
             ready = False
             if receivers == None:
