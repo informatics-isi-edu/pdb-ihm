@@ -4,12 +4,14 @@
 
 job_tasks=(
     "derivapy_pull_checkout"
+    "derivaextras_pull_checkout"
     "pdb_www_pull_checkout"
-    "python_ihm_pull_checkout 1.0"
+    "pdb_ihm_ops_pull_checkout origin/main"
     "derivapy_install"
+    "derivaextras_install"
     "pdb_processing_install"
-    "python_ihm_install"
-    "python_ihm_validation origin/dev_2.0"
+    "python_ihm_validation 412e6d0"
+    "require service pdb_staging_processing_worker restart"
 )
 
 cron_run "hourly-update" "${job_tasks[@]}"

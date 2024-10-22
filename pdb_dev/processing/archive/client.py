@@ -26,9 +26,10 @@ import sys
 import traceback
 import argparse
 
-from .worker import ArchiveClient
-from deriva.core import init_logging
+from deriva.core import init_logging, get_credential
 from ...utils.shared import PDBDEV_CLI, cfg
+#from pdb_dev.utils.shared import PDBDEV_CLI, cfg
+from .worker2 import ArchiveClient
 
 FORMAT = '%(asctime)s: %(levelname)s <%(module)s>: %(message)s'
 logger = logging.getLogger(__name__)
@@ -76,13 +77,13 @@ def load(config_filename):
             logger.error('Malformed configuration file: %s' % e)
             return None
     else:
-        sys.stderr.write('Configuration file: "%s" does not exist.\n' % config_filename)
+        sys.stderr.write('ERROR: Configuration file: "%s" does not exist.\n' % config_filename)
         return None
     
 '''
   fcfg: file configuration
 '''
-def get_configuration(fcfg, logger):
+def get_configuration(fcfg, logger, args):
     """
     Return the client configuration.
     """
@@ -91,19 +92,22 @@ def get_configuration(fcfg, logger):
 
     config['hostname'] = cfg.host
     config['catalog_id'] = cfg.catalog_id
-    config['hatrac_namespace'] = "/hatrac/pdb" if not cfg.is_dev else 'hatrac/dev/pdb'
+    config['hatrac_namespace'] = "/hatrac/pdb" if not cfg.is_dev else '/hatrac/dev/pdb'
+    config['verbose'] = args.verbose
+    config['rollback'] = args.rollback
+    config['dry_run'] = args.dry_run    
 
-    credentials_file = fcfg.get('credentials', '~/.deriva/credentials.json')
-    if not credentials_file or not os.path.isfile(credentials_file):
-        logger.error('credentials file %s must be provided and exist.' % (credentials_file))
+    credentials_file = fcfg.get('credentials', None)
+    credentials = get_credential(cfg.host, credentials_file)
+    if not credentials:
+        print('Credential is NULL. Provide a proper credential file or set up credential under the user account properly. Provided credential file:%s' % (credentials_file))        
+        logger.error('Credential is NULL. Provide a proper credential file or set up credential under the user account properly. Provided credential file:%s' % (credentials_file))
         return None
-    credentials = json.load(open(credentials_file))
-    
+    #print("credentials = %s" % (credentials))        
     config['credentials'] = credentials
 
-
     archive_parent = fcfg.get('archive_parent', None)
-    #archive_parent = "%s/%s" % (archive_parent, catalog_id2name[config['catalog_id']])    
+    #archive_parent = "%s/%s" % (archive_parent, catalog_id2name[config['catalog_id']])    # use same location
     if not archive_parent or not os.path.isdir(archive_parent):
         logger.error('archive parent directory must be provided and exists.')
         return None
@@ -111,12 +115,11 @@ def get_configuration(fcfg, logger):
     config['archive_parent'] = archive_parent
     
     data_scratch = fcfg.get('data_scratch', None)
-    #data_scratch = "%s/%s" % (data_scratch, catalog_id2name[config['catalog_id']])
+    #data_scratch = "%s/%s" % (data_scratch, catalog_id2name[config['catalog_id']])  # use same location
     if not data_scratch or not os.path.isdir(data_scratch):
         logger.error('The scratch directory must be provided and exist.')
         return None
     config['data_scratch'] = data_scratch
-
 
     holding_dir = fcfg.get('holding_dir', None)
     if not holding_dir:
@@ -131,17 +134,15 @@ def get_configuration(fcfg, logger):
     if not released_entry_dir:
         logger.error('The released entry dir directory must be provided.')
         return None
-    
     config['released_entry_dir'] = released_entry_dir
 
-    holding_namespace = fcfg.get('holding_namespace', None)
-    if holding_namespace == None:
-        logger.error(f'The holding namespace must be provided.')
+    holding_hatrac_namespace = fcfg.get('holding_hatrac_namespace', None)
+    if holding_hatrac_namespace == None:
+        logger.error(f'The holding hatrac namespace must be provided.')
         return None
-
-    config['holding_namespace'] = holding_namespace
+    config['holding_hatrac_namespace'] = holding_hatrac_namespace.replace('/hatrac/pdb', '/hatrac/dev/pdb') if cfg.is_dev else holding_hatrac_namespace
+    print("holding_hatrac_namespace: %s" % (config['holding_hatrac_namespace']))
     
-
     email_file = fcfg.get('mail', None)
     if not email_file or not os.path.isfile(email_file):
         logger.error('email file must be provided and exist.')
@@ -149,41 +150,34 @@ def get_configuration(fcfg, logger):
     
     with open(email_file, 'r') as f:
         email = json.load(f)
-
     config['email'] = email
-
+    
     config['logger'] = logger
 
     return config
 
 def main():
-    #parser = argparse.ArgumentParser(description='Tool to archive mmCIF files.')
-    #parser.add_argument( '--config', action='store', type=str, help='The JSON configuration file.', required=True)
-    #args = parser.parse_args()
-    
     cli = PDBDEV_CLI("pdbdev", None, 1)
-    cli.parser.add_argument( '--config', action='store', type=str, help='The JSON configuration file.', required=True)    
+    cli.parser.add_argument( '--config', action='store', type=str, help='The JSON configuration file.', required=True)
+    cli.parser.add_argument( '--verbose', action='store_true', help='Print status to stdout', default=False, required=False)
+    cli.parser.add_argument( '--rollback', action='store_true', help='Rollback ermrest update', default=False, required=False)
     args = cli.parse_cli()
+
+    #credentials = get_credential(args.host, args.credential_file)
+    #print("credentials = %s" % (credentials))
     
     try:
         config = load(args.config)
         if config != None:
-            archive_worker_configuration = get_configuration(config, logger)
+            archive_worker_configuration = get_configuration(config, logger, args)
             #del archive_worker_configuration['logger']
             #print(json.dumps(archive_worker_configuration, indent=4))
             #return 1
             if archive_worker_configuration != None:
-                try:
-                    archive_worker = ArchiveClient(archive_worker_configuration)
-                    returnStatus = archive_worker.processArchive()
-                    logger.debug('Return Status: {}'.format(returnStatus))
-                    return returnStatus
-                except:
-                    et, ev, tb = sys.exc_info()
-                    sys.stderr.write('got exception "%s"' % str(ev))
-                    sys.stderr.write('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-                    sys.stderr.write('\nusage: python3 -m pdb_dev.processing.archive.client --config <config-file>\n\n')
-                    return 1
+                archive_worker = ArchiveClient(archive_worker_configuration)
+                returnStatus = archive_worker.processArchive()
+                logger.debug('Return Status: {}'.format(returnStatus))
+                return returnStatus
     except:
         et, ev, tb = sys.exc_info()
         sys.stderr.write('got exception "%s"' % str(ev))

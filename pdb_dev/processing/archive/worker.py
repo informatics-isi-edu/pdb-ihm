@@ -37,6 +37,7 @@ from socket import gaierror, EAI_AGAIN
 from deriva.core import PollingErmrestCatalog, HatracStore, urlquote
 from deriva.core.utils import hash_utils as hu
 from deriva.core.utils.core_utils import DEFAULT_CHUNK_SIZE, NotModified
+from deriva.utils.extras.data import get_key2rows, get_ermrest_query
 
 import re
 import math
@@ -51,7 +52,30 @@ https://dev-aws.pdb-dev.org/ermrest/catalog/99/attribute/Vocab:System_Generated_
 https://dev-aws.pdb-dev.org/ermrest/catalog/99/attribute/A:=PDB:entry/Workflow_Status=REL/B:=PDB:Entry_Generated_File/File_Type=mmCIF/C:=left(A:RID)=(PDB:Entry_Latest_Archive:Entry)/Entry::null::;!B:File_URL=mmCIF_URL/$A/RID
 """
 
+def dumpJSON(fileneme, json_object):
+    fw = open(f'/home/pdbihm/tmp/{fileneme}.json', 'w')
+    json.dump(json_object, fw, indent=4)
+    fw.write(f'\n')
+    fw.close()
+    
 class ArchiveClient (object):
+    # HT: initialize with ermrest query
+    submission_date = None
+    previous_submission_date = None
+
+    system_generated_file_types = {}
+    entry_latest_archive = {}
+    new_releases = {}
+    re_releases = {}
+    entry_generated_files = {}
+    released_entries = {}
+    hold_entries = {}    
+    entry_id2rid = {}
+    entry_archive_insert_rids = []
+    entry_archive_update_rids = []
+    entry_archive_inserted = []    # update this variable after successfully inserting to entry_latest_archive
+    entry_archive_updated = []     # update this variable after successfully update to entry_latest_archive
+    
     """
     Network client for archiving mmCIF files.
     """
@@ -70,6 +94,8 @@ class ArchiveClient (object):
         self.current_holdings = {}
         self.archive_category_dir_names = {}
         self.PDB_Archive_RID = None
+        self.PDB_Archive_row_before = None  # Read at the beginning of the script for rollback        
+        self.PDB_Archive_row = None   # This contains the payload for insert/update to PDB_Archive table
         self.store = HatracStore(
             self.scheme, 
             self.host,
@@ -86,7 +112,140 @@ class ArchiveClient (object):
         self.cutoff_time_pacific = kwargs.get('cutoff_time_pacific')
         self.logger = kwargs.get("logger")
         self.logger.debug('Client initialized.')
+        
+        self.submission_date = self.getArchiveDate()
+        self.previous_submission_date = self.getPreviousArchiveDate(self.submission_date) 
+        
+        self.set_entry_latest_archive()
+        self.set_pdb_archive()
+        self.set_new_releases()
+        self.set_re_releases()
+        entry_rids = list(self.new_releases.keys()) + list(self.re_releases.keys()) 
+        self.set_released_entries(entry_rids)
+        self.set_system_generated_file_types()
+        self.set_entry_generated_files(entry_rids)
+        self.set_entry_archive_lists()
 
+    def set_entry_latest_archive(self):
+        rows = get_ermrest_query(self.catalog, "PDB", "Entry_Latest_Archive", None)
+        for row in rows:
+            self.entry_latest_archive[row["RID"]] = row
+
+    # read PDB_Archive at the beginning in case it needs to roll back
+    def set_pdb_archive(self):
+        constraints = "Submission_Time=%s" % (urlquote(self.submission_date))
+        rows = get_ermrest_query(self.catalog, "PDB", "PDB_Archive", constraints=constraints)
+        if rows:
+            self.PDB_Archive_row_before = rows[0]
+            self.PDB_Archive_RID = rows[0]["RID"]
+            self.PDB_Archive_row = rows[0].copy()  # make a copy, so the content can be changed
+            
+    def set_new_releases(self):
+        url1 = f'/attribute/' + \
+            f'E:=PDB:entry/Workflow_Status=REL/' + \
+            f'F:=(id)=(PDB:Entry_Generated_File:Structure_Id)/File_Type=mmCIF/' + \
+            f'A:=left(E:RID)=(PDB:Entry_Latest_Archive:Entry)/A:RID::null::;(A:RCT::gt::{urlquote(self.previous_submission_date)}&A:Submission_Time={urlquote(self.submission_date)})/' + \
+            f'$E/E:RID,E:id,E:Deposit_Date,E:Accession_Code,F:File_URL,A:Entry,A:Submission_Time,A:mmCIF_URL'
+            
+        self.logger.debug(f"Query for entries that haven't been archived: {url1}") 
+        resp = self.catalog.get(url1)
+        resp.raise_for_status()
+        rows = resp.json()
+        for row in rows:
+            self.new_releases[row["RID"]] = row
+
+    def set_re_releases(self):
+        url2 = f'/attribute/' + \
+            f'A:=PDB:Entry_Latest_Archive/A:RCT::leq::{urlquote(self.previous_submission_date)}/' + \
+            f'E:=(A:Entry)=(PDB:entry:RID)/Workflow_Status=REL/' + \
+            f'F:=left(A:mmCIF_URL)=(PDB:Entry_Generated_File:File_URL)/F:RID::null::;(F:File_Type=mmCIF&A:Submission_Time={urlquote(self.submission_date)})/' + \
+            f'$A/E:RID,E:id,E:Deposit_Date,E:Accession_Code,F:File_URL,A:Entry,A:Submission_Time,A:mmCIF_URL'
+        
+        self.logger.debug(f"Query for entries that entries that mmCIF contents have changed: {url2}") 
+        resp = self.catalog.get(url2)
+        resp.raise_for_status()
+        rows = resp.json()
+        for row in rows:
+            self.re_releases[row["RID"]] = row
+
+    """
+      REL entries
+    """
+    def set_released_entries(self, entry_rids):
+        """
+        constraints = "RID=ANY(%s)" %  ",".join([ urlquote(v) for v in entry_rids ])
+        rows = get_ermrest_query(self.catalog, "PDB", "entry", constraints, attributes=["id","Accession_Code"])
+        for row in rows:
+            self.released_entries[row["RID"]] = row
+            self.entry_id2rid[row["id"]] = row["RID"]
+        """
+        for row in list(self.new_releases.values()) + list(self.re_releases.values()):
+            self.released_entries[row["RID"]] = row
+            self.entry_id2rid[row["id"]] = row["RID"]
+            
+    """
+    Information about system generated file types
+    """
+    def set_system_generated_file_types(self):
+        constraints = "A:=Vocab:Archive_Category/$M"
+        attributes = ["File_Type:=M:Name","Archive_Category:=A:Name","A:Directory_Name"]
+        rows = get_ermrest_query(self.catalog, "Vocab", "System_Generated_File_Type", constraints, attributes=attributes)
+        for row in rows:
+            self.system_generated_file_types[row["File_Type"]] = row
+
+    """
+    query based on released RIDs
+      self.entry_generated_files : {
+        <RID>: {"mmCIF": [....], "Validation: Full PDF": [...], ...   }
+      }
+    """
+    def set_entry_generated_files(self, entry_rids):
+        constraints = "Structure_Id=ANY(%s)/T:=Vocab:System_Generated_File_Type/A:=Vocab:Archive_Category/$M" % ",".join([ urlquote(self.released_entries[rid]["id"]) for rid  in entry_rids ])
+        attributes = ["M:Structure_Id","M:File_Type","Archive_Category:=A:Name","A:Directory_Name"]
+        rows = get_ermrest_query(self.catalog, "PDB", "Entry_Generated_File", constraints)        
+        for row in rows:
+            rid = self.entry_id2rid[row["Structure_Id"]]
+            file_type = row["File_Type"]
+            #row["Archive_Category"] = self.system_generated_file_types[file_type]["Archive_Category"]
+            #row["Directory_Name"] = self.system_generated_file_types[file_type]["Directory_Name"]
+            self.entry_generated_files.setdefault(rid, {})
+            self.entry_generated_files[rid][row["File_Type"]] = row
+
+    def set_entry_archive_lists(self):
+        for rid in self.new_releases.keys():
+            if rid not in self.entry_latest_archive.keys():
+                self.entry_archive_insert_rids.append(rid)
+            else:
+                self.entry_archive_update_rids.append(rid)
+        self.entry_archive_update_rids.extend(self.re_releases.keys())
+
+    
+    def set_current_holdings(self):
+        curent_holdings = self.entry_latest_archive.copy()
+        for row in self.new_releases.values() + self.re_releases.values():
+            rid = row["RID"]
+            submitted_files = {}
+            for file_type, generated_file in self.entry_generated_files[rid]:
+                submitted_files.update(generated_file["Directory_Name"], [])
+                submitted_files[generated_file["Directory_Name"]].append(generated_file["File_URL"])
+            current_holdings[rid] = {
+                "Entry" : rid,
+                "Submission_Time" : self.submission_date,
+                "mmCIF_URL" : self.entry_generated_files[rid]["mmCIF"]["File_URL"],
+                "Submitted_Files": submitted_files,
+                "Archive" : self.Archive_RID,
+                "Submission_History": None,
+            }
+            if rid in self.re_releases.keys():
+                current_holdings[rid]["Submission_History"].update({
+                    self.submission_date : {
+                        "mmCIF_URL": current_holdings["mmCIF_URL"],
+                        "Submission_Files": current_holdings["Submission_Files"]
+                    }
+                })
+        # generate manifest from current holdings
+        #...
+        
     """
     Print the configuration
     """
@@ -146,31 +305,47 @@ class ArchiveClient (object):
                     ready = True
 
     """
-    Rollback the database 
+    Rollback the database depending on exceptions or book keeping?: HT: TODO
+    1. Delete PDB.Archive row if the row was inserted
+    2. Delete Entry_Latest_Archive with RIDs from self.entry_archive_insert 
+    3. Update modified Entry_Latest_Archive with the original version from self.entry_latest_archive
+    Note: the delete_table_rows address 404 (which is returned if the constraints are not found)
     """
     def rollbackArchive(self):
+        entry_archive_rollback_payload = []
         try:
             """
-            Delete the self.PDB_Archive_RID record
             """
-            if self.PDB_Archive_RID != None:
-                url = f'/entity/PDB:Entry_Latest_Archive/Entry={urlquote(self.PDB_Archive_RID)}'
-                try:
-                    resp = self.catalog.delete(
-                        url
-                    )
-                    resp.raise_for_status()
-                    self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
-                except:
-                    pass
-           
-                url = f'/entity/PDB:PDB_Archive/RID={urlquote(self.PDB_Archive_RID)}'
-                resp = self.catalog.delete(
-                    url
-                )
-                resp.raise_for_status()
-                self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
+            # delete the self.PDB_Archive_RID if inserted, otherwise update to original state
+            if self.PDB_Archive_RID:
+                if self.PDB_Archive_before:
+                    pdb_archive_rollback_payload = update_table_rows(self.catalog, "PDB", "PDB_Archive", keys=["RID"], payload=[self.PDB_Archive_before])
+                    self.logger.debug('SUCCEEDED updated the PDB_Archive row with RID = %s' % (self.PDB_Archive_RID))                    
+                else:
+                    delete_table_rows(self.catalog, "PDB", "PDB_Archive", key="RID", values=["self.PDB_Archive_RID"])                
+                    self.logger.debug('SUCCEEDED deleted the PDB_Archive row with RID = %s' % (self.PDB_Archive_RID))
+
+            # delete inserted Entry_Latest_Archive
+            if self.entry_archive_inserted:
+                # Need another flag to indicate that insertion has been performed. Then delete using RID from self.entry_archive_insert
+                # These rids should be exactly the same list as self.entry_archive_insert_rids, but let's get it from what returns from ermrest
+                rids = [ row["RID"] for row in self.entry_archive_inserted ]
+                delete_table_rows(self.catalog, "PDB", "Entry_Latest_Archive", key="RID", values=rids)
+                self.logger.debug('SUCCEEDED deleted the newly inserted rows in the Entry_Latest_Archive')
+
+            # Update Entry_Latest_Archive to its original state
+            if self.entry_archive_updated:
+                update_archive_payload = [ self.entry_latest_archive[row["RID"]] for row in self.entry_archive_updated ]
+                updated = update_table_rows(self.catalog, "PDB", "Entry_Latest_Archive", keys=["RID"], payload=entry_archive_rollback_payload) 
+                self.logger.debug('SUCCEEDED updating the Entry_Latest_Archive rows to the original sate')
         except:
+            # HT: TODO: If failed to roll back, we should output the following into a file: archive_error_<date>
+            #  1. self.PDB_Archive_row
+            #  2. self.PDB_Archive_row_before
+            #  2. self.entry_archive_inserted --> new rows added to the table
+            #  3. self.entry_archive_updated --> new rows update to the table
+            #  4. entry_archive_rollback_payload --> the payload attempt to roll back to
+            #
             et, ev, tb = sys.exc_info()
             self.logger.error('got exception "%s"' % str(ev))
             self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
@@ -183,39 +358,19 @@ class ArchiveClient (object):
     def processArchive(self):
         try:
             """
-            Get the the file types with Archive_Category
+            Get the:
+                - file types with Archive_Category
+                - archive directories and the associated file types
+                - archive directories of the Archive_Category
             """
-            url = f'/attribute/Vocab:System_Generated_File_Type/!Archive_Category::null::/Archive_Category,Name'
-            self.logger.debug(f'Query for the the file types with Archive_Category: "{url}"') 
-            
-            resp = self.catalog.get(url)
-            resp.raise_for_status()
-            rows = resp.json()
             self.archive_category = {}
-            for row in rows:
-                self.archive_category[row['Name']] = row['Archive_Category']
-                
-            """
-            Get the archive directories and the associated file types
-            """
             self.archive_file_types = []
-            for k,v in self.archive_category.items():
-                if k not in self.archive_file_types:
-                   self.archive_file_types.append(k) 
-
-            """
-            Get the archive directories of the Archive_Category
-            """
-            url = f'/attribute/Vocab:Archive_Category/Directory_Name,Name'
-            self.logger.debug(f'Query for the directories names of the Archive_Category: "{url}"') 
-            
-            resp = self.catalog.get(url)
-            resp.raise_for_status()
-            rows = resp.json()
             self.archive_category_dir_names = {}
-            for row in rows:
-                self.archive_category_dir_names[row['Name']] = row['Directory_Name']
-                
+            for k,v in self.system_generated_file_types.items():
+                self.archive_category[k] = v['Archive_Category']
+                self.archive_file_types.append(k)
+                self.archive_category_dir_names[v['Archive_Category']] = v['Directory_Name']
+
             """
             Get the archive directories and the associated file types
             """
@@ -243,7 +398,12 @@ class ArchiveClient (object):
             return 1
 
     """
-    Archive files 
+    Archive files
+    HT:
+      - Prepare directory of files
+      - Create manifest files
+      - insert/Update PDB:PDB_Archive
+      - Update PDB:Entry_Latest_Archive -> update "Archive" field with the PDB:Archive RID before performing updates
     """
     def archiveFiles(self):
         """
@@ -273,51 +433,6 @@ class ArchiveClient (object):
         os.makedirs(f'{self.archive_parent}/{self.released_entry_dir}', exist_ok=True)
         os.makedirs(f'{self.archive_parent}/{self.holding_dir}', exist_ok=True)
 
-        """
-        Get the current and previous submission date
-        """
-        self.submission_date, self.previous_submission_date = self.getArchiveDate()
-        self.logger.debug(f'Submission Dates: {self.submission_date}, {self.previous_submission_date}') 
-        url = f'/aggregate/A:=PDB:PDB_Archive/Submission_Time::lt::{urlquote(self.submission_date)}/previous_submission_time:=max(Submission_Time)'
-        self.logger.debug(f"Query to find the maximum submission time:\n\nhttps://{self.host}/ermrest/catalog/{self.catalog_id}{url}\n") 
-        resp = self.catalog.get(url)
-        resp.raise_for_status()
-        rows = resp.json()
-        self.logger.debug(f'Previous submission time\n\n{json.dumps(rows, indent=4)}\n')
-        if len(rows) > 0 and rows[0]['previous_submission_time'] != None:
-            self.previous_submission_date = rows[0]['previous_submission_time']
-        
-        """
-        Create the new entry in the PDB_Archive table if it does not exist
-        """
-        url = f'/attribute/A:=PDB:PDB_Archive/Submission_Time={urlquote(self.submission_date)}/A:RID'
-        self.logger.debug(f"Query to see if the archive has been run this week: {url}") 
-        resp = self.catalog.get(url)
-        resp.raise_for_status()
-        rows = resp.json()
-        if len(rows) > 0:
-            self.PDB_Archive_RID = rows[0]['RID']
-        else:
-            insert_row = {'Submission_Time': self.submission_date
-                          }
-            default_columns = [
-                'Submitted_Entries',
-                'Current_File_Holdings_Name',
-                'Current_File_Holdings_URL',
-                'Current_File_Holdings_Bytes',
-                'Current_File_Holdings_MD5',
-                'Released_Structures_LMD_Name',
-                'Released_Structures_LMD_URL',
-                'Released_Structures_LMD_Bytes',
-                'Released_Structures_LMD_MD5',
-                'Unreleased_Entries_Name',
-                'Unreleased_Entries_URL',
-                'Unreleased_Entries_Bytes',
-                'Unreleased_Entries_MD5'
-            ]
-            res = self.insert_rows([insert_row], 'PDB_Archive',defaults=','.join(default_columns))
-            self.PDB_Archive_RID = res['RID']
-        
         """
         Get the entries that haven't been archived
         """
@@ -407,11 +522,7 @@ class ArchiveClient (object):
             """
             Get the Entry_Generated_File
             """
-            url = f'/attribute/PDB:entry/RID={urlquote(rid)}/PDB:Entry_Generated_File/File_Name,File_URL,File_MD5,File_Type,RMT'
-            self.logger.debug(f'Query for the associated Entry_Generated_File: "{url}"') 
-            resp = self.catalog.get(url)
-            resp.raise_for_status()
-            files_generated = resp.json()
+            files_generated = self.entry_generated_files[rid]
             if len(files_generated) < 3:
                 """
                 We are in the REL status but the report validation was not run
@@ -421,10 +532,7 @@ class ArchiveClient (object):
             
             submitted_files = {}
 
-            for file_generated in files_generated:
-                file_type = file_generated['File_Type']
-                if file_type not in self.archive_file_types:
-                    continue
+            for file_type,file_generated in files_generated.items():
                 filename = file_generated['File_Name']
                 file_url = file_generated['File_URL']
                 
@@ -476,7 +584,6 @@ class ArchiveClient (object):
                             'Entry': rid,
                             'mmCIF_URL': self.released_structures[entry_id]['File_URL'],
                             'Submission_Time': self.submission_date,
-                            'Archive': self.PDB_Archive_RID,
                             'Submitted_Files': submitted_files
                         }
                 )
@@ -497,28 +604,19 @@ class ArchiveClient (object):
                         })
                         updated_rows.append(
                             {
+                                'Entry': rid,
                                 'mmCIF_URL': self.released_structures[entry_id]['File_URL'],
                                 'Submission_Time': self.submission_date,
-                                'Archive': self.PDB_Archive_RID,
                                 'Submitted_Files': submitted_files,
                                 'Submission_History': submission_history,
                                 'RID': latest_archive_record[0]['RID']
                             }
                 )
         
-        columns = [
-            'mmCIF_URL',
-            'Submission_Time',
-            'Archive',
-            'Submitted_Files',
-            'Submission_History'
-            ]
-        self.insert_or_update_rows(inserted_rows, updated_rows, 'Entry_Latest_Archive', columns)
-        
         """
         Generate the manifest files
         """
-        self.writeManifestFiles()
+        self.writeManifestFiles(inserted_rows, updated_rows)
         self.generate_unreleased_entries()
          
         """
@@ -548,7 +646,7 @@ class ArchiveClient (object):
             return 1
  
         """
-        Update the PDB_Archive table
+        Create or update the entry in the PDB_Archive table 
         """
         columns = [
             'Submitted_Entries',
@@ -567,9 +665,9 @@ class ArchiveClient (object):
             'Unreleased_Entries_Bytes',
             'Unreleased_Entries_MD5'
         ]
+
         rows = [
             {
-            'RID': self.PDB_Archive_RID,
             'Submitted_Entries': self.new_released_entries + self.re_released_entries,
             'New_Released_Entries': self.new_released_entries,
             'Re_Released_Entries': self.re_released_entries,
@@ -587,7 +685,42 @@ class ArchiveClient (object):
             'Unreleased_Entries_MD5': Unreleased_Entries_MD5
             }
         ]
-        self.update_rows(columns, rows, 'PDB_Archive')
+        
+        url = f'/attribute/A:=PDB:PDB_Archive/Submission_Time={urlquote(self.submission_date)}/A:RID'
+        self.logger.debug(f"Query to see if the archive has been run this week: {url}") 
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        archive_rows = resp.json()
+
+        if len(archive_rows) > 0:
+            """
+            Update operation
+            """
+            self.PDB_Archive_RID = archive_rows[0]['RID']
+            for row in rows:
+                row['RID'] = self.PDB_Archive_RID
+            self.update_rows(columns, rows, 'PDB_Archive')
+        else:
+            """
+            Insert operation
+            """
+            for row in rows:
+                row['Submission_Time'] = self.submission_date
+            res = self.insert_rows(rows, 'PDB_Archive')
+            self.PDB_Archive_RID = res[0]['RID']
+
+        columns = [
+            'mmCIF_URL',
+            'Submission_Time',
+            'Archive',
+            'Submitted_Files',
+            'Submission_History'
+            ]
+        
+        for row in inserted_rows + updated_rows:
+            row['Archive'] = self.PDB_Archive_RID
+
+        self.insert_or_update_rows(inserted_rows, updated_rows, 'Entry_Latest_Archive', columns)
         
         url = '/attribute/A:=PDB:entry/Workflow_Status=HOLD/B:=left(A:id)=(PDB:Entry_Generated_File:Structure_Id)/Structure_Id::null::/$A/RID'
         self.logger.debug(f'Query for unreleased entries w/o a system mmCIF generated file: "{url}"') 
@@ -650,16 +783,29 @@ class ArchiveClient (object):
     """
     Write manifest 
     """
-    def writeManifestFiles(self):
-        url = '/attribute/A:=PDB:Entry_Latest_Archive/PDB:entry/B:=PDB:Accession_Code/$A/Entry,Submitted_Files,Submission_Time,B:Accession_Code'
+    def writeManifestFiles(self, inserted_rows, updated_rows):
+        new_inserted_rows = [v.copy() for v in inserted_rows]
+        re_updated_rows = [v.copy() for v in updated_rows]
+        re_updated_rows_dict = {}
+        
+        for new_inserted_row in new_inserted_rows:
+            new_inserted_row['Accession_Code'] = self.new_releases[new_inserted_row['Entry']]['Accession_Code']
+            
+        for re_updated_row in re_updated_rows:
+            re_updated_row['Accession_Code'] = self.re_releases[re_updated_row['Entry']]['Accession_Code']
+            re_updated_rows_dict[re_updated_row['Entry']] = re_updated_row
+            
+        url = '/attribute/A:=PDB:Entry_Latest_Archive/B:=PDB:entry/$A/Entry,Submitted_Files,Submission_Time,B:Accession_Code'
         self.logger.debug(f'Query for writing the manifest files: "{url}"') 
         
         released_structures_LMD = {}
         holding_entries = {}
         resp = self.catalog.get(url)
         resp.raise_for_status()
-        entries = resp.json()
+        entries = resp.json() + new_inserted_rows
         for entry in entries:
+            if entry['Entry'] in re_updated_rows_dict.keys():
+                entry = re_updated_rows_dict[entry['Entry']]
             released_structures_LMD[entry['Accession_Code']] = self.getSubmissionTimeUTC(f'{entry["Submission_Time"]}')
             submitted_files = entry['Submitted_Files']
             rid = urlquote(entry['Entry'])
@@ -727,7 +873,8 @@ class ArchiveClient (object):
         return self.holding_dir
         
     """
-    Get the archive date 
+    Get the archive date
+    HT: Turn to class method?
     """
     def getArchiveDate(self):
         """
@@ -756,9 +903,27 @@ class ArchiveClient (object):
                 """
                 closed_day_of_week += timedelta(days=7)
         closed_day_of_week=closed_day_of_week.replace(hour=cutoff_hour_pacific,minute=cutoff_minute_pacific,second=0,microsecond=0)
-        previous_closed_day_of_week= closed_day_of_week - timedelta(days=7)
-        return (f'{closed_day_of_week}', f'{previous_closed_day_of_week}')
-                
+        return f'{closed_day_of_week}'
+
+    """
+    HT: TODO
+    """
+    def getPreviousArchiveDate(self, current_submission_time):
+        """
+        Get the latest Submission_Date that is less than the current submission Date. Otherwise, use Current_Submission_Date - 7 days
+        """
+        previous_submission_time = f'{dt.fromisoformat(current_submission_time) - timedelta(days=7)}'
+        self.logger.debug(f'Submission Dates: {current_submission_time}, {previous_submission_time}') 
+        url = f'/aggregate/A:=PDB:PDB_Archive/Submission_Time::lt::{urlquote(current_submission_time)}/previous_submission_time:=max(Submission_Time)'
+        self.logger.debug(f"Query to find the maximum submission time:\n\nhttps://{self.host}/ermrest/catalog/{self.catalog_id}{url}\n") 
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        rows = resp.json()
+        self.logger.debug(f'Previous submission time\n\n{json.dumps(rows, indent=4)}\n')
+        if len(rows) > 0 and rows[0]['previous_submission_time'] != None:
+            previous_submission_time = rows[0]['previous_submission_time']
+        return previous_submission_time
+        
     """
     Extract the file from hatrac
     """
@@ -876,7 +1041,7 @@ class ArchiveClient (object):
        )
        resp.raise_for_status()
        self.logger.debug('SUCCEEDED created in the table "%s" the rows "%s".' % (url, json.dumps(rows, indent=4))) 
-       return resp.json()[0]
+       return resp.json()
 
     """
     Update a record
