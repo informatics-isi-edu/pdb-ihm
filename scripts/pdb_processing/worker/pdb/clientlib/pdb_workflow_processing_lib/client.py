@@ -805,77 +805,10 @@ class PDBClient (object):
 
         if returncode == 0:
             """
-            Add the Conform_Dictionary entries
+            Generate the Conform_Dictionary entries
             """
+            returncode = self.generateConformDictionary ('PDB', 'entry', entry_id, process_status_error, rid, user)
             
-            """
-            Get the RID of Entry_Generated_File
-            """
-            url = '/attribute/PDB:Entry_Generated_File/Structure_Id={}&File_Type=mmCIF/RID'.format(urlquote(entry_id))
-            self.logger.debug('Query URL: "%s"' % url) 
-            resp = self.catalog.get(url)
-            resp.raise_for_status()
-            mmCIF_rows = resp.json()
-            if len(mmCIF_rows) != 1:
-                self.logger.debug('Entry_Generated_File is not unique')
-                self.updateAttributes(schema_pdb,
-                                      table_entry,
-                                      rid,
-                                      ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
-                                      {'RID': rid,
-                                      'Process_Status': process_status_error,
-                                      'Record_Status_Detail': 'Entry_Generated_File is not unique',
-                                      'Workflow_Status': 'ERROR'
-                                      },
-                                      user)
-                return 1
-    
-            mmCIF_row = mmCIF_rows[0]
-            
-            """
-            Delete entries from Conform_Dictionary if any
-            """
-            url = '/entity/PDB:Conform_Dictionary/Exported_mmCIF_RID={}'.format(urlquote(mmCIF_row['RID']))
-            self.logger.debug('Query URL: "%s"' % url) 
-            resp = self.catalog.get(url)
-            resp.raise_for_status()
-            conform_rows = resp.json()
-            if len(conform_rows) > 0:
-                url = '/entity/PDB:Conform_Dictionary/Exported_mmCIF_RID={}'.format(urlquote(mmCIF_row['RID']))
-                resp = self.catalog.delete(
-                    url
-                )
-                resp.raise_for_status()
-                self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
-    
-            """
-            Get the supported entries
-            """
-            url = '/attribute/PDB:Supported_Dictionary/Data_Dictionary_RID'
-            self.logger.debug('Query URL: "%s"' % url) 
-            resp = self.catalog.get(url)
-            resp.raise_for_status()
-            supported_rows = resp.json()
-            
-            """
-            Insert rows into Conform_Dictionary
-            """
-            for supported_row in supported_rows:
-                row = {'Data_Dictionary_RID': supported_row['Data_Dictionary_RID'], 'Exported_mmCIF_RID': mmCIF_row['RID']}
-            
-                if self.createEntity('PDB:Conform_Dictionary', row, rid, user) == None:
-                    self.updateAttributes(schema_pdb,
-                                          table_entry,
-                                          rid,
-                                          ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
-                                          {'RID': rid,
-                                          'Process_Status': process_status_error,
-                                          'Record_Status_Detail': 'Update error in createEntity():\n{}'.format(self.export_error_message),
-                                          'Workflow_Status': 'ERROR'
-                                          },
-                                          user)
-                    return 1
-    
             if returncode == 0:
                 self.logger.debug('Update success in export_mmCIF()')
                 if release == False and self.action == 'SUBMIT':
@@ -903,11 +836,90 @@ class PDBClient (object):
                                       user)
                 return 1
             return 0
+            
         else:
             subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'SUBMIT', process_status_error, user)
             self.sendMail(subject, error_message)
             return 1
             
+    """
+    Generate the Conform_Dictionary
+    """
+    def generateConformDictionary (self, schema_pdb, table_entry, entry_id, process_status_error, rid, user):
+        """
+        Generate the Conform_Dictionary entries
+        """
+        
+        """
+        Get the RID of Entry_Generated_File
+        """
+        url = '/attribute/PDB:Entry_Generated_File/Structure_Id={}&File_Type=mmCIF/RID'.format(urlquote(entry_id))
+        self.logger.debug('Query URL: "%s"' % url) 
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        mmCIF_rows = resp.json()
+        if len(mmCIF_rows) != 1:
+            self.logger.debug('Entry_Generated_File is not unique')
+            self.updateAttributes(schema_pdb,
+                                  table_entry,
+                                  rid,
+                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
+                                  {'RID': rid,
+                                  'Process_Status': process_status_error,
+                                  'Record_Status_Detail': 'Entry_Generated_File is not unique',
+                                  'Workflow_Status': 'ERROR'
+                                  },
+                                  user)
+            return 1
+
+        mmCIF_row = mmCIF_rows[0]
+        
+        """
+        Delete entries from Conform_Dictionary if any
+        """
+        url = '/entity/PDB:Conform_Dictionary/Exported_mmCIF_RID={}'.format(urlquote(mmCIF_row['RID']))
+        self.logger.debug('Query URL: "%s"' % url) 
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        conform_rows = resp.json()
+        if len(conform_rows) > 0:
+            url = '/entity/PDB:Conform_Dictionary/Exported_mmCIF_RID={}'.format(urlquote(mmCIF_row['RID']))
+            resp = self.catalog.delete(
+                url
+            )
+            resp.raise_for_status()
+            self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
+
+        """
+        Get the supported entries
+        """
+        url = '/attribute/PDB:Supported_Dictionary/Data_Dictionary_RID'
+        self.logger.debug('Query URL: "%s"' % url) 
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        supported_rows = resp.json()
+        
+        """
+        Insert rows into Conform_Dictionary
+        """
+        for supported_row in supported_rows:
+            row = {'Data_Dictionary_RID': supported_row['Data_Dictionary_RID'], 'Exported_mmCIF_RID': mmCIF_row['RID']}
+        
+            if self.createEntity('PDB:Conform_Dictionary', row, rid, user) == None:
+                self.updateAttributes(schema_pdb,
+                                      table_entry,
+                                      rid,
+                                      ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
+                                      {'RID': rid,
+                                      'Process_Status': process_status_error,
+                                      'Record_Status_Detail': 'Update error in createEntity():\n{}'.format(self.export_error_message),
+                                      'Workflow_Status': 'ERROR'
+                                      },
+                                      user)
+                return 1
+
+        return 0
+    
     """
     Insert a row in a table
     """
@@ -2800,6 +2812,15 @@ class PDBClient (object):
                 subject = 'PDB-Dev {} {}: {} ({})'.format(rid, 'HOLD' if hold else 'REL', process_status_error, user)
                 self.sendMail(subject, error_message)
                 return
+            else:
+                """
+                Generate the Conform_Dictionary entries
+                """
+                returncode = self.generateConformDictionary ('PDB', 'entry', entry_id, process_status_error, rid, user)
+                
+                if returncode != 0:
+                    return
+            
             if self.reportValidation:
                 if self.report_validation(rid, entry_id, user, user_id, hold) != (None, None, None):
                     if self.generate_JSON_mmCIF_content(rid, entry_id, user, user_id, hold) != None:
