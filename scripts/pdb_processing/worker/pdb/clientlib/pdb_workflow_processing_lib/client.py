@@ -2351,6 +2351,7 @@ class PDBClient (object):
     
             self.cleanupSingularityDir(f'{self.validation_dir}/input')
             self.cleanupSingularityDir(f'{self.validation_dir}/output')
+            self.cleanupSingularityDir(f'{self.validation_dir}/cache')
             shutil.copy2(file_path, f'{self.validation_dir}/input')
             
             filename = os.path.basename(file_path)
