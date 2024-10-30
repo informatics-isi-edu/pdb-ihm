@@ -28,6 +28,7 @@ from the tables in the **`m`** groups.
 python -m pdb_dev.config.app.get_catalog_model data.pdb-dev.org 1 display:constraints PDB > catalog_1_display_PDB_constraints.json
 ```
 The **`catalog_1_display_PDB_constraints.json`** file contains for each table the columns that are **`keys`**, **`foreign keys`** or **`referenced_by`**.
+This is used to lookup the referenced rows (in the parent table) in order to do proper insertion of the referring rows.
 
 4. Generating the optional foreign keys to the **`RID`** column
 ```
@@ -37,15 +38,18 @@ The tool uses as input the **`catalog_1_display_PDB_constraints.json`** file gen
 
 5. Generating the **`ermrest`** tables from the original [json-full-db-ihm_dev_full-col-ihm_dev_full.json](https://github.com/informatics-isi-edu/protein-database/blob/master/config-scripts/initial/json-may-27-2021/json_schema/json-full-db-ihm_dev_full-col-ihm_dev_full.json) file in a format closer to the **`ermrest`** introspection
 ```
-python -m pdb_dev.config.app.get_ermrest_table_defs json-full-db-ihm_dev_full-col-ihm_dev_full.json ermrest_table_defs.json
+python -m pdb_dev.config.app.get_ermrest_table_defs json-full-db-ihm_dev_full-col-ihm_dev_full.json ermrest_table_defs.json.
 ```
-The **`ermrest_table_defs.json`** file contains the `ermrest` tables and columns that will be exported in the `system generated mmCIF` file.
+The **`ermrest_table_defs.json`** file contains the `ermrest` tables and columns that will be exported in the `system generated mmCIF` file. 
+This is needed to identify extra tables that are not in ermrest that need to be part of the mmCIF export.
+
 
 6. Generating the columns that have the **`.`** as a default value
 ```
 python -m pdb_dev.config.app.get_mmcif_defaults data.pdb-dev.org 1 PDB > mmCIF_defaults.json
 ```
 In case those columns don't have a value set by the user, the default value **`.`** will be used.
+This rule is only applied to some columns with null value and cannot be broadly applied (check with Brinda)
 
 7. Generating the **`combo1`** columns referring the **`RID`** column
 ```
