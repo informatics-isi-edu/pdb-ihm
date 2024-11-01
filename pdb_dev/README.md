@@ -69,7 +69,7 @@ The output **`vocab_ucode.json`** file contains the vocabulary columns whose val
 
 This config contains a list of column orders of composite primary keys to be exported in that order. 
 
-10. **exported_vocab.map**
+11. **exported_vocab.map**
 
 This is a data file. Currently is not used.
 
