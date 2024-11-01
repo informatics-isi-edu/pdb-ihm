@@ -28,7 +28,6 @@ from the tables in the **`m`** groups.
 python -m pdb_dev.config.app.get_catalog_model data.pdb-dev.org 1 display:constraints PDB > catalog_1_display_PDB_constraints.json
 ```
 The **`catalog_1_display_PDB_constraints.json`** file contains for each table the columns that are **`keys`**, **`foreign keys`** or **`referenced_by`**.
-This is used to lookup the referenced rows (in the parent table) in order to do proper insertion of the referring rows.
 
 4. Generating the optional foreign keys to the **`RID`** column
 ```
@@ -38,30 +37,39 @@ The tool uses as input the **`catalog_1_display_PDB_constraints.json`** file gen
 
 5. Generating the **`ermrest`** tables from the original [json-full-db-ihm_dev_full-col-ihm_dev_full.json](https://github.com/informatics-isi-edu/protein-database/blob/master/config-scripts/initial/json-may-27-2021/json_schema/json-full-db-ihm_dev_full-col-ihm_dev_full.json) file in a format closer to the **`ermrest`** introspection
 ```
-python -m pdb_dev.config.app.get_ermrest_table_defs json-full-db-ihm_dev_full-col-ihm_dev_full.json ermrest_table_defs.json.
+python -m pdb_dev.config.app.get_ermrest_table_defs json-full-db-ihm_dev_full-col-ihm_dev_full.json ermrest_table_defs.json
 ```
-The **`ermrest_table_defs.json`** file contains the `ermrest` tables and columns that will be exported in the `system generated mmCIF` file. 
-This is needed to identify extra tables that are not in ermrest that need to be part of the mmCIF export.
+The **`ermrest_table_defs.json`** file contains the `ermrest` tables and columns that will be exported in the `system generated mmCIF` file.
 
+6. **mmcif_tables_input2output.json** (provided by Brinda)
 
-6. Generating the columns that have the **`.`** as a default value
+This config file contains the table names to be directly imported from the user-submitted mmCIF file directly to the system generated mmCIF file.
+
+7. Generating the columns that have the **`.`** as a default value
 ```
 python -m pdb_dev.config.app.get_mmcif_defaults data.pdb-dev.org 1 PDB > mmCIF_defaults.json
 ```
 In case those columns don't have a value set by the user, the default value **`.`** will be used.
-This rule is only applied to some columns with null value and cannot be broadly applied (check with Brinda)
 
-7. Generating the **`combo1`** columns referring the **`RID`** column
+8. Generating the **`combo1`** columns referring the **`RID`** column
 ```
 python -m pdb_dev.config.app.get_columns_end_with_rid data.pdb-dev.org 1
 ```
 The output is the **`combo1_columns.json`** file.
 
-8. Generating the vocabulary **`ucode`** columns
+9. Generating the vocabulary **`ucode`** columns
 ```
 python -m pdb_dev.config.app.get_ucode_all data.pdb-dev.org 1
 ```
 The script needs to have the [testGetUcode.py](https://github.com/informatics-isi-edu/protein-database/blob/master/scripts/dictionary-api/testGetUcode.py), 
 and from the `py-rcsb_db` package, the `py-rcsb_db/CACHE/dictionaries/mmcif_ihm_ext.dic` and `py-rcsb_db/CACHE/dictionaries/mmcif_ihm.dic` files.
 The output **`vocab_ucode.json`** file contains the vocabulary columns whose values will be converted to upper case.
+
+10. **order_by.json**
+
+This config contains a list of column orders of composite primary keys to be exported in that order. 
+
+10. **exported_vocab.map**
+
+This is a data file. Currently is not used.
 
