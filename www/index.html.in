@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="The PDB-Dev data harvesting system enables the deposition of diverse data used in integrative modeling studies.">
+  <meta name="description" content="The PDB-IHM data harvesting system enables the deposition of diverse data used in integrative modeling studies.">
   <meta rel="author" href="">
   <meta rel="publisher" href="">
 
-  <title>PDB-Dev Data Harvesting System</title>
+  <title>PDB-IHM Data Harvesting System</title>
 
   <link rel="stylesheet" href="./assets/css/main.css">
   <link rel="icon" href="/favicon.ico" type="image/x-icon" />
@@ -23,7 +23,7 @@
 <header id="header">
 
   <span class="titlewrap">
-  <h1><span>PDB-Dev Data Harvesting System</span></h1>
+  <h1><span>PDB-IHM Data Harvesting System</span></h1>
   </span>
 
 </header>
@@ -35,25 +35,25 @@
   	<img src="./assets/img/npc.png">
   </div>
 <!--
-  <h3 id="constructs" class="bigger">PDB-Dev Data Harvesting System</h3>
+  <h3 id="constructs" class="bigger">PDB-IHM Data Harvesting System</h3>
 -->
 <!--  <div class="explorer-content"> -->
   <div class="box">
-  	<p>Welcome to the <strong>PDB-Dev Data Harvesting System</strong>. </p>
-    <p align="justify">The PDB-Dev Data Harvesting System provides a web interface for depositors to assemble all the information required for archiving integrative structures in PDB-Dev and to create a compliant mmCIF file. This includes the submission of integrative structures, associated spatial restraints and starting models used, modeling protocols and metadata information (citations, authors, software, data in external repositories, reference sequence information etc.).</p>
+  	<p>Welcome to the <strong>PDB-IHM Data Harvesting System</strong>. </p>
+    <p align="justify">The PDB-IHM (formerly PDB-Dev) Data Harvesting System provides a web interface for depositors to assemble all the information required for archiving integrative structures in PDB-IHM and to create a compliant mmCIF file. This includes the submission of integrative structures, associated spatial restraints and starting models used, modeling protocols, and metadata information (citations, authors, software, data in external repositories, reference sequence information etc.).</p>
     <p align="justify">The Data Harvesting System provides an automated mechanism for collecting diverse and heterogeneous types of integrative structures and restraint data. The system has been developed using the <a href="http://isrd.isi.edu/deriva/">DERIVA</a> scientific asset management platform and is supported by the <a href="https://mmcif.wwpdb.org">PDBx/mmCIF</a> dictionary, the <a href="https://github.com/ihmwg/IHMCIF">IHMCIF dictionary</a> and the <a href="https://github.com/ihmwg/python-ihm">python-ihm</a> software library.</p>
     <p>
-    <p align="justify"> From August 14 2024, <a href="https://pdb-dev.wwpdb.org/">PDB-Dev</a> will issue 4-character PDB accession codes as part of the unification process with the PDB archive. Integrative structures processed by PDB-Dev will be made available alongside experimental structures in the <a href="https://files.wwpdb.org/pub/">PDB archive</a>. PDB-Dev accessions that have been already issued will be supported but new integrative structures will not be issued PDB-Dev accession codes and only PDB accession codes will be issued going forward. </p>
+    <p align="justify"> From August 14 2024, <a href="https://pdb-ihm.org/">PDB-IHM</a> will issue 4-character PDB accession codes as part of the unification process with the PDB archive. Integrative structures processed by PDB-IHM will be made available alongside experimental structures in the <a href="https://files.wwpdb.org/pub/">PDB archive</a>. Entries that already have PDB-Dev accession codes have been issued new PDB accession codes, which are now the primary accession codes for structures in PDB-IHM. New integrative structures deposited to PDB-IHM will only be issued PDB accession codes. </p>
       Use the links below to start exploring the system.
     </p>
 <div class="demo-links">
 
   <p class="demo">New Account: <a href="https://app.globus.org/groups/99da042e-64a6-11ea-ad5f-0ef992ed7ca1/about">Register using Globus</a> </p>
-  <p class="demo">Submit Data: <a href="https://data.pdb-dev.org/chaise/recordset/#1/PDB:entry@sort(RID)">Create a New Entry</a> </p>
+  <p class="demo">Submit Data: <a href="https://data.pdb-ihm.org/chaise/recordset/#1/PDB:entry@sort(RID)">Create a New Entry</a> </p>
   <p class="demo">Documentation: <a href="https://docs.google.com/document/d/1577tJoeXxY5MtolMHzJ5000b-dz2M8JrONAyhZRvXVc/">User Guide</a> </p>
 
 </div>
-  <p>Please report problems to <a href="mailto:pdb-dev@mail.wwpdb.org">pdb-dev@mail.wwpdb.org</a>. </p>
+  <p>Please report problems to <a href="mailto:helpdesk@pdb-ihm.org">helpdesk@pdb-ihm.org</a>. </p>
 <br>
 </div>
 <!-- </div> -->
