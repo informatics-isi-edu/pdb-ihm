@@ -18,7 +18,7 @@ then
 	prefix="production"
 fi
 
-make all
 make clean
+make all
 deriva-annotation-config --host ${host} --config-file ${prefix}_annotation_config.json ${catalog_id}
 python3 -m pdb_dev.config.annotation.apply_all_annotations --host ${host} --catalog-id ${catalog_id}
