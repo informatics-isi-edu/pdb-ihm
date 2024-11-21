@@ -401,7 +401,8 @@ class ArchiveClient (object):
                     self.current_entry_latest_archive[rid]["Submission_History"] = submission_history
                 else:  # update the history in descending order (e.g. creating a new dict with the current submission at the beginning, following by old history)
                     if self.submission_time in self.entry_latest_archive[rid]["Submission_History"].keys():
-                        self.current_entry_latest_archive[rid]["Submission_History"] = self.entry_latest_archive[rid]["Submission_History"].update(submission_history)
+                        self.current_entry_latest_archive[rid]["Submission_History"] = self.entry_latest_archive[rid]["Submission_History"].copy()
+                        self.current_entry_latest_archive[rid]["Submission_History"].update(submission_history)
                     else: 
                         self.current_entry_latest_archive[rid]["Submission_History"] = dict(submission_history, **self.entry_latest_archive[rid]["Submission_History"])
                 #print("+++++ rid:%s entry_submission_history:%s + %s \n --> current_history:%s " % (rid, self.entry_latest_archive[rid]["Submission_History"], submission_history, self.current_entry_latest_archive[rid]["Submission_History"]))
