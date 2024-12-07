@@ -127,16 +127,16 @@ def load(config_filename, args):
 
     primary_accession_code_mode = conf.get('primary_accession_code_mode', 'PDB')    
     if primary_accession_code_mode not in ['PDBDEV', 'PDB']:
-        raise ConfigError(f'Invalid value for the primary_accession_code_mode: {config['primary_accession_code_mode']}.')
+        raise ConfigError(f'Invalid value for the primary_accession_code_mode: {config["primary_accession_code_mode"]}.')
     config['primary_accession_code_mode'] = primary_accession_code_mode
 
     alternative_accession_code_mode = conf.get('alternative_accession_code_mode', 'PDBDEV')
     if alternative_accession_code_mode not in ['PDBDEV', 'PDB', 'None']:
-        raise ConfigError(f'Invalid value for the alternative_accession_code_mode: {config['alternative_accession_code_mode']}.')        
+        raise ConfigError(f'Invalid value for the alternative_accession_code_mode: {config["alternative_accession_code_mode"]}.')        
     config['alternative_accession_code_mode'] = alternative_accession_code_mode
     
     if config['primary_accession_code_mode'] == config['alternative_accession_code_mode']:
-        raise ConfigError(f'primary_accession_code_mode "{config['primary_accession_code_mode']}" must be different from alternative_accession_code_mode "{config['alternative_accession_code_mode']}".')        
+        raise ConfigError(f'primary_accession_code_mode {config["primary_accession_code_mode"]} must be different from alternative_accession_code_mode {config["alternative_accession_code_mode"]}.')        
 
     make_mmCIF = conf.get('make_mmCIF', None)
     if not make_mmCIF or not os.path.isdir(make_mmCIF):

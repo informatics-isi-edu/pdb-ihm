@@ -33,6 +33,8 @@ class Config():
     is_prod = False
     is_staging = False
     is_dev = False
+    shared_dev_env = True # This is needed for adjusting hatrac namespace for dev env.
+    catalog_name = None
     
     def __init__(self):
         pass
@@ -44,11 +46,14 @@ class Config():
         
         if host == "data.pdb-dev.org":
             self.is_www = True
-            self.is_prod = True            
+            self.is_prod = True
+            self.catalog_name = "prod"
         elif host in ["dev.pdb-dev.org", "dev-aws.pdb-dev.org"] and catalog_id == "50":
             self.is_staging = True
+            self.catalog_name = "staging"
         else:
             self.is_dev = True
+            self.catalog_name = "dev"
             
     def print(self):
         print("host:%s, catalog_id:%s, is_www=%s, is_staging=%s, is_dev=%s" % (self.host, self.catalog_id, self.is_www, self.is_staging, self.is_dev))
