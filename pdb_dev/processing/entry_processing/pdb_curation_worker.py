@@ -1,0 +1,278 @@
+#!/usr/bin/python
+
+import os
+import json
+from deriva.core import PollingErmrestCatalog, init_logging, urlquote
+import subprocess
+import logging
+import sys
+import traceback
+import logging.handlers
+
+# Loglevel dictionary
+__LOGLEVEL = {'error': logging.ERROR,
+              'warning': logging.WARNING,
+              'info': logging.INFO,
+              'debug': logging.DEBUG}
+
+FORMAT = '%(asctime)s: %(levelname)s <%(module)s>: %(message)s'
+
+logger = logging.getLogger(__name__)
+loglevel = os.getenv('LOGLEVEL', 'info')
+loglevel =__LOGLEVEL.get(loglevel)
+logfile = os.getenv('PDB_LOG', '/home/pdbihm/pdb/log/pdb.log')
+handler=logging.handlers.TimedRotatingFileHandler(logfile,when='D',backupCount=7)
+logger.addHandler(handler)
+init_logging(level=loglevel, log_format=FORMAT, file_path=logfile)
+
+Process_Status_Terms = {
+    'NEW': 'New (trigger backend process)',
+    'REPROCESS': 'Reprocess (trigger backend process after Error)',
+    'IN_PROGRESS_UPLOADING_mmCIF_FILE': 'In progress: processing uploaded mmCIF file',
+    'IN_PROGRESS_GENERATING_mmCIF_FILE': 'In progress: generating mmCIF file',
+    'IN_PROGRESS_GENERATING_SYSTEM_FILES': 'In progress: generating system files',
+    'IN_PROGRESS_RELEASING_ENTRY': 'In progress: releasing entry',
+    'SUCCESS': 'Success',
+    'RESUME': 'Resume (trigger backend process)',
+    'ERROR_PROCESSING_UPLOADED_mmCIF_FILE': 'Error: processing uploaded mmCIF file',
+    'ERROR_GENERATING_mmCIF_FILE': 'Error: generating mmCIF file',
+    'ERROR_GENERATING_SYSTEM_FILES': 'Error: generating system files',
+    'ERROR_RELEASING_ENTRY': 'Error: releasing entry',
+    'IN_PROGRESS_PROCESSING_UPLOADED_RESTRAINT_FILES': 'In progress: processing uploaded restraint files',
+    'ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES': 'Error: processing uploaded restraint files'
+    }
+
+class WorkerRuntimeError (RuntimeError):
+    pass
+
+class WorkerBadDataError (RuntimeError):
+    pass
+
+class WorkUnit (object):
+    def __init__(
+            self,
+            get_claimable_url,
+            put_claim_url,
+            put_update_baseurl,
+            run_row_job,
+            claim_input_data=lambda row: {'RID': row['RID'], 'Process_Status': "in progress"},
+            failure_input_data=lambda row, e: {'RID': row['RID'], 'Process_Status': "ERROR"}
+    ):
+        self.get_claimable_url = get_claimable_url
+        self.put_claim_url = put_claim_url
+        self.put_update_baseurl = put_update_baseurl
+        self.run_row_job = run_row_job
+        self.claim_input_data = claim_input_data
+        self.failure_input_data = failure_input_data
+        self.idle_etag = None
+
+_work_units = []
+
+def entry_row_job(handler):
+    """
+    Process mmCIF the PDB:entry table.
+    """
+    pdb_row_job(handler, 'entry')
+    
+def entry_export_job(handler):
+    """
+    Export mmCIF.
+    """
+    pdb_row_job(handler, 'export')
+    
+def submission_complete_row_job(handler):
+    """
+    Process set the accession_code in the PDB:entry table.
+    """
+    pdb_row_job(handler, 'accession_code')
+    
+def release_ready_row_job(handler):
+    """
+    Include in the mmCIF file the records for release.
+    """
+    pdb_row_job(handler, 'release_mmCIF')
+    
+def Entry_Related_File_row_job(handler):
+    """
+    Load data from the csv/tsv file into a table.
+    """
+    pdb_row_job(handler, 'Entry_Related_File')
+    
+def pdb_row_job(handler, action):
+	"""
+	Run the script for the PDB Workflow Processing.
+	"""
+	
+	try:
+		row = handler.row
+		unit = handler.unit
+		
+		logger.info('Running job for the PDB Workflow Processing for RID="%s".' % (row['RID'])) 
+		args = ['env', 'action={}'.format(action),  'RID={}'.format(row['RID']), 'URL=https://{}/ermrest/catalog/{}'.format(Worker.servername, Worker.catalog_number), '/usr/local/bin/pdb_process_entry', '--config', '{}'.format(Worker.config_file)]
+		p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		stdoutdata, stderrdata = p.communicate()
+		returncode = p.returncode
+		if returncode != 0:
+			logger.error('Could not execute the script for the PDB Workflow Processing.\nstdoutdata: %s\nstderrdata: %s\n' % (stdoutdata, stderrdata)) 
+			raise WorkerRuntimeError('Could not execute the script for the PDB Workflow Processing.\nstdoutdata: %s\nstderrdata: %s\n' % (stdoutdata, stderrdata))
+	except:
+		et, ev, tb = sys.exc_info()
+		logger.error('got unexpected exception "%s"' % str(ev))
+		logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+		returncode = 1
+	    
+	logger.info('Finished job for the PDB Workflow Processing for RID="%s".' % (row['RID'])) 
+        
+
+_work_units.append(
+    WorkUnit(
+        '/entity/A:=PDB:entry/Manual_Processing=False/Process_Status={};Process_Status={};Process_Status={}/Vocab:Workflow_Status/Name=DEPO/$A?limit=1'.format(urlquote(Process_Status_Terms['NEW']), urlquote(Process_Status_Terms['RESUME']), urlquote(Process_Status_Terms['REPROCESS'])),
+        '/attributegroup/PDB:entry/RID;Process_Status',
+        '/attributegroup/PDB:entry/RID',
+        entry_row_job,
+        claim_input_data=lambda row: {'RID': row['RID'], 'Process_Status': Process_Status_Terms['IN_PROGRESS_UPLOADING_mmCIF_FILE']},
+        failure_input_data=lambda row, e: {'RID': row['RID'], 'Process_Status': Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE']}
+    )
+)
+
+_work_units.append(
+    WorkUnit(
+        '/entity/A:=PDB:entry/Manual_Processing=False/Process_Status={};Process_Status={};Process_Status={}/Vocab:Workflow_Status/Name=SUBMIT/$A?limit=1'.format(urlquote(Process_Status_Terms['NEW']), urlquote(Process_Status_Terms['RESUME']), urlquote(Process_Status_Terms['REPROCESS'])),
+        '/attributegroup/PDB:entry/RID;Process_Status',
+        '/attributegroup/PDB:entry/RID',
+        entry_export_job,
+        claim_input_data=lambda row: {'RID': row['RID'], 'Process_Status': Process_Status_Terms['IN_PROGRESS_GENERATING_mmCIF_FILE']},
+        failure_input_data=lambda row, e: {'RID': row['RID'], 'Process_Status': Process_Status_Terms['ERROR_GENERATING_mmCIF_FILE']}
+    )
+)
+
+_work_units.append(
+    WorkUnit(
+        '/entity/A:=PDB:entry/Manual_Processing=False/Process_Status={};Process_Status={}/Vocab:Workflow_Status/Name=SUBMISSION%20COMPLETE/$A?limit=1'.format(urlquote(Process_Status_Terms['RESUME']), urlquote(Process_Status_Terms['REPROCESS'])),
+        '/attributegroup/PDB:entry/RID;Process_Status',
+        '/attributegroup/PDB:entry/RID',
+        submission_complete_row_job,
+        claim_input_data=lambda row: {'RID': row['RID'], 'Process_Status': Process_Status_Terms['IN_PROGRESS_GENERATING_SYSTEM_FILES']},
+        failure_input_data=lambda row, e: {'RID': row['RID'], 'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES']}
+    )
+)
+
+_work_units.append(
+    WorkUnit(
+        '/entity/A:=PDB:entry/Manual_Processing=False/Process_Status={};Process_Status={}/Vocab:Workflow_Status/Name=RELEASE%20READY/$A?limit=1'.format(urlquote(Process_Status_Terms['RESUME']), urlquote(Process_Status_Terms['REPROCESS'])),
+        '/attributegroup/PDB:entry/RID;Process_Status',
+        '/attributegroup/PDB:entry/RID',
+        release_ready_row_job,
+        claim_input_data=lambda row: {'RID': row['RID'], 'Process_Status': Process_Status_Terms['IN_PROGRESS_RELEASING_ENTRY']},
+        failure_input_data=lambda row, e: {'RID': row['RID'], 'Process_Status': Process_Status_Terms[ERROR_RELEASING_ENTRY]}
+    )
+)
+
+_work_units.append(
+    WorkUnit(
+        '/entity/A:=PDB:Entry_Related_File/Restraint_Process_Status={};Restraint_Process_Status={};Restraint_Process_Status={}/Vocab:Workflow_Status/Name=DEPO/$A/PDB:entry/Manual_Processing=False&Process_Status={}/$A?limit=1'.format(urlquote(Process_Status_Terms['NEW']), urlquote(Process_Status_Terms['RESUME']), urlquote(Process_Status_Terms['REPROCESS']), urlquote(Process_Status_Terms['SUCCESS'])),
+        '/attributegroup/PDB:Entry_Related_File/RID;Restraint_Process_Status',
+        '/attributegroup/PDB:Entry_Related_File/RID',
+        Entry_Related_File_row_job,
+        claim_input_data=lambda row: {'RID': row['RID'], 'Restraint_Process_Status': Process_Status_Terms['IN_PROGRESS_PROCESSING_UPLOADED_RESTRAINT_FILES']},
+        failure_input_data=lambda row, e: {'RID': row['RID'], 'Restraint_Process_Status': Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES']}
+    )
+)
+
+
+class Worker (object):
+    # server to talk to... defaults to our own FQDN
+    servername = os.getenv('PDB_SERVER', 'data.pdb-dev.org')
+
+    # catalog number
+    catalog_number = os.getenv('CATALOG', '50')
+
+    # secret session cookie
+    credfile = os.getenv('PDB_CREDENTIALS', '/home/secrets/pdbihm/credentials.json')
+    credentials = json.load(open(credfile))
+
+    poll_seconds = int(os.getenv('PDB_POLL_SECONDS', '300'))
+    config_file = os.getenv('PDB_CONFIG', '/home/pdbihm/pdb/config/pdb.conf')
+
+    # these are peristent/logical connections so we create once and reuse
+    # they can retain state and manage an actual HTTP connection-pool
+    catalog = PollingErmrestCatalog(
+        'https', 
+        servername,
+        catalog_number,
+        credentials
+    )
+    catalog.dcctx['cid'] = 'pipeline/pdb'
+
+    def __init__(self, row, unit):
+        logger.info('Claimed job %s.\n' % row.get('RID'))
+
+        self.row = row
+        self.unit = unit
+
+    work_units = _work_units # these are defined above w/ their funcs and URLs...
+
+    @classmethod
+    def look_for_work(cls):
+        """Find, claim, and process work for each work unit.
+
+        Do find/claim with HTTP opportunistic concurrency control and
+        caching for efficient polling and quiescencs.
+
+        On error, set Process_Status="failed: reason"
+
+        Result:
+         true: there might be more work to claim
+         false: we failed to find any work
+        """
+        found_work = False
+
+        for unit in cls.work_units:
+            # this handled concurrent update for us to safely and efficiently claim a record
+            try:
+                unit.idle_etag, batch = cls.catalog.state_change_once(
+                    unit.get_claimable_url,
+                    unit.put_claim_url,
+                    unit.claim_input_data,
+                    unit.idle_etag
+                )
+            except:
+                # keep going if we have a broken WorkUnit
+                continue
+            # batch may be empty if no work was found...
+            for row, claim in batch:
+                found_work = True
+                try:
+                    handler = cls(row, unit)
+                    unit.run_row_job(handler)
+                except WorkerBadDataError as e:
+                    logger.error("Aborting task %s on data error: %s\n" % (row["RID"], e))
+                    cls.catalog.put(unit.put_claim_url, json=[unit.failure_input_data(row, e)])
+                    # continue with next task...?
+                except WorkerRuntimeError as e:
+                    logger.error("Aborting task %s on data error: %s\n" % (row["RID"], e))
+                    cls.catalog.put(unit.put_claim_url, json=[unit.failure_input_data(row, e)])
+                    # continue with next task...?
+                except Exception as e:
+                    cls.catalog.put(unit.put_claim_url, json=[unit.failure_input_data(row, e)])
+                    raise
+
+        return found_work
+
+    @classmethod
+    def blocking_poll(cls):
+        return cls.catalog.blocking_poll(cls.look_for_work, polling_seconds=cls.poll_seconds)
+
+
+# switch user to pdb-ihm
+# > sudo su - pdbihm
+# > PDB_CREDENTIALS="/home/pdbihm/.secrets/credentials.json" PDB_SERVER="data-dev.pdb-ihm.org" CATALOG="99" PDB_CONFIG="/home/pdbihm/pdb/config/staging/pdb_conf.json" PDB_LOG="/home/pdbihm/pdb/log/staging/pdb.log" /usr/local/bin/pdb_curation_worker
+#
+def main():
+    DESC = "Curation processing worker"
+    INFO = "For more information see: https://github.com/informatics-isi-edu/pdb-ihm"
+    return Worker.blocking_poll()
+
+
+if __name__ == '__main__':
+    sys.exit(main())
