@@ -34,8 +34,8 @@ setup(
     entry_points={
         'console_scripts': [
             'pdb_dev_clear_entry_record = pdb_dev.tools.clear_entry_record:main',
-            'pdb_process_entry = pdb_dev.processing.curation.pdb_process_entry:main',
-            'pdb_curation_worker = pdb_dev.processing.curation.pdb_curation_worker:main',
+            'pdb_process_entry = pdb_dev.processing.entry_processing.pdb_process_entry:main',
+            'pdb_entry_processing_worker = pdb_dev.processing.entry_processing.pdb_entry_processing_worker:main',
         ]
     },
     # scripts

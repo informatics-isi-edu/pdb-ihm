@@ -260,7 +260,7 @@ To run this on command line
   - 2.1 pass all parameters through the cli
     > pdb_process_entry --host data-dev.pdb-ihm.org --catalog-id 99 --config /home/pdbihm/pdb/config/pdb_conf.json --action entry --rid 3-4RHT
   - 2.2. pass some parameters through environment variables (deprecated)
-    > URL="https://data-dev.pdb-ihm.org/ermrest/catalog/99" action="entry" RID="3-4RHT" pdb_process_entry --config /home/pdbihm/pdb/config/pdb_conf.json
+    > URL="https://data-dev.pdb-ihm.org/ermrest/catalog/99" action="entry" RID="3-4RHT" pdb_process_entry --config /home/pdbihm/dev/config/entry_processing/pdb_conf.json
 - Note: ACTION : ["entry", "export", "accession_code", "release_mmCIF", "Entry_Related_File"]
 """
 def main():
