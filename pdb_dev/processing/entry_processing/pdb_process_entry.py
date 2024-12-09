@@ -270,15 +270,15 @@ def main():
     try:
         cli = PDBDEV_CLI("pdb_process_entry", None, 1)
         cli.remove_options(['--pre-print', '--post-print', '--dry-run'])
-        cli.parser.add_argument('--config', metavar='<config-file>', action='store', type=str, help='The JSON configuration file.', required=True)
+        cli.parser.add_argument('--config', metavar='<config-file>', action='store', type=str, help='The JSON configuration file.', required=False)
         #cli.parser.add_argument('--RID', metavar='<RID>', action='store', type=str, help='entry RID to be processed', required=False)
         cli.parser.add_argument('--action', metavar='<action>',  action='store', type=str, help='Workflow actions (entry, export, accession_code, release_mmCIF, Entry_Related_File)', default='entry', required=False)
         cli.parser.add_argument('--verbose', action='store_true', help='Print status to stdout', default=False, required=False)
         #cli.parser.add_argument('--rollback', action='store_true', help='Rollback ermrest update', default=False, required=False)
         
         args = cli.parse_cli()
-        
-        config_filename = args.config
+
+        config_filename = os.getenv('PDB_CONFIG', args.config)
         config = load(config_filename, args)
         entry_processor = EntryProcessor(**config)
         print ('The client will be started')
