@@ -82,22 +82,22 @@ def load(config_filename, args):
     config['logfile'] = logfile    
     config['cfg'] = cfg
     
-    # Ermrest settings -- get from command line args if exist, then look for environment variables (for backward compatibility)
-    if args.host and args.catalog_id:
-        hostname = args.host
-        catalog_id = args.catalog_id
-        logger.info(f'hostname: {hostname}, catalog_id: {catalog_id}')
-    else:
-        url = os.getenv('URL', None)
-        if not url:
-            raise ConfigError(f'Require host and catalog number. Either provide "host" and "catalog-id" CLI parameters or proper "URL" env variable. URL:{URL}')            
+    # Ermrest settings -- look for environment variables (for backward compatibility) first, then command line (args.host and args.catalog_id have defaults) 
+    url = os.getenv('URL', None)
+    if url:
         elements = urlparse(url)
         scheme = elements[0]
         hostname = elements[1].split(":")[0]
         port = elements[1].split(":")[1] if ":" in elements[1] else None
         path = elements[2]
         catalog_id = int(path.split('/')[-1]) if path else None
-        logger.info('URL: %s' % url)        
+        logger.info('URL: %s' % url)
+    else:
+        if not args.host or not args.catalog_id :
+            raise ConfigError(f'Require host and catalog number. Either provide "host" and "catalog-id" CLI parameters or proper "URL" env variable.')                                
+        hostname = args.host
+        catalog_id = args.catalog_id
+        logger.info(f'args: hostname: {hostname}, catalog_id: {catalog_id}')
         
     if not hostname or not catalog_id:
         raise ConfigError(f'Require host and catalog number. Either provide "host" and "catalog-id" CLI parameters or proper "URL" env variable. args.host:{args.host}, args.catalog-id:{args.catalog_id}, URL:{URL}')
