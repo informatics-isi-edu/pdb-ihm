@@ -62,7 +62,7 @@ def load(config_filename, args):
             loglevel = conf.get('loglevel', None)
             #logfile = conf.get('log', None)            
             log_dir = conf.get('log_dir')
-            logfile = "%s/curation_%s.log" % (log_dir, cfg.catalog_name)
+            logfile = "%s/process_entry_%s.log" % (log_dir, cfg.catalog_name)
             if loglevel and logfile:
                 handler=logging.handlers.TimedRotatingFileHandler(logfile,when='D',backupCount=7)
                 logger.addHandler(handler)
@@ -136,11 +136,11 @@ def load(config_filename, args):
     config['alternative_accession_code_mode'] = alternative_accession_code_mode
     
     if config['primary_accession_code_mode'] == config['alternative_accession_code_mode']:
-        raise ConfigError(f'primary_accession_code_mode {config["primary_accession_code_mode"]} must be different from alternative_accession_code_mode {config["alternative_accession_code_mode"]}.')        
+        raise ConfigError(f'primary_accession_code_mode {config["primary_accession_code_mode"]} must be different from alternative_accession_code_mode {config["alternative_accession_code_mode"]}.')
 
     make_mmCIF = conf.get('make_mmCIF', None)
     if not make_mmCIF or not os.path.isdir(make_mmCIF):
-        raise ConfigError('make_mmCIF directory must be provided and exist.')
+        raise ConfigError(f'make_mmCIF directory {make_mmcCIF} must be provided and exist.')
     config['make_mmCIF'] = make_mmCIF
     
     py_rcsb_db = conf.get('py_rcsb_db', None)
