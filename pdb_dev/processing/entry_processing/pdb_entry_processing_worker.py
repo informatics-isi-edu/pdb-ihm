@@ -239,10 +239,10 @@ class Worker (object):
                 )
             except Exception as e:
                 # keep going if we have a broken WorkUnit
-		et, ev, tb = sys.exc_info()
-		sys.stderr.write('Looking for job: got unexpected exception "%s"\n' % str(ev))
-		logger.error('Looking for job: got unexpected exception "%s"' % str(ev))
-		logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+                et, ev, tb = sys.exc_info()
+                sys.stderr.write('Looking for job: got unexpected exception "%s"\n' % str(ev))
+                logger.error('Looking for job: got unexpected exception "%s"' % str(ev))
+                logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
                 continue
             # batch may be empty if no work was found...
             for row, claim in batch:
