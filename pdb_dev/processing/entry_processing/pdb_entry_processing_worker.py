@@ -2,7 +2,7 @@
 
 import os
 import json
-from deriva.core import PollingErmrestCatalog, init_logging, urlquote
+from deriva.core import PollingErmrestCatalog, init_logging, urlquote, get_credential
 import subprocess
 import logging
 import sys
