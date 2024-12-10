@@ -182,17 +182,18 @@ _work_units.append(
 
 class Worker (object):
     # server to talk to... defaults to our own FQDN
-    servername = os.getenv('PDB_SERVER', 'data.pdb-dev.org')
+    servername = os.getenv('PDB_SERVER', 'data-dev.pdb-ihm.org')
 
     # catalog number
     catalog_number = os.getenv('CATALOG', '50')
 
     # secret session cookie
-    credfile = os.getenv('PDB_CREDENTIALS', '/home/secrets/pdbihm/credentials.json')
-    credentials = json.load(open(credfile))
+    credfile = os.getenv('PDB_CREDENTIALS', None)
+    credentials = get_credential(servername, credfile)  # old way of using token
+    #credentials = json.load(open(credfile))
 
     poll_seconds = int(os.getenv('PDB_POLL_SECONDS', '300'))
-    config_file = os.getenv('PDB_CONFIG', '/home/pdbihm/pdb/config/pdb.conf')
+    config_file = os.getenv('PDB_CONFIG', '/home/pdbihm/config/entry_processing/pdb_conf.json')
 
     # these are peristent/logical connections so we create once and reuse
     # they can retain state and manage an actual HTTP connection-pool
@@ -236,8 +237,12 @@ class Worker (object):
                     unit.claim_input_data,
                     unit.idle_etag
                 )
-            except:
+            except Exception as e:
                 # keep going if we have a broken WorkUnit
+		et, ev, tb = sys.exc_info()
+		sys.stderr.write('Looking for job: got unexpected exception "%s"\n' % str(ev))
+		logger.error('Looking for job: got unexpected exception "%s"' % str(ev))
+		logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
                 continue
             # batch may be empty if no work was found...
             for row, claim in batch:
@@ -266,12 +271,13 @@ class Worker (object):
 
 # switch user to pdb-ihm
 # > sudo su - pdbihm
-# > PDB_CREDENTIALS="/home/pdbihm/.secrets/credentials.json" PDB_SERVER="data-dev.pdb-ihm.org" CATALOG="99" PDB_CONFIG="/home/pdbihm/pdb/config/staging/pdb_conf.json" PDB_LOG="/home/pdbihm/pdb/log/staging/pdb.log" /usr/local/bin/pdb_curation_worker
+# > PDB_CREDENTIALS="/home/pdbihm/.secrets/credentials.json" PDB_SERVER="data-dev.pdb-ihm.org" CATALOG="99" PDB_CONFIG="/home/pdbihm/pdb/config/staging/pdb_conf.json" PDB_LOG="/home/pdbihm/pdb/log/staging/pdb.log" /usr/local/bin/pdb_entry_processing_worker
 #
 def main():
     DESC = "Curation processing worker"
     INFO = "For more information see: https://github.com/informatics-isi-edu/pdb-ihm"
-    return Worker.blocking_poll()
+    Worker.blocking_poll()
+    return 0
 
 
 if __name__ == '__main__':

@@ -102,7 +102,8 @@ def load(config_filename, args):
     if not hostname or not catalog_id:
         raise ConfigError(f'Require host and catalog number. Either provide "host" and "catalog-id" CLI parameters or proper "URL" env variable. args.host:{args.host}, args.catalog-id:{args.catalog_id}, URL:{URL}')
 
-    config["rid"] = args.rid if args.rid else os.getenv('RID', os.getenv('rid', None))
+    rid = os.getenv('RID', os.getenv('rid', None))
+    config["rid"] = rid if rid else args.rid  
     if not config["rid"]:
         raise ConfigError(f'Require rid. Either provide "rid" as CLI parameters or "RID" env variable.')
 
@@ -120,7 +121,7 @@ def load(config_filename, args):
     credentials = get_credential(hostname, credentials_file)
     if not credentials:
         raise ConfigError('Credential is NULL. Provide a proper credential file or set up credential under the user account properly. Provided credential file:%s' % (credentials_file))
-    #print("get_recential: %s" % (credentials))
+    #print("get_crecential: %s" % (credentials))
     config['credentials'] = credentials
     config['timeout'] = conf.get('timeout', 30)
 
