@@ -107,7 +107,7 @@ def pdb_row_job(handler, action):
 		row = handler.row
 		unit = handler.unit
 		
-		logger.info('Running job for the PDB Workflow Processing for RID="%s".' % (row['RID'])) 
+		logger.info('Running job for the PDB Workflow Processing for RID="%s" action=%s.' % (row['RID'], action)) 
 		args = ['env', 'action={}'.format(action),  'RID={}'.format(row['RID']), 'URL=https://{}/ermrest/catalog/{}'.format(Worker.servername, Worker.catalog_number), '/usr/local/bin/pdb_process_entry', '--config', '{}'.format(Worker.config_file)]
 		p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		stdoutdata, stderrdata = p.communicate()

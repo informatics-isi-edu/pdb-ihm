@@ -102,12 +102,12 @@ def load(config_filename, args):
     if not hostname or not catalog_id:
         raise ConfigError(f'Require host and catalog number. Either provide "host" and "catalog-id" CLI parameters or proper "URL" env variable. args.host:{args.host}, args.catalog-id:{args.catalog_id}, URL:{URL}')
 
-    rid = os.getenv('RID', os.getenv('rid', None))
-    config["rid"] = rid if rid else args.rid  
+    # RID are obtained from: env RID or rid, then args.rid
+    rid = os.getenv('RID', os.getenv('rid', args.rid))
     if not config["rid"]:
         raise ConfigError(f'Require rid. Either provide "rid" as CLI parameters or "RID" env variable.')
 
-    config["action"] = args.action if args.action else os.getenv('action', None)
+    config["action"] = os.getenv('action', args.action)
     if not config["action"]:
         raise ConfigError(f'Require action. Either provide "action" as CLI parameters or env variable.')
     
@@ -271,9 +271,9 @@ def main():
     try:
         cli = PDBDEV_CLI("pdb_process_entry", None, 1)
         cli.remove_options(['--pre-print', '--post-print', '--dry-run'])
+        # args.rid is a default parameter from PDBDEV_CLI
         cli.parser.add_argument('--config', metavar='<config-file>', action='store', type=str, help='The JSON configuration file.', required=False)
-        #cli.parser.add_argument('--RID', metavar='<RID>', action='store', type=str, help='entry RID to be processed', required=False)
-        cli.parser.add_argument('--action', metavar='<action>',  action='store', type=str, help='Workflow actions (entry, export, accession_code, release_mmCIF, Entry_Related_File)', default='entry', required=False)
+        cli.parser.add_argument('--action', metavar='<action>',  action='store', type=str, help='Workflow actions (entry, export, accession_code, release_mmCIF, Entry_Related_File)', required=False)
         cli.parser.add_argument('--verbose', action='store_true', help='Print status to stdout', default=False, required=False)
         #cli.parser.add_argument('--rollback', action='store_true', help='Rollback ermrest update', default=False, required=False)
         
