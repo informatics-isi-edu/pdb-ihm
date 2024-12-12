@@ -103,7 +103,7 @@ def load(config_filename, args):
         raise ConfigError(f'Require host and catalog number. Either provide "host" and "catalog-id" CLI parameters or proper "URL" env variable. args.host:{args.host}, args.catalog-id:{args.catalog_id}, URL:{URL}')
 
     # RID are obtained from: env RID or rid, then args.rid
-    rid = os.getenv('RID', os.getenv('rid', args.rid))
+    config["rid"] = os.getenv('RID', os.getenv('rid', args.rid))
     if not config["rid"]:
         raise ConfigError(f'Require rid. Either provide "rid" as CLI parameters or "RID" env variable.')
 
