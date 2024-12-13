@@ -207,7 +207,7 @@ class Worker (object):
     catalog.dcctx['cid'] = 'pipeline/pdb'
 
     def __init__(self, row, unit):
-        logger.info('Claimed job %s.\n' % row.get('RID'))
+        logger.info('\nClaimed job %s.' % row.get('RID'))
 
         self.row = row
         self.unit = unit
