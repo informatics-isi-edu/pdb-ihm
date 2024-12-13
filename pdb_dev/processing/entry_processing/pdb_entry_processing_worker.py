@@ -20,7 +20,7 @@ FORMAT = '%(asctime)s: %(levelname)s <%(module)s>: %(message)s'
 logger = logging.getLogger(__name__)
 loglevel = os.getenv('LOGLEVEL', 'info')
 loglevel =__LOGLEVEL.get(loglevel)
-logfile = os.getenv('PDB_LOG', '/home/pdbihm/pdb/log/pdb.log')
+logfile = os.getenv('PDB_LOG', '/home/pdbihm/pdb/log/entry_processing/pdb_entry_worker.log')
 handler=logging.handlers.TimedRotatingFileHandler(logfile,when='D',backupCount=7)
 logger.addHandler(handler)
 init_logging(level=loglevel, log_format=FORMAT, file_path=logfile)
@@ -99,30 +99,30 @@ def Entry_Related_File_row_job(handler):
     pdb_row_job(handler, 'Entry_Related_File')
     
 def pdb_row_job(handler, action):
-	"""
-	Run the script for the PDB Workflow Processing.
-	"""
-	
-	try:
-		row = handler.row
-		unit = handler.unit
-		
-		logger.info('Running job for the PDB Workflow Processing for RID="%s" action=%s.' % (row['RID'], action)) 
-		args = ['env', 'action={}'.format(action),  'RID={}'.format(row['RID']), 'URL=https://{}/ermrest/catalog/{}'.format(Worker.servername, Worker.catalog_number), '/usr/local/bin/pdb_process_entry', '--config', '{}'.format(Worker.config_file)]
-		p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-		stdoutdata, stderrdata = p.communicate()
-		returncode = p.returncode
-		if returncode != 0:
-			logger.error('Could not execute the script for the PDB Workflow Processing.\nstdoutdata: %s\nstderrdata: %s\n' % (stdoutdata, stderrdata)) 
-			raise WorkerRuntimeError('Could not execute the script for the PDB Workflow Processing.\nstdoutdata: %s\nstderrdata: %s\n' % (stdoutdata, stderrdata))
-	except:
-		et, ev, tb = sys.exc_info()
-		logger.error('got unexpected exception "%s"' % str(ev))
-		logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-		returncode = 1
-	    
-	logger.info('Finished job for the PDB Workflow Processing for RID="%s".' % (row['RID'])) 
+    """
+    Run the script for the PDB Workflow Processing.
+    """
+    try:
+        row = handler.row
+        unit = handler.unit
         
+        logger.info('Running entry_processing job: host=%s catalog-id=%s RID="%s" action=%s' % (Worker.servername, Worker.catalog_number, row['RID'], action))
+        #args = ['env', 'action={}'.format(action),  'RID={}'.format(row['RID']), 'URL=https://{}/ermrest/catalog/{}'.format(Worker.servername, Worker.catalog_number), '/usr/local/bin/pdb_process_entry', '--config', '{}'.format(Worker.config_file)]
+        args = ['env', 'ACTION={}'.format(action), 'PDB_SERVER={}'.format(Worker.servername), 'CATALOG={}'.format(Worker.catalog_number), 'RID={}'.format(row['RID']), '/usr/local/bin/pdb_process_entry', '--config', '{}'.format(Worker.config_file)]
+        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdoutdata, stderrdata = p.communicate()
+        returncode = p.returncode
+        if returncode != 0:
+            logger.error('Could not execute the script for the PDB Workflow Processing.\nstdoutdata: %s\nstderrdata: %s\n' % (stdoutdata, stderrdata)) 
+            raise WorkerRuntimeError('Could not execute the script for the PDB Workflow Processing.\nstdoutdata: %s\nstderrdata: %s\n' % (stdoutdata, stderrdata))
+    except:
+        et, ev, tb = sys.exc_info()
+        logger.error('got unexpected exception "%s"' % str(ev))
+        logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+        returncode = 1
+        
+    logger.info('Finished job for the PDB Workflow Processing for RID="%s".' % (row['RID'])) 
+    
 
 _work_units.append(
     WorkUnit(
@@ -182,16 +182,17 @@ _work_units.append(
 
 class Worker (object):
     # server to talk to... defaults to our own FQDN
-    servername = os.getenv('PDB_SERVER', 'data-dev.pdb-ihm.org')
+    servername = os.getenv('PDB_SERVER')
 
     # catalog number
-    catalog_number = os.getenv('CATALOG', '50')
+    catalog_number = os.getenv('CATALOG')
 
     # secret session cookie
     credfile = os.getenv('PDB_CREDENTIALS', None)
     credentials = get_credential(servername, credfile)  # old way of using token
     #credentials = json.load(open(credfile))
-
+    print("credential: %s" % (credentials))
+    
     poll_seconds = int(os.getenv('PDB_POLL_SECONDS', '300'))
     config_file = os.getenv('PDB_CONFIG', '/home/pdbihm/config/entry_processing/pdb_conf.json')
 

@@ -81,8 +81,9 @@ def load(config_filename, args):
     config['logger'] = logger
     config['logfile'] = logfile    
     config['cfg'] = cfg
-    
-    # Ermrest settings -- look for environment variables (for backward compatibility) first, then command line (args.host and args.catalog_id have defaults) 
+
+    '''deprecated
+    # Ermrest settings -- look for environment variables (for backward compatibility) first, then command line (args.host and args.catalog_id have defaults)
     url = os.getenv('URL', None)
     if url:
         elements = urlparse(url)
@@ -98,33 +99,36 @@ def load(config_filename, args):
         hostname = args.host
         catalog_id = args.catalog_id
         logger.info(f'args: hostname: {hostname}, catalog_id: {catalog_id}')
-        
-    if not hostname or not catalog_id:
-        raise ConfigError(f'Require host and catalog number. Either provide "host" and "catalog-id" CLI parameters or proper "URL" env variable. args.host:{args.host}, args.catalog-id:{args.catalog_id}, URL:{URL}')
+    '''
+    
+    config['hostname'] = args.host
+    config['catalog_id'] = args.catalog_id
+    if not config['hostname'] or not config['catalog_id']:
+        raise ConfigError(f'Require host and catalog number. Either provide "host" and "catalog-id" cli parameters or "PDB_SERVER" and "CATALOG" env variables. args.host:{args.host}, args.catalog-id:{args.catalog_id}')
 
     # RID are obtained from: env RID or rid, then args.rid
-    config["rid"] = os.getenv('RID', os.getenv('rid', args.rid))
+    config["rid"] = args.rid
     if not config["rid"]:
         raise ConfigError(f'Require rid. Either provide "rid" as CLI parameters or "RID" env variable.')
 
-    config["action"] = os.getenv('action', args.action)
+    config["action"] = args.action
     if not config["action"]:
         raise ConfigError(f'Require action. Either provide "action" as CLI parameters or env variable.')
+
+    logger.info(f'args: hostname: {config["hostname"]}, catalog_id: {config["catalog_id"]}, rid: {config["rid"]}, action: {config["action"]}')
+    print(f'args: hostname: {config["hostname"]}, catalog_id: {config["catalog_id"]}, rid: {config["rid"]}, action: {config["action"]}')    
     
-    config['hostname'] = hostname
-    config['catalog_id'] = catalog_id
     config['verbose'] = args.verbose
     #config['rollback'] = args.rollback
     #config['dry_run'] = args.dry_run    
     
     credentials_file = conf.get('credentials', None)
-    credentials = get_credential(hostname, credentials_file)
+    credentials = get_credential(config['hostname'], credentials_file)
     if not credentials:
         raise ConfigError('Credential is NULL. Provide a proper credential file or set up credential under the user account properly. Provided credential file:%s' % (credentials_file))
     #print("get_crecential: %s" % (credentials))
     config['credentials'] = credentials
     config['timeout'] = conf.get('timeout', 30)
-
 
     primary_accession_code_mode = conf.get('primary_accession_code_mode', 'PDB')    
     if primary_accession_code_mode not in ['PDBDEV', 'PDB']:
@@ -261,7 +265,7 @@ To run this on command line
   - 2.1 pass all parameters through the cli
     > pdb_process_entry --host data-dev.pdb-ihm.org --catalog-id 99 --config /home/pdbihm/pdb/config/pdb_conf.json --action entry --rid 3-4RHT
   - 2.2. pass some parameters through environment variables (deprecated)
-    > URL="https://data-dev.pdb-ihm.org/ermrest/catalog/99" action="entry" RID="3-4RHT" pdb_process_entry --config /home/pdbihm/dev/config/entry_processing/pdb_conf.json
+    > PDB_SERVER="data-dev.pdb-ihm.org", CATALOG="99" ACTION="entry" RID="3-4RHT" pdb_process_entry --config /home/pdbihm/dev/config/entry_processing/pdb_conf.json
 - Note: ACTION : ["entry", "export", "accession_code", "release_mmCIF", "Entry_Related_File"]
 """
 def main():
@@ -272,14 +276,20 @@ def main():
         cli = PDBDEV_CLI("pdb_process_entry", None, 1)
         cli.remove_options(['--pre-print', '--post-print', '--dry-run'])
         # args.rid is a default parameter from PDBDEV_CLI
-        cli.parser.add_argument('--config', metavar='<config-file>', action='store', type=str, help='The JSON configuration file.', required=False)
-        cli.parser.add_argument('--action', metavar='<action>',  action='store', type=str, help='Workflow actions (entry, export, accession_code, release_mmCIF, Entry_Related_File)', required=False)
+        cli.parser.add_argument('--config', metavar='<config-file>',
+                                action='store', type=str, help='The JSON configuration file. Default is PDB_CONFIG env variable.',
+                                default=os.getenv("PDB_CONFIG", None), required=False)
+        cli.parser.add_argument('--action', metavar='<action>',  action='store', type=str,
+                                help='Workflow actions (entry, export, accession_code, release_mmCIF, Entry_Related_File). Default is from ACTION env variable',
+                                default=os.getenv("ACTION", None), required=False)
         cli.parser.add_argument('--verbose', action='store_true', help='Print status to stdout', default=False, required=False)
         #cli.parser.add_argument('--rollback', action='store_true', help='Rollback ermrest update', default=False, required=False)
         
         args = cli.parse_cli()
 
-        config_filename = os.getenv('PDB_CONFIG', args.config)
+        config_filename = args.config 
+        if not config_filename:
+            raise Exception("ERROR: A configuration file is needed to run pdb_process_entry")
         config = load(config_filename, args)
         entry_processor = EntryProcessor(**config)
         print ('The client will be started')
