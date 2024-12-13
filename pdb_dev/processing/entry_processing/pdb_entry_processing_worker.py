@@ -108,7 +108,7 @@ def pdb_row_job(handler, action):
         
         logger.info('Running entry_processing job: host=%s catalog-id=%s RID="%s" action=%s' % (Worker.servername, Worker.catalog_number, row['RID'], action))
         #args = ['env', 'action={}'.format(action),  'RID={}'.format(row['RID']), 'URL=https://{}/ermrest/catalog/{}'.format(Worker.servername, Worker.catalog_number), '/usr/local/bin/pdb_process_entry', '--config', '{}'.format(Worker.config_file)]
-        args = ['env', 'ACTION={}'.format(action), 'PDB_SERVER={}'.format(Worker.servername), 'CATALOG={}'.format(Worker.catalog_number), 'RID={}'.format(row['RID']), '/usr/local/bin/pdb_process_entry', '--config', '{}'.format(Worker.config_file)]
+        args = ['env', 'ACTION={}'.format(action), 'PDB_SERVER={}'.format(Worker.servername), 'CATALOG={}'.format(Worker.catalog_number), 'RID={}'.format(row['RID']), 'pdb_process_entry', '--config', '{}'.format(Worker.config_file)]
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdoutdata, stderrdata = p.communicate()
         returncode = p.returncode
