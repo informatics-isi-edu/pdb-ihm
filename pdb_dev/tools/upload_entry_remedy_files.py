@@ -9,12 +9,12 @@ from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key,
 from deriva.core import urlquote, urlunquote, DEFAULT_SESSION_CONFIG
 from deriva.core.utils.hash_utils import compute_hashes
 
-from pdb_dev.utils.shared import PDBDEV_CLI, DCCTX
-from atlas_d2k.utils.data import get_entities, insert_if_not_exist, update_table_rows, delete_table_rows
-from atlas_d2k.utils.hatrac import chunk_upload
+from ..utils.shared import PDBDEV_CLI, DCCTX
+from deriva.utils.extras.data import get_ermrest_query, insert_if_not_exist, update_table_rows, delete_table_rows
+
 
 '''
-    -- remedy files per entries
+    -- destination remedy files per entries???
     mmcif/<entry_id>.cif
     validation_reports/<entry_id>/<entry_id>_full_validation.pdf
     validation_reports/<entry_id>/<entry_id>_summary_validation.pdf
@@ -289,20 +289,24 @@ def main(catalog, store):
 
 # =================================================================================    
 # set up to run the script:
-# - get appropriate scripts/libraries
-# rsync -avPz atlas-d2k-py/. data.pdb-dev.org:/home/hongsuda/git/atlas-d2k-py/.
-# rsync -avPz protein-database/. data.pdb-dev.org:/home/hongsuda/git/protein-database/.
-# rsync -avPz remediation_upload.tar.gz  data.pdb-dev.org:
+# 1. setup remedy file structures
 #
-# - get the remedy files with proper ownership
+# - <upload_dir>
+#   - <accession_code>
+#     - <accession_code><suffix>  -- <suffix follows file nameing conventions based on different file types>
+#  
+# 2. get the directory to be where we will run the script from. This can be your own laptop.
+# If want to run on the server, setup appropriate ownership
+#
 # as root on the server:
 # cd /scratch
 # tar -xvf /home/hongsuda/remediation_upload.tar.gz
 # chown -R  hongsuda:hongsuda remediation_upload
 #
-## Run the Script
+## 3. Run the Script
 #
-# python upload_entry_remedy_files.py --host data.pdb-dev.org --catalog-id 1 --upload-path /scratch/remediation_upload > log
+# python -m pdb_dev.tools.upload_entry_remedy_files --host data.pdb-dev.org --catalog-id 1 --upload-path /scratch/remediation_upload > log
+#
 if __name__ == "__main__":
     cli = PDBDEV_CLI("pdbdev", None, 1)
     cli.parser.add_argument('--upload-path', help="directory containing entry generated files", default="/tmp/pdb/remediation_upload")
