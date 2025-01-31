@@ -287,26 +287,33 @@ def main(catalog, store):
     print("\nupdate_entries (%d/%d): %s" % (len(update_entries), len(dir_entry_ids), json.dumps(update_entries, indent=4)))
     update_table_rows(catalog, "PDB", "entry", key="RID", column_names=["Workflow_Status", "Manual_Processing", "Process_Status"], payload=update_entries)
 
-# =================================================================================    
-# set up to run the script:
-# 1. setup remedy file structures
-#
-# - <upload_dir>
-#   - <accession_code>
-#     - <accession_code><suffix>  -- <suffix follows file nameing conventions based on different file types>
-#  
-# 2. get the directory to be where we will run the script from. This can be your own laptop.
-# If want to run on the server, setup appropriate ownership
-#
+# =================================================================================
+'''
+Sset up to run the script:
+ 1. setup remedy file structures
+
+ - <upload_dir>
+   - <accession_code>
+     - <accession_code><suffix>  -- <suffix follows file nameing conventions based on different file types>
+ examples:
+  remediation_upload/9A2H/9A2H_full_validation.pdf
+  remediation_upload/9A2H/9A2H_html.tar.gz
+  remediation_upload/9A2H/9A2H.cif
+  remediation_upload/9A2H/9A2H_summary_validation.pdf
+  remediation_upload/9A2H/9A2H.json
+
+2. get the directory to be where we will run the script from. This can be your own laptop.
+   If want to run on the server, setup appropriate ownership
+
 # as root on the server:
-# cd /scratch
-# tar -xvf /home/hongsuda/remediation_upload.tar.gz
-# chown -R  hongsuda:hongsuda remediation_upload
-#
-## 3. Run the Script
-#
-# python -m pdb_dev.tools.upload_entry_remedy_files --host data.pdb-dev.org --catalog-id 1 --upload-path /scratch/remediation_upload > log
-#
+> cd /scratch
+> tar -xvf /home/hongsuda/remediation_upload.tar.gz
+> chown -R  hongsuda:hongsuda remediation_upload
+
+3. Run the Script
+> python -m pdb_dev.tools.upload_entry_remedy_files --host data.pdb-dev.org --catalog-id 1 --upload-path /scratch/remediation_upload > log
+
+'''
 if __name__ == "__main__":
     cli = PDBDEV_CLI("pdbdev", None, 1)
     cli.parser.add_argument('--upload-path', help="directory containing entry generated files", default="/tmp/pdb/remediation_upload")
