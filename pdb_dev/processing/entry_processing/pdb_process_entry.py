@@ -61,9 +61,9 @@ def load(config_filename, args):
             conf = json.load(f)
             loglevel = conf.get('loglevel', None)
             #logfile = conf.get('log', None)            
-            log_dir = conf.get('log_dir')
+            log_dir = conf.get('log_dir', '/home/pdbihm/log/entry_processing')
             logfile = "%s/process_entry_%s.log" % (log_dir, cfg.catalog_name)
-            if loglevel and logfile:
+            if loglevel and os.path.isdir(log_dir):
                 handler=logging.handlers.TimedRotatingFileHandler(logfile,when='D',backupCount=7)
                 logger.addHandler(handler)
                 init_logging(level=__LOGLEVEL.get(loglevel), log_format=FORMAT, file_path=logfile)
@@ -126,7 +126,7 @@ def load(config_filename, args):
     credentials = get_credential(config['hostname'], credentials_file)
     if not credentials:
         raise ConfigError('Credential is NULL. Provide a proper credential file or set up credential under the user account properly. Provided credential file:%s' % (credentials_file))
-    #print("get_crecential: %s" % (credentials))
+    print("get_crecential: %s" % (credentials))
     config['credentials'] = credentials
     config['timeout'] = conf.get('timeout', 30)
 
@@ -145,7 +145,7 @@ def load(config_filename, args):
 
     make_mmCIF = conf.get('make_mmCIF', None)
     if not make_mmCIF or not os.path.isdir(make_mmCIF):
-        raise ConfigError(f'make_mmCIF directory {make_mmcCIF} must be provided and exist.')
+        raise ConfigError(f'make_mmCIF directory {make_mmCIF} must be provided and exist.')
     config['make_mmCIF'] = make_mmCIF
     
     py_rcsb_db = conf.get('py_rcsb_db', None)
@@ -246,6 +246,8 @@ def load(config_filename, args):
         email = json.load(f)
     config['email'] = email
 
+    config['log_dir'] = conf.get('log_dir', '/home/pdbihm/log/entry_processing')
+
     # print config object
     '''
     for k, v in config.items():
@@ -267,6 +269,10 @@ To run this on command line
   - 2.2. pass some parameters through environment variables (deprecated)
     > PDB_SERVER="data-dev.pdb-ihm.org", CATALOG="99" ACTION="entry" RID="3-4RHT" pdb_process_entry --config /home/pdbihm/dev/config/entry_processing/pdb_conf.json
 - Note: ACTION : ["entry", "export", "accession_code", "release_mmCIF", "Entry_Related_File"]
+
+- Testing restraints-related process
+> pdb_process_entry --host data-dev.pdb-ihm.org --catalog-id 99 --config /home/hongsuda/config/entry_processing/local_pdb_conf.json --action Entry_Related_File --rid "1-SDXT" --verbose
+
 """
 def main():
     '''
