@@ -66,6 +66,7 @@ _database_2.database_code
 _database_2.pdbx_database_accession 
 _database_2.pdbx_DOI 
 """
+
 mmCIF_release_records="""_pdbx_database_status.status_code                     <status_code>
 _pdbx_database_status.entry_id                        <entry_id>
 _pdbx_database_status.deposit_site                    RCSB
@@ -93,6 +94,7 @@ _database_2.database_code
 _database_2.pdbx_database_accession 
 _database_2.pdbx_DOI 
 """
+
 Process_Status_Terms = {
     'NEW': 'New (trigger backend process)',
     'REPROCESS': 'Reprocess (trigger backend process after Error)',
@@ -242,72 +244,6 @@ class EntryProcessor(PipelineProcessor):
             return None
 
     """
-    Send Linux email notification
-    """
-    def x_sendLinuxMail(self, subject, text, receivers):
-        if receivers == None:
-            receivers = self.email_config['receivers']
-        temp_name = '/tmp/{}.txt'.format(next(tempfile._get_candidate_names()))
-        fw = open(temp_name, 'w')
-        fw.write('{}\n\n{}'.format(text, self.email_config['footer']))
-        fw.close()
-        fr = open(temp_name, 'r')
-        args = ['/usr/bin/mail', '-r', self.email_config['sender'], '-s', 'DEV {}'.format(subject), receivers]
-        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=fr)
-        stdoutdata, stderrdata = p.communicate()
-        returncode = p.returncode
-        
-        if returncode != 0:
-            self.logger.debug('Can not send Linux email for file {}.\nstdoutdata: {}\nstderrdata: {}\n'.format(temp_name, stdoutdata, stderrdata)) 
-        else:
-            self.logger.debug('Sent Linux email for file {}.\n'.format(temp_name)) 
-        
-        fr.close()
-        os.remove(temp_name)
-
-    """
-    Send email notification
-    """
-    def x_sendMail(self, subject, text, receivers=None):
-        if not notify: return
-        if self.email_config['server'] and self.email_config['sender'] and (self.email_config['receivers'] or self.email_config['curators']):
-            subject = 'PDB-IHM %s' % (subject)
-            if self.host in ['dev.pdb-dev.org', 'data-dev.pdb-ihm.org']:
-                subject = f'DEV:{self.catalog_id} {subject}'
-            text = f'Backend hostname: {self.local_hostname}, catalog: {self.catalog_id}\n\n{text}'
-            if not receivers: receivers = self.email_config['receivers']
-            retry = 0
-            ready = False
-            while not ready:
-                try:
-                    msg = MIMEText('%s\n\n%s' % (text, self.email_config['footer']), 'plain')
-                    msg['Subject'] = subject
-                    msg['From'] = self.email_config['sender']
-                    msg['To'] = receivers
-                    s = smtplib.SMTP_SSL(self.email_config['server'], self.email_config['port'])
-                    s.login(self.email_config['user'], self.email_config['password'])
-                    s.sendmail(self.email_config['sender'], receivers.split(','), msg.as_string())
-                    s.quit()
-                    self.logger.debug(f'Sent email notification to {receivers}.')
-                    ready = True
-                except socket.gaierror as e:
-                    if e.errno == socket.EAI_AGAIN:
-                        time.sleep(100)
-                        retry = retry + 1
-                        ready = retry > 10
-                    else:
-                        ready = True
-                    if ready:
-                        et, ev, tb = sys.exc_info()
-                        self.logger.error('got exception "%s"' % str(ev))
-                        self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-                except:
-                    et, ev, tb = sys.exc_info()
-                    self.logger.error('got exception "%s"' % str(ev))
-                    self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-                    ready = True
-
-    """
     Start the process for generating pyramidal tiles
     """
     def start(self):
@@ -399,15 +335,16 @@ class EntryProcessor(PipelineProcessor):
             if self.verbose: print('Ended PDB Processing for the %s:%s:%s with status:%s' % (schema, table, related_file_rid, update_file_row))
             
         except Exception as e:
-            error_message = e
-            subject = '%s %s: %s (%s)' % (related_file_rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
-            self.handle_error(e, subject=subject)
             if self.verbose: print("error processing: %s" % (subject))
             # -- update the slide table with the failure result.
             update_file_row['Restraint_Workflow_Status'] = 'ERROR'
             update_file_row['Restraint_Process_Status'] = Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'],
             update_file_row['Record_Status_Detail'] = error_message
             self.updateAttributes(schema, table, related_file_rid, update_cnames, update_file_row, user)
+            error_message = e
+            subject = '%s %s: %s (%s)' % (related_file_rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
+            self.handle_error(e, notify=False, subject=subject, re_raise=True)
+            
             
         
     """
@@ -1417,7 +1354,7 @@ class EntryProcessor(PipelineProcessor):
                     count+=1
                     if count >= limit: break
  
-    def handle_error(self, e, re_raise=False, subject=None):
+    def handle_error(self, e, re_raise=False, notify=True, subject=None):
         et, ev, tb = sys.exc_info()
         tb_message = ''.join(traceback.format_exception(et, ev, tb))
         self.logger.error('-- Got exception "%s: %s"' % (et.__name__, str(ev)))
@@ -2614,7 +2551,7 @@ class EntryProcessor(PipelineProcessor):
         
         return '#' if mode == 'None' \
             else None if mode == 'PDBDEV' and accesion_code_row["PDBDEV_Accession_Code"] == None \
-            else f'{accesion_code_row["PDBDEV_Accession_Code"]} {self.get_primary_accession_code("PDBDEV", accesion_code_row)} ?' if mode == 'PDBDEV' \
+            else f'PDB-Dev {accesion_code_row["PDBDEV_Accession_Code"]} {self.get_primary_accession_code("PDBDEV", accesion_code_row)} ?' if mode == 'PDBDEV' \
             else f'PDB {accesion_code_row["PDB_Accession_Code"]} {self.get_lower_accession_code(accesion_code_row["PDB_Extended_Code"])} 10.2210/pdb{self.get_lower_accession_code(accesion_code_row["PDB_Code"])}/pdb'
 
     def addReleaseRecords(self, rid, hold=False, user_id=None):

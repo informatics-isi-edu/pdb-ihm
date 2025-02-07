@@ -143,7 +143,7 @@ class PipelineProcessor(object):
         now_to_cutoff_weekday = (cutoff_time.tm_wday - now.weekday()) % 7
         archive_datetime = now + timedelta(days=now_to_cutoff_weekday)
         #print("get_archive_datetime: weekday_diff = %s" % (now_to_cutoff_weekday))
-        if  now_to_cutoff_weekday == 0 and (now.hour < cutoff_time.tm_hour or (now.hour == cutoff_time.tm_hour and now.minute < cutoff_time.tm_min)):
+        if now_to_cutoff_weekday == 0 and (now.hour > cutoff_time.tm_hour or (now.hour == cutoff_time.tm_hour and now.minute > cutoff_time.tm_min)):
             archive_datetime += timedelta(days=7)
         archive_datetime = archive_datetime.replace(hour=cutoff_time.tm_hour,minute=cutoff_time.tm_min,second=0,microsecond=0)
         #print("archive pacific time: %s" % (str(archive_datetime)))
@@ -252,15 +252,19 @@ def main(server_name, catalog_id, credentials, args):
     catalog = server.connect_ermrest(catalog_id)
     model = catalog.getCatalogModel()
 
+    cutoff_time = args.cutoff_time if args.cutoff_time else None
     processor = PipelineProcessor(
-        hostname=args.host, credential_file=args.credential_file, catalog_id=args.catalog_id,
+        hostname=args.host, credential_file=args.credential_file, catalog_id=args.catalog_id, cutoff_time_pacific=cutoff_time
     )
-    processor.get_archive_datetime(utz=True)
+    #processor.get_archive_datetime(utz=True)
     release_date = processor.get_release_datetime_utc(isoformat=False).strftime("%Y-%m-%d")
     print("release_date: %s" % (release_date))
 
  # -- =================================================================================
 if __name__ == '__main__':
-    args = PDBDEV_CLI("pdb-ihm", None, 1).parse_cli()
+    cli = PDBDEV_CLI("pdb-ihm", None, 1)
+    cli.add_argument('--cutoff-time', metavar='<cutoff_time>', help="cutoff_time in PT", required=False)
+    args = cli.parse_cli()
     credentials = get_credential(args.host, args.credential_file)
+    
     main(args.host, args.catalog_id, credentials, args)
