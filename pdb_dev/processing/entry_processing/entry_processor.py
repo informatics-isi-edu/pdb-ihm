@@ -116,8 +116,7 @@ class EntryProcessor(PipelineProcessor):
     """
     primary_accession_code_mode = "PDB"
     alternative_accession_code_mode = "PDBDEV"
-    #singularity_sif = 'ihmv_20250205.sif'       # default singularity for validation report (previous:'ihmv_20231222.sif')
-    singularity_sif = 'ihmv_20231222.sif'
+    singularity_sif = 'ihmv_20250205.sif'       # default singularity for validation report (previous:'ihmv_20231222.sif')
     CifCheck = "/home/pdbihm/bin/CifCheck"
     py_rcsb_db = "/home/pdbihm/pdb/py-rcsb_db"
     scratch = "/mnt/vdb1/entry_processing/scratch"
@@ -155,25 +154,6 @@ class EntryProcessor(PipelineProcessor):
         
         super().__init__(hostname=kwargs.get("hostname"), catalog_id=kwargs.get("catalog_id"), credentials = kwargs.get("credentials"),
                          cfg=kwargs.get("cfg"))
-        '''
-        self.cfg = kwargs.get("cfg")
-        self.scheme = "https"
-        self.host = kwargs.get("hostname")
-        self.catalog_id = kwargs.get("catalog_id")
-        self.credentials = kwargs.get("credentials")
-        self.store = HatracStore(
-            self.scheme,
-            self.host,
-            self.credentials
-        )
-        self.catalog = PollingErmrestCatalog(
-            self.scheme,
-            self.host,
-            self.catalog_id,
-            self.credentials
-        )
-        self.catalog.dcctx['cid'] = 'pipeline/pdb'
-        '''
         
         self.is_catalog_dev = True if self.catalog_id in catalog_dev_number else False
         self.logger = kwargs.get("logger")
@@ -200,13 +180,6 @@ class EntryProcessor(PipelineProcessor):
             """
             Query for detecting the user email
             """
-            '''
-            url = '/attribute/A:={}:{}/RID={}/B:=(A:RCB)=(public:ERMrest_Client:ID)/B:Email,B:Full_Name'.format(urlquote(schema), urlquote(table), urlquote(rid))
-            self.logger.debug('Query Email URL: "{}"'.format(url)) 
-            resp = self.catalog.get(url)
-            resp.raise_for_status()
-            rows = resp.json()
-            '''
             rows = get_ermrest_query(self.catalog, schema, table, constraints=f"RID={rid}/B:=(M:RCB)=(public:ERMrest_Client:ID)", attributes=["B:Email","B:Full_Name"])
             if len(rows) == 1:
                 row = rows[0]                
@@ -391,13 +364,13 @@ class EntryProcessor(PipelineProcessor):
         structure_id = row['structure_id']
         filename = row['File_Name']
         file_url = row['File_URL']
-        md5 = row['File_MD5']
-        creation_time = row['RCT']
+        #md5 = row['File_MD5']
+        #creation_time = row['RCT']
         file_format = row['File_Format']
         csv_tname = row['Table_Name']
         
         if self.cfg.is_dev:       #if self.is_catalog_dev == True:
-            subject = '{}: {} ({})'.format(related_file_rid, row['Restraint_Process_Status'], user)
+            subject = '{}: START with status = {} ({})'.format(related_file_rid, row['Restraint_Process_Status'], user)
             self.sendMail(subject, 'The Restraint Process Status of the Entry Related File with RID={} was changed to "{}".'.format(row['RID'], row['Restraint_Process_Status']), receivers=self.email_config['curators'])
 
         """
@@ -430,9 +403,7 @@ class EntryProcessor(PipelineProcessor):
             subject = '%s %s: %s (%s)' % (related_file_rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
             self.handle_error(e, subject=subject)
             if self.verbose: print("error processing: %s" % (subject))
-            """
-            Update the slide table with the failure result.
-            """
+            # -- update the slide table with the failure result.
             update_file_row['Restraint_Workflow_Status'] = 'ERROR'
             update_file_row['Restraint_Process_Status'] = Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'],
             update_file_row['Record_Status_Detail'] = error_message
@@ -1633,175 +1604,12 @@ class EntryProcessor(PipelineProcessor):
         except Exception as e:
             raise ErmrestUpdateError("Fail to insert CSV file to table %s (%s)" % (tname, e))
         
-    """
-    Load data into the tables from a csv/tsv file.
-    """
-    def x_loadTableFromCSV(self, fpath, delimiter, tname, entry_id, rid, user):
-        
-        """
-        Empty first the tname table
-        """
-        self.logger.debug('Checking if PDB:{}/structure_id={} is empty'.format(tname, entry_id))
-        url = '/entity/PDB:{}/structure_id={}'.format(tname, entry_id)
-        resp = self.catalog.get(
-            url
-        )
-        resp.raise_for_status()
-        deleted_rows = resp.json()
-        if len(deleted_rows) > 0:
-            try:
-                """
-                The table is not empty
-                """
-                url = '/entity/PDB:{}/structure_id={}'.format(tname, entry_id)
-                resp = self.catalog.delete(url)
-                resp.raise_for_status()
-                self.logger.debug('Deleted rows from PDB:{}/structure_id={}'.format(tname, entry_id))
-            except:
-                et, ev, tb = sys.exc_info()
-                self.logger.error('got exception "%s"' % str(ev))
-                self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-                subject = '{} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
-                self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
-                error_message = 'ERROR loadTableFromCSV: "%s"' % str(ev)
-                returncode = 1
-                return (returncode, error_message)
-
-        """
-        Read in chunks of 1000 rows
-        Make a temporization of 10 seconds between chunks readings
-        """
-        returncode = 0
-        error_message = None
-        chunk_size = 1000
-        sleep_time = 10
-        schema_name = 'PDB'
-        pb = self.catalog.getPathBuilder()
-        table = pb.schemas[schema_name].tables[tname]
-        column_definitions = table.column_definitions
-        counter = 0
-        
-        try:
-            """
-            Read the JSON FK optional file
-            """
-            with open(self.optional_fk_file, 'r') as f:
-                optional_fks = json.load(f)
-    
-            """
-            Read the rows of the csv/tsv file as dictionaries
-            """
-            csvfile = open(fpath, 'r')
-            reader = csv.DictReader(csvfile, delimiter=delimiter)
-            j=0
-            done = False
-            missing_columns = []
-            while not done:
-                done = True
-                i = 0
-                entities = []
-                for row in reader:
-                    j=j+1
-                    entity = dict(row)
-                    for column in list(entity.keys()):
-                        try:
-                            column_definitions[column]
-                        except:
-                            if column not in missing_columns:
-                                missing_columns.append(column)
-                                self.logger.debug('Table "%s" has not the column "%s".' % (tname, column))
-                            entity[column] = ''
-                            
-                        """
-                        Columns types:
-                            ermrest_rid
-                            ermrest_rct
-                            ermrest_rmt
-                            ermrest_rcb
-                            ermrest_rmb
-                            ermrest_curie
-                            ermrest_uri
-                            text
-                            markdown
-                            text[]
-                            int4
-                            float4
-                            int8
-                        """
-                        if entity[column] == '':
-                            """
-                            Any empty value will be treated as NULL
-                            """
-                            del entity[column]
-                        elif column_definitions[column]._wrapped_column.type.typename == 'jsonb':
-                            entity[column] = json.loads(entity[column])
-                        elif column_definitions[column]._wrapped_column.type.typename.endswith('[]'):
-                            entity[column] = entity[column][1:-1].split(',')
-                    
-                    """
-                    Replace the FK references to the entry table
-                    """
-                    entity = self.getRecordUpdatedWithFK(tname, entity, entry_id)
-                    entity = self.getUpdatedOptional(optional_fks, tname, entity, entry_id)
-                    entity['Entry_Related_File'] = rid
-                    
-                    entities.append(entity)
-                    i = i+1
-                    if i >= chunk_size:
-                        """
-                        Insert the chunk
-                        """
-                        done = False
-                        break
-                if len(entities) > 0:
-                    try:
-                        table.insert(entities).fetch()
-                        counter = counter + len(entities)
-                        time.sleep(sleep_time)
-                    except DataPathException as e:
-                        et, ev, tb = sys.exc_info()
-                        self.logger.error(e)
-                        self.logger.error(e.message)
-                        self.logger.error(e.reason)
-                        subject = '{} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
-                        self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
-                        returncode = 1
-                        error_message = 'Error in inserting CSV values into the table {}\n{}'.format(tname, e.message)
-                        break
-                    except HTTPError as e:
-                        et, ev, tb = sys.exc_info()
-                        self.logger.error(e)
-                        self.logger.error(e.response.text)
-                        subject = '{} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
-                        self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
-                        returncode = 1
-                        error_message = 'Error in inserting CSV values into the table {}\n{}'.format(tname, e.response.text)
-                        break
-                    except:
-                        et, ev, tb = sys.exc_info()
-                        self.logger.error('got exception "%s"' % str(ev))
-                        self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-                        subject = '{} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
-                        self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
-                        returncode = 1
-                        error_message = 'Error in inserting CSV values into the table {}\n{}'.format(tname, str(ev))
-                        break
-            self.logger.debug('File {}: inserted {} rows into table {}'.format(fpath, counter, tname))
-        except:
-            et, ev, tb = sys.exc_info()
-            self.logger.error('got exception "%s"' % str(ev))
-            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            subject = '{} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
-            self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
-            error_message = 'ERROR loadTableFromCSV: "%s"' % str(ev)
-            returncode = 1
-        return (returncode, error_message)
              
     """
     Get the the entry child table foreign keys and update the entry_id/structure_id column with the entry id.
     If the FK is missing, add it.
     """
-    def getRecordUpdatedWithFK(self, tname, row, entry_id):
+    def x_getRecordUpdatedWithFK(self, tname, row, entry_id):
         with open('{}'.format(self.entry), 'r') as f:
             pdb = json.load(f)
         referenced_by = pdb['Catalog {}'.format(self.catalog_id)]['schemas']['PDB']['tables']['entry']['referenced_by']

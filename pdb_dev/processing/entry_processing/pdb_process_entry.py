@@ -26,12 +26,10 @@ import json
 import sys
 import traceback
 import logging.handlers
-from urllib.parse import urlparse
 
 from deriva.core import init_logging, get_credential
 from ...utils.shared import PDBDEV_CLI, cfg
 from .entry_processor import EntryProcessor
-#from pdb_dev.processing.curation.entry_processor import EntryProcessor
 
 
 FORMAT = '%(asctime)s: %(levelname)s <%(module)s>: %(message)s'
@@ -70,6 +68,8 @@ def load(config_filename, args):
             else:
                 logging.getLogger().addHandler(logging.NullHandler())
             logger.debug("config: %s" % conf)
+            #logger.debug("log_file: %s" % (logfile))
+            #print("log_file: %s" % (logfile))
         except ValueError as e:
             raise ConfigError('Malformed configuration file: %s' % e)
         else:
@@ -79,28 +79,10 @@ def load(config_filename, args):
 
     config = {}
     config['logger'] = logger
+    config['log_dir'] = log_dir
     config['logfile'] = logfile    
     config['cfg'] = cfg
 
-    '''deprecated
-    # Ermrest settings -- look for environment variables (for backward compatibility) first, then command line (args.host and args.catalog_id have defaults)
-    url = os.getenv('URL', None)
-    if url:
-        elements = urlparse(url)
-        scheme = elements[0]
-        hostname = elements[1].split(":")[0]
-        port = elements[1].split(":")[1] if ":" in elements[1] else None
-        path = elements[2]
-        catalog_id = int(path.split('/')[-1]) if path else None
-        logger.info('URL: %s' % url)
-    else:
-        if not args.host or not args.catalog_id :
-            raise ConfigError(f'Require host and catalog number. Either provide "host" and "catalog-id" CLI parameters or proper "URL" env variable.')                                
-        hostname = args.host
-        catalog_id = args.catalog_id
-        logger.info(f'args: hostname: {hostname}, catalog_id: {catalog_id}')
-    '''
-    
     config['hostname'] = args.host
     config['catalog_id'] = args.catalog_id
     if not config['hostname'] or not config['catalog_id']:
@@ -187,6 +169,12 @@ def load(config_filename, args):
     if not dictSdb or not os.path.isfile(dictSdb):
         raise ConfigError('dictSdb file must be provided and exist.')
     config['dictSdb'] = dictSdb
+
+    singularity_sif = conf.get('singularity_sif', None)
+    if singularity_sif:
+        if not os.path.isfile(singularity_sif):
+            raise ConfigError('singularity_sif file must exist.')
+    config['singularity_sif'] = singularity_sif
     
     entry = conf.get('entry', None)
     if not entry or not os.path.isfile(entry):
@@ -246,7 +234,6 @@ def load(config_filename, args):
         email = json.load(f)
     config['email'] = email
 
-    config['log_dir'] = conf.get('log_dir', '/home/pdbihm/log/entry_processing')
 
     # print config object
     '''
@@ -265,9 +252,10 @@ To run this on command line
   > sudo su - pdb-ihm
 - 2 ways to run the program:
   - 2.1 pass all parameters through the cli
-    > pdb_process_entry --host data-dev.pdb-ihm.org --catalog-id 99 --config /home/pdbihm/pdb/config/pdb_conf.json --action entry --rid 3-4RHT
+    > pdb_process_entry --host data-dev.pdb-ihm.org --catalog-id 99 --config /home/pdbihm/dev/config/entry_processing/pdb_conf.json --action entry --rid 3-4RHT
   - 2.2. pass some parameters through environment variables (deprecated)
     > PDB_SERVER="data-dev.pdb-ihm.org", CATALOG="99" ACTION="entry" RID="3-4RHT" pdb_process_entry --config /home/pdbihm/dev/config/entry_processing/pdb_conf.json
+    > PDB_SERVER="data-dev.pdb-ihm.org", CATALOG="99" ACTION="release_mmCIF" RID="3-6MH6" pdb_process_entry --config /home/pdbihm/dev/config/entry_processing/pdb_conf.json
 - Note: ACTION : ["entry", "export", "accession_code", "release_mmCIF", "Entry_Related_File"]
 
 - Testing restraints-related process

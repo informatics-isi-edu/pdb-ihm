@@ -46,11 +46,11 @@ class Config():
         self.host = host
         self.catalog_id = catalog_id
         
-        if host == "data.pdb-dev.org":
+        if host == "data.pdb-ihm.org":
             self.is_www = True
             self.is_prod = True
             self.catalog_name = "prod"
-        elif host in ["dev.pdb-dev.org", "dev-aws.pdb-dev.org"] and catalog_id == "50":
+        elif host in ["data-dev.pdb-ihm.org", "dev.pdb-dev.org"] and str(catalog_id) == "50":
             self.is_staging = True
             self.catalog_name = "staging"
         else:
