@@ -263,7 +263,7 @@ def main(server_name, catalog_id, credentials, args):
  # -- =================================================================================
 if __name__ == '__main__':
     cli = PDBDEV_CLI("pdb-ihm", None, 1)
-    cli.add_argument('--cutoff-time', metavar='<cutoff_time>', help="cutoff_time in PT", required=False)
+    cli.parser.add_argument('--cutoff-time', metavar='<cutoff_time>', help="cutoff_time in PT", required=False)
     args = cli.parse_cli()
     credentials = get_credential(args.host, args.credential_file)
     
