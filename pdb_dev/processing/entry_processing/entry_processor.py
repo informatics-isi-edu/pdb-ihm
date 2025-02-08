@@ -979,7 +979,14 @@ class EntryProcessor(PipelineProcessor):
             return (None,error_message)
             
     """
-    Convert the input file to JSON
+    Convert the input file to JSON.
+    1. generate mmcif file using make_mmcif
+    2. Move output.cif file to the rcsb/db/tests-validate/test-output/ihm-files
+    3. from py_rcsb_db dir, cp rcsb/db/config/exdb-config-example-ihm-DEPO.yml to rcsb/db/config/exdb-config-example-ihm.yml
+    4. run 'rcsb/db/tests-validate/testSchemaDataPrepValidate-ihm.py'
+       > env PYTHONPATH=~/pdb/py-rcsb_db python3 testSchemaDataPrepValidate-ihm.py
+    5. copy output.cif to  /home/pdbihm/temp
+    HT TODO: refactor code
     """
     def convert2json(self, filename, entry_id, rid, user):
         try:
@@ -1012,17 +1019,23 @@ class EntryProcessor(PipelineProcessor):
                 return (returncode,error_message)
             
             os.remove('{}/{}'.format(self.make_mmCIF, filename))
+
+            output_cif_fpath = '%s/%s' % (self.make_mmCIF, output_cif)
+            py_rcsb_db_input_cif_dir = '%s/rcsb/db/tests-validate/test-output/ihm-files' % (self.py_rcsb_db)
+            py_rcsb_db_input_cif_fpath = '%s/%s' % (my_rcsb_db_input_cif_dir, output_cif)
+            py_rcsb_db_output_json_dir = '%s/rcsb/db/tests-validate/test-output' % (self.py_rcsb_db)            
             
             """
-            Cleanup the rcsb/db/tests-validate/test-output/ihm-files and rcsb/db/tests-validate/test-output directories 
+            Cleanup the rcsb/db/tests-validate/test-output/ihm-files (*.cif) and rcsb/db/tests-validate/test-output directories (*.json)
+            Since we will use the .cif and .json in those dirs for processing (instead of specifying as arguments). 
             """
-            fpath = '{}/rcsb/db/tests-validate/test-output/ihm-files'.format(self.py_rcsb_db)
+            fpath = py_rcsb_db_input_cif_dir
             for entry in os.scandir(fpath):
                 if entry.is_file() and entry.path.endswith('.cif'):
                     os.remove(entry.path)
                     self.logger.debug('Removed file {}'.format(entry.path))
             
-            fpath = '{}/rcsb/db/tests-validate/test-output'.format(self.py_rcsb_db)
+            fpath = py_rcsb_db_output_json_dir
             for entry in os.scandir(fpath):
                 if entry.is_file() and entry.path.endswith('.json'):
                     os.remove(entry.path)
@@ -1031,10 +1044,12 @@ class EntryProcessor(PipelineProcessor):
             """
             Move the output.cif file to the rcsb/db/tests-validate/test-output/ihm-files directory and apply testSchemaDataPrepValidate-ihm.py
             """
-            output_cif_fpath = '%s/%s' % (self.make_mmCIF, output_cif)
-            #shutil.move('{}/output.cif'.format(self.make_mmCIF), '{}/rcsb/db/tests-validate/test-output/ihm-files/'.format(self.py_rcsb_db))
-            shutil.move(output_cif_fpath, '{}/rcsb/db/tests-validate/test-output/ihm-files/'.format(self.py_rcsb_db))
-            self.logger.debug('File {} was moved to the {} directory'.format(output_cif_fpath, '{}/rcsb/db/tests-validate/test-output/ihm-files/'.format(self.py_rcsb_db)))
+            '''HT TODO: CLEANUP
+            shutil.move('{}/output.cif'.format(self.make_mmCIF), '{}/rcsb/db/tests-validate/test-output/ihm-files/'.format(self.py_rcsb_db))
+            self.logger.debug('convert2jason: File {} was moved to the {} directory'.format(output_cif_fpath, '{}/rcsb/db/tests-validate/test-output/ihm-files/'.format(self.py_rcsb_db)))
+            '''
+            shutil.move(output_cif_fpath, py_rcsb_db_input_cif_dir)
+            self.logger.debug('convert2jason: File %s was moved to the %s directory' % (output_cif, py_rcsb_db_input_cif_dir))
             
             currentDirectory=os.getcwd()
             os.chdir('{}'.format(self.py_rcsb_db))
@@ -1045,24 +1060,30 @@ class EntryProcessor(PipelineProcessor):
             stdoutdata, stderrdata = p.communicate()
             returncode = p.returncode
             os.chdir(currentDirectory)
-            
+
             if returncode != 0:
-                self.logger.error('Can not validate testSchemaDataPrepValidate-ihm for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % ('output.cif', stdoutdata, stderrdata)) 
+                self.logger.error('Can not validate testSchemaDataPrepValidate-ihm for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (output_cif, stdoutdata, stderrdata)) 
                 subject = '{} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], user)
-                self.sendMail(subject, 'Can not make testSchemaDataPrepValidate-ihm for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % ('output.cif', stdoutdata, stderrdata))
-                os.remove('{}/rcsb/db/tests-validate/test-output/ihm-files/output.cif'.format(self.py_rcsb_db))
+                self.sendMail(subject, 'Can not make testSchemaDataPrepValidate-ihm for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (output_cif, stdoutdata, stderrdata))
+                #os.remove('%s/rcsb/db/tests-validate/test-output/ihm-files/%s' % (self.py_rcsb_db, output_cif))
+                os.remove(py_rcsb_db_input_cif_fpath)
                 error_message = 'ERROR convert2json: {}'.format(stderrdata)
                 return (returncode,error_message)
+
+            '''TODO: CLEANUP
+            shutil.copy2('%s/rcsb/db/tests-validate/test-output/ihm-files/%s' % (self.py_rcsb_db, output_cif), '/home/pdbihm/temp')
+            os.remove('%s/rcsb/db/tests-validate/test-output/ihm-files/%s' % (self.py_rcsb_db, output_cif))
+            self.logger.debug('convert2josn: File {}/{} was removed'.format(self.py_rcsb_db, 'rcsb/db/tests-validate/test-output/ihm-files/%s' % (output_cif)))
+            '''
             
-            shutil.copy2('{}/rcsb/db/tests-validate/test-output/ihm-files/output.cif'.format(self.py_rcsb_db), '/home/pdbihm/temp')
-            os.remove('{}/rcsb/db/tests-validate/test-output/ihm-files/output.cif'.format(self.py_rcsb_db))
-            self.logger.debug('File {}/{} was removed'.format(self.py_rcsb_db, 'rcsb/db/tests-validate/test-output/ihm-files/output.cif')) 
+            shutil.copy2(py_rcsb_db_input_cif_fpath, '/home/pdbihm/temp')
+            os.remove(py_rcsb_db_input_cif_fpath)
+            self.logger.debug('convert2josn: File %s was removed' % (py_rcsb_db_input_cif_fpath))
             
             """
             Load now the data from JSON files which are in the rcsb/db/tests-validate/test-output directory into the tables 
             """
-            fpath = '{}/rcsb/db/tests-validate/test-output'.format(self.py_rcsb_db)
-
+            fpath = py_rcsb_db_output_json_dir
             json_files = []
             for entry in os.scandir(fpath):
                     if entry.is_file() and entry.path.endswith('.json'):
@@ -1685,7 +1706,9 @@ class EntryProcessor(PipelineProcessor):
         return row
 
     """
-    Get the output.cif file
+    Get the output.cif file from make_mmcif and put it in self.scratch directory
+     > python3 -m ihm.util.make_mmcif <input> <output>
+    HT TODO: replace output.cif with <rid>_output.cif
     """
     def getOutputCIF(self, rid, file_url, filename, user):
         try:
@@ -1704,17 +1727,18 @@ class EntryProcessor(PipelineProcessor):
             self.store.get_obj(file_url, destfilename=hatracFile)
             currentDirectory=os.getcwd()
             os.chdir('{}'.format(self.make_mmCIF))
-
+            
             """
             Prepend the RID to the input file
             """
             shutil.move('{}/{}'.format(self.make_mmCIF, filename), '{}/{}_{}'.format(self.make_mmCIF, rid, filename))
             filename = '{}_{}'.format(rid, filename)
+            output_cif = '%s_output.cif' % (rid)
 
             """
             Apply make_mmcif.py
             """
-            args = [self.python_bin, '-m', 'ihm.util.make_mmcif', filename]
+            args = [self.python_bin, '-m', 'ihm.util.make_mmcif', filename, output_cif]
             self.logger.debug('Running "{}" from the {} directory'.format(' '.join(args), self.make_mmCIF)) 
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdoutdata, stderrdata = p.communicate()
@@ -1730,12 +1754,12 @@ class EntryProcessor(PipelineProcessor):
                 return None
             
             os.remove('{}/{}'.format(self.make_mmCIF, filename))
-            
+
             """
             Move the output.cif file to the scratch directory
             """
-            shutil.move('{}/output.cif'.format(self.make_mmCIF), '{}/'.format(self.scratch))
-            self.logger.debug('File {} was moved to the {} directory'.format('{}/output.cif'.format(self.make_mmCIF), '{}/rcsb/db/tests-validate/test-output/ihm-files/'.format(self.py_rcsb_db))) 
+            shutil.move('%s/%s' % (self.make_mmCIF, output_cif), '%s/' % (self.scratch))
+            self.logger.debug('getOutputCIF: File %s/%s was moved to the %s directory' % (self.make_mmCIF, output_cif, self.scratch))
         except:
             et, ev, tb = sys.exc_info()
             self.logger.error('got unexpected exception "%s"' % str(ev))
@@ -1746,7 +1770,7 @@ class EntryProcessor(PipelineProcessor):
             self.export_error_message = 'ERROR getOutputCIF: "%s"' % str(ev)
             return None
             
-        return '{}/output.cif'.format(self.scratch)
+        return '%s/%s' % (self.scratch, output_cif)
             
     """
     Get the accession serial value
@@ -2402,6 +2426,11 @@ class EntryProcessor(PipelineProcessor):
 
     """
     Execute JSON mmCIF content.
+    1. download .cif file from hatrac
+    2. prepare py_rcsb_db for processing (remove .cif, .json, and prepare yml config)
+    3. run rcsb/db/tests-validate/testSchemaDataPrepValidate-ihm.py
+    4. renaming .json file
+    5. upload to hatrac and update ermrest
     """
     def generate_JSON_mmCIF_content(self, rid, entry_id, user, user_id, hold):
         try:
@@ -2454,10 +2483,10 @@ class EntryProcessor(PipelineProcessor):
             os.chdir(currentDirectory)
             
             if returncode != 0:
-                self.logger.error('Can not validate testSchemaDataPrepValidate-ihm for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % ('output.cif', stdoutdata, stderrdata)) 
+                self.logger.error('Can not validate testSchemaDataPrepValidate-ihm for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (file_path, stdoutdata, stderrdata)) 
                 subject = '{} {}: {} ({})'.format(rid, 'HOLD/REL', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], user)
-                self.sendMail(subject, 'Can not make testSchemaDataPrepValidate-ihm for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % ('output.cif', stdoutdata, stderrdata))
-                os.remove('{}/rcsb/db/tests-validate/test-output/ihm-files/output.cif'.format(self.py_rcsb_db))
+                self.sendMail(subject, 'Can not make testSchemaDataPrepValidate-ihm for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (file_path, stdoutdata, stderrdata))
+                os.remove('{}/rcsb/db/tests-validate/test-output/ihm-files/%s'.format(self.py_rcsb_db, filename))
                 error_message = 'ERROR convert2json: {}'.format(stderrdata)
                 return (returncode,error_message)
             
