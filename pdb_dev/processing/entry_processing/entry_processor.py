@@ -1022,7 +1022,7 @@ class EntryProcessor(PipelineProcessor):
 
             output_cif_fpath = '%s/%s' % (self.make_mmCIF, output_cif)
             py_rcsb_db_input_cif_dir = '%s/rcsb/db/tests-validate/test-output/ihm-files' % (self.py_rcsb_db)
-            py_rcsb_db_input_cif_fpath = '%s/%s' % (my_rcsb_db_input_cif_dir, output_cif)
+            py_rcsb_db_input_cif_fpath = '%s/%s' % (py_rcsb_db_input_cif_dir, output_cif)
             py_rcsb_db_output_json_dir = '%s/rcsb/db/tests-validate/test-output' % (self.py_rcsb_db)            
             
             """
