@@ -107,7 +107,8 @@ class PipelineProcessor(object):
     @classmethod
     def same_table_rows(table, base_rows, compare_rows, key="structure_id"):
         """
-        Check whether content are all the same before deleting. Doesn't work
+        Check whether content are all the same before deleting.
+        TODO: look up existing content based on keys
         """
         return False
         tname = table.name
@@ -159,8 +160,11 @@ class PipelineProcessor(object):
     def get_release_datetime_utc(self, isoformat=True):
         """
         Release Date logic:
-        If the REL is set before the Thursday archive deadline reference time (11 PM PT), the release date is next Wednesday 0 UTC.
-        If REL is set after the Thursday archive deadline, the release date is the Wednesday after the next 0 UTC.
+          - If the REL is set before the archive deadline reference time (Thursday 11 PM PT), the release date is next Wednesday 0 UTC.
+          - If REL is set after the archive deadline, the release date is the Wednesday after the next 0 UTC.
+        Caveat: Cutoff datetime and archive datetime are in Pacific time and release date is always Wednesday 0:00 UTC.
+          Because of the time zone difference, any cutoff time between Tuesday 16:00 PT and Wednesday 00:00 PT will result in a wrong release date
+          (release date before cutoff datetime). Do not set cutoff datetime between Tuesday 16:00 PT and Wednesday 00:00 PT.
         """
         archive_datetime = dt.fromisoformat(self.get_archive_datetime(isoformat=True))
         release_time = time.strptime(self.release_time_utc, "%A %H:%M")
@@ -175,7 +179,23 @@ class PipelineProcessor(object):
             return str(release_datetime)
         else: 
             return release_datetime
-        
+
+    # ------------------------------------------------------------------------
+    # the caller sometimes need the error message to be included in ermrest.
+    # HT TODO: return the error message for now
+    def log_exception(self, e, notify=False, subject=None):
+        """
+        log exception, send email notificatioin if specified
+        """
+        error_message = str(e)
+        et, ev, tb = sys.exc_info()
+        tb_message = error_message + '\n' + ''.join(traceback.format_exception(et, ev, tb))
+        self.logger.error('-- Got exception "%s: %s"' % (et.__name__, str(ev)))
+        self.logger.error('%s' % (tb_message))
+        if notify: self.sendMail(subject, tb_message)
+        if self.verbose: print(tb_message)
+        return tb_message
+
     # -------------------------------------------------------------------
     """
     Send Linux email notification
@@ -201,8 +221,10 @@ class PipelineProcessor(object):
         fr.close()
         os.remove(temp_name)
 
+    # -------------------------------------------------------------------        
     """
     Send email notification
+    HT TODO: make this not deployment specific
     """
     def sendMail(self, subject, text, receivers=None):
         if not self.notify:

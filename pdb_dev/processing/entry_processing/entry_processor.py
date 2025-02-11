@@ -1386,22 +1386,6 @@ class EntryProcessor(PipelineProcessor):
                     count+=1
                     if count >= limit: break
 
-    # -----------------------------------------------------------------------------------------                    
-    # the caller sometimes need the error message to be included in ermrest.
-    # HT TODO: return the error message for now
-    def log_exception(self, e, notify=False, subject=None):
-        """
-        log exception, send email notificatioin if specified
-        """
-        error_message = str(e)
-        et, ev, tb = sys.exc_info()
-        tb_message = error_message + '\n' + ''.join(traceback.format_exception(et, ev, tb))
-        self.logger.error('-- Got exception "%s: %s"' % (et.__name__, str(ev)))
-        self.logger.error('%s' % (tb_message))
-        if notify: self.sendMail(subject, tb_message)
-        if self.verbose: print(tb_message)
-        return tb_message
-
     # -----------------------------------------------------------------------------------------    
     # constraints="structure_id=%s&Entry_Related_File=%s" % (structure_id, related_file_rid)    
     def delete_rows(self, sname, tname, constraints, check_first=False):
