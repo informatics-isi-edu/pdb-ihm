@@ -274,8 +274,8 @@ class EntryProcessor(PipelineProcessor):
                 table = 'entry'
             user = self.getUser('PDB', table, rid)
             et, ev, tb = sys.exc_info()
-            self.logger.error('got unexpected exception "%s"' % str(ev))
-            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+            self.logger.error('start: got unexpected exception "%s"' % str(ev))
+            self.logger.error('start: %s' % ''.join(traceback.format_exception(et, ev, tb)))
             subject = '{} {}: {} ({})'.format(rid, 'unexpected exception', 'Error', user)
             self.sendMail(subject, '%s\nThe process might have been stopped\n' % ''.join(traceback.format_exception(et, ev, tb)))
             raise
@@ -283,17 +283,17 @@ class EntryProcessor(PipelineProcessor):
     """
     Process the csv/tsv file of the Entry_Related_File table
     """
-    def process_Entry_Related_File(self, schema, table, related_file_rid):
+    def process_Entry_Related_File(self, sname, related_file_tname, related_file_rid):
         """
         Get the RCB user
         """
-        user = self.getUser(schema, table, related_file_rid)
+        user = self.getUser(sname, related_file_tname, related_file_rid)
         
         """
         Query for detecting the record to be processed
         """
         constraints='RID=%s/T:=(M:File_Type)=(Vocab:File_Type:Name)' % (related_file_rid)
-        rows = get_ermrest_query(self.catalog, schema, table, constraints=constraints,
+        rows = get_ermrest_query(self.catalog, sname, related_file_tname, constraints=constraints,
                                  attributes=['M:File_Name','M:File_URL','M:File_MD5','M:structure_id','M:RCT','M:File_Format','M:Restraint_Process_Status','M:Restraint_Workflow_Status','T:Table_Name'] )
         row = rows[0]
         if self.verbose: print(json.dumps(row, indent=4))
@@ -306,7 +306,7 @@ class EntryProcessor(PipelineProcessor):
         csv_tname = row['Table_Name']
         
         if self.cfg.is_dev:       #if self.is_catalog_dev == True:
-            subject = '{}: START with status = {} ({})'.format(related_file_rid, row['Restraint_Process_Status'], user)
+            subject = '{}: DEV ONLY: START restraint file status {} ({})'.format(related_file_rid, row['Restraint_Process_Status'], user)
             self.sendMail(subject, 'The Restraint Process Status of the Entry Related File with RID={} was changed to "{}".'.format(row['RID'], row['Restraint_Process_Status']), receivers=self.email_config['curators'])
 
         """
@@ -328,24 +328,30 @@ class EntryProcessor(PipelineProcessor):
             delimiter = '\t' if file_format=='TSV' else ','        
             self.loadTableFromCSV(self.hatrac_file.file_path, delimiter, csv_tname, structure_id, related_file_rid, user)
             
-            self.updateAttributes(schema, table, related_file_rid, update_cnames, update_file_row, user)
-            self.logger.debug('Ended PDB Processing for the %s:%s table with RID %s.' % (schema, table, related_file_rid))
+            self.updateAttributes(sname, related_file_tname, related_file_rid, update_cnames, update_file_row, user)
+            self.logger.debug('Ended PDB Processing for the %s:%s table with RID %s.' % (sname, related_file_tname, related_file_rid))
             
             if self.verbose: print("Good processing")
-            if self.verbose: print('Ended PDB Processing for the %s:%s:%s with status:%s' % (schema, table, related_file_rid, update_file_row))
+            if self.verbose: print('Ended PDB Processing for the %s:%s:%s with status:%s' % (sname, related_file_tname, related_file_rid, update_file_row))
             
         except Exception as e:
-            if self.verbose: print("error processing: %s" % (subject))
-            # -- update the slide table with the failure result.
+            error_message = str(e)
             update_file_row['Restraint_Workflow_Status'] = 'ERROR'
-            update_file_row['Restraint_Process_Status'] = Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'],
+            update_file_row['Restraint_Process_Status'] = Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES']
             update_file_row['Record_Status_Detail'] = error_message
-            self.updateAttributes(schema, table, related_file_rid, update_cnames, update_file_row, user)
-            error_message = e
-            subject = '%s %s: %s (%s)' % (related_file_rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
-            self.handle_error(e, notify=False, subject=subject, re_raise=True)
-            
-            
+            subject = '%s %s: %s (%s)' % (related_file_rid, 'ERROR', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
+            self.log_exception(e, notify=False, subject=subject)
+            if self.verbose: print("process_entry_related_fiie: fail with subject: %s" % (subject))            
+            try:
+                self.updateAttributes(sname, related_file_tname, related_file_rid, update_cnames, update_file_row, user)
+                constraints="structure_id=%s&Entry_Related_File=%s" % (structure_id, related_file_rid)
+                # HT TODO: delete might fail due to dependency of child tables. We decided to go forward since it is less confusing to users
+                self.delete_rows(sname, csv_tname, constraints=constraints)
+            except Exception as e:
+                subject = '%s %s: %s (%s)' % (related_file_rid, 'ERROR', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
+                self.log_exception(e, notify=False, subject=subject)
+                raise ErmrestError("ERROR: Fail to update status in table %s or cleanup restraint table %s while handling error (%s)." % (related_file_tname, csv_tname, error_message))
+            raise
         
     """
     Export the mmCIF file of the entry table
@@ -1046,10 +1052,10 @@ class EntryProcessor(PipelineProcessor):
             """
             '''HT TODO: CLEANUP
             shutil.move('{}/output.cif'.format(self.make_mmCIF), '{}/rcsb/db/tests-validate/test-output/ihm-files/'.format(self.py_rcsb_db))
-            self.logger.debug('convert2jason: File {} was moved to the {} directory'.format(output_cif_fpath, '{}/rcsb/db/tests-validate/test-output/ihm-files/'.format(self.py_rcsb_db)))
+            self.logger.debug('convert2json: File {} was moved to the {} directory'.format(output_cif_fpath, '{}/rcsb/db/tests-validate/test-output/ihm-files/'.format(self.py_rcsb_db)))
             '''
             shutil.move(output_cif_fpath, py_rcsb_db_input_cif_dir)
-            self.logger.debug('convert2jason: File %s was moved to the %s directory' % (output_cif, py_rcsb_db_input_cif_dir))
+            self.logger.debug('convert2json: File %s was moved to the %s directory' % (output_cif, py_rcsb_db_input_cif_dir))
             
             currentDirectory=os.getcwd()
             os.chdir('{}'.format(self.py_rcsb_db))
@@ -1073,12 +1079,12 @@ class EntryProcessor(PipelineProcessor):
             '''TODO: CLEANUP
             shutil.copy2('%s/rcsb/db/tests-validate/test-output/ihm-files/%s' % (self.py_rcsb_db, output_cif), '/home/pdbihm/temp')
             os.remove('%s/rcsb/db/tests-validate/test-output/ihm-files/%s' % (self.py_rcsb_db, output_cif))
-            self.logger.debug('convert2josn: File {}/{} was removed'.format(self.py_rcsb_db, 'rcsb/db/tests-validate/test-output/ihm-files/%s' % (output_cif)))
+            self.logger.debug('convert2json: File {}/{} was removed'.format(self.py_rcsb_db, 'rcsb/db/tests-validate/test-output/ihm-files/%s' % (output_cif)))
             '''
             
             shutil.copy2(py_rcsb_db_input_cif_fpath, '/home/pdbihm/temp')
             os.remove(py_rcsb_db_input_cif_fpath)
-            self.logger.debug('convert2josn: File %s was removed' % (py_rcsb_db_input_cif_fpath))
+            self.logger.debug('convert2json: File %s was removed' % (py_rcsb_db_input_cif_fpath))
             
             """
             Load now the data from JSON files which are in the rcsb/db/tests-validate/test-output directory into the tables 
@@ -1118,29 +1124,33 @@ class EntryProcessor(PipelineProcessor):
         
     """
     Update the ermrest attributes
+    HT TODO: consider re-raise in the exception block
     """
     def updateAttributes (self, schema, table, rid, columns, row, user):
         """
         Update the ermrest attributes with the row values.
         """
+        
         try:
             columns = ','.join([urlquote(col) for col in columns])
             url = '/attributegroup/%s:%s/RID;%s' % (urlquote(schema), urlquote(table), columns)
             resp = self.catalog.put(url, json=[row])
             resp.raise_for_status()
             self.logger.debug('SUCCEEDED updated the table "%s" for the RID "%s"  with "%s".' % (url, rid, json.dumps(row, indent=4))) 
-        except:
-            et, ev, tb = sys.exc_info()
-            self.logger.error('got exception "%s"' % str(ev))
-            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+        except Exception as e:
             if 'Process_Status' in row.keys():
                 status = row['Process_Status']
             elif 'Restraint_Process_Status' in row.keys():
                 status = row['Restraint_Process_Status']
             else:
                 status = None
-            subject = '{} {}: {} ({})'.format(rid, 'ERROR', status, user)
-            self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+            subject = '{} {}: {} ({}) - updateAttributes'.format(rid, 'ERROR', status, user)
+            self.log_exception(e, notify=False, subject=subject)
+            raise
+            #et, ev, tb = sys.exc_info()
+            #self.logger.error('got exception "%s"' % str(ev))
+            #self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+            #self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
             
 
     """
@@ -1355,6 +1365,7 @@ class EntryProcessor(PipelineProcessor):
         
         return (returncode,error_message)
 
+    # -----------------------------------------------------------------------------------------    
     # note: if the structure in print statement is a tuple, need to convert to string first
     def print_pk_tables_dict(self, pk_table_dict, data_dict=False, limit=50):
         """
@@ -1374,17 +1385,52 @@ class EntryProcessor(PipelineProcessor):
                     print("        k: %s -> %s" % (k, json.dumps(v, indent=2)))
                     count+=1
                     if count >= limit: break
- 
-    def handle_error(self, e, re_raise=False, notify=True, subject=None):
+
+    # -----------------------------------------------------------------------------------------                    
+    # the caller sometimes need the error message to be included in ermrest.
+    # HT TODO: return the error message for now
+    def log_exception(self, e, notify=False, subject=None):
+        """
+        log exception, send email notificatioin if specified
+        """
+        error_message = str(e)
         et, ev, tb = sys.exc_info()
-        tb_message = ''.join(traceback.format_exception(et, ev, tb))
+        tb_message = error_message + '\n' + ''.join(traceback.format_exception(et, ev, tb))
         self.logger.error('-- Got exception "%s: %s"' % (et.__name__, str(ev)))
         self.logger.error('%s' % (tb_message))
-        self.sendMail(subject, tb_message)
+        if notify: self.sendMail(subject, tb_message)
         if self.verbose: print(tb_message)
-        if re_raise: raise
-    
+        return tb_message
+
+    # -----------------------------------------------------------------------------------------    
+    # constraints="structure_id=%s&Entry_Related_File=%s" % (structure_id, related_file_rid)    
+    def delete_rows(self, sname, tname, constraints, check_first=False):
+        """
+        delete table rows of specified constraints.
+        - parameter:
+          Check_first is not supported yet.
+        """
+        if not constraints:
+            raise Exception("ERROR: deleting rows from %s:%s require constraints" % (sname, tname))
+        
+        content_change = True
+        
+        if check_first:
+            existing_rows = get_ermrest_query(self.catalog, "PDB", tname, constraints=constraints)
+            #print("%s existing_rows[%d]: %s" % (tname, len(existing_rows), existing_rows))
+            
+        if content_change:
+            if self.verbose: print("!! tname: %s : will delete existing data with constraint: %s" % (tname, constraints))
+            delete_table_rows(self.catalog, "PDB", tname, constraints=constraints)
+            self.logger.debug('Deleted rows from PDB:%s with constraints=%s' % (tname, constraints))
+        else:
+            if self.verbose: print("%s content does not change" % (tname))
+        
+    # -----------------------------------------------------------------------------------------
     def loadTableFromCSV(self, fpath, delimiter, tname, entry_id, related_file_rid, user):
+        """
+        load restraint tables from specified csv file
+        """
         catalog = self.catalog
         model = self.catalog.getCatalogModel()
         table = model.schemas["PDB"].tables[tname]
@@ -1536,21 +1582,14 @@ class EntryProcessor(PipelineProcessor):
 
         """
         Empty the tname table of those with structure_id
+        TODO: refactor to use self.delete_rows
         """
         try:
             constraints="structure_id=%s&Entry_Related_File=%s" % (structure_id, related_file_rid)
-            existing_rows = get_ermrest_query(self.catalog, "PDB", tname, constraints=constraints)
-            #print("%s existing_rows[%d]: %s" % (tname, len(existing_rows), existing_rows))
-            
-            content_change = True
-            if content_change:
-                if self.verbose: print("!! %s content has changed: will delete existing data with constraint: %s" % (tname, constraints))
-                delete_table_rows(self.catalog, "PDB", tname, constraints=constraints)
-                self.logger.debug('Deleted rows from PDB:%s with constraints=%s' % (tname, constraints))
-            else:
-                if self.verbose: print("%s content does not change" % (tname))
+            self.delete_rows("PDB", tname, constraints)
         except Exception as e:
-            raise ErmrestError("Unable to read or cleanup table %s" % (tname))
+            self.log_exception(e, notify=False, subject="Unable to delete rows in table %s" % (tname))
+            raise ErmrestError("Unable to cleanup table %s with constraint" % (tname))
         
         """
         Insert updated payload to table
@@ -2317,6 +2356,8 @@ class EntryProcessor(PipelineProcessor):
             currentDirectory=os.getcwd()
             os.chdir(f'{self.validation_dir}')
 
+            # Note: the parameter before : is the local directory in the base vm, the parameter after : is the container path
+            # To test this manually, cd to the validation directory (e.g. /mnt/vdb1/validation
             args = ['singularity', 
                     'exec', '--pid',
                     '--bind', 'IHMValidation/:/opt/IHMValidation,/usr/local/lib/python3.8/dist-packages/ihm/:/opt/conda/lib/python3.10/site-packages/ihm/,input:/ihmv/input,cache:/ihmv/cache,output:/ihmv/output', 

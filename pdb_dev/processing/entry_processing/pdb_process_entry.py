@@ -295,8 +295,8 @@ def main():
         return 1
     except:
         et, ev, tb = sys.exc_info()
-        sys.stderr.write('got exception "%s"' % str(ev))
-        sys.stderr.write('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+        sys.stderr.write('pdb_process_entry: got exception "%s"' % str(ev))
+        sys.stderr.write('pdb_process_entry: %s' % ''.join(traceback.format_exception(et, ev, tb)))
         sys.stderr.write('\nusage: URL=https://foo.org/ermrest/catalog/N pdb_process_workflow --config config-file\n\n')
         return 1
 
