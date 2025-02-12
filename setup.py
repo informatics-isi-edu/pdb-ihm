@@ -30,7 +30,11 @@ setup(
     maintainer=author,
     maintainer_email=author_email,
     keywords=['pdb_dev', 'ihm', 'protein structure'],
-    packages=find_namespace_packages(exclude=["tests", "tmp"]),
+    package_dir={"": "pdb_dev"},    
+    packages=find_namespace_packages(
+        where="pdb_dev",
+        exclude=["build", "scripts", "config-scripts", "catalog-configs", "www", "templates", "tests", "tmp"]
+    ),
     entry_points={
         'console_scripts': [
             'pdb_dev_clear_entry_record = pdb_dev.tools.clear_entry_record:main',
