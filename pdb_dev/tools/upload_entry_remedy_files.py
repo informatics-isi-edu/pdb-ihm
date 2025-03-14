@@ -37,7 +37,7 @@ from deriva.utils.extras.hatrac import HatracFile
     WHERE "Accession_Code" in ('9A83', '9A86', '8ZZ1');
     
     -- check conform dicts
-    SELECT e."Accession_Code", count(f."RID"), array_agg(f."File_Name"||':'||d."Version")
+    SELECT e."Accession_Code", count(f."RID"), array_agg(f."RID"||':'||f."File_Name"||':'||d."Version")
     from "PDB"."Conform_Dictionary" cd
       JOIN "PDB"."Entry_Generated_File" f ON (cd."Exported_mmCIF_RID" = f."RID")
       JOIN "PDB".entry e ON (f."Structure_Id" = e.id)
@@ -61,7 +61,7 @@ from deriva.utils.extras.hatrac import HatracFile
 upload_path = "/tmp/pdb/remediation_upload"
 ihm_version = "1.27"    # "1.26"
 pdbx_version = "5.399"  # "5.395"
-flr_version = "0.02"    # not track previously
+flr_version = None      # not track previously
 delete_other_dicts = False
 verbose = False
 
@@ -159,9 +159,11 @@ def main(catalog, store):
         elif row["Name"] == "mmcif_ihm_flr_ext.dic" and row["Version"] == flr_version: 
             mmcif_flr_rid = row["RID"]
     if verbose: print("mmcif_ihm_rid: %s, mmcif_pdbx_rid: %s mmcif_flr_rid:%s " % (mmcif_ihm_rid, mmcif_pdbx_rid, mmcif_flr_rid))
-    if not mmcif_ihm_rid or not mmcif_pdbx_rid or not mmcif_flr_rid:
-        raise Exception("ERROR: mmcif_ihm_ext.dic version %s or mmcif_pdbx.dic version %s or mmcif_ihm_flr_ext.dic version %s does not exist" % (ihm_version, pdbx_version, flr_version))
-
+    if not mmcif_ihm_rid or not mmcif_pdbx_rid:
+        raise Exception("ERROR: mmcif_ihm_ext.dic version %s or mmcif_pdbx.dic version %s does not exist" % (ihm_version, pdbx_version))
+    if flr_version and not mmcif_flr_rid:
+        raise Exception("ERROR: mmcif_ihm_flr_ext.dic version %s does not exist" % (flr_version))
+    
     # == read directory
     insert_files = []
     update_files = []
@@ -255,12 +257,13 @@ def main(catalog, store):
             crid = existing_conform_dicts[(structure_id, "mmcif_ihm_ext.dic")]["CRID"]
             update_conform_dicts.append({"Exported_mmCIF_RID": file_rid, "Data_Dictionary_RID": mmcif_ihm_rid, "RID": crid, "_info": "%s - ihm %s" % (entry_code, ihm_version) })
         # -- flr dict
-        if (structure_id, "mmcif_ihm_flr_ext.dic") not in existing_conform_dicts.keys():
-            #print("(%s, %s) doesn't exist. Will insert" % (structure_id, "mmcif_ihm_flr_ext.dic"))
-            insert_conform_dicts.append({"Exported_mmCIF_RID": file_rid, "Data_Dictionary_RID": mmcif_flr_rid, "_info": "%s - flr %s" % (entry_code, flr_version) })
-        elif existing_conform_dicts[(structure_id, "mmcif_ihm_flr_ext.dic")]["Version"] != flr_version:
-            crid = existing_conform_dicts[(structure_id, "mmcif_ihm_flr_ext.dic")]["CRID"]
-            update_conform_dicts.append({"Exported_mmCIF_RID": file_rid, "Data_Dictionary_RID": mmcif_flr_rid, "RID": crid, "_info": "%s - flr %s" % (entry_code, flr_version) })
+        if flr_version:
+            if (structure_id, "mmcif_ihm_flr_ext.dic") not in existing_conform_dicts.keys():
+                #print("(%s, %s) doesn't exist. Will insert" % (structure_id, "mmcif_ihm_flr_ext.dic"))
+                insert_conform_dicts.append({"Exported_mmCIF_RID": file_rid, "Data_Dictionary_RID": mmcif_flr_rid, "_info": "%s - flr %s" % (entry_code, flr_version) })
+            elif existing_conform_dicts[(structure_id, "mmcif_ihm_flr_ext.dic")]["Version"] != flr_version:
+                crid = existing_conform_dicts[(structure_id, "mmcif_ihm_flr_ext.dic")]["CRID"]
+                update_conform_dicts.append({"Exported_mmCIF_RID": file_rid, "Data_Dictionary_RID": mmcif_flr_rid, "RID": crid, "_info": "%s - flr %s" % (entry_code, flr_version) })
         # -- pdbx dict
         if (structure_id, "mmcif_pdbx.dic") not in existing_conform_dicts.keys():
             #print("(%s, %s) doesn't exist. Will insert" % (structure_id, "mmcif_pdbx.dic"))            
@@ -282,11 +285,12 @@ def main(catalog, store):
         for (structure_id, dict_name), row in existing_conform_dicts.items():
             #print(" d: %s %s %s " % (structure_id, dict_name, row))
             if structure_id not in dir_mmcif_entry_ids: continue
-            if dict_name in ["mmcif_ihm_ext.dic", "mmcif_pdbx.dic", "mmcif_ihm_flr_ext.dic"]: continue
+            #if dict_name in ["mmcif_ihm_ext.dic", "mmcif_pdbx.dic", "mmcif_ihm_flr_ext.dic"]: continue
+            if dict_name in ["mmcif_ihm_ext.dic", "mmcif_pdbx.dic"]: continue
             delete_conform_dict_rids.append(row["CRID"])
         print("\ndelete_conform_dict_rids(%d): %s" % (len(delete_conform_dict_rids), json.dumps(delete_conform_dict_rids, indent=4)))
         if delete_conform_dict_rids:
-            constraints = "/RID=ANY(%s)" % (','.join(delete_conform_dict_rids))
+            constraints = "RID=ANY(%s)" % (','.join(delete_conform_dict_rids))
             deleted = delete_table_rows(catalog, "PDB", "Conform_Dictionary", constraints=constraints)
             #print("deleted with constraint: %s" % (constraints))
     
@@ -339,14 +343,15 @@ if __name__ == "__main__":
     cli.parser.add_argument('--upload-path', help="directory containing entry generated files", default="/tmp/pdb/remedy")
     cli.parser.add_argument('--ihm-version', help="mmcif_ihm_ext.dic version (default: 1.27)", default="1.27")
     cli.parser.add_argument('--pdbx-version', help="mmcif_pdbx.dict version (default: 5.399)", default="5.399")
-    cli.parser.add_argument('--flr-version', help="mmcif_ihm_flr_ext.dic version (default: 0.02)", default="0.02")    
-    cli.parser.add_argument('--delete-dicts', action="store_true", help="flag whether to delete other dicts that are not ihm/pdbx/flr", default=False)
+    cli.parser.add_argument('--flr-version', help="mmcif_ihm_flr_ext.dic version (default: 0.02)")
+    cli.parser.add_argument('--delete-dicts', action="store_true", help="flag whether to delete other dicts that are not ihm/pdbx", default=False)
     cli.parser.add_argument('--verbose', action="store_true", help="flag whether to print progress/status", default=False)
     
     args = cli.parse_cli()
     upload_path = args.upload_path
     ihm_version = args.ihm_version
     pdbx_version = args.pdbx_version
+    flr_version = args.flr_version
     delete_other_dicts = args.delete_dicts
     verbose = args.verbose
     
