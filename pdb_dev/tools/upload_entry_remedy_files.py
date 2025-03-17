@@ -33,8 +33,8 @@ from deriva.utils.extras.hatrac import HatracFile
       JOIN "PDB".entry e ON (f."Structure_Id" = e.id)
       JOIN "PDB"."Accession_Code" ac ON (e."Accession_Code" = ac."Accession_Code")
       JOIN "PDB"."Data_Dictionary" d ON (cd."Data_Dictionary_RID" = d."RID")
-    -- WHERE "RMT" > '20240801'
-    WHERE "Accession_Code" in ('9A83', '9A86', '8ZZ1');
+    WHERE f."RMT" > '20250312'
+    --WHERE "Accession_Code" in ('9A83', '9A86', '8ZZ1');
     
     -- check conform dicts
     SELECT e."Accession_Code", count(f."RID"), array_agg(f."RID"||':'||f."File_Name"||':'||d."Version")
@@ -43,9 +43,9 @@ from deriva.utils.extras.hatrac import HatracFile
       JOIN "PDB".entry e ON (f."Structure_Id" = e.id)
       JOIN "PDB"."Accession_Code" ac ON (e."Accession_Code" = ac."Accession_Code")
       JOIN "PDB"."Data_Dictionary" d ON (cd."Data_Dictionary_RID" = d."RID")
-    -- WHERE f."RMT" > '20250312'
+    WHERE f."RMT" > '20250312'
     GROUP BY e."Accession_Code"
-    HAVING count(f."RID") != 2
+    --HAVING count(f."RID") != 2
     
     -- check generated files associated with entries
     SELECT e."Accession_Code", count(f."RID"), array_agg(concat(f."File_Name", ':', f."File_Bytes", ':', f."File_MD5", ' '))
@@ -343,8 +343,8 @@ if __name__ == "__main__":
     cli.parser.add_argument('--upload-path', help="directory containing entry generated files", default="/tmp/pdb/remedy")
     cli.parser.add_argument('--ihm-version', help="mmcif_ihm_ext.dic version (default: 1.27)", default="1.27")
     cli.parser.add_argument('--pdbx-version', help="mmcif_pdbx.dict version (default: 5.399)", default="5.399")
-    cli.parser.add_argument('--flr-version', help="mmcif_ihm_flr_ext.dic version (default: 0.02)")
-    cli.parser.add_argument('--delete-dicts', action="store_true", help="flag whether to delete other dicts that are not ihm/pdbx", default=False)
+    cli.parser.add_argument('--flr-version', help="mmcif_ihm_flr_ext.dic version (default=None). If None, flr-version will not be set.", default=None)
+    cli.parser.add_argument('--delete-dicts', action="store_true", help="flag whether to delete other dicts (e.g. flr) that are not ihm/pdbx", default=False)
     cli.parser.add_argument('--verbose', action="store_true", help="flag whether to print progress/status", default=False)
     
     args = cli.parse_cli()
