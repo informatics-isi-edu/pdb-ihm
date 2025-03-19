@@ -64,6 +64,7 @@ pdbx_version = "5.399"  # "5.395"
 flr_version = None      # not track previously
 delete_other_dicts = False
 verbose = False
+manual_processing = True
 
 # --------------------------------------------------------------------------
 def insert_new_data_dicts(catalog):
@@ -296,15 +297,15 @@ def main(catalog, store):
     
     # == update entry table
     '''
-    set Workflow_Status = REL, Manual_Processing = True, Process_Status = Success
-    Note: Can't set id since it timeouts
+    For those with mmcif file, set Workflow_Status = REL, Manual_Processing = <manual_processing>, Process_Status = Success
+    Note: Can't set id to conform to convention since it timeouts
     '''
     update_entries = []
-    for id in dir_entry_ids: 
+    for id in dir_mmcif_entry_ids:    # dir_entry_ids: 
         entry_row = id2entries[id]
         structure_id = "D_%s" % (entry_row["RID"])
-        if entry_row["Workflow_Status"] != "REL" or entry_row["Manual_Processing"] is False or entry_row["Process_Status"] != "Success":
-            update_entries.append({"RID": entry_row["RID"], "Workflow_Status": "REL", "Manual_Processing": True, "Process_Status": "Success", "id": structure_id })
+        if entry_row["Workflow_Status"] != "REL" or entry_row["Manual_Processing"] != manual_processing or entry_row["Process_Status"] != "Success":
+            update_entries.append({"RID": entry_row["RID"], "Workflow_Status": "REL", "Manual_Processing": manual_processing, "Process_Status": "Success", "id": structure_id })
     print("\nupdate_entries (%d/%d): %s" % (len(update_entries), len(dir_entry_ids), json.dumps(update_entries, indent=4)))
     update_table_rows(catalog, "PDB", "entry", keys=["RID"], column_names=["Workflow_Status", "Manual_Processing", "Process_Status"], payload=update_entries)
 
@@ -346,6 +347,7 @@ if __name__ == "__main__":
     cli.parser.add_argument('--flr-version', help="mmcif_ihm_flr_ext.dic version (default=None). If None, flr-version will not be set.", default=None)
     cli.parser.add_argument('--delete-dicts', action="store_true", help="flag whether to delete other dicts (e.g. flr) that are not ihm/pdbx", default=False)
     cli.parser.add_argument('--verbose', action="store_true", help="flag whether to print progress/status", default=False)
+    cli.parser.add_argument('--manual-processing', help="manual processing value of entries with mmcif files (default=True)", default="True")
     
     args = cli.parse_cli()
     upload_path = args.upload_path
@@ -354,7 +356,13 @@ if __name__ == "__main__":
     flr_version = args.flr_version
     delete_other_dicts = args.delete_dicts
     verbose = args.verbose
-    
+    if args.manual_processing.lower() in ["true", "t"]:
+        manual_processing = True
+    elif args.manual_processing.lower() in ["false", "f"]:
+        manual_processing = False
+    else:
+        raise Exception("manual processing can be either True or False (case insensitive)")
+
     credentials = get_credential(args.host, args.credential_file)
     print("credentials: %s" % (credentials))
     catalog = ErmrestCatalog("https", args.host, args.catalog_id, credentials)
