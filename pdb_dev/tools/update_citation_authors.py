@@ -51,8 +51,12 @@ def clear_citation_authors(catalog, citation_authors):
     """
     constraints="C:=(structure_id)=(PDB:ihm_entry_collection_mapping:entry_id)/C:collection_id=%s/$M" % (collection_id)
     rows = get_ermrest_query(catalog, "PDB", "citation_author", constraints=constraints, attributes=["structure_id", "citation_id", "name", "ordinal"])
-    # TODO: uncomment to delete
-    #deleted = delete_table_rows(catalog, "PDB", "citation_author", constraints=constraints)
+    if len(rows) == 0:
+        print("clear_citation_author: there is nothing to delete in PDB:citation_author")
+    else:
+        print("clear_citation_author: Will delete %s entries" % (len(rows)))
+        # TODO: uncomment to delete
+        deleted = delete_table_rows(catalog, "PDB", "citation_author", constraints=constraints)
     
 # TODO: complete this function
 def get_author_list(author_file):
