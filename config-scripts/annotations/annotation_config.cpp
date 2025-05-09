@@ -25878,7 +25878,7 @@
                     "First_PDB_Entry_ID",
                     {
                         "comment": "Entry RID of the first released IHM entry with which the chemical component defintion was released",
-                        "markdown_name": "Release_IHM_Entry_RID",
+                        "markdown_name": "Release IHM Entry RID",
                         "source": [
                             {
                                 "outbound": [
@@ -25966,7 +25966,7 @@
                     "First_PDB_Entry_ID",
                     {
                         "comment": "Entry RID of the first released IHM entry with which the chemical component defintion was released",
-                        "markdown_name": "Release_IHM_Entry_RID",
+                        "markdown_name": "Release IHM Entry RID",
                         "source": [
                             {
                                 "outbound": [
@@ -26063,7 +26063,7 @@
                     "First_PDB_Entry_ID",
                     {
                         "comment": "Entry RID of the first released IHM entry with which the chemical component defintion was released",
-                        "markdown_name": "Release_IHM_Entry_RID",
+                        "markdown_name": "Release IHM Entry RID",
                         "source": [
                             {
                                 "outbound": [
