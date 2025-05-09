@@ -209,6 +209,22 @@
                 "url_pattern": "/<hatrac>/pdb/submitted/uid/{{#if _RCB}}{{#regexFindFirst _RCB \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^\/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/mmCIF/{{{mmCIF_File_MD5}}}{{{_mmCIF_File_URL.filename_ext}}}"
             }
         },
+#if defined(dev)
+        {
+            "column": "CCD_CIF_File_URL",
+            "schema": "PDB",
+            "table": "IHM_New_Chem_Comp",
+            "uri": "tag:isrd.isi.edu,2017:asset",
+            "value": {
+                "byte_count_column": "CCD_CIF_File_Bytes",
+                "filename_column": "CCD_CIF_File_Name",
+                "md5": "CCD_CIF_File_md5",
+                "filename_ext_filter" : [".cif", ".CIF"],
+                "template_engine": "handlebars",
+                "url_pattern": "/hatrac/dev/pdb/internal/CCD/{{$moment.year}}/{{{CCD_CIF_File_Name}}}"
+            }
+        },
+#endif
         {
             "column": "pdbx_database_id_DOI",
             "schema": "PDB",
@@ -23608,6 +23624,21 @@
                             "RID"
                         ]
                     },
+#if defined(dev)
+                    {
+                        "comment": "An identifier for the group of structure models whose results are described",
+                        "markdown_name": "Model Group Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_cross_link_result_model_group_id_combo2_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+#endif
                     {
                         "comment": "A reference to table ihm_ensemble_info.ensemble_id.",
                         "markdown_name": "Ensemble Id",
@@ -23668,6 +23699,21 @@
                             "RID"
                         ]
                     },
+#if defined(dev)
+                    {
+                        "comment": "An identifier for the group of structure models whose results are described",
+                        "markdown_name": "Model Group Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_cross_link_result_model_group_id_combo2_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+#endif
                     {
                         "comment": "A reference to table ihm_ensemble_info.ensemble_id.",
                         "markdown_name": "Ensemble Id",
@@ -23741,6 +23787,21 @@
                             "RID"
                         ]
                     },
+#if defined(dev)
+                    {
+                        "comment": "An identifier for the group of structure models whose results are described",
+                        "markdown_name": "Model Group Id",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "ihm_cross_link_result_model_group_id_combo2_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+#endif
                     {
                         "comment": "A reference to table ihm_ensemble_info.ensemble_id.",
                         "markdown_name": "Ensemble Id",
@@ -25726,6 +25787,301 @@
                 ]
             }
         },
+#if defined(dev)
+        {
+            "schema": "PDB",
+            "table": "IHM_New_Chem_Comp",
+            "uri": "tag:misd.isi.edu,2015:display",
+            "value": {
+                "name": "New Chemical Components for PDB-IHM",
+                "comment_display": {
+                    "*": {
+                        "table_comment_display" : "inline"
+                    }
+                }
+            }
+        },
+        {
+            "schema": "PDB",
+            "table": "IHM_New_Chem_Comp",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "comp_id",
+                    {
+                        "comment": "Type of chemical component",
+                        "markdown_name": "Chem Comp Type",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "Vocab",
+                                    "IHM_New_Chem_Comp_Type_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    {
+                        "comment": "Current release status of the chemical component",
+                        "markdown_name": "PDBx Release Status",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "Vocab",
+                                    "IHM_New_Chem_Comp_pdbx_release_status_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    {
+                        "comment": "Deposition site that processed this chemical component definition",
+                        "markdown_name": "PDBx Processing Site",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "Vocab",
+                                    "IHM_New_Chem_Comp_pdbx_processing_site_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    {
+                        "comment": "Resource for which the chemical component definition was created for",
+                        "markdown_name": "Created For",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "Vocab",
+                                    "IHM_New_Chem_Comp_Created_For_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "Creation_Date",
+                    {
+                        "comment": "Entry RID of the first IHM entry for which the chemical component defintion was created",
+                        "markdown_name": "First IHM Entry RID",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "IHM_New_Chem_Comp_First_entry_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "First_PDB_Entry_ID",
+                    {
+                        "comment": "Entry RID of the first released IHM entry with which the chemical component defintion was released",
+                        "markdown_name": "Release_IHM_Entry_RID",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "IHM_New_Chem_Comp_Release_entry_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "Release_PDB_Entry_ID",
+                    "Release_Date",
+                    "Notes",
+                    "CCD_CIF_File_URL"
+                ],
+                "detailed": [
+                    "RID",
+                    "comp_id",
+                    {
+                        "comment": "Type of chemical component",
+                        "markdown_name": "Chem Comp Type",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "Vocab",
+                                    "IHM_New_Chem_Comp_Type_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    {
+                        "comment": "Current release status of the chemical component",
+                        "markdown_name": "PDBx Release Status",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "Vocab",
+                                    "IHM_New_Chem_Comp_pdbx_release_status_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    {
+                        "comment": "Deposition site that processed this chemical component definition",
+                        "markdown_name": "PDBx Processing Site",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "Vocab",
+                                    "IHM_New_Chem_Comp_pdbx_processing_site_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    {
+                        "comment": "Resource for which the chemical component definition was created for",
+                        "markdown_name": "Created For",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "Vocab",
+                                    "IHM_New_Chem_Comp_Created_For_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "Creation_Date",
+                    {
+                        "comment": "Entry RID of the first IHM entry for which the chemical component defintion was created",
+                        "markdown_name": "First IHM Entry RID",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "IHM_New_Chem_Comp_First_entry_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "First_PDB_Entry_ID",
+                    {
+                        "comment": "Entry RID of the first released IHM entry with which the chemical component defintion was released",
+                        "markdown_name": "Release_IHM_Entry_RID",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "IHM_New_Chem_Comp_Release_entry_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "Release_PDB_Entry_ID",
+                    "Release_Date",
+                    "Notes",
+                    "CCD_CIF_File_URL",
+                    "RCT",
+                    "RMT",
+                    [
+                        "PDB",
+                        "IHM_New_Chem_Comp_RCB_fkey"
+                    ],
+                    [
+                        "PDB",
+                        "IHM_New_Chem_Comp_RMB_fkey"
+                    ]
+                ],
+                "entry": [
+                    "comp_id",
+                    {
+                        "comment": "Type of chemical component",
+                        "markdown_name": "Chem Comp Type",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "Vocab",
+                                    "IHM_New_Chem_Comp_Type_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    {
+                        "comment": "Current release status of the chemical component",
+                        "markdown_name": "PDBx Release Status",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "Vocab",
+                                    "IHM_New_Chem_Comp_pdbx_release_status_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    {
+                        "comment": "Deposition site that processed this chemical component definition",
+                        "markdown_name": "PDBx Processing Site",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "Vocab",
+                                    "IHM_New_Chem_Comp_pdbx_processing_site_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    {
+                        "comment": "Resource for which the chemical component definition was created for",
+                        "markdown_name": "Created For",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "Vocab",
+                                    "IHM_New_Chem_Comp_Created_For_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "Creation_Date",
+                    {
+                        "comment": "Entry RID of the first IHM entry for which the chemical component defintion was created",
+                        "markdown_name": "First IHM Entry RID",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "IHM_New_Chem_Comp_First_entry_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "First_PDB_Entry_ID",
+                    {
+                        "comment": "Entry RID of the first released IHM entry with which the chemical component defintion was released",
+                        "markdown_name": "Release_IHM_Entry_RID",
+                        "source": [
+                            {
+                                "outbound": [
+                                    "PDB",
+                                    "IHM_New_Chem_Comp_Release_entry_fkey"
+                                ]
+                            },
+                            "RID"
+                        ]
+                    },
+                    "Release_PDB_Entry_ID",
+                    "Release_Date",
+                    "Notes",
+                    "CCD_CIF_File_URL"
+                ]
+            }
+        },
+#endif
         {
             "schema": "Vocab",
             "table": "Data_Dictionary_Name",
@@ -26823,6 +27179,44 @@
                 ]
             }
         },
+#if defined(dev)
+        {
+            "schema": "Vocab",
+            "table": "chem_comp_pdbx_release_status",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "chem_comp_pdbx_processing_site",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+        {
+            "schema": "Vocab",
+            "table": "chem_comp_ihm_created_for",
+            "uri": "tag:isrd.isi.edu,2016:visible-columns",
+            "value": {
+                "*": [
+                    "RID",
+                    "Name",
+                    "Description"
+                ]
+            }
+        },
+#endif
         {
             "schema": "Vocab",
             "table": "ihm_external_files_content_type",
@@ -29252,6 +29646,12 @@
                                             "name": "Chem Comp",
                                             "url": "/chaise/recordset/catalog_number/PDB:chem_comp"
                                         },
+#if defined(dev)
+                                        {
+                                            "name": "IHM New Chem Comp",
+                                            "url": "/chaise/recordset/catalog_number/PDB:IHM_New_Chem_Comp"
+                                        },
+#endif
                                         {
                                             "name": "Chem Comp Atom",
                                             "url": "/chaise/recordset/catalog_number/PDB:chem_comp_atom"
@@ -29778,6 +30178,20 @@
                                             "name": "Substruct Code",
                                             "url": "/chaise/recordset/catalog_number/Vocab:chem_comp_atom_substruct_code"
                                         },
+#if defined(dev)
+                                        {
+                                            "name": "Chem Comp Release Status",
+                                            "url": "/chaise/recordset/catalog_number/Vocab:chem_comp_pdbx_release_status"
+                                        },
+                                        {
+                                            "name": "Chem Comp Processing Site",
+                                            "url": "/chaise/recordset/catalog_number/Vocab:chem_comp_pdbx_processing_site"
+                                        },
+                                        {
+                                            "name": "Chem Comp Created For",
+                                            "url": "/chaise/recordset/catalog_number/Vocab:chem_comp_ihm_created_for"
+                                        },
+#endif
                                         {
                                             "name": "Type",
                                             "url": "/chaise/recordset/catalog_number/Vocab:chem_comp_type"
