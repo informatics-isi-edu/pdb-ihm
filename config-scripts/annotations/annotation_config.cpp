@@ -17553,10 +17553,12 @@
                         "PDB",
                         "ihm_ensemble_sub_sample_ihm_ensemble_info_combo1_fkey"
                     ],
+#if defined(dev)
                     [
                         "PDB",
-                        "ihm_cross_link_result_ensemble_id_fkey"
+                        "ihm_cross_link_result_ensemble_id_combo2_fkey"
                     ],
+#endif
                     [
                         "PDB",
                         "ihm_localization_density_files_ensemble_id_fkey"
@@ -23638,7 +23640,6 @@
                             "RID"
                         ]
                     },
-#endif
                     {
                         "comment": "A reference to table ihm_ensemble_info.ensemble_id.",
                         "markdown_name": "Ensemble Id",
@@ -23646,12 +23647,13 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_cross_link_result_ensemble_id_fkey"
+                                    "ihm_cross_link_result_ensemble_id_combo2_fkey"
                                 ]
                             },
                             "RID"
                         ]
                     },
+#endif
                     "num_models",
                     "distance_threshold",
                     "median_distance",
@@ -23713,7 +23715,6 @@
                             "RID"
                         ]
                     },
-#endif
                     {
                         "comment": "A reference to table ihm_ensemble_info.ensemble_id.",
                         "markdown_name": "Ensemble Id",
@@ -23721,12 +23722,13 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_cross_link_result_ensemble_id_fkey"
+                                    "ihm_cross_link_result_ensemble_id_combo2_fkey"
                                 ]
                             },
                             "RID"
                         ]
                     },
+#endif
                     "num_models",
                     "distance_threshold",
                     "median_distance",
@@ -23801,7 +23803,6 @@
                             "RID"
                         ]
                     },
-#endif
                     {
                         "comment": "A reference to table ihm_ensemble_info.ensemble_id.",
                         "markdown_name": "Ensemble Id",
@@ -23809,12 +23810,13 @@
                             {
                                 "outbound": [
                                     "PDB",
-                                    "ihm_cross_link_result_ensemble_id_fkey"
+                                    "ihm_cross_link_result_ensemble_id_combo2_fkey"
                                 ]
                             },
                             "RID"
                         ]
                     },
+#endif
                     "num_models",
                     "distance_threshold",
                     "median_distance",
@@ -32533,8 +32535,9 @@
                 "domain_filter_pattern": "structure_id={{structure_id}}"
             }
         },
+#if defined(dev)
         {
-            "foreign_key": "ihm_cross_link_result_ensemble_id_fkey",
+            "foreign_key": "ihm_cross_link_result_ensemble_id_combo2_fkey",
             "foreign_key_schema": "PDB",
             "schema": "PDB",
             "table": "ihm_cross_link_result",
@@ -32543,6 +32546,7 @@
                 "domain_filter_pattern": "structure_id={{structure_id}}"
             }
         },
+#endif
         {
             "foreign_key": "ihm_cross_link_result_restraint_id_fkey",
             "foreign_key_schema": "PDB",
