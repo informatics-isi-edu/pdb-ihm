@@ -7002,6 +7002,9 @@
                      "Deposit_Date",
                      "Release_Date",
                      "Method_Details",
+#if defined(dev)
+                    "New_Chem_Comp_Pending",
+#endif
                      "Manual_Processing",
                   {
                      "markdown_name" : "RCB",
@@ -7123,6 +7126,12 @@
                         "RID"
                      ]
                   },
+#if defined(dev)
+                  { 
+                     "markdown_name" : "New Chem Comp Pending",
+                     "source" : "New_Chem_Comp_Pending"
+                  },
+#endif
                   { 
                      "markdown_name" : "Manual Processing",
                      "source" : "Manual_Processing"
@@ -7200,6 +7209,9 @@
                     "Method_Details",
                     "Submitter_Flag",
                     "Submitter_Flag_Date",
+#if defined(dev)
+                    "New_Chem_Comp_Pending",
+#endif
                     "Manual_Processing",
                     "Notes",
 			      {
@@ -7229,6 +7241,9 @@
                     "Release_Date",
                     "Submitter_Flag",
                     "Submitter_Flag_Date",
+#if defined(dev)
+                    "New_Chem_Comp_Pending",
+#endif
                     "Manual_Processing",
                     "Notes"
                 ],
@@ -7240,6 +7255,9 @@
                         "entry_Workflow_Status_fkey"
                     ],
                     "Method_Details",
+#if defined(dev)
+                    "New_Chem_Comp_Pending",
+#endif
                     "Manual_Processing",
                     "Notes"
                 ]
