@@ -92,9 +92,13 @@ def print_export_annotations(model):
 
 # -- =================================================================================    
 def update_export_annotations(model):
+    
     update_PDB_entry(model)
     # -- list of specific tables
 
+# -------------------------------------------
+def clear_export_annotations(model):
+    clear_all_schema_annotations(model, export_annotation_tags)    
     
 # -- =================================================================================    
 def main(server_name, catalog_id, credentials, args):
@@ -105,7 +109,7 @@ def main(server_name, catalog_id, credentials, args):
     
     if args.pre_print:
         print_export_annotations(model)
-    clear_all_schema_annotations(model, export_annotation_tags)
+    clear_export_annotations(model)
     update_export_annotations(model)
     if args.post_print:
         print_export_annotations(model)

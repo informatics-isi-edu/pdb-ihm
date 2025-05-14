@@ -7,15 +7,15 @@ from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key,
 from deriva.core import urlquote, urlunquote
 import requests.exceptions
 from ...utils.shared import DCCTX, PDBDEV_CLI
-from deriva.utils.extras.model import print_catalog_model_extras, print_schema_model_extras, print_table_model_extras, get_schemas, get_tables, get_columns, check_model_acl_types
+from deriva.utils.extras.model import print_catalog_model_extras, print_schema_model_extras, print_table_model_extras, per_schema_annotation_tags, clear_schema_annotations
 
 from . import catalog_annotations
 from . import export
-'''
-from . import google_dataset
-from . import bulk_upload
 from . import asset
 from . import citation
+
+'''
+from . import google_dataset
 from . import viz_3d_display
 '''
 from . import PDB
@@ -44,33 +44,37 @@ def main(server_name, catalog_id, credentials, args):
             print_catalog_model_extras(model, annotations=True, acls=False, acl_bindings=False, exclude_default_fkey=False)        
         return
 
-    
     # -- clear annotations
     #model.clear(clear_comment=False, clear_annotations=True, clear_acls=False, clear_acl_bindings=False)
+
+    # -- catalog annotation (chaise_config, bulk_upload) and catalog-wide annotations
+    catalog_annotations.clear_catalog_catalog_wide_annotations(model)
     
-    # -- per schema annotations
-    #PDB.update_PDB_annotations(model)
-    export.update_export_annotations(model)
-    
-    '''
-    # -- catalog annotation (chaise_config, bulk_upload)
     catalog_annotations.update_catalog_annotations(model)
-    # -- update annotation in all schemas
     catalog_annotations.update_catalog_wide_annotations(model)
+
+    # -- per schema annotations
+    clear_schema_annotations(model, "Vocab", per_schema_annotation_tags)
+    Vocab.update_Vocab_annotations(model)
+    clear_schema_annotations(model, "PDB", per_schema_annotation_tags)    
+    PDB.update_PDB_annotations(model)
     
     # -- tag specifics annotations
-
+    export.clear_export_annotations(model)        
+    export.update_export_annotations(model)
+    
+    asset.clear_asset_annotations(model)
     asset.update_asset_annotations(model)
-    viz_3d_display.update_viz_3d_display_annotations(model)
+    
+    citation.clear_citation_annotations(model)
     citation.update_citation_annotations(model)
-
+    
+    '''    
+    viz_3d_display.update_viz_3d_display_annotations(model)
     # -- per schema annotations
-    PDB.update_PDB_annotations(model)
-    Vocab.update_Vocab_annotations(model)
     #public.update_public_annotations(model)
     #_acl_admin.update__acl_admin_annotations(model)    
     '''
-
 
     if args.post_print:
         if args.schema and args.table:
@@ -81,7 +85,7 @@ def main(server_name, catalog_id, credentials, args):
             print_catalog_model_extras(model, annotations=True, acls=False, acl_bindings=False, exclude_default_fkey=False)        
         return
     if not args.dry_run:
-        #model.apply()
+        model.apply()
         pass
     
 

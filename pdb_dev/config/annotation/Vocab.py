@@ -3,27 +3,148 @@ from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key,
 from deriva.core import urlquote, urlunquote
 import requests.exceptions
 from ...utils.shared import DCCTX, PDBDEV_CLI
-from deriva.utils.extras.model import print_catalog_model_extras, print_schema_model_extras, print_table_model_extras, get_schemas, get_tables, get_columns, check_model_acl_types
+from deriva.utils.extras.model import print_schema_model_extras, print_table_model_extras, print_schema_annotations, per_schema_annotation_tags, clear_schema_annotations
 
 # -- =================================================================================
 # -- schema level annotation
 
 def update_Vocab(model):
-    schema = model.schemas["PDB"]
+    schema = model.schemas["Vocab"]
 
+    # ----------------------------
+    schema.display.update({
+        "name_style": {
+            "title_case": False,
+            "underline_space": True
+        }
+    })
+
+    # -- default table behavior
+    for tname, table in schema.tables.items():
+        table.visible_columns.update({
+            "*": [
+                "RID",
+                "Name",
+                "Description",
+            ]
+        })
+
+# -- =================================================================================        
+# -- individual table updates
+#
+
+def update_Vocab_Data_Dictionary_Name(model):
+    schema = model.schemas["Vocab"]
+    table = schema.tables["Data_Dictionary_Name"]
+
+    # ----------------------------
+    schema.tables["Data_Dictionary_Name"].columns["Location"].column_display.update({
+        "*": {
+            "markdown_pattern": "[{{{Name}}}]({{{Location}}})"
+        }
+    })
+    
+# -- ---------------------------------------------------------------------------------    
+def update_Vocab_System_Generated_File_Type(model):
+    schema = model.schemas["Vocab"]
+    table = schema.tables["System_Generated_File_Type"]
+
+    # ----------------------------
+    schema.tables["System_Generated_File_Type"].visible_columns.update({
+        "*": [
+            "RID",
+            "Name",
+            {
+                "source": [{ "outbound": ["Vocab", "System_Generated_File_Type_Archive_Category_Name_fkey"]}, "Name" ],
+                "markdown_name": "Archive Category"
+            },
+            "Description",
+        ]
+    })
     
 # -- ---------------------------------------------------------------------------------
-def update_Vocab_xx(model):
+def update_Vocab_Process_Status(model):
     schema = model.schemas["Vocab"]
-    table = schema.tables["xx"]
+    table = schema.tables["Process_Status"]
+    # ----------------------------
+    schema.tables["Process_Status"].table_display.update({
+        "*": {
+            "row_order": [{ "column": "Rank", "descending": False }]
+        }
+    })
+    
+    # ----------------------------
+    schema.tables["Process_Status"].visible_columns.update({
+        "*": [
+            "RID",
+            "Name",
+            "Description",
+            "Rank",
+        ]
+    })
 
+# -- ---------------------------------------------------------------------------------
+def update_Vocab_Workflow_Status(model):
+    schema = model.schemas["Vocab"]
+    table = schema.tables["Workflow_Status"]
+    # ----------------------------
+    schema.tables["Workflow_Status"].table_display.update({
+        "*": {
+            "row_order": [ {"column": "Rank",  "descending": False } ]
+        }
+    })
+    
+    # ----------------------------
+    schema.tables["Workflow_Status"].visible_columns.update({
+        "*": [
+            "RID",
+            "Name",
+            "Description",
+            "Rank"
+        ],
+        "entry": [
+            "RID",
+            "Name",
+            "Description",
+            "Rank",
+            "Restraint_Status",
+            "PDB_Submitter_Allow",
+            "ID",
+            "URI"
+        ],
+        "detailed": [
+            "RID",
+            "Name",
+            "Description",
+            "Rank",
+            "Restraint_Status",
+            "PDB_Submitter_Allow",
+            "ID",
+            "URI",
+            #{
+            #    "source": [{ "outbound": ["Vocab", "workflow_status_RCB_fkey"] }, "Full_Name" ],
+            #    "markdown_name": "RCB"
+            #},
+            #{
+            #    "source": [{ "outbound": ["Vocab", "workflow_status_RMB_fkey"]}, "Full_Name" ],
+            #    "markdown_name": "RMB"
+            #},
+            "RCT",
+            "RMT",
+        ]
+    })
 
+    
 # -- =================================================================================    
 def update_Vocab_annotations(model):
     update_Vocab(model)
-    # -- list of specific tables
-
     
+    # -- list of specific tables
+    update_Vocab_Data_Dictionary_Name(model)
+    update_Vocab_System_Generated_File_Type(model)
+    update_Vocab_Process_Status(model)
+    update_Vocab_Workflow_Status(model)
+
 # -- =================================================================================    
 def main(server_name, catalog_id, credentials, args):
     server = DerivaServer('https', server_name, credentials)
@@ -32,20 +153,22 @@ def main(server_name, catalog_id, credentials, args):
     model = catalog.getCatalogModel()
 
     if args.pre_print:
-        print_schema_annotations(model, schema_name)
-    #clear_schema_annotations(model, schema_name, per_schema_annotation_tags)
+        print_schema_annotations(model, "Vocab")
+        
+    clear_schema_annotations(model, "Vocab", per_schema_annotation_tags)
     update_Vocab_annotations(model)
+    
     if args.post_print:
-        print_schema_annotations(model, schema_name)
+        print_schema_annotations(model, "Vocab")
     if not args.dry_run:
-        #model.apply()
+        model.apply()
         pass
 
 
 # -- =================================================================================
 
 if __name__ == '__main__':
-    cli = AtlasD2KCLI("ATLAS-D2K", None, 1)
+    cli = PDBDEV_CLI("PDB-IHM", None, 1)
     cli.parser.add_argument('--schema', metavar='<schema>', help="print catalog acl script without applying", default=False)
     cli.parser.add_argument('--table', metavar='<table>', help="print catalog acl script without applying", default=False)
     args = cli.parse_cli()
