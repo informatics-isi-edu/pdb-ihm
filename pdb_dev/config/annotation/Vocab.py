@@ -80,6 +80,9 @@ def update_Vocab_Process_Status(model):
             "Name",
             "Description",
             "Rank",
+            "Restraint_Status",
+            "Entry_Submitter_Select",
+            "Restraint_Submitter_Select",
         ]
     })
 
@@ -100,38 +103,40 @@ def update_Vocab_Workflow_Status(model):
             "RID",
             "Name",
             "Description",
-            "Rank"
-        ],
-        "entry": [
-            "RID",
-            "Name",
-            "Description",
             "Rank",
             "Restraint_Status",
-            "PDB_Submitter_Allow",
-            "ID",
-            "URI"
+            "Entry_Submitter_Select",            
+            "Restraint_Submitter_Select",
+            "RMT",            
         ],
-        "detailed": [
-            "RID",
-            "Name",
-            "Description",
-            "Rank",
-            "Restraint_Status",
-            "PDB_Submitter_Allow",
-            "ID",
-            "URI",
-            #{
-            #    "source": [{ "outbound": ["Vocab", "workflow_status_RCB_fkey"] }, "Full_Name" ],
-            #    "markdown_name": "RCB"
-            #},
-            #{
-            #    "source": [{ "outbound": ["Vocab", "workflow_status_RMB_fkey"]}, "Full_Name" ],
-            #    "markdown_name": "RMB"
-            #},
-            "RCT",
-            "RMT",
-        ]
+        #"entry": [
+        #    "RID",
+        #    "Name",
+        #    "Description",
+        #    "Rank",
+        #    "Restraint_Status",
+        #    "PDB_Submitter_Allow",
+        #],
+        #"detailed": [
+        #    "RID",
+        #    "Name",
+        #    "Description",
+        #    "Rank",
+        #    "Restraint_Status",
+        #    "PDB_Submitter_Allow",
+        #    "ID",
+        #    "URI",
+        #{
+        #    "source": [{ "outbound": ["Vocab", "workflow_status_RCB_fkey"] }, "Full_Name" ],
+        #    "markdown_name": "RCB"
+        #},
+        #{
+        #    "source": [{ "outbound": ["Vocab", "workflow_status_RMB_fkey"]}, "Full_Name" ],
+        #    "markdown_name": "RMB"
+        #},
+        #   "RCT",
+        #   "RMT",
+        #]
     })
 
     

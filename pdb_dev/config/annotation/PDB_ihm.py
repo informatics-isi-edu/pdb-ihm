@@ -6,22 +6,6 @@ import requests.exceptions
 from ...utils.shared import DCCTX, PDBDEV_CLI
 from deriva.utils.extras.model import print_schema_model_extras, print_table_model_extras, print_schema_annotations, per_schema_annotation_tags, clear_schema_annotations
 
-x_per_schema_annotation_tags = [
-    tag["visible_foreign_keys"],
-#    tag["source_definitions"], tag["visible_columns"],  tag["display"],
-#    tag["table_display"], tag["column_display"], tag["foreign_key"], tag["column_defaults"],
-#    tag["key_display"], tag["app_links"], tag["indexing_preferences"], tag["table_alternatives"],
-]
-
-
-# these tags are handled in per-tag script or in catalog_annotation.py
-per_tag_annotation_tags = [
-    tag['asset'], tag['google_dataset'], tag['viz_3d_display'], tag['bulk_upload'],    
-    tag['export'], tag['export_2019'], tag['export_fragment_definitions'],
-    tag['generated'], tag['immutable'], tag['non_deletable'], tag['required'],
-    tag["citation"],     
-]
-
 
 # -- ==========================================================================================================
 def update_PDB_ihm_2dem_class_average_fitting(model):
@@ -1001,90 +985,85 @@ def update_PDB_ihm_cross_link_result(model):
         {'name' : 'Chemical Crosslink Restraint Results', 'comment_display' : {'*': {'table_comment_display': 'inline'}}, }
     )
 
+    table.source_definitions.update({
+        'fkeys' :  [],
+        'columns' :  True,
+        'sources' : {
+            'structure_id_fkey': {
+                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_structure_id_fkey']}, 'RID'],
+                'comment' : 'A reference to table entry.id.',
+                'markdown_name' : 'Structure Id',
+            },
+            'restraint_id_fkey': {
+                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_restraint_id_fkey']}, 'RID'],
+                'comment' : 'A reference to table ihm_cross_link_restraint.id.',
+                'markdown_name' : 'Restraint Id',
+            },
+            'model_group_id_fkey': { 
+                "comment": "An identifier for the group of structure models whose results are described",
+                "markdown_name": "Model Group Id",
+                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_model_group_id_combo2_fkey']}, 'RID'],
+            },
+            'ensemble_id_combo2_fkey': { 
+                "comment": "A reference to table ihm_ensemble_info.ensemble_id.",
+                "markdown_name": "Ensemble Id",
+                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_ensemble_id_combo2_fkey']}, 'RID'],
+            },
+            'ensemble_id_fkey': {
+                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_ensemble_id_fkey']}, 'RID'],
+                'comment' : 'A reference to table ihm_ensemble_info.ensemble_id.',
+                'markdown_name' : 'Ensemble Id',
+            },
+            'upload_restraint_file_fkey': {
+                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_Entry_Related_File_fkey']}, 'RID'],
+                'comment' : 'A reference to the uploaded restraint file in the table Entry_Related_File.id.',
+                'markdown_name' : 'Uploaded Restraint File',
+            },
+        },
+    })
+    
     # ----------------------------
     schema.tables["ihm_cross_link_result"].visible_columns.update({
         '*' :  [
-            'RID', 
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_structure_id_fkey']}, 'RID'],
-                'comment' : 'A reference to table entry.id.',
-                'markdown_name' : 'Structure Id',
-            },
-            'id', 
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_restraint_id_fkey']}, 'RID'],
-                'comment' : 'A reference to table ihm_cross_link_restraint.id.',
-                'markdown_name' : 'Restraint Id',
-            },
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_ensemble_id_fkey']}, 'RID'],
-                'comment' : 'A reference to table ihm_ensemble_info.ensemble_id.',
-                'markdown_name' : 'Ensemble Id',
-            },
+            'RID',
+            { "sourcekey": 'structure_id_fkey' },
+            'id',
+            { "sourcekey": 'restraint_id_fkey' },
+            { "sourcekey": 'model_group_id_fkey' },
+            { "sourcekey": 'ensemble_id_combo2_fkey' },                                    
             'num_models', 
             'distance_threshold', 
             'median_distance', 
-            'details', 
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_Entry_Related_File_fkey']}, 'RID'],
-                'comment' : 'A reference to the uploaded restraint file in the table Entry_Related_File.id.',
-                'markdown_name' : 'Uploaded Restraint File',
-            },
+            'details',
+            { "sourcekey": 'upload_restraint_file_fkey' },                                                
         ],
         'entry' :  [
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_structure_id_fkey']}, 'RID'],
-                'comment' : 'A reference to table entry.id.',
-                'markdown_name' : 'Structure Id',
-            },
-            'id', 
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_restraint_id_fkey']}, 'RID'],
-                'comment' : 'A reference to table ihm_cross_link_restraint.id.',
-                'markdown_name' : 'Restraint Id',
-            },
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_ensemble_id_fkey']}, 'RID'],
-                'comment' : 'A reference to table ihm_ensemble_info.ensemble_id.',
-                'markdown_name' : 'Ensemble Id',
-            },
+            { "sourcekey": 'structure_id_fkey' },
+            'id',
+            { "sourcekey": 'restraint_id_fkey' },
+            { "sourcekey": 'model_group_id_fkey' },
+            { "sourcekey": 'ensemble_id_combo2_fkey' },                                    
             'num_models', 
             'distance_threshold', 
             'median_distance', 
-            'details', 
+            'details',
         ],
         'detailed' :  [
-            'RID', 
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_structure_id_fkey']}, 'RID'],
-                'comment' : 'A reference to table entry.id.',
-                'markdown_name' : 'Structure Id',
-            },
-            'id', 
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_restraint_id_fkey']}, 'RID'],
-                'comment' : 'A reference to table ihm_cross_link_restraint.id.',
-                'markdown_name' : 'Restraint Id',
-            },
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_ensemble_id_fkey']}, 'RID'],
-                'comment' : 'A reference to table ihm_ensemble_info.ensemble_id.',
-                'markdown_name' : 'Ensemble Id',
-            },
+            'RID',
+            { "sourcekey": 'structure_id_fkey' },
+            'id',
+            { "sourcekey": 'restraint_id_fkey' },
+            { "sourcekey": 'model_group_id_fkey' },
+            { "sourcekey": 'ensemble_id_combo2_fkey' },                                    
             'num_models', 
             'distance_threshold', 
             'median_distance', 
-            'details', 
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_Entry_Related_File_fkey']}, 'RID'],
-                'comment' : 'A reference to the uploaded restraint file in the table Entry_Related_File.id.',
-                'markdown_name' : 'Uploaded Restraint File',
-            },
+            'details',
+            { "sourcekey": 'upload_restraint_file_fkey' },                                                
             ['PDB', 'ihm_cross_link_result_RCB_fkey'], 
             ['PDB', 'ihm_cross_link_result_RMB_fkey'], 
             'RCT', 
             'RMT', 
-            ['PDB', 'ihm_cross_link_result_Owner_fkey'], 
         ],
     })
 

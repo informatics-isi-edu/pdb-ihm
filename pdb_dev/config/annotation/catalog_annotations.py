@@ -5,7 +5,7 @@ from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key,
 from deriva.core import urlquote, urlunquote
 import requests.exceptions
 from ...utils.shared import DCCTX, PDBDEV_CLI, cfg
-from deriva.utils.extras.model import get_schemas, get_tables, get_columns, print_catalog_model_extras, print_presence_tag_annotations, clear_catalog_annotations
+from deriva.utils.extras.model import get_schemas, get_tables, get_columns, print_catalog_model_extras, print_presence_tag_annotations, clear_catalog_annotations, tag2name
 from . import bulk_upload
 #from ..acl.ermrest_acl import schemas_not_in_model, tables_not_in_model, columns_not_in_model, set_elements_not_in_model
 
@@ -57,163 +57,85 @@ def get_navbar_menu(catalog_id):
             "children": [
 	        {
 	            "name": "Entry",
-	            "url": "/chaise/recordset/"+catalog_id+"/PDB:entry"
+	            "url": "/chaise/recordset/#"+catalog_id+"/PDB:entry"
 	        },
-                {
-                    "name": "Data Categories",
+                { 
+                    "name": "Data Categories", 
                     "children": [
-                        {
+                        { 
                             "name": "2DEM",
                             "children": [
-                                {
-                                    "name": "Ihm 2DEM Class Average Fitting",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_2dem_class_average_fitting"
-                                },
-                                {
-                                    "name": "Ihm 2DEM Class Average Restraint",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_2dem_class_average_restraint"
-                                }
+                                { "name": "Ihm 2DEM Class Average Fitting", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_2dem_class_average_fitting" },
+                                { "name": "Ihm 2DEM Class Average Restraint", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_2dem_class_average_restraint" }
                             ],
                         },
                         {
                             "name": "3DEM",
                             "children": [
-                                {
-                                    "name": "Ihm 3DEM Restraint",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_3dem_restraint"
-                                }
+                                { "name": "Ihm 3DEM Restraint", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_3dem_restraint" }
                             ],
                         },
                         {
                             "name": "Audit Conform",
                             "children": [
-                                {
-                                    "name": "Audit Conform",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:audit_conform"
-                                }
+                                { "name": "Audit Conform", "url": "/chaise/recordset/#"+catalog_id+"/PDB:audit_conform" }
                             ],
                         },
-                        {
+                        { #3
                             "name": "Chemical Components",                            
                             "children": [
-                                {
-                                    "name": "Chem Comp",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:chem_comp"
-                                },
-                                {
-                                    "name": "Chem Comp Atom",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:chem_comp_atom"
-                                }
+                                { "name": "Chem Comp", "url": "/chaise/recordset/#"+catalog_id+"/PDB:chem_comp" },
+                                { "name": "Chem Comp Atom", "url": "/chaise/recordset/#"+catalog_id+"/PDB:chem_comp_atom" }
                             ],
                         },
                         {
                             "name": "Chemical Crosslinks",                            
                             "children": [
-                                {
-                                    "name": "Ihm Cross Link List",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_cross_link_list"
-                                },
-                                {
-                                    "name": "Ihm Cross Link Restraint",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_cross_link_restraint"
-                                },
-                                {
-                                    "name": "Ihm Cross Link Result",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_cross_link_result"
-                                },
-                                {
-                                    "name": "Ihm Cross Link Result Parameters",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_cross_link_result_parameters"
-                                }
+                                { "name": "Ihm Cross Link List", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_cross_link_list" },
+                                { "name": "Ihm Cross Link Restraint", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_cross_link_restraint" },
+                                { "name": "Ihm Cross Link Result", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_cross_link_result" },
+                                { "name": "Ihm Cross Link Result Parameters", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_cross_link_result_parameters" }
                             ],
                         },
                         {
                             "name": "Citation, Authors and Software",
                             "children": [
-                                {
-                                    "name": "Audit Author",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:audit_author"
-                                },
-                                {
-                                    "name": "Citation",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:citation"
-                                },
-                                {
-                                    "name": "Citation Author",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:citation_author"
-                                },
-                                {
-                                    "name": "Software",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:software"
-                                }
+                                { "name": "Audit Author", "url": "/chaise/recordset/#"+catalog_id+"/PDB:audit_author" },
+                                { "name": "Citation", "url": "/chaise/recordset/#"+catalog_id+"/PDB:citation" },
+                                { "name": "Citation Author", "url": "/chaise/recordset/#"+catalog_id+"/PDB:citation_author" },
+                                { "name": "Software", "url": "/chaise/recordset/#"+catalog_id+"/PDB:software" }
                             ],
                         },
                         {
                             "name": "Dictionaries",
                             "children": [
-                                {
-                                    "name": "Data Dictionary",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:Data_Dictionary"
-                                },
-                                {
-                                    "name": "Supported Dictionary",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:Supported_Dictionary"
-                                }
+                                { "name": "Data Dictionary", "url": "/chaise/recordset/#"+catalog_id+"/PDB:Data_Dictionary" },
+                                { "name": "Supported Dictionary", "url": "/chaise/recordset/#"+catalog_id+"/PDB:Supported_Dictionary" }
                             ],
                         },
                         {
                             "name": "Entry and Structure",
                             "children": [
-                                {
-                                    "name": "Entry",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:entry"
-                                },
-                                {
-                                    "name": "Struct",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:struct"
-                                }
+                                { "name": "Entry", "url": "/chaise/recordset/#"+catalog_id+"/PDB:entry" },
+                                {"name": "Struct", "url": "/chaise/recordset/#"+catalog_id+"/PDB:struct" }
                             ],
                         },
                         {
                             "name": "EPR",
                             "children": [
-                                {
-                                    "name": "Ihm EPR Restraint",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_epr_restraint"
-                                }
+                                { "name": "Ihm EPR Restraint", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_epr_restraint" }
                             ],
                         },
                         {
                             "name": "Generic Distance Restraints",
                             "children": [
-                                {
-                                    "name": "Ihm Derived Distance Restraint",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_derived_distance_restraint"
-                                },
-                                {
-                                    "name": "Ihm Feature List",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_feature_list"
-                                },
-                                {
-                                    "name": "Ihm Interface Residue Feature",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_interface_residue_feature"
-                                },
-                                {
-                                    "name": "Ihm Non Poly Feature",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_non_poly_feature"
-                                },
-                                {
-                                    "name": "Ihm Poly Atom Feature",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_poly_atom_feature"
-                                },
-                                {
-                                    "name": "Ihm Poly Residue Feature",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_poly_residue_feature"
-                                },
-                                {
-                                    "name": "Ihm Pseudo Site Feature",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_pseudo_site_feature"
-                                }
+                                { "name": "Ihm Derived Distance Restraint", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_derived_distance_restraint" },
+                                { "name": "Ihm Feature List", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_feature_list" },
+                                { "name": "Ihm Interface Residue Feature", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_interface_residue_feature" },
+                                { "name": "Ihm Non Poly Feature", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_non_poly_feature" },
+                                { "name": "Ihm Poly Atom Feature", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_poly_atom_feature" },
+                                { "name": "Ihm Poly Residue Feature", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_poly_residue_feature" },
+                                { "name": "Ihm Pseudo Site Feature", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_pseudo_site_feature" }
                             ],
                         },
                         {
@@ -221,39 +143,39 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Ihm Geometric Object Axis",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_geometric_object_axis"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_geometric_object_axis"
                                 },
                                 {
                                     "name": "Ihm Geometric Object Center",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_geometric_object_center"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_geometric_object_center"
                                 },
                                 {
                                     "name": "Ihm Geometric Object Distance Restraint",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_geometric_object_distance_restraint"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_geometric_object_distance_restraint"
                                 },
                                 {
                                     "name": "Ihm Geometric Object Half Torus",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_geometric_object_half_torus"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_geometric_object_half_torus"
                                 },
                                 {
                                     "name": "Ihm Geometric Object List",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_geometric_object_list"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_geometric_object_list"
                                 },
                                 {
                                     "name": "Ihm Geometric Object Plane",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_geometric_object_plane"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_geometric_object_plane"
                                 },
                                 {
                                     "name": "Ihm Geometric Object Sphere",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_geometric_object_sphere"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_geometric_object_sphere"
                                 },
                                 {
                                     "name": "Ihm Geometric Object Torus",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_geometric_object_torus"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_geometric_object_torus"
                                 },
                                 {
                                     "name": "Ihm Geometric Object Transformation",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_geometric_object_transformation"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_geometric_object_transformation"
                                 }
                             ],
                         },
@@ -262,7 +184,7 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Ihm Hydroxyl Radical Fp Restraint",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_hydroxyl_radical_fp_restraint"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_hydroxyl_radical_fp_restraint"
                                 }
                             ],
                         },
@@ -271,35 +193,35 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Ihm Dataset External Reference",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_dataset_external_reference"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_dataset_external_reference"
                                 },
                                 {
                                     "name": "Ihm Dataset Group",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_dataset_group"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_dataset_group"
                                 },
                                 {
                                     "name": "Ihm Dataset Group Link",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_dataset_group_link"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_dataset_group_link"
                                 },
                                 {
                                     "name": "Ihm Dataset List",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_dataset_list"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_dataset_list"
                                 },
                                 {
                                     "name": "Ihm Dataset Related Db Reference",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_dataset_related_db_reference"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_dataset_related_db_reference"
                                 },
                                 {
                                     "name": "Ihm External Files",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_external_files"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_external_files"
                                 },
                                 {
                                     "name": "Ihm External Reference Info",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_external_reference_info"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_external_reference_info"
                                 },
                                 {
                                     "name": "Ihm Related Datasets",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_related_datasets"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_related_datasets"
                                 }
                             ],
                         },
@@ -308,7 +230,7 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Ihm Localization Density Files",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_localization_density_files"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_localization_density_files"
                                 }
                             ],
                         },
@@ -317,23 +239,23 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Ihm Model Group",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_model_group"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_model_group"
                                 },
                                 {
                                     "name": "Ihm Model Group Link",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_model_group_link"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_model_group_link"
                                 },
                                 {
                                     "name": "Ihm Model List",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_model_list"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_model_list"
                                 },
                                 {
                                     "name": "Ihm Model Representative",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_model_representative"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_model_representative"
                                 },
                                 {
                                     "name": "Ihm Residues Not Modeled",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_residues_not_modeled"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_residues_not_modeled"
                                 }
                             ],
                         },
@@ -342,11 +264,11 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Ihm Model Representation",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_model_representation"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_model_representation"
                                 },
                                 {
                                     "name": "Ihm Model Representation Details",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_model_representation_details"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_model_representation_details"
                                 }
                             ],
                         },
@@ -355,15 +277,15 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Ihm Modeling Post Process",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_modeling_post_process"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_modeling_post_process"
                                 },
                                 {
                                     "name": "Ihm Modeling Protocol",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_modeling_protocol"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_modeling_protocol"
                                 },
                                 {
                                     "name": "Ihm Modeling Protocol Details",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_modeling_protocol_details"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_modeling_protocol_details"
                                 }
                             ],
                         },
@@ -372,43 +294,43 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Atom Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:atom_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:atom_type"
                                 },
                                 {
                                     "name": "Entity",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:entity"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:entity"
                                 },
                                 {
                                     "name": "Entity Name Com",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:entity_name_com"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:entity_name_com"
                                 },
                                 {
                                     "name": "Entity Name Sys",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:entity_name_sys"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:entity_name_sys"
                                 },
                                 {
                                     "name": "Entity Poly",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:entity_poly"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:entity_poly"
                                 },
                                 {
                                     "name": "Entity Poly Seq",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:entity_poly_seq"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:entity_poly_seq"
                                 },
                                 {
                                     "name": "Entity Src Gen",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:entity_src_gen"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:entity_src_gen"
                                 },
                                 {
                                     "name": "Ihm Entity Poly Segment",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_entity_poly_segment"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_entity_poly_segment"
                                 },
                                 {
                                     "name": "PDBX Entity Nonpoly",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:pdbx_entity_nonpoly"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:pdbx_entity_nonpoly"
                                 },
                                 {
                                     "name": "Struct Asym",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:struct_asym"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:struct_asym"
                                 }
                             ],
                         },
@@ -417,19 +339,19 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Ihm Ensemble Info",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_ensemble_info"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_ensemble_info"
                                 },
                                 {
                                     "name": "Ihm Multi State Model Group Link",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_multi_state_model_group_link"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_multi_state_model_group_link"
                                 },
                                 {
                                     "name": "Ihm Multi State Modeling",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_multi_state_modeling"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_multi_state_modeling"
                                 },
                                 {
                                     "name": "Ihm Ordered Model",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_ordered_model"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_ordered_model"
                                 }
                             ],
                         },
@@ -438,23 +360,23 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "ihm Multi-State Scheme",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_multi_state_scheme"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_multi_state_scheme"
                                 },
                                 {
                                     "name": "ihm Multi-State Scheme Connectivity",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_multi_state_scheme_connectivity"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_multi_state_scheme_connectivity"
                                 },
                                 {
                                     "name": "ihm Kinetic Rate",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_kinetic_rate"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_kinetic_rate"
                                 },
                                 {
                                     "name": "ihm Relaxation Time",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_relaxation_time"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_relaxation_time"
                                 },
                                 {
                                     "name": "ihm Relaxation Time Multi-State Scheme",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_relaxation_time_multi_state_scheme"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_relaxation_time_multi_state_scheme"
                                 }
                             ],
                         },
@@ -463,7 +385,7 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Ihm Predicted Contact Restraint",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_predicted_contact_restraint"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_predicted_contact_restraint"
                                 }
                             ],
                         },
@@ -472,23 +394,23 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Ihm Chemical Component Descriptor",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_chemical_component_descriptor"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_chemical_component_descriptor"
                                 },
                                 {
                                     "name": "Ihm Ligand Probe",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_ligand_probe"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_ligand_probe"
                                 },
                                 {
                                     "name": "Ihm Poly Probe Conjugate",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_poly_probe_conjugate"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_poly_probe_conjugate"
                                 },
                                 {
                                     "name": "Ihm Poly Probe Position",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_poly_probe_position"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_poly_probe_position"
                                 },
                                 {
                                     "name": "Ihm Probe List",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_probe_list"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_probe_list"
                                 }
                             ],
                         },
@@ -497,7 +419,7 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Ihm SAS Restraint",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_sas_restraint"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_sas_restraint"
                                 }
                             ],
                         },
@@ -506,19 +428,19 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Ihm Starting Comparative Models",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_starting_comparative_models"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_starting_comparative_models"
                                 },
                                 {
                                     "name": "Ihm Starting Computational Models",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_starting_computational_models"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_starting_computational_models"
                                 },
                                 {
                                     "name": "Ihm Starting Model Details",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_starting_model_details"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_starting_model_details"
                                 },
                                 {
                                     "name": "Ihm Starting Model Seq Dif",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_starting_model_seq_dif"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_starting_model_seq_dif"
                                 }
                             ],
                         },
@@ -527,19 +449,19 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Ihm Struct Assembly",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_struct_assembly"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_struct_assembly"
                                 },
                                 {
                                     "name": "Ihm Struct Assembly Class",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_struct_assembly_class"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_struct_assembly_class"
                                 },
                                 {
                                     "name": "Ihm Struct Assembly Class Link",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_struct_assembly_class_link"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_struct_assembly_class_link"
                                 },
                                 {
                                     "name": "Ihm Struct Assembly Details",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_struct_assembly_details"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_struct_assembly_details"
                                 }
                             ],
                         },
@@ -548,23 +470,23 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Accession Code",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:Accession_Code"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:Accession_Code"
                                 },
                                 {
                                     "name": "Curation Log",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:Curation_Log"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:Curation_Log"
                                 },
                                 {
                                     "name": "Entry Error File",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:Entry_Error_File"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:Entry_Error_File"
                                 },
                                 {
                                     "name": "Entry Generated File",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:Entry_Generated_File"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:Entry_Generated_File"
                                 },
                                 {
                                     "name": "Entry Related File",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:Entry_Related_File"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:Entry_Related_File"
                                 }
                             ],
                         },
@@ -573,11 +495,11 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Entry Collection",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_entry_collection"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_entry_collection"
                                 },
                                 {
                                     "name": "Entry Collection Mapping",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:ihm_entry_collection_mapping"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_entry_collection_mapping"
                                 }
                             ],
                         },
@@ -586,11 +508,11 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "PDB Archive",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:PDB_Archive"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:PDB_Archive"
                                 },
                                 {
                                     "name": "Entry Latest Archive",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:Entry_Latest_Archive"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:Entry_Latest_Archive"
                                 }
                             ],
                         }
@@ -606,47 +528,20 @@ def get_navbar_menu(catalog_id):
                         {
                             "name": "Chem Comp",
                             "children": [
-                                {
-                                    "name": "Mon Nstd Flag",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:chem_comp_mon_nstd_flag"
-                                },
-                                {
-                                    "name": "PDBX  Aromatic Flag",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:chem_comp_atom_pdbx_aromatic_flag"
-                                },
-                                {
-                                    "name": "PDBX  Leaving Atom Flag",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:chem_comp_atom_pdbx_leaving_atom_flag"
-                                },
-                                {
-                                    "name": "PDBX  Polymer Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:chem_comp_atom_pdbx_polymer_type"
-                                },
-                                {
-                                    "name": "PDBX  Stereo Config",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:chem_comp_atom_pdbx_stereo_config"
-                                },
-                                {
-                                    "name": "Substruct Code",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:chem_comp_atom_substruct_code"
-                                },
-                                {
-                                    "name": "Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:chem_comp_type"
-                                }
+                                { "name": "Mon Nstd Flag", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_mon_nstd_flag" },
+                                { "name": "PDBX  Aromatic Flag", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_atom_pdbx_aromatic_flag" },
+                                { "name": "PDBX  Leaving Atom Flag", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_atom_pdbx_leaving_atom_flag" },
+                                { "name": "PDBX  Polymer Type", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_atom_pdbx_polymer_type" },
+                                { "name": "PDBX  Stereo Config", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_atom_pdbx_stereo_config" },
+                                { "name": "Substruct Code", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_atom_substruct_code" },
+                                { "name": "Type", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_type" }
                             ],
                         },
                         {
                             "name": "Data Dictionaries",
                             "children": [
-                                {
-                                    "name": "Names",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:Data_Dictionary_Name"
-                                },
-                                {
-                                    "name": "Categories",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:Data_Dictionary_Category"
-                                }
+                                { "name": "Names", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:Data_Dictionary_Name" },
+                                { "name": "Categories", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:Data_Dictionary_Category" }
                             ],
                         },
                         {
@@ -654,39 +549,39 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Hetero",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:entity_poly_seq_hetero"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:entity_poly_seq_hetero"
                                 },
                                 {
                                     "name": "Nstd Chirality",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:entity_poly_nstd_chirality"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:entity_poly_nstd_chirality"
                                 },
                                 {
                                     "name": "Nstd Linkage",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:entity_poly_nstd_linkage"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:entity_poly_nstd_linkage"
                                 },
                                 {
                                     "name": "Nstd Monomer",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:entity_poly_nstd_monomer"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:entity_poly_nstd_monomer"
                                 },
                                 {
                                     "name": "PDBX  Alt Source Flag",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:entity_src_gen_pdbx_alt_source_flag"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:entity_src_gen_pdbx_alt_source_flag"
                                 },
                                 {
                                     "name": "PDBX  Sequence Evidence Code",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:entity_poly_pdbx_sequence_evidence_code"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:entity_poly_pdbx_sequence_evidence_code"
                                 },
                                 {
                                     "name": "Poly Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:entity_poly_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:entity_poly_type"
                                 },
                                 {
                                     "name": "Src Method",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:entity_src_method"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:entity_src_method"
                                 },
                                 {
                                     "name": "Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:entity_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:entity_type"
                                 }
                             ],
                         },
@@ -695,7 +590,7 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Image Segment Flag",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_2dem_class_average_restraint_image_segment_flag"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_2dem_class_average_restraint_image_segment_flag"
                                 }
                             ],
                         },
@@ -704,7 +599,7 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Map Segment Flag",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_3dem_restraint_map_segment_flag"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_3dem_restraint_map_segment_flag"
                                 }
                             ],
                         },
@@ -713,19 +608,19 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Conditional Crosslink Flag",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_cross_link_restraint_conditional_crosslink_flag"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_cross_link_restraint_conditional_crosslink_flag"
                                 },
                                 {
                                     "name": "Linker Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_cross_link_list_linker_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_cross_link_list_linker_type"
                                 },
                                 {
                                     "name": "Model Granularity",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_cross_link_restraint_model_granularity"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_cross_link_restraint_model_granularity"
                                 },
                                 {
                                     "name": "Restraint Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_cross_link_restraint_restraint_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_cross_link_restraint_restraint_type"
                                 }
                             ],
                         },
@@ -734,27 +629,27 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Application",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_dataset_group_application"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_dataset_group_application"
                                 },
                                 {
                                     "name": "Data Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_dataset_list_data_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_dataset_list_data_type"
                                 },
                                 {
                                     "name": "Database Hosted",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_dataset_list_database_hosted"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_dataset_list_database_hosted"
                                 },
                                 {
                                     "name": "Related DB Reference DB Name",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_dataset_related_db_reference_db_name"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_dataset_related_db_reference_db_name"
                                 },
                                 {
                                     "name": "Group Conditionality",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_derived_distance_restraint_group_conditionality"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_derived_distance_restraint_group_conditionality"
                                 },
                                 {
                                     "name": "Restraint Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_derived_distance_restraint_restraint_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_derived_distance_restraint_restraint_type"
                                 }
                             ],
                         },
@@ -763,11 +658,11 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Group Conditionality",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_derived_distance_restraint_group_conditionality"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_derived_distance_restraint_group_conditionality"
                                 },
                                 {
                                     "name": "Restraint Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_derived_distance_restraint_restraint_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_derived_distance_restraint_restraint_type"
                                 }
                             ],
                         },
@@ -776,11 +671,11 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Ensemble Clustering Feature",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_ensemble_info_ensemble_clustering_feature"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_ensemble_info_ensemble_clustering_feature"
                                 },
                                 {
                                     "name": "Ensemble Clustering Method",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_ensemble_info_ensemble_clustering_method"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_ensemble_info_ensemble_clustering_method"
                                 }
                             ],
                         },
@@ -789,7 +684,7 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Fitting State",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_epr_restraint_fitting_state"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_epr_restraint_fitting_state"
                                 }
                             ],
                         },
@@ -798,19 +693,19 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Content Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_external_files_content_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_external_files_content_type"
                                 },
                                 {
                                     "name": "File Format",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_external_files_file_format"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_external_files_file_format"
                                 },
                                 {
                                     "name": "Reference Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_external_reference_info_reference_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_external_reference_info_reference_type"
                                 },
                                 {
                                     "name": "Refers To",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_external_reference_info_refers_to"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_external_reference_info_refers_to"
                                 }
                             ],
                         },
@@ -819,11 +714,11 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Entity Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_feature_list_entity_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_feature_list_entity_type"
                                 },
                                 {
                                     "name": "Feature Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_feature_list_feature_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_feature_list_feature_type"
                                 }
                             ],
                         },
@@ -832,31 +727,31 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Axis Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_geometric_object_axis_axis_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_geometric_object_axis_axis_type"
                                 },
                                 {
                                     "name": "Group Conditionality",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:geometric_object_distance_restraint_group_condition"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:geometric_object_distance_restraint_group_condition"
                                 },
                                 {
                                     "name": "Object Characteristic",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:geometric_object_distance_restraint_object_character"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:geometric_object_distance_restraint_object_character"
                                 },
                                 {
                                     "name": "Object Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_geometric_object_list_object_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_geometric_object_list_object_type"
                                 },
                                 {
                                     "name": "Plane Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_geometric_object_plane_plane_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_geometric_object_plane_plane_type"
                                 },
                                 {
                                     "name": "Restraint Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_geometric_object_distance_restraint_restraint_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_geometric_object_distance_restraint_restraint_type"
                                 },
                                 {
                                     "name": "Section",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_geometric_object_half_torus_section"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_geometric_object_half_torus_section"
                                 }
                             ],
                         },
@@ -865,39 +760,39 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Ensemble Flag",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_modeling_protocol_details_ensemble_flag"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_modeling_protocol_details_ensemble_flag"
                                 },
                                 {
                                     "name": "Feature",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_modeling_post_process_feature"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_modeling_post_process_feature"
                                 },
                                 {
                                     "name": "Model Granularity",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_model_representation_details_model_granularity"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_model_representation_details_model_granularity"
                                 },
                                 {
                                     "name": "Model Mode",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_model_representation_details_model_mode"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_model_representation_details_model_mode"
                                 },
                                 {
                                     "name": "Model Object Primitive",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:model_representation_details_model_object_primitive"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:model_representation_details_model_object_primitive"
                                 },
                                 {
                                     "name": "Multi Scale Flag",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_modeling_protocol_details_multi_scale_flag"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_modeling_protocol_details_multi_scale_flag"
                                 },
                                 {
                                     "name": "Ordered Flag",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_modeling_protocol_details_ordered_flag"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_modeling_protocol_details_ordered_flag"
                                 },
                                 {
                                     "name": "Selection Criteria",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_model_representative_selection_criteria"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_model_representative_selection_criteria"
                                 },
                                 {
                                     "name": "Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_modeling_post_process_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_modeling_post_process_type"
                                 }
                             ],
                         },
@@ -906,15 +801,15 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Experiment Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_multi_state_modeling_experiment_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_multi_state_modeling_experiment_type"
                                 },
                                 {
                                     "name": "Relaxation Time Unit",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_relaxation_time_unit"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_relaxation_time_unit"
                                 },
                                 {
                                     "name": "Equilibrium Constant Determination Methods",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_equilibrium_constant_determination_method"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_equilibrium_constant_determination_method"
                                 }
                             ],
                         },
@@ -923,27 +818,27 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Ambiguous Stoichiometry Flag",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_poly_probe_conjugate_ambiguous_stoichiometry_flag"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_poly_probe_conjugate_ambiguous_stoichiometry_flag"
                                 },
                                 {
                                     "name": "Interface Residue Flag",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_poly_residue_feature_interface_residue_flag"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_poly_residue_feature_interface_residue_flag"
                                 },
                                 {
                                     "name": "Modification Flag",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_poly_probe_position_modification_flag"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_poly_probe_position_modification_flag"
                                 },
                                 {
                                     "name": "Mutation Flag",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_poly_probe_position_mutation_flag"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_poly_probe_position_mutation_flag"
                                 },
                                 {
                                     "name": "Rep Atom",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_poly_residue_feature_rep_atom"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_poly_residue_feature_rep_atom"
                                 },
                                 {
                                     "name": "Residue Range Granularity",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_poly_residue_feature_residue_range_granularity"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_poly_residue_feature_residue_range_granularity"
                                 }
                             ],
                         },
@@ -952,19 +847,19 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Model Granularity",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_predicted_contact_restraint_model_granularity"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_predicted_contact_restraint_model_granularity"
                                 },
                                 {
                                     "name": "Rep Atom 1",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_predicted_contact_restraint_rep_atom_1"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_predicted_contact_restraint_rep_atom_1"
                                 },
                                 {
                                     "name": "Rep Atom 2",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_predicted_contact_restraint_rep_atom_2"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_predicted_contact_restraint_rep_atom_2"
                                 },
                                 {
                                     "name": "Restraint Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_predicted_contact_restraint_restraint_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_predicted_contact_restraint_restraint_type"
                                 }
                             ],
                         },
@@ -973,15 +868,15 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Probe Link Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_probe_list_probe_link_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_probe_list_probe_link_type"
                                 },
                                 {
                                     "name": "Probe Origin",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_probe_list_probe_origin"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_probe_list_probe_origin"
                                 },
                                 {
                                     "name": "Reactive Probe Flag",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_probe_list_reactive_probe_flag"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_probe_list_reactive_probe_flag"
                                 }
                             ],
                         },
@@ -990,7 +885,7 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Reason",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_residues_not_modeled_reason"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_residues_not_modeled_reason"
                                 }
                             ],
                         },
@@ -999,11 +894,11 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Fitting State",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_sas_restraint_fitting_state"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_sas_restraint_fitting_state"
                                 },
                                 {
                                     "name": "Profile Segment Flag",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_sas_restraint_profile_segment_flag"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_sas_restraint_profile_segment_flag"
                                 }
                             ],
                         },
@@ -1012,11 +907,11 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Starting Model Source",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_starting_model_details_starting_model_source"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_starting_model_details_starting_model_source"
                                 },
                                 {
                                     "name": "Template Sequence Identity Denominator",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:starting_comparative_models_template_sequence_id_denom"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:starting_comparative_models_template_sequence_id_denom"
                                 }
                             ],
                         },
@@ -1025,7 +920,7 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:ihm_struct_assembly_class_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:ihm_struct_assembly_class_type"
                                 }
                             ],
                         },
@@ -1034,7 +929,7 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:pdbx_entity_poly_na_type_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:pdbx_entity_poly_na_type_type"
                                 }
                             ],
                         },
@@ -1043,7 +938,7 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {
                                     "name": "Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:software_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:software_type"
                                 }
                             ],
                         },
@@ -1052,49 +947,31 @@ def get_navbar_menu(catalog_id):
                             "children": [
                                 {   
                                     "name": "PDBX  Structure Determination Methodology",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:struct_pdbx_structure_determination_methodology"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:struct_pdbx_structure_determination_methodology"
                                 },
                                 {
                                     "name": "PDBX  CASP Flag",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:struct_pdbx_CASP_flag"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:struct_pdbx_CASP_flag"
                                 },
                                 {
                                     "name": "PDBX  Blank PDB Chainid Flag",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:struct_asym_pdbx_blank_PDB_chainid_flag"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:struct_asym_pdbx_blank_PDB_chainid_flag"
                                 },
                                 {
                                     "name": "PDBX  Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:struct_asym_pdbx_type"
+                                    "url": "/chaise/recordset/#"+catalog_id+"/Vocab:struct_asym_pdbx_type"
                                 }
                             ],
                         },
                         {
                             "name": "Workflow",
                             "children": [
-                                {
-                                    "name": "Archive Category",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:Archive_Category"
-                                },
-                                {
-                                    "name": "File Format",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:File_Format"
-                                },
-                                {
-                                    "name": "File Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:File_Type"
-                                },
-                                {
-                                    "name": "Process Status",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:Process_Status"
-                                },
-                                {
-                                    "name": "System Generated File Type",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:System_Generated_File_Type"
-                                },
-                                {
-                                    "name": "Workflow Status",
-                                    "url": "/chaise/recordset/"+catalog_id+"/Vocab:Workflow_Status"
-                                }
+                                { "name": "Archive Category", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:Archive_Category" },
+                                { "name": "File Format", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:File_Format" },
+                                { "name": "File Type", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:File_Type" },
+                                { "name": "Process Status", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:Process_Status" },
+                                { "name": "System Generated File Type", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:System_Generated_File_Type" },
+                                { "name": "Workflow Status", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:Workflow_Status" }
                             ],
                         }
                     ],
@@ -1105,10 +982,7 @@ def get_navbar_menu(catalog_id):
                         {
                             "name": "Entry Related File",                            
                             "children": [
-                                {
-                                    "name": "CSV Templates for Restraint Files",
-                                    "url": "/chaise/recordset/"+catalog_id+"/PDB:Entry_Related_File_Templates"
-                                }
+                                { "name": "CSV Templates for Restraint Files", "url": "/chaise/recordset/#"+catalog_id+"/PDB:Entry_Related_File_Templates" }
                             ],
                         }
                     ],
@@ -1119,10 +993,7 @@ def get_navbar_menu(catalog_id):
                         {
                             "name": "User Guide",
                             "children": [
-                                {
-                                    "name": "PDB-IHM",
-                                    "url": "https://docs.google.com/document/d/1CM8-6PYqI0DvETeQEfoUpSFZ8BhLrvYnihLSK8ghVcI/"
-                                }
+                                { "name": "PDB-IHM", "url": "https://docs.google.com/document/d/1CM8-6PYqI0DvETeQEfoUpSFZ8BhLrvYnihLSK8ghVcI/" }
                             ],
                         }
                     ],
@@ -1130,10 +1001,41 @@ def get_navbar_menu(catalog_id):
             ],
         }
     }
+
+    # Once deploy to staging, put the code in the appropriate place above
+    if cfg.is_dev:
+        navbar["navbarMenu"]["children"][1]["children"][3] = {
+            "name": "Chemical Components",                            
+            "children": [
+                { "name": "Chem Comp", "url": "/chaise/recordset/#"+catalog_id+"/PDB:chem_comp" },
+                # -- dev
+                { "name": "IHM New Chem Comp", "url": "/chaise/recordset/#"+catalog_id+"/PDB:IHM_New_Chem_Comp" },
+                # -- end dev
+                { "name": "Chem Comp Atom", "url": "/chaise/recordset/#"+catalog_id+"/PDB:chem_comp_atom" }
+            ],
+        }
+        navbar["navbarMenu"]["children"][2]["children"][0] = {            
+            "name": "Chem Comp",
+            "children": [
+                { "name": "Mon Nstd Flag", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_mon_nstd_flag" },
+                { "name": "PDBX  Aromatic Flag", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_atom_pdbx_aromatic_flag" },
+                { "name": "PDBX  Leaving Atom Flag", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_atom_pdbx_leaving_atom_flag" },
+                { "name": "PDBX  Polymer Type", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_atom_pdbx_polymer_type" },
+                { "name": "PDBX  Stereo Config", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_atom_pdbx_stereo_config" },
+                { "name": "Substruct Code", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_atom_substruct_code" },
+                # -- dev
+                { "name": "Chem Comp Release Status", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_pdbx_release_status" },
+                { "name": "Chem Comp Processing Site", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_pdbx_processing_site" },
+                { "name": "Chem Comp Created For", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_ihm_created_for" },
+                # -- end dev
+                { "name": "Type", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_type" }
+            ],
+        }
+    
     return navbar
 
 # -- ----------------------------------------------------------------------
-# TODO: check this annotation
+# TODO: check this annotation. I (HT) am not aware of this annotations. 
 def update_catalog_config(model):
     pass
     """
@@ -1195,6 +1097,16 @@ def update_catalog_column_defaults(model):
                 "tag:isrd.isi.edu,2016:immutable": True,
                 #"tag:isrd.isi.edu,2016:non-deletable": True, # NOT COLUMN LEVEL
             },
+            "RCB": {
+                "tag:misd.isi.edu,2015:display": {
+                    "name": "Created By",
+                },
+            },
+            "RCB": {
+                "tag:misd.isi.edu,2015:display": {
+                    "name": "Modifed By",
+                },
+            },            
             "RCT": {
                 "tag:misd.isi.edu,2015:display": {
                     "name": "Creation Time",
@@ -1291,7 +1203,6 @@ def print_generated_elements(model):
             if table.generated:
                 generated_dict.setdefault((schema.name, table.name), set())
                 for column in table.columns:
-                    #if column.name in ["RID", "RCT", "RMT", "RCB", "RMB", "Curation_Status", "Record_Status", "Record_Status_Detail"]: continue
                     if column.name in ["RID", "RCT", "RMT", "RCB", "RMB"]: continue                    
                     if column.generated:
                         generated_dict.setdefault((schema.name, table.name), set()).add(column.name)

@@ -3,7 +3,7 @@ from deriva.core import ErmrestCatalog, AttrDict, get_credential, DEFAULT_CREDEN
 from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key, ForeignKey
 from deriva.core import urlquote, urlunquote
 import requests.exceptions
-from ...utils.shared import DCCTX, PDBDEV_CLI
+from ...utils.shared import DCCTX, PDBDEV_CLI, cfg
 from deriva.utils.extras.model import print_schema_model_extras, print_table_model_extras, print_schema_annotations, per_schema_annotation_tags, clear_schema_annotations, tag2name
 from .PDB_base import update_PDB_base_annotations
 from .PDB_ihm import update_PDB_ihm_annotations
@@ -14,7 +14,6 @@ from .PDB_ihm import update_PDB_ihm_annotations
 # TODO: In progress. Still need to be tested
 def update_PDB(model):
     schema = model.schemas["PDB"]
-    print("update_PDB")
     
     schema.display.update({
         'name_style' : { 'title_case' : True, 'underline_space' : True, },
@@ -52,6 +51,30 @@ def update_PDB_entry(model):
         'row_name' : { 'row_markdown_pattern' : '{{{id}}}', },
     })
 
+    table.source_definitions.update({
+        'fkeys' :  [],
+        'columns' :  True,
+        'sources' : {
+            'entry_RCB' : {
+                'entity' : True,
+                'source' : [{'outbound': ['PDB', 'entry_RCB_fkey']}, 'RID'],
+                #'display' : { 'template_engine' : 'handlebars', 'markdown_pattern' : '{{{$self.values.Full_Name}}} ({{{$self.values.Email}}})', },
+                #'markdown_name' : 'Created By',
+            },
+            'entry_RMB' : {
+                'entity' : True,
+                'source' : [{'outbound': ['PDB', 'entry_RMB_fkey']}, 'RID'],
+                #'display' : { 'template_engine' : 'handlebars', 'markdown_pattern' : '{{{$self.values.Full_Name}}} ({{{$self.values.Email}}})', },
+                #'markdown_name' : 'Modified By',
+            },
+            'molstar_image' : {
+                'entity' : True,
+                'source' : [{'inbound': ['PDB', 'Entry_Generated_File_Structure_Id_fkey']}, {'filter': 'File_Type', 'operand_pattern': 'mmCIF'}, 'RID'],
+            },
+        },
+    })
+
+    
     table.visible_columns.update({
         '*' :  [
             'RID', 
@@ -79,10 +102,12 @@ def update_PDB_entry(model):
             'Deposit_Date', 
             'Release_Date', 
             'Method_Details', 
-            #'New_Chem_Comp_Pending', 
-            'Manual_Processing', 
-            { 'source' : [{'outbound': ['PDB', 'entry_RCB_fkey']}, 'Full_Name'], 'markdown_name' : 'RCB',  },
-            { 'source' : [{'outbound': ['PDB', 'entry_RMB_fkey']}, 'Full_Name'], 'markdown_name' : 'RMB',  },
+            'New_Chem_Comp_Pending', 
+            'Manual_Processing',
+            { 'sourcekey': 'entry_RCB', },
+            { 'sourcekey': 'entry_RMB', },
+            #{ 'source' : [{'outbound': ['PDB', 'entry_RCB_fkey']}, 'Full_Name'], 'markdown_name' : 'RCB',  },
+            #{ 'source' : [{'outbound': ['PDB', 'entry_RMB_fkey']}, 'Full_Name'], 'markdown_name' : 'RMB',  },
             'RCT', 
             'RMT', 
         ],
@@ -91,9 +116,23 @@ def update_PDB_entry(model):
             'Image_File_URL', 
             ['PDB', 'entry_Workflow_Status_fkey'], 
             'Method_Details', 
-            #'New_Chem_Comp_Pending', 
+            'New_Chem_Comp_Pending', 
             'Manual_Processing', 
             'Notes', 
+        ],
+        'entry/edit' :  [
+            'mmCIF_File_URL', 
+            'Image_File_URL', 
+            ['PDB', 'entry_Workflow_Status_fkey'],
+            'Method_Details', 
+            'Deposit_Date', 
+            'Release_Date', 
+            'Submitter_Flag', 
+            'Submitter_Flag_Date', 
+            'New_Chem_Comp_Pending', 
+            'Manual_Processing', 
+            'Notes',
+            ['PDB', 'entry_Process_Status_fkey'],
         ],
         'filter' :  {
             'and' :  [
@@ -121,7 +160,7 @@ def update_PDB_entry(model):
                 { 'source' : [{'inbound': ['PDB', 'citation_author_structure_id_fkey']}, 'RID'], 'markdown_name' : 'Authors',  },
                 { 'source' : [{'inbound': ['PDB', 'citation_structure_id_fkey']}, 'RID'], 'markdown_name' : 'Citations',  },
                 { 'source' : [{'inbound': ['PDB', 'software_structure_id_fkey']}, 'RID'], 'markdown_name' : 'Software',  },
-                #{ 'source' : 'New_Chem_Comp_Pending', 'markdown_name' : 'New Chem Comp Pending',  },
+                { 'source' : 'New_Chem_Comp_Pending', 'markdown_name' : 'New Chem Comp Pending',  },
                 { 'source' : 'Manual_Processing', 'markdown_name' : 'Manual Processing',  },
             ],
         },
@@ -149,24 +188,10 @@ def update_PDB_entry(model):
             'Method_Details', 
             'Submitter_Flag', 
             'Submitter_Flag_Date', 
-            #'New_Chem_Comp_Pending', 
+            'New_Chem_Comp_Pending', 
             'Manual_Processing', 
             'Notes', 
             { 'display' : {'wait_for': ['molstar_image'], 'template_engine': 'handlebars', 'markdown_pattern': '{{#if (or (eq Workflow_Status "mmCIF CREATED") (eq Workflow_Status "SUBMISSION COMPLETE") (eq Workflow_Status "HOLD") (eq Workflow_Status "REL") (eq Workflow_Status "REL"))}} {{#each molstar_image}}::: iframe [](/molstar/embedded.html?url={{this.values.File_URL}}){style="min-width:800px; min-height:700px; height:70vh;" class=chaise-autofill  } \n :::{{/each}}{{else}}Not Available{{/if}}'}, 'markdown_name' : '3D Visualization',  },
-            ['PDB', 'entry_Owner_fkey'], 
-        ],
-        'entry/edit' :  [
-            'mmCIF_File_URL', 
-            'Image_File_URL', 
-            ['PDB', 'entry_Workflow_Status_fkey'], 
-            'Method_Details', 
-            'Deposit_Date', 
-            'Release_Date', 
-            'Submitter_Flag', 
-            'Submitter_Flag_Date', 
-            #'New_Chem_Comp_Pending', 
-            'Manual_Processing', 
-            'Notes', 
         ],
         'export/compact' :  [
             'RID', 
@@ -186,37 +211,7 @@ def update_PDB_entry(model):
         ],
     })
 
-    table.source_definitions.update({
-        'fkeys' :  [],
-        'columns' :  True,
-        'sources' : {
-            'entry_RCB' : {
-                'entity' : True,
-                'source' : [{'outbound': ['PDB', 'entry_RCB_fkey']}, 'RID'],
-                'display' : { 'template_engine' : 'handlebars', 'markdown_pattern' : '{{{$self.values.Full_Name}}} ({{{$self.values.Email}}})', },
-                'markdown_name' : 'RCB',
-            },
-            'entry_RMB' : {
-                'entity' : True,
-                'source' : [{'outbound': ['PDB', 'entry_RMB_fkey']}, 'RID'],
-                'display' : { 'template_engine' : 'handlebars', 'markdown_pattern' : '{{{$self.values.Full_Name}}} ({{{$self.values.Email}}})', },
-                'markdown_name' : 'RMB',
-            },
-            'molstar_image' : {
-                'entity' : True,
-                'source' : [{'inbound': ['PDB', 'Entry_Generated_File_Structure_Id_fkey']}, {'filter': 'File_Type', 'operand_pattern': 'mmCIF'}, 'RID'],
-            },
-            'Accession_Code_RCB' : {
-                'entity' : True,
-                'source' : [{'outbound': ['PDB', 'Accession_Code_RCB_fkey']}, 'RID'],
-                'display' : { 'template_engine' : 'handlebars', 'markdown_pattern' : '{{{$self.values.Full_Name}}} ({{{$self.values.Email}}})', },
-                'markdown_name' : 'RCB',
-            },
-        },
-    })
-
     table.visible_foreign_keys.update({
-        'filter' :  'detailed',     
         'detailed' :  [
             ['PDB', 'Entry_Generated_File_Structure_Id_fkey'], 
             ['PDB', 'struct_entry_id_fkey'], 
@@ -358,6 +353,7 @@ def update_PDB_entry(model):
         {'name' : 'User Provided Method Details', }
     )
 
+    
 # -- ==================================================================================================
 
 # -- ---------------------------------------------------------------------------------
@@ -382,7 +378,6 @@ def update_PDB_Accession_Code(model):
             {'source' : [{'outbound': ['PDB', 'Accession_Code_RMB_fkey']}, 'Full_Name'], 'markdown_name' : 'RMB', },
             'RCT', 
             'RMT', 
-            ['PDB', 'Accession_Code_Owner_fkey'], 
         ],
         'entry' :  [
             {'source' : [{'outbound': ['PDB', 'Accession_Code_Entry_fkey']}, 'RID'], 'markdown_name' : 'Entry', },
@@ -560,16 +555,15 @@ def update_PDB_Entry_Error_File(model):
     schema.tables["Entry_Error_File"].visible_columns.update({
         '*' :  [
             'RID', 
-            ['PDB', 'Entry_Error_File_Entry_RID_fkey'], 
-            'File_Name', 
-            'File_URL', 
+            ['PDB', 'Entry_Error_File_Entry_RID_fkey'],
+            'File_URL',             
             ['PDB', 'Entry_Error_File_System_Generated_File_Type_fkey'], 
         ],
-        'entry' :  [
-            'File_URL', 
-            ['PDB', 'Entry_Error_File_Entry_RID_fkey'], 
-            ['PDB', 'Entry_Error_File_System_Generated_File_Type_fkey'], 
-        ],
+        #'entry' :  [
+        #    'File_URL', 
+        #    ['PDB', 'Entry_Error_File_Entry_RID_fkey'], 
+        #    ['PDB', 'Entry_Error_File_System_Generated_File_Type_fkey'], 
+        #],
         'detailed' :  [
             'RID', 
             ['PDB', 'Entry_Error_File_Entry_RID_fkey'], 
@@ -587,9 +581,10 @@ def update_PDB_Entry_Error_File(model):
     )
 
     # ----------------------------
-    schema.tables["Entry_Error_File"].columns["File_URL"].column_display.update({
-        '*' : { 'markdown_pattern' : '[{{{File_Name}}}]({{{File_URL}}})', },
-    })
+    # use chaise default
+    #schema.tables["Entry_Error_File"].columns["File_URL"].column_display.update({
+    #    '*' : { 'markdown_pattern' : '[{{{File_Name}}}]({{{File_URL}}})', },
+    #})
 
 # -- -----------------------------------------------------------------------------
 def update_PDB_Entry_Generated_File(model):
@@ -659,14 +654,17 @@ def update_PDB_Entry_Generated_File(model):
     )
     
     # ----------------------------
-    schema.tables["Entry_Generated_File"].columns["File_URL"].column_display.update({
-        '*' : { 'markdown_pattern' : '[{{{File_Name}}}]({{{File_URL}}})', },
-    })
+    # use chaise default
+    #schema.tables["Entry_Generated_File"].columns["File_URL"].column_display.update({
+    #    '*' : { 'markdown_pattern' : '[{{{File_Name}}}]({{{File_URL}}})', },
+    #})
 
 # -- -----------------------------------------------------------------------------
 def update_PDB_Entry_Latest_Archive(model):
     schema = model.schemas["PDB"]
     table = schema.tables["Entry_Latest_Archive"]
+
+ 
     # ----------------------------
     schema.tables["Entry_Latest_Archive"].visible_columns.update({
         '*' :  [
@@ -750,11 +748,8 @@ def update_PDB_Entry_Related_File(model):
         'entry' :  [
             ['PDB', 'Entry_Related_File_entry_id_fkey'], 
             ['PDB', 'Entry_Related_File_File_Type_fkey'], 
-            ['PDB', 'Entry_Related_File_File_Format_fkey'], 
-            'File_Name', 
-            'File_URL', 
-            'File_Bytes', 
-            'File_MD5', 
+            ['PDB', 'Entry_Related_File_File_Format_fkey'],
+            'File_URL',             
             'Description', 
             ['PDB', 'Entry_Related_File_Restraint_Workflow_Status_fkey'], 
         ],
@@ -774,7 +769,6 @@ def update_PDB_Entry_Related_File(model):
             ['PDB', 'Entry_Related_File_RMB_fkey'], 
             'RCT', 
             'RMT', 
-            ['PDB', 'Entry_Related_File_Owner_fkey'], 
         ],
     })
 
@@ -787,7 +781,13 @@ def update_PDB_Entry_Related_File(model):
     schema.tables["Entry_Related_File"].foreign_keys[(schema,"Entry_Related_File_Restraint_Workflow_Status_fkey")].foreign_key.update({
         'domain_filter_pattern' :  'Restraint_Status=True',
     })
+    
+    # ----------------------------
+    schema.tables["Entry_Related_File"].foreign_keys[(schema,"Entry_Related_File_Restraint_Process_Status_fkey")].foreign_key.update({
+        'domain_filter_pattern' :  'Restraint_Status=True',
+    })
 
+    
 # -- -----------------------------------------------------------------------------
 def update_PDB_Entry_Related_File_Templates(model):
     schema = model.schemas["PDB"]
@@ -805,11 +805,11 @@ def update_PDB_Entry_Related_File_Templates(model):
             'File_URL', 
             'Description', 
         ],
-        'entry' :  [
-            ['PDB', 'Entry_Template_File_File_Type_fkey'], 
-            'File_URL', 
-            'Description', 
-        ],
+        #'entry' :  [
+        #    ['PDB', 'Entry_Template_File_File_Type_fkey'], 
+        #    'File_URL', 
+        #    'Description', 
+        #],
         'detailed' :  [
             'RID', 
             ['PDB', 'Entry_Template_File_File_Type_fkey'], 
@@ -820,7 +820,92 @@ def update_PDB_Entry_Related_File_Templates(model):
             ['PDB', 'Entry_Template_File_RMB_fkey'], 
             'RCT', 
             'RMT', 
-            ['PDB', 'Entry_Template_File_Owner_fkey'], 
+        ],
+    })
+
+# -- -----------------------------------------------------------------------------
+def update_PDB_IHM_New_Chem_Comp(model):
+    schema = model.schemas["PDB"]
+    table = schema.tables["IHM_New_Chem_Comp"]
+
+    schema.display.update({
+        'name_style' : { 'title_case' : False, 'underline_space' : True, },
+    })
+
+    schema.tables["entry"].source_definitions.update({
+        'fkeys' :  [],
+        'columns' :  True,
+        'sources' : {
+            'chem_comp_type_fkey' : {
+                'source' : [{'outbound': ['Vocab', 'IHM_New_Chem_Comp_Type_fkey']}, 'RID'],
+                'comment' : 'Type of chemical component',
+            },
+            'pdbx_release_status_fkey' : {
+                'source' : [{'outbound': ['Vocab', 'IHM_New_Chem_Comp_pdbx_release_status_fkey']}, 'RID'],
+                'comment' : 'Current release status of the chemical component',
+                'markdown_name' : 'PDBx Release Status',
+            },
+            'pdbx_processing_site_fkey' : {
+                'source' : [{'outbound': ['Vocab', 'IHM_New_Chem_Comp_pdbx_processing_site_fkey']}, 'RID'],
+                'comment' : 'Deposition site that processed this chemical component definition',
+                'markdown_name' : 'PDBx Processing Site',
+            },
+            'created_for_fkey' : {
+                'source' : [{'outbound': ['Vocab', 'IHM_New_Chem_Comp_Created_For_fkey']}, 'RID'],
+                'comment' : 'Resource for which the chemical component definition was created for',
+                'markdown_name' : 'Created For',
+            },
+            'first_ihm_entry_fkey' : {
+                'source' : [{'outbound': ['PDB', 'IHM_New_Chem_Comp_First_entry_fkey']}, 'RID'],
+                'comment' : 'Entry RID of the first IHM entry for which the chemical component defintion was created',
+                'markdown_name' : 'First IHM Entry RID',
+            },
+            'release_ihm_entry_fkey' : {
+                'source' : [{'outbound': ['PDB', 'IHM_New_Chem_Comp_Release_entry_fkey']}, 'RID'],
+                'comment' : 'Entry RID of the first released IHM entry with which the chemical component defintion was released',
+                'markdown_name' : 'Release IHM Entry RID',
+            },
+        },
+    })
+
+    # ----------------------------
+    schema.tables["IHM_New_Chem_Comp"].visible_columns.update({
+        '*' :  [
+            'RID', 
+            'comp_id',
+            { 'sourcekey': 'chem_comp_type_fkey' },
+            { 'sourcekey': 'pdbx_release_status_fkey' },
+            { 'sourcekey': 'pdbx_processing_site_fkey' },
+            { 'sourcekey': 'created_for_fkey' },
+            'Creation_Date',
+            { 'sourcekey': 'first_ihm_entry_fkey' },            
+            'First_PDB_Entry_ID',
+            { 'sourcekey': 'release_ihm_entry_fkey' },                        
+            'Release_PDB_Entry_ID', 
+            'Release_Date', 
+            'Notes', 
+            'CCD_CIF_File_URL',
+            'RCT',
+        ],
+        'detailed' :  [
+            'RID', 
+            'comp_id',
+            { 'sourcekey': 'chem_comp_type_fkey' },
+            { 'sourcekey': 'pdbx_release_status_fkey' },
+            { 'sourcekey': 'pdbx_processing_site_fkey' },
+            { 'sourcekey': 'created_for_fkey' },
+            'Creation_Date',
+            { 'sourcekey': 'first_ihm_entry_fkey' },            
+            'First_PDB_Entry_ID',
+            { 'sourcekey': 'release_ihm_entry_fkey' },                        
+            'Release_PDB_Entry_ID', 
+            'Release_Date', 
+            'Notes', 
+            'CCD_CIF_File_URL', 
+            'RCT', 
+            'RMT', 
+            ['PDB', 'IHM_New_Chem_Comp_RCB_fkey'], 
+            ['PDB', 'IHM_New_Chem_Comp_RMB_fkey'], 
         ],
     })
 
@@ -828,6 +913,11 @@ def update_PDB_Entry_Related_File_Templates(model):
 def update_PDB_PDB_Archive(model):
     schema = model.schemas["PDB"]
     table = schema.tables["PDB_Archive"]
+
+    table.display.update({
+        'name_style' : { 'title_case' : False, 'underline_space' : True, },
+    })
+    
     # ----------------------------
     schema.tables["PDB_Archive"].display.update(
         {'name' : 'PDB Archive', 'comment_display' : {'*': {'table_comment_display': 'inline'}}, }
@@ -849,6 +939,22 @@ def update_PDB_PDB_Archive(model):
             'RCT', 
             'RMT', 
         ],
+        'detailed' :  [
+            'RID', 
+            'Submission_Time', 
+            'Submitted_Entries', 
+            'New_Released_Entries', 
+            'Re_Released_Entries', 
+            'Current_File_Holdings_URL', 
+            {'source' : 'Current_File_Holdings_Bytes', 'markdown_name' : 'Current File Holdings Size', },
+            'Released_Structures_LMD_URL', 
+            {'source' : 'Released_Structures_LMD_Bytes', 'markdown_name' : 'Released Structures LMD Size', },
+            'Unreleased_Entries_URL', 
+            {'source' : 'Unreleased_Entries_Bytes', 'markdown_name' : 'Unreleased Entries Bytes Size', },
+            {'source' : [{'outbound': ['PDB', 'PDB_Archive_RCB_fkey']}, 'Full_Name'], 'markdown_name' : 'RCB', },
+            {'source' : [{'outbound': ['PDB', 'PDB_Archive_RMB_fkey']}, 'Full_Name'], 'markdown_name' : 'RMB', },
+        ],
+        
         'entry' :  [
             'Submission_Time', 
             'Submitted_Entries', 
@@ -860,27 +966,12 @@ def update_PDB_PDB_Archive(model):
         ],
         'filter' :  {
             'and' :  [
-                {'source' : 'Submission_Time', 'markdown_name' : 'Submission Date', },
-                {'source' : 'Submitted_Entries', 'markdown_name' : 'Submitted Entries', },
-                {'source' : 'New_Released_Entries', 'markdown_name' : 'New Released Entries', },
-                {'source' : 'Re_Released_Entries', 'markdown_name' : 'Re-Released Entries', },
+                {'source' : 'Submission_Time' },
+                {'source' : 'Submitted_Entries' },
+                {'source' : 'New_Released_Entries' },
+                {'source' : 'Re_Released_Entries' },
             ],
         },
-        'detailed' :  [
-            'RID', 
-            'Submission_Time', 
-            'Submitted_Entries', 
-            'New_Released_Entries', 
-            'Re_Released_Entries', 
-            'Current_File_Holdings_URL', 
-            {'source' : 'Current_File_Holdings_Bytes', 'markdown_name' : 'Current File Holdings Size (Bytes)', },
-            'Released_Structures_LMD_URL', 
-            {'source' : 'Released_Structures_LMD_Bytes', 'markdown_name' : 'Released Structures LMD Size (Bytes)', },
-            'Unreleased_Entries_URL', 
-            {'source' : 'Unreleased_Entries_Bytes', 'markdown_name' : 'Unreleased Entries Bytes Size (Bytes)', },
-            {'source' : [{'outbound': ['PDB', 'PDB_Archive_RCB_fkey']}, 'Full_Name'], 'markdown_name' : 'RCB', },
-            {'source' : [{'outbound': ['PDB', 'PDB_Archive_RMB_fkey']}, 'Full_Name'], 'markdown_name' : 'RMB', },
-        ],
         'entry/edit' :  [
             'Submission_Time', 
             'Submitted_Entries', 
@@ -893,18 +984,13 @@ def update_PDB_PDB_Archive(model):
     })
 
     # ----------------------------
+    schema.tables["PDB_Archive"].columns["Re_Released_Entries"].display.update(
+        {'name' : 'Re-Released Entries', }
+    )
+    
+    # ----------------------------
     schema.tables["PDB_Archive"].columns["Current_File_Holdings_URL"].display.update(
         {'name' : 'Current File Holdings', }
-    )
-
-    # ----------------------------
-    schema.tables["PDB_Archive"].columns["Current_File_Holdings_MD5"].display.update(
-        {'name' : 'Current File Holdings MD5', }
-    )
-
-    # ----------------------------
-    schema.tables["PDB_Archive"].columns["Released_Structures_LMD_Name"].display.update(
-        {'name' : 'Released Structures LMD Name', }
     )
     
     # ----------------------------
@@ -913,19 +999,30 @@ def update_PDB_PDB_Archive(model):
     )
 
     # ----------------------------
-    schema.tables["PDB_Archive"].columns["Released_Structures_LMD_MD5"].display.update(
-        {'name' : 'Released Structures LMD MD5', }
-    )
-
-    # ----------------------------
     schema.tables["PDB_Archive"].columns["Unreleased_Entries_URL"].display.update(
         {'name' : 'Unreleased Entries', }
     )
 
     # ----------------------------
-    schema.tables["PDB_Archive"].columns["Unreleased_Entries_MD5"].display.update(
-        {'name' : 'Unreleased Entries MD5', }
-    )
+    #schema.tables["PDB_Archive"].columns["Current_File_Holdings_MD5"].display.update(
+    #    {'name' : 'Current File Holdings MD5', }
+    #)
+
+    # ----------------------------
+    #schema.tables["PDB_Archive"].columns["Released_Structures_LMD_Name"].display.update(
+    #    {'name' : 'Released Structures LMD Name', }
+    #)
+    
+    # ----------------------------
+    #schema.tables["PDB_Archive"].columns["Released_Structures_LMD_MD5"].display.update(
+    #    {'name' : 'Released Structures LMD MD5', }
+    #)
+
+
+    # ----------------------------
+    #schema.tables["PDB_Archive"].columns["Unreleased_Entries_MD5"].display.update(
+    #    {'name' : 'Unreleased Entries MD5', }
+    #)
 
 
 # -- ---------------------------------------------------------------------------------
@@ -949,26 +1046,26 @@ def update_PDB_Supported_Dictionary(model):
             'RCT', 
             'RMT', 
         ],
-        'entry' :  [
-            {
-                'source' : [{'outbound': ['PDB', 'Supported_Dictionary_fkey']}, 'RID'],
-                'comment' : 'A reference to table Data_Dictionary.RID.',
-                'markdown_name' : 'Data Dictionary',
-            },
-        ],
-        'detailed' :  [
-            'RID', 
-            {
-                'source' : [{'outbound': ['PDB', 'Supported_Dictionary_fkey']}, 'RID'],
-                'comment' : 'A reference to table Data_Dictionary.RID.',
-                'markdown_name' : 'Data Dictionary',
-            },
-            {
-                'source' : [{'outbound': ['PDB', 'Supported_Dictionary_fkey']}, 'Category'],
-                'comment' : 'A reference to table Data_Dictionary.Category.',
-                'markdown_name' : 'Category',
-            },
-        ],
+        #'entry' :  [
+        #    {
+        #        'source' : [{'outbound': ['PDB', 'Supported_Dictionary_fkey']}, 'RID'],
+        #        'comment' : 'A reference to table Data_Dictionary.RID.',
+        #        'markdown_name' : 'Data Dictionary',
+        #    },
+        #],
+        #'detailed' :  [
+        #    'RID', 
+        #    {
+        #        'source' : [{'outbound': ['PDB', 'Supported_Dictionary_fkey']}, 'RID'],
+        #        'comment' : 'A reference to table Data_Dictionary.RID.',
+        #        'markdown_name' : 'Data Dictionary',
+        #    },
+        #    {
+        #        'source' : [{'outbound': ['PDB', 'Supported_Dictionary_fkey']}, 'Category'],
+        #        'comment' : 'A reference to table Data_Dictionary.Category.',
+        #        'markdown_name' : 'Category',
+        #    },
+        #],
     })
 
 
@@ -989,6 +1086,7 @@ def update_PDB_annotations(model):
     update_PDB_Entry_Latest_Archive(model)
     update_PDB_Entry_Related_File(model)
     update_PDB_Entry_Related_File_Templates(model)
+    if cfg.is_dev: update_PDB_IHM_New_Chem_Comp(model)
     update_PDB_PDB_Archive(model)
     update_PDB_Supported_Dictionary(model)
     

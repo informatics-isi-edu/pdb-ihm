@@ -20,7 +20,7 @@ from . import viz_3d_display
 '''
 from . import PDB
 from . import Vocab
-#from . import public     # NOT IN MODEL
+from . import public    
 #from . import _acl_admin # NOT IN MODEL
 
 # This script pull all the annotations in different scripts together and
@@ -45,28 +45,28 @@ def main(server_name, catalog_id, credentials, args):
         return
 
     # -- clear annotations
-    #model.clear(clear_comment=False, clear_annotations=True, clear_acls=False, clear_acl_bindings=False)
+    model.clear(clear_comment=False, clear_annotations=True, clear_acls=False, clear_acl_bindings=False)
 
-    # -- catalog annotation (chaise_config, bulk_upload) and catalog-wide annotations
-    catalog_annotations.clear_catalog_catalog_wide_annotations(model)
+    #catalog_annotations.clear_catalog_catalog_wide_annotations(model)
+    #clear_schema_annotations(model, "Vocab", per_schema_annotation_tags)
+    #clear_schema_annotations(model, "PDB", per_schema_annotation_tags)
+    #clear_schema_annotations(model, "public", per_schema_annotation_tags)
+    #export.clear_export_annotations(model)
+    #asset.clear_asset_annotations(model)
+    #citation.clear_citation_annotations(model)
     
+    # -- catalog annotation (chaise_config, bulk_upload) and catalog-wide annotations
     catalog_annotations.update_catalog_annotations(model)
     catalog_annotations.update_catalog_wide_annotations(model)
 
     # -- per schema annotations
-    clear_schema_annotations(model, "Vocab", per_schema_annotation_tags)
     Vocab.update_Vocab_annotations(model)
-    clear_schema_annotations(model, "PDB", per_schema_annotation_tags)    
     PDB.update_PDB_annotations(model)
+    public.update_public_annotations(model)
     
     # -- tag specifics annotations
-    export.clear_export_annotations(model)        
     export.update_export_annotations(model)
-    
-    asset.clear_asset_annotations(model)
     asset.update_asset_annotations(model)
-    
-    citation.clear_citation_annotations(model)
     citation.update_citation_annotations(model)
     
     '''    
@@ -86,6 +86,7 @@ def main(server_name, catalog_id, credentials, args):
         return
     if not args.dry_run:
         model.apply()
+        print("Model changes have been applied")
         pass
     
 
