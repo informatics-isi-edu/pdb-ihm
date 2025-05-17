@@ -9,6 +9,7 @@ from deriva.core import HatracStore
 import requests.exceptions
 from ... import utils
 from ...utils import DCCTX, PDBDEV_CLI, cfg
+from deriva.utils.extras.model import clear_schema_acls, print_schema_model_extras, print_table_model_extras, format_acls, format_acl_bindings, ermrest_groups, set_ermrest_groups
 
 '''
 NOTE: Use cfg object to check for different deployment env 
@@ -24,6 +25,7 @@ GROUPS = {
     "isrd-staff": ["https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"],    
     "isrd-systems": ["https://auth.globus.org/3938e0d0-ed35-11e5-8641-22000ab4b42b"],
     "isrd-testers": ["https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"],
+    "pdb-ihm-dev": [],     
     "pdb-ihm": ["https://auth.globus.org/cfc89bb6-3d96-4f50-8f1d-f625ef400e40"], 
 }
 g = GROUPS
@@ -37,7 +39,7 @@ GROUPS["isrd-all"] = g["isrd-systems"] + g["isrd-staff"] + g["isrd-testers"]
 # -- NOTE: ignore pdb-readers and pdb-writers for now
 GROUPS["entry-creators"] = g["pdb-submitters"] + g["pdb-curators"] + g["isrd-staff"] 
 GROUPS["entry-updaters"] = g["pdb-curators"] + g["isrd-staff"]
-#GROUPS["entry-readers"] = g["pdb-curators"] + g["isrd-staff"]   # to discuss, ignore for now
+GROUPS["entry-readers"] = g["pdb-readers"]
 
 FKEY_ACLS = {
     "default": { "insert": ["*"], "update": ["*"] },
@@ -55,20 +57,22 @@ FKEY_ACL_BINDINGS = {
 }
 
 ermrest_catalog_acls = {}
-column_curators_enumericate_curator_read_curator_write = {}
+column_curator_enumerate_curator_read_curator_write = {}
 
 # -- set different group members depending on deployment environment
-def initialize_policies():
-    global g, ermrest_catalog_acls, column_curators_enumericate_curator_read_curator_write
+def initialize_policies(catalog):
+    global g, ermrest_catalog_acls, column_curator_enumerate_curator_read_curator_write
+    if not ermrest_groups: set_ermrest_groups(catalog) # needed to use humanize groups in format_acls/acl_bindings 
     
     if cfg.is_dev:
         g["owners"] = g["owners"] + g["isrd-staff"]
         g["entry-updaters"] = g["entry-updaters"] + g["isrd-testers"]
+        g["pdb-pipeline"] = g["pdb-ihm-dev"]
 
     ermrest_catalog_acls = {
         "owner" : g["owners"],
         "enumerate": g["public"], 
-        "select": g["entry-updaters"],
+        "select": g["entry-updaters"] + g["entry-readers"],
         "insert": g["entry-updaters"],
         "update": g["entry-updaters"],
         "delete": g["entry-updaters"],
@@ -76,7 +80,7 @@ def initialize_policies():
         "write": [],
     }
 
-    column_curators_enumericate_curator_read_curator_write = {
+    column_curator_enumerate_curator_read_curator_write = {
         "enumerate": g["entry-updaters"],
         "select": g["entry-updaters"],
         "insert": g["entry-updaters"],
@@ -115,7 +119,7 @@ def clear_table_acls(table):
 
 # -- ---------------------------------------------------------------------
 # clear all acls and acl_bindings under the schema
-def clear_schema_acls(schema):
+def x_clear_schema_acls(schema):
     # NOTE: There is a bug in the fkey clear. It doesn't set the fkey acls to default.
     # Uncomment and ignore the rest of the code when the bug is fixed
     #schema.clear(clear_comment=False, clear_annotations=False, clear_acls=True, clear_acl_bindings=True)
@@ -149,9 +153,6 @@ def set_PDB_acl(model):
     schema = model.schemas["PDB"]
     print("set_PDB_acl")
     
-    #schema.clear(clear_comment=False, clear_annotations=False, clear_acls=True, clear_acl_bindings=True)
-    clear_schema_acls(schema)
-
     # -- set table level ACLs
     set_PDB_entry(model)
     set_PDB_entry_related(model)      # set appropriate Entry_Related_File
@@ -161,9 +162,9 @@ def set_PDB_acl(model):
     set_PDB_entry_collection_related(model)
     set_PDB_entry_related_error_file_tables(model)
     set_PDB_entry_related_system_generated_tables(model)
-    set_PDB_Data_Dictionary_Related(model)
     set_PDB_Entry_Related_File(model)
     set_PDB_Entry_Related_File_Templates(model)    
+    set_tables_curators_access_only(model)
 
     # -- apply add-on acls to all tables in schema
     # disable Owner columns
@@ -187,8 +188,6 @@ def set_Vocab_acl(model):
     schema = model.schemas["Vocab"]
     print("set_Vocab_acl")
     
-    #schema.clear(clear_comment=False, clear_annotations=False, clear_acls=True, clear_acl_bindings=True)
-    clear_schema_acls(schema)
     
     # Anyone can read. The rest follows catalog policy
     schema.acls.update({
@@ -216,11 +215,6 @@ def set_Vocab_acl(model):
 def set_public_acl(model):
     schema = model.schemas["public"]
     print("set_public_acl")
-    
-    # -- reset policies
-    # there is a bug in acl_binding.clear()
-    #schema.clear(clear_comment=False, clear_annotations=False, clear_acls=True, clear_acl_bindings=True)
-    clear_schema_acls(schema)    
     
     schema.acls.update({
         "select": g["entry-updaters"],
@@ -260,10 +254,7 @@ def set_WWW_acl(model):
     schema = model.schemas["WWW"]
 
     print("set_WWW_acl")
-    # There is a bug in schema.clear. Need to set fkey.acls to default
-    #schema.clear(clear_comment=False, clear_annotations=False, clear_acls=True, clear_acl_bindings=True)
-    clear_schema_acls(schema)
-
+    
     # -- inherit policy from catalog e.g. only entry-updaters can do anything
     # -- Page
     
@@ -298,6 +289,7 @@ def set_PDB_entry(model):
                 {
                     "or": [
                         { "filter": "Workflow_Status", "operator": "=", "operand": "REL" },
+                        { "filter": "Workflow_Status", "operator": "=", "operand": "RELEASE READY" },
                         { "filter": "Workflow_Status", "operator": "=", "operand": "HOLD" },
                     ]
                 },
@@ -379,35 +371,46 @@ def set_PDB_entry(model):
     
     # -- ACL: only entry updaters can create and read:
     # -- cnames: Notes, Manual_Processing (TO-ADD)
-    for cname in ["Notes", "Manual_Processing"]:
+    for cname in ["Notes", "Manual_Processing", "New_Chem_Comp_Pending"]:
         if not cname in table.columns.elements: continue
         col = table.columns[cname]
-        col.acls.update(column_curators_enumericate_curator_read_curator_write)
+        col.acls.update(column_curator_enumerate_curator_read_curator_write)
         col.acl_bindings.update({
             "submitters_read_own_entries": False,        
             "submitters_modify_based_on_workflow_status": False,
         })
     
     # ==== foreign keys =====
-
-    # -- Workflow Status: submitters can only choose Workflow_Status that they are allowed
-    table.foreign_keys[(schema, "entry_Workflow_Status_fkey")].acls.update({ 
-        "insert": g["entry-updaters"],
-        "update": g["entry-updaters"],
-    })
-    table.foreign_keys[(schema, "entry_Workflow_Status_fkey")].acl_bindings.update({
-        # submitters can only selected workflow status that they are allowed (PDB_Submitter_Allow)
-        "submitters_select_allowed_workflow_status": {
-            "types": [ "insert", "update" ],
-            "scope_acl": g["pdb-submitters"],
-            "projection": [
-                { "filter": "PDB_Submitter_Allow", "operator": "=", "operand": "True",  },
-                "RID"
-            ],
-            "projection_type": "nonnull"
-        }
-    })
-
+    
+    # -- Workflow_Status/Process_Status: submitters can only choose status that they are allowed
+    status_related_fkeys = {
+        "workflow_status": "entry_Workflow_Status_fkey",
+        "process_status": "entry_Process_Status_fkey"
+    }
+    for status_name, constraint_name in status_related_fkeys.items():
+        fkey = table.foreign_keys[(schema, constraint_name)]
+        fkey.acls.update({
+            "insert": g["entry-updaters"],
+            "update": g["entry-updaters"],
+        })
+        # set acl_binding policy name
+        submitters_select_allowed = f"submitters_select_allowed_{status_name}" # eg submitters_select_allowed_workflow_status
+        curators_select_allowed = f"curators_select_allowed_{status_name}"     # eg curators_select_allowed_workflow_status
+        fkey.acl_bindings.update({
+            # submitters can only selected workflow status that they are allowed: "File upload"
+            # Note: Can't filter based on Entry_Related_File_Status column since submitters can't choose all those choices
+            submitters_select_allowed: {
+                "types": [ "insert", "update" ],
+                "scope_acl": g["pdb-submitters"],
+                "projection": [
+                    { "filter": "Entry_Submitter_Select" if cfg.is_dev else "PDB_Submitter_Allow" , "operator": "=", "operand": "True"  },
+                    "RID"
+                ],
+                "projection_type": "nonnull"
+            },
+        }) # end setting up fkey.acl_bindings
+    # end for
+    
     # -- Use default for the rest of fkeys
     #table.foreign_keys[(schema, "entry_Accession_Code_fkey")].acls = FKEY_ACLS["default"]
     #table.foreign_keys[(schema, "entry_Workflow_Status_fkey")].acls = FKEY_ACLS["default"]
@@ -568,7 +571,7 @@ def set_PDB_Accession_Code(model):
     cnames = ["Accession_Serial", "PDB_Extended_Code", "PDB_Code", "PDB_Accession_Code", "Notes"]
     for cname in cnames:
         col = table.columns[cname]
-        col.acls.update(column_curators_enumericate_curator_read_curator_write)
+        col.acls.update(column_curator_enumerate_curator_read_curator_write)
         
 
 # -- ---------------------------------------------------------------------
@@ -594,7 +597,7 @@ def set_PDB_Curation_Log(model):
         raise Exception("ERROR: PDB.Curation_Log do not have proper foreign keys to entry table")
 
     table.acl_bindings.update({
-        "submitter_allowed_and_own_entries": {
+        "submitter_allow_and_own_entries": {
             "types": ["select"],
             "scope_acl": g["pdb-submitters"],
             "projection": [
@@ -700,6 +703,7 @@ def set_PDB_entry_related_error_file_tables(model):
 # -- ---------------------------------------------------------------------
 '''
   policy: pdb-ihm generated content, entry_updater can read, pdb_submitter can only read their own entry.
+  TODO: use entry_table.referenced_by:
 '''
 def set_PDB_entry_related_system_generated_tables(model):
     schema = model.schemas["PDB"]
@@ -719,7 +723,8 @@ def set_PDB_entry_related_system_generated_tables(model):
         for fkey in table.foreign_keys:
             from_cols = {c.name for c in fkey.column_map.keys()}
             pk_table = fkey.pk_table
-            if pk_table.name == "entry":  
+            if pk_table.name == "entry":
+                # -- extend existing policy to filter certain file types
                 table.acl_bindings.update({
                     "submitter_read_own_entries" : {
                         "types": ["select"],
@@ -744,11 +749,16 @@ def set_PDB_entry_related_system_generated_tables(model):
     
 # -- ---------------------------------------------------------------------
 # Data_Dictionary, Supported_Dictionary: only updater can read and do anything, submmitter can't read
-#
-def set_PDB_Data_Dictionary_Related(model):
-    for table_name in ["Data_Dictionary", "Supported_Dictionary", "Conform_Dictionary", "audit_conform"]:
-        print("  - set PDB_Data_Dictionary_Related: %s" % (table_name))
-        table = model.schemas["PDB"].tables[table_name]
+# IHM_New_Chem_Comp: submitters can't read
+def set_tables_curators_access_only(model):
+    """
+    Set ACLs for tables that only curators can access.
+    """
+    schema = model.schemas["PDB"]
+    for table_name in ["Data_Dictionary", "Supported_Dictionary", "Conform_Dictionary", "audit_conform", "IHM_New_Chem_Comp"]:
+        if table_name not in schema.tables.keys(): continue
+        print("  - set_tables_curators_access_only: %s" % (table_name))
+        table = schema.tables[table_name]
         clear_table_acls(table)                
         # use default schema ACLs (only entry-updaters can do anything to these tables)
 
@@ -760,29 +770,49 @@ def set_PDB_Entry_Related_File(model):
     schema = model.schemas["PDB"]
     table = schema.tables["Entry_Related_File"]
 
-    # -- table acl and entry_fkey are set in set_PDB_entry_related()
+    # == table acl and entry_fkey are set in set_pdb_entry_related()
 
-    # -- update restraint_workflow_status fkey
-    fkey = table.foreign_keys[(schema, "Entry_Related_File_Restraint_Workflow_Status_fkey")]
-    fkey.acls.update({
-        "insert": g["entry-updaters"],
-        "update": g["entry-updaters"]        
-    })
-    fkey.acl_bindings.update({
-        # submitters can only selected workflow status that they are allowed (PDB_Submitter_Allow)
-        "submitters_select_allowed_restraint_workflow_status": {
-            "types": [ "insert", "update" ],
-            "scope_acl": g["pdb-submitters"],
-            "projection": [
-                {"or": [
-                    { "filter": "Name", "operator": "=", "operand": "DRAFT",  },
-                    { "filter": "Name", "operator": "=", "operand": "DEPO", },
-                ]},
-                "RID"
-            ],
-            "projection_type": "nonnull"
-        }
-    })
+    # == update restraint_workflow_status fkey
+    # ACL details is controlled through database columns Submitter_Select and Entry_Related_File_Status in
+    # the Vocab.Workflow_Status and Vocab.Processing_Status
+    status_related_fkeys = {
+        "workflow_status": "Entry_Related_File_Restraint_Workflow_Status_fkey",
+        "process_status": "Entry_Related_File_Restraint_Process_Status_fkey"
+    }
+    for status_name, constraint_name in status_related_fkeys.items():
+        fkey = table.foreign_keys[(schema, constraint_name)]
+        fkey.acls.update({
+            "insert": [],
+            "update": [],
+        })
+        # set acl_binding policy name
+        submitters_select_allowed = f"submitters_select_allowed_{status_name}" # eg submitters_select_allowed_workflow_status
+        curators_select_allowed = f"curators_select_allowed_{status_name}"     # eg curators_select_allowed_workflow_status
+        fkey.acl_bindings.update({
+            # submitters can only selected workflow status that they are allowed: "File upload"
+            # Note: Can't filter based on Entry_Related_File_Status column since submitters can't choose all those choices
+            submitters_select_allowed: {
+                "types": [ "insert", "update" ],
+                "scope_acl": g["pdb-submitters"],
+                "projection": [
+                    { "filter": "Restraint_Submitter_Select", "operator": "=", "operand": True, },
+                    "RID"
+                ],
+                "projection_type": "nonnull"
+            },
+            curators_select_allowed: {
+                "types": [ "insert", "update" ],
+                "scope_acl": g["entry-updaters"],
+                "projection": [
+                    { "filter": "Restraint_Status", "operator": "=", "operand": True, },
+                    "RID"
+                ],
+                "projection_type": "nonnull"
+            }
+        }) # end setting up fkey.acl_bindings
+    # end for
+
+    
     #print("set_PDB_entry_Related_Fiie: acl:%s --- acl_bindings:%s" % (fkey.acls, fkey.acl_bindings))    
 
 # -- ---------------------------------------------------------------------
@@ -802,19 +832,16 @@ def set_PDB_Entry_Related_File_Templates(model):
 # -- ---------------------------------------------------------------------
 # 
 def set_ermrest_acl(catalog):
+    initialize_policies(catalog)    
     model = catalog.getCatalogModel()
-    #response = catalog.get("/schema")
-    #schema = response.json()
-    #print(json.dumps(schema, indent=2))
 
-    # test deriva-py clear function
-    #print_table_acls(model.schemas["PDB"].tables["entry"])    
     if False:
         print_acls(model, ["PDB"])
         #clear_table_acls(model.schemas["PDB"].tables["Entry_Related_File_Templates"])        
         set_PDB_Entry_Related_File_Templates(model)
         print_table_acls(model.schemas["PDB"].tables["Entry_Related_File_Templates"])
-
+        
+    model.clear(clear_comment=False, clear_annotations=False, clear_acls=True, clear_acl_bindings=True)
 
     # -- catalog
     model.acls.update(ermrest_catalog_acls)
@@ -829,7 +856,6 @@ def set_ermrest_acl(catalog):
 # -- =================================================================================
         
 def main(server_name, catalog_id, credentials):
-    initialize_policies()    
     server = DerivaServer("https", server_name, credentials)
     catalog = server.connect_ermrest(catalog_id)
     catalog.dcctx["cid"] = DCCTX["acl"]
