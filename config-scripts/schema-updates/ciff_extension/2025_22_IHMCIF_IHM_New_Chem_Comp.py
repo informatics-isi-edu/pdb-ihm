@@ -37,7 +37,7 @@ def define_tdoc_IHM_New_Chem_Comp():
         ),
         Column.define(
             'Creation_Date',
-            builtin_types.timestamptz,
+            builtin_types.date,
             comment='Creation date of the chemical component definition',
             nullok=False
         ),
@@ -67,7 +67,7 @@ def define_tdoc_IHM_New_Chem_Comp():
         ),
         Column.define(
             'Release_Date',
-            builtin_types.timestamptz,
+            builtin_types.date,
             comment='Release date of the chemical component definition',
             nullok=True
         ),
