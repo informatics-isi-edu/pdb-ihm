@@ -7,7 +7,7 @@ import requests.exceptions
 from ...utils.shared import DCCTX, PDBDEV_CLI, cfg
 from deriva.utils.extras.model import get_schemas, get_tables, get_columns, print_catalog_model_extras, print_presence_tag_annotations, clear_catalog_annotations, tag2name
 from . import bulk_upload
-#from ..acl.ermrest_acl import schemas_not_in_model, tables_not_in_model, columns_not_in_model, set_elements_not_in_model
+from ..acl.ermrest_acl import GROUPS, initialize_policies
 
 catalog_wide_annotation_tags = [tag["generated"], tag["immutable"], tag["non_deletable"], tag["required"]]
 catalog_specific_annotation_tags = [tag["chaise_config"], tag["bulk_upload"], tag["column_defaults"], tag["display"]]
@@ -182,56 +182,26 @@ def get_navbar_menu(catalog_id):
                         {
                             "name": "Hydroxyl Radical Foot Printing",
                             "children": [
-                                {
-                                    "name": "Ihm Hydroxyl Radical Fp Restraint",
-                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_hydroxyl_radical_fp_restraint"
-                                }
+                                { "name": "Ihm Hydroxyl Radical Fp Restraint", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_hydroxyl_radical_fp_restraint" }
                             ],
                         },
                         {
                             "name": "Input Data",
                             "children": [
-                                {
-                                    "name": "Ihm Dataset External Reference",
-                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_dataset_external_reference"
-                                },
-                                {
-                                    "name": "Ihm Dataset Group",
-                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_dataset_group"
-                                },
-                                {
-                                    "name": "Ihm Dataset Group Link",
-                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_dataset_group_link"
-                                },
-                                {
-                                    "name": "Ihm Dataset List",
-                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_dataset_list"
-                                },
-                                {
-                                    "name": "Ihm Dataset Related Db Reference",
-                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_dataset_related_db_reference"
-                                },
-                                {
-                                    "name": "Ihm External Files",
-                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_external_files"
-                                },
-                                {
-                                    "name": "Ihm External Reference Info",
-                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_external_reference_info"
-                                },
-                                {
-                                    "name": "Ihm Related Datasets",
-                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_related_datasets"
-                                }
+                                { "name": "Ihm Dataset External Reference", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_dataset_external_reference" },
+                                { "name": "Ihm Dataset Group", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_dataset_group" },
+                                { "name": "Ihm Dataset Group Link", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_dataset_group_link" },
+                                { "name": "Ihm Dataset List", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_dataset_list" },
+                                { "name": "Ihm Dataset Related Db Reference", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_dataset_related_db_reference" },
+                                { "name": "Ihm External Files", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_external_files" },
+                                { "name": "Ihm External Reference Info", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_external_reference_info" },
+                                { "name": "Ihm Related Datasets", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_related_datasets" }
                             ],
                         },
                         {
                             "name": "Localization Densities",
                             "children": [
-                                {
-                                    "name": "Ihm Localization Density Files",
-                                    "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_localization_density_files"
-                                }
+                                { "name": "Ihm Localization Density Files", "url": "/chaise/recordset/#"+catalog_id+"/PDB:ihm_localization_density_files" }
                             ],
                         },
                         {
@@ -520,10 +490,11 @@ def get_navbar_menu(catalog_id):
                 },
                 {
                     "name": "Vocabulary",
-                    "acls": {
-	                "show": ["https://auth.globus.org/0b98092c-3c41-11e9-a8c8-0ee7d80087ee", "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6"],
-	                "enable": ["https://auth.globus.org/0b98092c-3c41-11e9-a8c8-0ee7d80087ee", "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6"]
-                    },
+                    "acls": { "show": GROUPS["owners"] + GROUPS["entry-updaters"], "enable": GROUPS["owners"] + GROUPS["entry-updaters"] },
+                    #"acls": {
+	            #    "show": ["https://auth.globus.org/0b98092c-3c41-11e9-a8c8-0ee7d80087ee", "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6"],
+	            #    "enable": ["https://auth.globus.org/0b98092c-3c41-11e9-a8c8-0ee7d80087ee", "https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6"]
+                    #},
                     "children": [
                         {
                             "name": "Chem Comp",
@@ -1008,8 +979,8 @@ def get_navbar_menu(catalog_id):
             "name": "Chemical Components",                            
             "children": [
                 { "name": "Chem Comp", "url": "/chaise/recordset/#"+catalog_id+"/PDB:chem_comp" },
-                # -- dev
-                { "name": "IHM New Chem Comp", "url": "/chaise/recordset/#"+catalog_id+"/PDB:IHM_New_Chem_Comp" },
+                # -- dev # updaters only
+                { "name": "IHM New Chem Comp", "url": "/chaise/recordset/#"+catalog_id+"/PDB:IHM_New_Chem_Comp"},
                 # -- end dev
                 { "name": "Chem Comp Atom", "url": "/chaise/recordset/#"+catalog_id+"/PDB:chem_comp_atom" }
             ],
@@ -1252,22 +1223,6 @@ def print_isolated_tables(model):
                 print("<- out_only: %s:%s" % (table.schema.name, table.name))
             
 
-# -- ------------------------------------------------------------------------
-# -- clear schema, table, columns with certain tags
-def x_clear_catalog_wide_annotations(model):
-    for schema in model.schemas.values():
-        s_tags = list(schema.annotations.keys()).copy()
-        for tag in s_tags:
-            if tag in catalog_wide_annotation_tags: schema.annotations.pop(tag, None)
-        for table in schema.tables.values():
-            t_tags = list(table.annotations.keys()).copy()
-            for tag in t_tags:
-                if tag in catalog_wide_annotation_tags: table.annotations.pop(tag, None)
-            for column in table.columns:
-                c_tags = list(column.annotations.keys()).copy()
-                for tag in c_tags:
-                    if tag in catalog_wide_annotation_tags: column.annotations.pop(tag, None)
-
 # -- ---------------------------------------------------------------------------------
 def remove_catalog_generated(model):
 
@@ -1291,7 +1246,8 @@ def update_catalog_wide_annotations(model):
 # -- ---------------------------------------------------------------------------------
 # catalog annotation
 def update_catalog_annotations(model):
-
+    initialize_policies(model.catalog)
+    
     chaise_config = get_chaise_config(model.catalog.catalog_id)
     model.annotations[tag["chaise_config"]] = chaise_config
     bulk_upload.update_bulk_upload_annotations(model)

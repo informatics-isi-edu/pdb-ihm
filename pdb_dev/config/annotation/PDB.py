@@ -832,26 +832,26 @@ def update_PDB_IHM_New_Chem_Comp(model):
         'name_style' : { 'title_case' : False, 'underline_space' : True, },
     })
 
-    schema.tables["entry"].source_definitions.update({
+    table.source_definitions.update({
+        'columns' :  True,        
         'fkeys' :  [],
-        'columns' :  True,
         'sources' : {
             'chem_comp_type_fkey' : {
-                'source' : [{'outbound': ['Vocab', 'IHM_New_Chem_Comp_Type_fkey']}, 'RID'],
+                'source' : [{'outbound': ['PDB', 'IHM_New_Chem_Comp_Type_fkey']}, 'RID'],
                 'comment' : 'Type of chemical component',
             },
-            'pdbx_release_status_fkey' : {
-                'source' : [{'outbound': ['Vocab', 'IHM_New_Chem_Comp_pdbx_release_status_fkey']}, 'RID'],
+            'pdbx_release_status_fkey' : { 
+                'source' : [{'outbound': ['PDB', 'IHM_New_Chem_Comp_pdbx_release_status_fkey']}, 'RID'],
                 'comment' : 'Current release status of the chemical component',
                 'markdown_name' : 'PDBx Release Status',
             },
             'pdbx_processing_site_fkey' : {
-                'source' : [{'outbound': ['Vocab', 'IHM_New_Chem_Comp_pdbx_processing_site_fkey']}, 'RID'],
+                'source' : [{'outbound': ['PDB', 'IHM_New_Chem_Comp_pdbx_processing_site_fkey']}, 'RID'],
                 'comment' : 'Deposition site that processed this chemical component definition',
                 'markdown_name' : 'PDBx Processing Site',
             },
             'created_for_fkey' : {
-                'source' : [{'outbound': ['Vocab', 'IHM_New_Chem_Comp_Created_For_fkey']}, 'RID'],
+                'source' : [{'outbound': ['PDB', 'IHM_New_Chem_Comp_Created_For_fkey']}, 'RID'],
                 'comment' : 'Resource for which the chemical component definition was created for',
                 'markdown_name' : 'Created For',
             },
@@ -869,7 +869,7 @@ def update_PDB_IHM_New_Chem_Comp(model):
     })
 
     # ----------------------------
-    schema.tables["IHM_New_Chem_Comp"].visible_columns.update({
+    table.visible_columns.update({
         '*' :  [
             'RID', 
             'comp_id',
@@ -1176,12 +1176,12 @@ def main(server_name, catalog_id, credentials, args):
 
     clear_schema_annotations(model, schema_name, per_schema_annotation_tags)
     update_PDB_annotations(model)
-    return
+    
     if args.post_print:
         print_schema_annotations(model, schema_name)
-
+    
     if not args.dry_run:
-        #model.apply()
+        model.apply()
         pass
 
 
