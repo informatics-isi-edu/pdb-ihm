@@ -30,7 +30,7 @@ import logging.handlers
 from deriva.core import init_logging, get_credential
 from ...utils.shared import PDBDEV_CLI, cfg
 from .entry_processor import EntryProcessor
-
+from .shared import test_logging
 
 FORMAT = '%(asctime)s: %(levelname)s <%(module)s>: %(message)s'
 logger = logging.getLogger(__name__)
@@ -154,11 +154,13 @@ def load(config_filename, args):
     if not tables_groups or not os.path.isfile(tables_groups):
         raise ConfigError('tables_groups file must be provided and exist.')
     config['tables_groups'] = tables_groups
-    
-    optional_fk_file = conf.get('optional_fk_file', None)
-    if not optional_fk_file or not os.path.isfile(optional_fk_file):
-        raise ConfigError('optional_fk_file file must be provided and exist.')
-    config['optional_fk_file'] = optional_fk_file
+
+    # Deprecated. Replace by python function that dynimically create this config
+    if False:
+        optional_fk_file = conf.get('optional_fk_file', None)
+        if not optional_fk_file or not os.path.isfile(optional_fk_file):
+            raise ConfigError('optional_fk_file file must be provided and exist.')
+        config['optional_fk_file'] = optional_fk_file
 
     CifCheck = conf.get('CifCheck', None)
     if not CifCheck or not os.path.isfile(CifCheck):
@@ -198,12 +200,14 @@ def load(config_filename, args):
         raise ConfigError('export_order_by file must be provided and exist.')
     export_order_by = json.load(open(export_order_by_file))
     config['export_order_by'] = export_order_by
-    
-    combo1_columns_file = conf.get('combo1_columns', None)
-    if not combo1_columns_file or not os.path.isfile(combo1_columns_file):
-        raise ConfigError('combo1_columns file must be provided and exist.')
-    combo1_columns = json.load(open(combo1_columns_file))
-    config['combo1_columns'] = combo1_columns
+
+    # Deprecated. Replace by python function that dynimically create this config    
+    if False:
+        combo1_columns_file = conf.get('combo1_columns', None)
+        if not combo1_columns_file or not os.path.isfile(combo1_columns_file):
+            raise ConfigError('combo1_columns file must be provided and exist.')
+        combo1_columns = json.load(open(combo1_columns_file))
+        config['combo1_columns'] = combo1_columns
     
     mmCIF_defaults = conf.get('mmCIF_defaults', None)
     if not mmCIF_defaults or not os.path.isfile(mmCIF_defaults):
@@ -216,8 +220,10 @@ def load(config_filename, args):
         raise ConfigError('vocab_ucode file must be provided and exist.')
     vocab_ucode = json.load(open(vocab_ucode))
     config['vocab_ucode'] = vocab_ucode
+
+    # Deprecated.
+    #config['mmCIF_Schema_Version'] = conf.get('mmCIF_Schema_Version', '1.0')  
     
-    config['mmCIF_Schema_Version'] = conf.get('mmCIF_Schema_Version', '1.0')
     hatrac_namespace = conf.get('hatrac_namespace', None)
     if hatrac_namespace == None:
         hatrac_namespace = 'hatrac/pdb'

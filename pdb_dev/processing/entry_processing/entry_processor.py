@@ -46,7 +46,7 @@ from deriva.core.utils.core_utils import DEFAULT_CHUNK_SIZE
 from deriva.core.datapath import DataPathException
 
 from deriva.utils.extras.data import insert_if_not_exist, update_table_rows, delete_table_rows, get_ermrest_query
-from .mmcif_utils import get_mmcif_rid_optional_fkeys, print_restraint_table_fkeys, get_mmcif_rid_mandatory_fkeys
+from .mmcif_utils import get_mmcif_rid_optional_fkeys, print_restraint_table_fkeys, get_mmcif_rid_mandatory_fkeys, get_legacy_combo1_columns, get_legacy_optional_fks
 #from ...utils.shared import PDBDEV_CLI, DCCTX
 from pdb_dev.utils.shared import PDBDEV_CLI, DCCTX
 from pdb_dev.processing.processor import PipelineProcessor, ProcessingError, ErmrestError, ErmrestUpdateError, FileError
@@ -112,7 +112,12 @@ Process_Status_Terms = {
     'ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES': 'Error: processing uploaded restraint files'
     }
 
-
+"""
+TODO:
+1) replace self.entry with ReferencedBy API to get a list of tables that point to entry
+2) replace combo1_columns.json with expected json structure
+3) replace optional_fk_file with expected json structure 
+"""
 class EntryProcessor(PipelineProcessor):
     """Network client for PDB entry processing.
     """
@@ -127,16 +132,16 @@ class EntryProcessor(PipelineProcessor):
     def __init__(self, **kwargs):
         self.action = kwargs.get("action")
         self.rid = kwargs.get("rid")
-        self.mmCIF_defaults = kwargs.get("mmCIF_defaults")
+        self.mmCIF_defaults = kwargs.get("mmCIF_defaults")     # TODO: generate directly
         self.vocab_ucode = kwargs.get("vocab_ucode")
         self.make_mmCIF = kwargs.get("make_mmCIF")
-        self.mmCIF_Schema_Version = kwargs.get("mmCIF_Schema_Version")
+        #self.mmCIF_Schema_Version = kwargs.get("mmCIF_Schema_Version")  # deprecated -- replace by Supported_Dictionary
         self.tables_groups = kwargs.get("tables_groups")
-        self.export_tables = kwargs.get("export_tables")
-        self.optional_fk_file = kwargs.get("optional_fk_file")
-        self.cif_tables = kwargs.get("cif_tables")
+        self.export_tables = kwargs.get("export_tables")        # tables from ermrest to be exported
+        self.cif_tables = kwargs.get("cif_tables")              # tables from submited files to be exported
         self.export_order_by = kwargs.get("export_order_by")
-        self.combo1_columns = kwargs.get("combo1_columns")
+        #self.combo1_columns = kwargs.get("combo1_columns")     # deprecated
+        #self.optional_fk_file = kwargs.get("optional_fk_file") # deprecated
         self.dictSdb = kwargs.get("dictSdb")
         self.entry = kwargs.get("entry")
         self.hatrac_namespace = kwargs.get("hatrac_namespace")
@@ -156,6 +161,9 @@ class EntryProcessor(PipelineProcessor):
         
         super().__init__(hostname=kwargs.get("hostname"), catalog_id=kwargs.get("catalog_id"), credentials = kwargs.get("credentials"),
                          cfg=kwargs.get("cfg"))
+
+        self.combo1_columns = get_legacy_combo1_columns(catalog)
+        self.optional_fks = get_legacy_optional_fks(catalog)
         
         self.is_catalog_dev = True if self.catalog_id in catalog_dev_number else False
         self.logger = kwargs.get("logger")
@@ -163,6 +171,7 @@ class EntryProcessor(PipelineProcessor):
         if kwargs.get("log_dir", None): self.log_dir = kwargs.get("log_dir")
         if kwargs.get("verbose", None): self.verbose = kwargs.get("verbose")
         if kwargs.get("notify", None): self.notify = kwargs.get("notify")
+        
 
     """
     Trace into the log_dir e.g. /home/pdbihm/log/trace.log file 
@@ -456,6 +465,8 @@ class EntryProcessor(PipelineProcessor):
                 return False
         
         def getColumnValue(table_name, column_name, column_type, column_value):
+            """ Format column value based on type; mostly to handle text
+            """
             if column_value == None:
                 return '.'
             if column_type in ['int4', 'float4']:
@@ -484,6 +495,8 @@ class EntryProcessor(PipelineProcessor):
                 return None
 
         def exportData(rid, user):
+            """ Export data from ermrest database
+            """
             try:
                 for table_name, table_body in tables.items():
                     pk = table_body['pkey_columns']
@@ -596,6 +609,8 @@ class EntryProcessor(PipelineProcessor):
                 return 1
 
         def exportCIF(rid, user):
+            """ Export data using user upload mmcif file
+            """
             fr = open(hatracFile, 'r')
             lines = fr.readlines()
             status = 'skip'
@@ -1009,7 +1024,7 @@ class EntryProcessor(PipelineProcessor):
             error_message = None
             currentDirectory=os.getcwd()
             os.chdir('{}'.format(self.make_mmCIF))
-            args = [self.python_bin, '-m', 'ihm.util.make_mmcif', filename, output_cif]
+            args = [self.python_bin, '-m', 'ihm.util.make_mmcif', '--histidines', filename, output_cif]
             self.logger.debug('Running "{}" from the {} directory'.format(' '.join(args), self.make_mmCIF)) 
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdoutdata, stderrdata = p.communicate()
@@ -1278,10 +1293,13 @@ class EntryProcessor(PipelineProcessor):
 
         """
         Read the JSON FK optional file
+        HT: use self.optional_fks which was dynamically created instead of reading from a file
         """
-        with open(self.optional_fk_file, 'r') as f:
-            optional_fks = json.load(f)
-
+        # legacy code
+        #with open(self.optional_fk_file, 'r') as f:
+        #    optional_fks = json.load(f)
+        
+        
         """
         Sort the tables based on the FK dependencies
         """
@@ -1318,7 +1336,7 @@ class EntryProcessor(PipelineProcessor):
                 if self.is_catalog_dev == True:
                     if tname == 'ihm_entity_poly_segment':
                         r = self.getUpdatedEntityPolySegment(r)
-                self.getUpdatedOptional(optional_fks, tname, r, entry_id)
+                self.getUpdatedOptional(self.optional_fks, tname, r, entry_id)
                 entities.append(r)
             
             self.logger.debug('Table {}, inserting {} rows'.format(tname, len(entities)))
@@ -1608,6 +1626,7 @@ class EntryProcessor(PipelineProcessor):
 
     """
     Get the record with the foreign key updated to the entry id.
+    TODO: This approach is fragile and make assumption about the size of fkey columns
     """
     def getUpdatedRecord(self, tname, row, entry_id, table, inserted_records, fk_tables):
         with open('{}'.format(self.entry), 'r') as f:
@@ -1730,7 +1749,7 @@ class EntryProcessor(PipelineProcessor):
 
     """
     Get the output.cif file from make_mmcif and put it in self.scratch directory
-     > python3 -m ihm.util.make_mmcif <input> <output>
+     > python3 -m ihm.util.make_mmcif --histidines <input> <output>
     HT TODO: replace output.cif with <rid>_output.cif
     """
     def getOutputCIF(self, rid, file_url, filename, user):
@@ -1761,7 +1780,7 @@ class EntryProcessor(PipelineProcessor):
             """
             Apply make_mmcif.py
             """
-            args = [self.python_bin, '-m', 'ihm.util.make_mmcif', filename, output_cif]
+            args = [self.python_bin, '-m', 'ihm.util.make_mmcif', '--histidines', filename, output_cif]
             self.logger.debug('Running "{}" from the {} directory'.format(' '.join(args), self.make_mmCIF)) 
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdoutdata, stderrdata = p.communicate()
@@ -2068,7 +2087,7 @@ class EntryProcessor(PipelineProcessor):
                        'Structure_Id': entry_id,
                        'Entry_RCB': entry_RCB,
                        'File_Type': 'mmCIF',
-                       'mmCIF_Schema_Version': urlquote(self.mmCIF_Schema_Version)
+                       #'mmCIF_Schema_Version': urlquote(self.mmCIF_Schema_Version)  # deprecated
                        }
                 if self.createEntity('PDB:Entry_Generated_File', row, rid, user) == None:
                     self.updateAttributes('PDB',

@@ -11,25 +11,25 @@ The following commands need to executed in order to generate the PDB backend con
 
 1. Generating the introspection of the **`entry`** table from the catalog **`1`**
 ```
-    python -m pdb_dev.config.app.get_catalog_model data.pdb-dev.org 1 display PDB:entry > catalog_1_display_entry.json
+    python -m pdb_dev.config.app.get_catalog_model data-dev.pdb-ihm.org 99 display PDB:entry > catalog_99_display_entry.json
 ```
 The output is the **`catalog_1_display_entry.json`** file.  
 
 2. Generating the tables dependencies
 ```
-python -m pdb_dev.config.app.get_tables_dependencies data.pdb-dev.org PDB tables_groups.json
+python -m pdb_dev.config.app.get_tables_dependencies data-dev.pdb-ihm.org 99 PDB tables_groups.json
 ```
 While loading the data, the Foreign Keys establish an order in which the tables will be loaded. The output **`tables_groups.json`** file has as keys a group number, 
 and the tables from the group **`n`** need to be loaded after the tables in the groups **`m`** where **`m < n`**. That is because it has foreign keys referring columns 
 from the tables in the **`m`** groups.
 
-3. Generating the constraints introspection (keys, foreign keys) of the catalog **`1`**
+3. Generating the constraints introspection (keys, foreign keys) of the catalog **`1`** (not include in pdb_config.json)
 ```
-python -m pdb_dev.config.app.get_catalog_model data.pdb-dev.org 1 display:constraints PDB > catalog_1_display_PDB_constraints.json
+python -m pdb_dev.config.app.get_catalog_model data-dev.pdb-ihm.org 99 display:constraints PDB > catalog_99_display_PDB_constraints.json
 ```
 The **`catalog_1_display_PDB_constraints.json`** file contains for each table the columns that are **`keys`**, **`foreign keys`** or **`referenced_by`**.
 
-4. Generating the optional foreign keys to the **`RID`** column
+4. ~Generating the optional foreign keys to the **`RID`** column~ (deprecated)
 ```
 python -m pdb_dev.config.app.get_optional_fk data.pdb-dev.org 1 catalog_1_display_PDB_constraints.json optional_fk.json
 ```
@@ -47,11 +47,11 @@ This config file contains the table names to be directly imported from the user-
 
 7. Generating the columns that have the **`.`** as a default value
 ```
-python -m pdb_dev.config.app.get_mmcif_defaults data.pdb-dev.org 1 PDB > mmCIF_defaults.json
+python -m pdb_dev.config.app.get_mmcif_defaults data-dev.pdb-ihm.org 99 PDB > mmCIF_defaults.json
 ```
 In case those columns don't have a value set by the user, the default value **`.`** will be used.
 
-8. Generating the **`combo1`** columns referring the **`RID`** column
+8. ~Generating the **`combo1`** columns referring the **`RID`** column~ (deprecated)
 ```
 python -m pdb_dev.config.app.get_columns_end_with_rid data.pdb-dev.org 1
 ```
@@ -59,7 +59,7 @@ The output is the **`combo1_columns.json`** file.
 
 9. Generating the vocabulary **`ucode`** columns
 ```
-python -m pdb_dev.config.app.get_ucode_all data.pdb-dev.org 1
+python -m pdb_dev.config.app.get_ucode_all data-ihm.pdb-dev.org 99 
 ```
 The script needs to have the [testGetUcode.py](https://github.com/informatics-isi-edu/protein-database/blob/master/scripts/dictionary-api/testGetUcode.py), 
 and from the `py-rcsb_db` package, the `py-rcsb_db/CACHE/dictionaries/mmcif_ihm_ext.dic` and `py-rcsb_db/CACHE/dictionaries/mmcif_ihm.dic` files.
@@ -69,7 +69,7 @@ The output **`vocab_ucode.json`** file contains the vocabulary columns whose val
 
 This config contains a list of column orders of composite primary keys to be exported in that order. 
 
-11. **exported_vocab.map**
+11. **exported_vocab.map** (not used)
 
 This is a data file. Currently is not used.
 
