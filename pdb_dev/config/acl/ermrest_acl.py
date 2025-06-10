@@ -165,6 +165,7 @@ def set_PDB_acl(model):
     set_PDB_Entry_Related_File(model)
     set_PDB_Entry_Related_File_Templates(model)    
     set_tables_curators_access_only(model)
+    set_tables_submitters_read(model)
 
     # -- apply add-on acls to all tables in schema
     # disable Owner columns
@@ -755,7 +756,7 @@ def set_tables_curators_access_only(model):
     Set ACLs for tables that only curators can access.
     """
     schema = model.schemas["PDB"]
-    for table_name in ["Data_Dictionary", "Supported_Dictionary", "Conform_Dictionary", "audit_conform", "IHM_New_Chem_Comp"]:
+    for table_name in ["Supported_Dictionary", "audit_conform", "IHM_New_Chem_Comp"]:
         if table_name not in schema.tables.keys(): continue
         print("  - set_tables_curators_access_only: %s" % (table_name))
         table = schema.tables[table_name]
@@ -763,6 +764,25 @@ def set_tables_curators_access_only(model):
         # use default schema ACLs (only entry-updaters can do anything to these tables)
 
     
+# -- ---------------------------------------------------------------------
+# "Data_Dictionary" and "Conform_Dictionary" are needed for users to see Conform Dict associated with
+# generated mmCIF files
+
+def set_tables_submitters_read(model):
+    """
+    Set ACLs for tables that allow submitters to read the content (similar to vocab tables)
+    """
+    schema = model.schemas["PDB"]
+    for table_name in ["Conform_Dictionary", "Data_Dictionary"]:
+        if table_name not in schema.tables.keys(): continue
+        print("  - set_tables_submitters_read: %s" % (table_name))
+        table = schema.tables[table_name]
+        clear_table_acls(table)
+        table.acls.update({
+            "select": g["entry-creators"],
+        })
+
+
 # -- ---------------------------------------------------------------------
 # Added on additional fkey policies in Entry_Related_File.
 # Do not clear the table since the rest of the policies are set in set_PDB_entry_related()
