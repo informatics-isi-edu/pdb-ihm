@@ -131,7 +131,7 @@ def define_tdoc_IHM_New_Chem_Comp():
                           on_delete="NO ACTION"
         ),
         ForeignKey.define(["pdbx_processing_site"], "Vocab", "chem_comp_pdbx_processing_site", ["Name"],
-                          constraint_names=[ ["Vocab", "IHM_New_Chem_Comp_pdbx_processing_fkey"] ],
+                          constraint_names=[ ["Vocab", "IHM_New_Chem_Comp_pdbx_processing_site_fkey"] ],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
