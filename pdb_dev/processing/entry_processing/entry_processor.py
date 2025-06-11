@@ -162,8 +162,8 @@ class EntryProcessor(PipelineProcessor):
         super().__init__(hostname=kwargs.get("hostname"), catalog_id=kwargs.get("catalog_id"), credentials = kwargs.get("credentials"),
                          cfg=kwargs.get("cfg"))
 
-        self.combo1_columns = get_legacy_combo1_columns(catalog)
-        self.optional_fks = get_legacy_optional_fks(catalog)
+        self.combo1_columns = get_legacy_combo1_columns(self.catalog)
+        self.optional_fks = get_legacy_optional_fks(self.catalog)
         
         self.is_catalog_dev = True if self.catalog_id in catalog_dev_number else False
         self.logger = kwargs.get("logger")

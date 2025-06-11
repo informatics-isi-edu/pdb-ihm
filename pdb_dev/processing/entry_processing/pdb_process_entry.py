@@ -30,7 +30,6 @@ import logging.handlers
 from deriva.core import init_logging, get_credential
 from ...utils.shared import PDBDEV_CLI, cfg
 from .entry_processor import EntryProcessor
-from .shared import test_logging
 
 FORMAT = '%(asctime)s: %(levelname)s <%(module)s>: %(message)s'
 logger = logging.getLogger(__name__)
