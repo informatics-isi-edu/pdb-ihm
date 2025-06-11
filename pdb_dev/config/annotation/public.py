@@ -25,7 +25,8 @@ def update_public_ERMrest_Client(model):
     })
     
     table.table_display.update({
-        'row_name' : '{{{Full_Name}}} ({{{Email}}})'
+        'row_name' : { 'row_markdown_pattern' : '{{{Full_Name}}}', },
+        'row_name/detailed' : { 'row_markdown_pattern' : '{{{Full_Name}}} {{#if Email}}({{{Email}}}){{/if}}', },
     })
 
 # -- ---------------------------------------------------------------------------------
@@ -34,7 +35,7 @@ def update_public_ERMrest_Group(model):
     table = schema.tables["ERMrest_Group"]
     
     table.table_display.update({
-        'row_name' : '{{{Display_Name}}}'
+        'row_name' : { 'row_markdown_pattern' : '{{{Display_Name}}}' }
     })
 
     

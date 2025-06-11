@@ -55,17 +55,20 @@ def update_PDB_entry(model):
         'fkeys' :  [],
         'columns' :  True,
         'sources' : {
-            'entry_RCB' : {
-                'entity' : True,
+            'entry_rcb_fkey' : {
                 'source' : [{'outbound': ['PDB', 'entry_RCB_fkey']}, 'RID'],
-                #'display' : { 'template_engine' : 'handlebars', 'markdown_pattern' : '{{{$self.values.Full_Name}}} ({{{$self.values.Email}}})', },
-                #'markdown_name' : 'Created By',
+                'markdown_name' : 'Created By',                
             },
-            'entry_RMB' : {
-                'entity' : True,
+            'entry_rmb_fkey' : {
                 'source' : [{'outbound': ['PDB', 'entry_RMB_fkey']}, 'RID'],
-                #'display' : { 'template_engine' : 'handlebars', 'markdown_pattern' : '{{{$self.values.Full_Name}}} ({{{$self.values.Email}}})', },
-                #'markdown_name' : 'Modified By',
+                'markdown_name' : 'Modified By',
+            },
+            'entry_error_file_fkey': {
+                'entity' : True,
+                'source' : [{'inbound': ['PDB', 'Entry_Error_File_Entry_RID_fkey']}, 'RID'],
+                'display' : { 'markdown_pattern' : '{{#if _Record_Status_Detail}}{{{Record_Status_Detail}}}\n{{#each $self}}- [{{{this.rowName}}}]({{{this.uri.detailed}}}) \n{{/each}}{{/if}}'  },
+                'aggregate' : 'array_d',
+                'markdown_name' : 'Record Status Detail',
             },
             'molstar_image' : {
                 'entity' : True,
@@ -84,18 +87,12 @@ def update_PDB_entry(model):
             'Image_File_URL', 
             ['PDB', 'entry_Accession_Code_fkey'], 
             ['PDB', 'entry_Workflow_Status_fkey'], 
-            'Process_Status', 
-            {
-                'entity' : True,
-                'source' : [{'inbound': ['PDB', 'Entry_Error_File_Entry_RID_fkey']}, 'RID'],
-                'display' : {'template_engine' : 'handlebars', 'markdown_pattern' : '{{#if _Record_Status_Detail}}{{{Record_Status_Detail}}}\n{{#each $self}}- [{{{this.rowName}}}]({{{this.uri.detailed}}}) \n{{/each}}{{/if}}',  },
-                'aggregate' : 'array_d',
-                'markdown_name' : 'Record Status Detail',
-            },
+            'Process_Status',
+            { 'sourcekey': 'entry_error_file_fkey', },            
             {
                 'entity' : True,
                 'source' : [{'inbound': ['PDB', 'Entry_Generated_File_Structure_Id_fkey']}, 'RID'],
-                'display' : {'template_engine' : 'handlebars', 'markdown_pattern' : '{{#each $self}}- {{{this.rowName}}} \n{{/each}}',  },
+                'display' : {'markdown_pattern' : '{{#each $self}}- {{{this.rowName}}} \n{{/each}}',  },
                 'aggregate' : 'array_d',
                 'markdown_name' : 'System Generated Files',
             },
@@ -104,12 +101,37 @@ def update_PDB_entry(model):
             'Method_Details', 
             'New_Chem_Comp_Pending', 
             'Manual_Processing',
-            { 'sourcekey': 'entry_RCB', },
-            { 'sourcekey': 'entry_RMB', },
-            #{ 'source' : [{'outbound': ['PDB', 'entry_RCB_fkey']}, 'Full_Name'], 'markdown_name' : 'RCB',  },
-            #{ 'source' : [{'outbound': ['PDB', 'entry_RMB_fkey']}, 'Full_Name'], 'markdown_name' : 'RMB',  },
+            { 'sourcekey': 'entry_rcb_fkey', },
+            { 'sourcekey': 'entry_rmb_fkey', },
             'RCT', 
             'RMT', 
+        ],
+        'detailed' :  [
+            'RID', 
+            'id', 
+            { 'sourcekey' : 'entry_rcb_fkey' },
+            { 'sourcekey' : 'entry_rmb_fkey' },            
+            'mmCIF_File_URL', 
+            { 'source' : 'mmCIF_File_Bytes', 'markdown_name' : 'mmCIF File Size',  },
+            'Image_File_URL', 
+            { 'source' : 'Image_File_Bytes', 'markdown_name' : 'Image File Size',  },
+            ['PDB', 'entry_Accession_Code_fkey'], 
+            ['PDB', 'entry_Workflow_Status_fkey'], 
+            'Process_Status',
+            { 'sourcekey' : 'entry_error_file_fkey'  },                        
+            'Deposit_Date', 
+            'Release_Date', 
+            'Method_Details', 
+            'Submitter_Flag', 
+            'Submitter_Flag_Date', 
+            'New_Chem_Comp_Pending', 
+            'Manual_Processing', 
+            'Notes',
+            {
+                'display' : {
+                    'wait_for': ['molstar_image'],
+                    'markdown_pattern': '{{#if (or (eq Workflow_Status "mmCIF CREATED") (eq Workflow_Status "SUBMISSION COMPLETE") (eq Workflow_Status "HOLD") (eq Workflow_Status "REL") (eq Workflow_Status "REL"))}} {{#each molstar_image}}::: iframe [](/molstar/embedded.html?url={{this.values.File_URL}}){style="min-width:800px; min-height:700px; height:70vh;" class=chaise-autofill  } \n :::{{/each}}{{else}}Not Available{{/if}}'},
+                'markdown_name' : '3D Visualization',  },
         ],
         'entry' :  [
             'mmCIF_File_URL', 
@@ -143,8 +165,7 @@ def update_PDB_entry(model):
                     'hide_not_null_choice' : False,
                 },
                 {
-                    'source' : [{'outbound': ['PDB', 'entry_RCB_fkey']}, 'Full_Name'],
-                    'markdown_name' : 'Created By',
+                    'sourcekey': 'entry_rcb_fkey',
                     'hide_null_choice' : True,
                     'hide_not_null_choice' : True,
                 },
@@ -164,35 +185,6 @@ def update_PDB_entry(model):
                 { 'source' : 'Manual_Processing', 'markdown_name' : 'Manual Processing',  },
             ],
         },
-        'detailed' :  [
-            'RID', 
-            'id', 
-            { 'sourcekey' : 'entry_RCB',  },
-            { 'source' : [{'outbound': ['PDB', 'entry_RMB_fkey']}, 'Full_Name'], 'markdown_name' : 'RMB',  },
-            'mmCIF_File_URL', 
-            { 'source' : 'mmCIF_File_Bytes', 'markdown_name' : 'mmCIF File Size (Bytes)',  },
-            'Image_File_URL', 
-            { 'source' : 'Image_File_Bytes', 'markdown_name' : 'Image File Size (Bytes)',  },
-            ['PDB', 'entry_Accession_Code_fkey'], 
-            ['PDB', 'entry_Workflow_Status_fkey'], 
-            'Process_Status', 
-            {
-                'entity' : True,
-                'source' : [{'inbound': ['PDB', 'Entry_Error_File_Entry_RID_fkey']}, 'RID'],
-                'display' : {'template_engine' : 'handlebars', 'markdown_pattern' : '{{#if _Record_Status_Detail}}{{{Record_Status_Detail}}}\n{{#each $self}}- [{{{this.rowName}}}]({{{this.uri.detailed}}}) \n{{/each}}{{/if}}',  },
-                'aggregate' : 'array_d',
-                'markdown_name' : 'Record Status Detail',
-            },
-            'Deposit_Date', 
-            'Release_Date', 
-            'Method_Details', 
-            'Submitter_Flag', 
-            'Submitter_Flag_Date', 
-            'New_Chem_Comp_Pending', 
-            'Manual_Processing', 
-            'Notes', 
-            { 'display' : {'wait_for': ['molstar_image'], 'template_engine': 'handlebars', 'markdown_pattern': '{{#if (or (eq Workflow_Status "mmCIF CREATED") (eq Workflow_Status "SUBMISSION COMPLETE") (eq Workflow_Status "HOLD") (eq Workflow_Status "REL") (eq Workflow_Status "REL"))}} {{#each molstar_image}}::: iframe [](/molstar/embedded.html?url={{this.values.File_URL}}){style="min-width:800px; min-height:700px; height:70vh;" class=chaise-autofill  } \n :::{{/each}}{{else}}Not Available{{/if}}'}, 'markdown_name' : '3D Visualization',  },
-        ],
         'export/compact' :  [
             'RID', 
             'id', 
@@ -360,6 +352,16 @@ def update_PDB_entry(model):
 def update_PDB_Accession_Code(model):
     schema = model.schemas["PDB"]
     table = schema.tables["Accession_Code"]
+
+    table.source_definitions.update({
+        'fkeys' :  [],
+        'columns' :  True,
+        'sources' : {
+            'entry_rcb_fkey' : { 'source': [{'outbound': ['PDB', 'Accession_Code_RCB_fkey']}, 'RID'], 'markdown_name' : 'Created By' },
+            'entry_rmb_fkey' : { 'source': [{'outbound': ['PDB', 'Accession_Code_RMB_fkey']}, 'RID'], 'markdown_name' : 'Modified By' },
+        },
+    })
+
     # ----------------------------
     schema.tables["Accession_Code"].visible_columns.update({
         '*' :  [
@@ -373,9 +375,9 @@ def update_PDB_Accession_Code(model):
             {'source' : [{'outbound': ['PDB', 'Accession_Code_Entry_fkey']}, 'RID'], 'markdown_name' : 'Entry', },
             {'source' : [{'outbound': ['PDB', 'Accession_Code_Entry_fkey']}, {'outbound': ['PDB', 'entry_Workflow_Status_fkey']}, 'Name'],
              'markdown_name' : 'Workflow Status', },
-            'Notes', 
-            {'source' : [{'outbound': ['PDB', 'Accession_Code_RCB_fkey']}, 'Full_Name'], 'markdown_name' : 'RCB', },
-            {'source' : [{'outbound': ['PDB', 'Accession_Code_RMB_fkey']}, 'Full_Name'], 'markdown_name' : 'RMB', },
+            'Notes',
+            { 'sourcekey': 'entry_rcb_fkey'},
+            { 'sourcekey': 'entry_rmb_fkey'},             
             'RCT', 
             'RMT', 
         ],
@@ -408,9 +410,9 @@ def update_PDB_Accession_Code(model):
             ],
         },
         'detailed' :  [
-            'RID', 
-            {'source' : [{'outbound': ['PDB', 'Accession_Code_RCB_fkey']}, 'Full_Name'], 'markdown_name' : 'RCB', },
-            {'source' : [{'outbound': ['PDB', 'Accession_Code_RMB_fkey']}, 'Full_Name'], 'markdown_name' : 'RMB', },
+            'RID',
+            { 'sourcekey': 'entry_rcb_fkey'},
+            { 'sourcekey': 'entry_rmb_fkey'},             
             'Accession_Serial', 
             'Accession_Code', 
             {'source' : 'PDBDEV_Accession_Code', 'markdown_name' : 'PDBDEV Accession Code', },
@@ -590,6 +592,7 @@ def update_PDB_Entry_Error_File(model):
 def update_PDB_Entry_Generated_File(model):
     schema = model.schemas["PDB"]
     table = schema.tables["Entry_Generated_File"]
+    
     # ----------------------------
     schema.tables["Entry_Generated_File"].display.update(
         {'name' : 'System Generated Files', 'comment_display' : {'*': {'table_comment_display': 'inline'}}, }
@@ -600,13 +603,12 @@ def update_PDB_Entry_Generated_File(model):
         'row_name' : { 'row_markdown_pattern' : '[{{{File_Name}}}]({{{File_URL}}})', },
     })
 
-    # ----------------------------
-    schema.tables["Entry_Generated_File"].visible_columns.update({
-        '*' :  [
-            'RID', 
-            'File_URL', 
-            ['PDB', 'Entry_Generated_File_System_Generated_File_Type_fkey'], 
-            {
+    # ----------------------------    
+    table.source_definitions.update({
+        'fkeys' :  [],
+        'columns' :  True,
+        'sources' : {
+            'conform_dict_agg' : {
                 'entity' : True,
                 'source' : [{'inbound': ['PDB', 'Conform_Dictionary_Entry_Generated_File_fkey']}, {'outbound': ['PDB', 'Conform_Dictionary_Data_Dictionary_fkey']}, 'RID'],
                 'display' : { 'array_ux_mode' : 'ulist', },
@@ -614,37 +616,35 @@ def update_PDB_Entry_Generated_File(model):
                 'array_options' : { 'order' : [{'column': 'Name', 'descending': False}, {'column': 'Version', 'descending': False}], },
                 'markdown_name' : 'Conform Dictionary',
             },
-            ['PDB', 'Entry_Generated_File_Structure_Id_fkey'], 
+        },
+    })
+    
+    # ----------------------------
+    schema.tables["Entry_Generated_File"].visible_columns.update({
+        '*' :  [
+            'RID',
+            ['PDB', 'Entry_Generated_File_Structure_Id_fkey'],             
+            'File_URL', 
+            ['PDB', 'Entry_Generated_File_System_Generated_File_Type_fkey'], 
+            { "sourcekey": "conform_dict_agg" },
             'RCT', 
             'RMT', 
         ],
         'entry' :  [
+            ['PDB', 'Entry_Generated_File_Structure_Id_Entry_RCB_fkey'], 
             'File_URL', 
             ['PDB', 'Entry_Generated_File_System_Generated_File_Type_fkey'], 
-            ['PDB', 'Entry_Generated_File_Structure_Id_Entry_RCB_fkey'], 
         ],
         'detailed' :  [
-            'RID', 
-            'File_URL', 
-            ['PDB', 'Entry_Generated_File_System_Generated_File_Type_fkey'], 
-            {
-                'entity' : True,
-                'source' : [{'inbound': ['PDB', 'Conform_Dictionary_Entry_Generated_File_fkey']}, {'outbound': ['PDB', 'Conform_Dictionary_Data_Dictionary_fkey']}, 'RID'],
-                'display' : { 'array_ux_mode' : 'ulist', },
-                'aggregate' : 'array_d',
-                'array_options' : { 'order' : [{'column': 'Name', 'descending': False}, {'column': 'Version', 'descending': False}], },
-                'markdown_name' : 'Conform Dictionary',
-            },
+            'RID',
             ['PDB', 'Entry_Generated_File_Structure_Id_fkey'], 
+            'File_URL', 
+            ['PDB', 'Entry_Generated_File_System_Generated_File_Type_fkey'],
+            { "sourcekey": "conform_dict_agg" },
             'File_Bytes', 
             'File_MD5', 
             'RCT', 
             'RMT', 
-        ],
-        'entry/edit' :  [
-            'File_URL', 
-            ['PDB', 'Entry_Generated_File_System_Generated_File_Type_fkey'], 
-            ['PDB', 'Entry_Generated_File_Structure_Id_Entry_RCB_fkey'], 
         ],
     })
 
@@ -730,6 +730,16 @@ def update_PDB_Entry_Related_File(model):
         {'name' : 'Uploaded Restraint Files', 'comment_display' : {'*': {'table_comment_display': 'inline'}}, }
     )
 
+    ''' # no rmb/rcb fkeys defined
+    table.source_definitions.update({
+        'fkeys' :  [],
+        'columns' :  True,
+        'sources' : {
+            'entry_rcb_fkey' : { 'source': [{'outbound': ['PDB', 'Entry_Related_File_RCB_fkey']}, 'RID'], 'markdown_name' : 'Created By' },
+            'entry_rmb_fkey' : { 'source': [{'outbound': ['PDB', 'Entry_Related_File_RMB_fkey']}, 'RID'], 'markdown_name' : 'Modified By' },
+        },
+    })
+    '''
     # ----------------------------
     schema.tables["Entry_Related_File"].visible_columns.update({
         '*' :  [
@@ -779,12 +789,12 @@ def update_PDB_Entry_Related_File(model):
 
     # ----------------------------
     schema.tables["Entry_Related_File"].foreign_keys[(schema,"Entry_Related_File_Restraint_Workflow_Status_fkey")].foreign_key.update({
-        'domain_filter_pattern' :  'Restraint_Status=True',
+        'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.pdb_submitters) }}Restraint_Submitter_Select=True{{else}}Restraint_Status=True{{/if}}',
     })
     
     # ----------------------------
     schema.tables["Entry_Related_File"].foreign_keys[(schema,"Entry_Related_File_Restraint_Process_Status_fkey")].foreign_key.update({
-        'domain_filter_pattern' :  'Restraint_Status=True',
+        'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.pdb_submitters) }}Restraint_Submitter_Select=True{{else}}Restraint_Status=True{{/if}}',        
     })
 
     
@@ -805,11 +815,6 @@ def update_PDB_Entry_Related_File_Templates(model):
             'File_URL', 
             'Description', 
         ],
-        #'entry' :  [
-        #    ['PDB', 'Entry_Template_File_File_Type_fkey'], 
-        #    'File_URL', 
-        #    'Description', 
-        #],
         'detailed' :  [
             'RID', 
             ['PDB', 'Entry_Template_File_File_Type_fkey'], 

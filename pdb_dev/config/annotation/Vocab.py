@@ -83,7 +83,12 @@ def update_Vocab_Process_Status(model):
             "Restraint_Status",
             "Entry_Submitter_Select",
             "Restraint_Submitter_Select",
-        ]
+        ],
+        "compact/select/foreign_key": [
+            "RID",
+            "Name",
+            "Description",
+        ],
     })
 
 # -- ---------------------------------------------------------------------------------
@@ -109,34 +114,11 @@ def update_Vocab_Workflow_Status(model):
             "Restraint_Submitter_Select",
             "RMT",            
         ],
-        #"entry": [
-        #    "RID",
-        #    "Name",
-        #    "Description",
-        #    "Rank",
-        #    "Restraint_Status",
-        #    "PDB_Submitter_Allow",
-        #],
-        #"detailed": [
-        #    "RID",
-        #    "Name",
-        #    "Description",
-        #    "Rank",
-        #    "Restraint_Status",
-        #    "PDB_Submitter_Allow",
-        #    "ID",
-        #    "URI",
-        #{
-        #    "source": [{ "outbound": ["Vocab", "workflow_status_RCB_fkey"] }, "Full_Name" ],
-        #    "markdown_name": "RCB"
-        #},
-        #{
-        #    "source": [{ "outbound": ["Vocab", "workflow_status_RMB_fkey"]}, "Full_Name" ],
-        #    "markdown_name": "RMB"
-        #},
-        #   "RCT",
-        #   "RMT",
-        #]
+        "compact/select/foreign_key": [
+            "RID",
+            "Name",
+            "Description",
+        ],
     })
 
     

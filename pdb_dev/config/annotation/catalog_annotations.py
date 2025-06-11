@@ -27,7 +27,6 @@ def get_chaise_config(catalog_id):
         "maxRecordsetRowHeight": 235,
         #"footerMarkdown": "[* Privacy policy](/privacy-policy){target='_blank'}",
         "exportServicePath": "/deriva/export",
-        "templating": {"engine": "handlebars"},
         "SystemColumnsDisplayCompact": ["RID"],
         "SystemColumnsDisplayDetailed": ["RID", "RCT", "RMT"],
         "SystemColumnsDisplayEntry": [],
@@ -37,6 +36,15 @@ def get_chaise_config(catalog_id):
 	"signUpURL": "https://app.globus.org/groups/99da042e-64a6-11ea-ad5f-0ef992ed7ca1/about",
         #"disableExternalLinkModal": True, # check this?
 	#"internaleHosts": ["github.com"],
+        "templating": {
+            "engine": "handlebars",
+            "site_var": {
+                "acl_groups": {
+                    "pdb_submitters": "https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1",
+                    #"isrd_testers": "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d",
+                }  
+            },
+        }
     }
     
     config.update(get_navbar_menu(catalog_id))        
@@ -1070,12 +1078,14 @@ def update_catalog_column_defaults(model):
             },
             "RCB": {
                 "tag:misd.isi.edu,2015:display": {
-                    "name": "Created By",
+                    "name": "RCB",
+                    "comment": "Created by",
                 },
             },
-            "RCB": {
+            "RMB": {
                 "tag:misd.isi.edu,2015:display": {
-                    "name": "Modifed By",
+                    "name": "RMB",
+                    "comment": "Modified by"                    
                 },
             },            
             "RCT": {
