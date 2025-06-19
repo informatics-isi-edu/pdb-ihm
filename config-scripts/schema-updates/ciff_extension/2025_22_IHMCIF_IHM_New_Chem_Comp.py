@@ -175,9 +175,9 @@ def update_PDB_ihm_cross_link_result(model):
                                         nullok=True
                                     ))
 
-    utils.create_foreign_key_if_not_exists(model, 'PDB', 'ihm_cross_link_result', 'ihm_cross_link_result_model_group_id_combo2_fkey',
+    utils.create_foreign_key_if_not_exists(model, 'PDB', 'ihm_cross_link_result', 'ihm_cross_link_result_model_group_combo2_fkey',
                                             ForeignKey.define(['Model_Group_RID', 'model_group_id'], 'PDB', 'ihm_model_group', ['RID', 'id'],
-                                              constraint_names=[ ['PDB', 'ihm_cross_link_result_model_group_id_combo2_fkey'] ],
+                                              constraint_names=[ ['PDB', 'ihm_cross_link_result_model_group_combo2_fkey'] ],
                                               on_update='CASCADE',
                                               on_delete='NO ACTION')
                                           )
@@ -194,12 +194,31 @@ def update_PDB_ihm_cross_link_result(model):
 
     utils.create_key_if_not_exists(model, 'PDB', 'ihm_ensemble_info', ['RID', 'ensemble_id'], 'ihm_ensemble_info_combo2_key')
 
-    utils.create_foreign_key_if_not_exists(model, 'PDB', 'ihm_cross_link_result', 'ihm_cross_link_result_ensemble_id_combo2_fkey',
+    utils.create_foreign_key_if_not_exists(model, 'PDB', 'ihm_cross_link_result', 'ihm_cross_link_result_ensemble_info_combo2_fkey',
                                             ForeignKey.define(['Ensemble_RID', 'ensemble_id'], 'PDB', 'ihm_ensemble_info', ['RID', 'ensemble_id'],
-                                              constraint_names=[ ['PDB', 'ihm_cross_link_result_ensemble_id_combo2_fkey'] ],
+                                              constraint_names=[ ['PDB', 'ihm_cross_link_result_ensemble_info_combo2_fkey'] ],
                                               on_update='CASCADE',
                                               on_delete='NO ACTION')
                                            )
+
+    utils.create_column_if_not_exist(model, 'PDB', 'ihm_cross_link_result',
+                                     Column.define(
+                                        'Restraint_RID',
+                                        builtin_types.text,
+                                        comment='Identifier to the crosslink restraint RID',
+                                        nullok=True
+                                    ))
+
+    utils.create_key_if_not_exists(model, 'PDB', 'ihm_cross_link_restraint', ['RID', 'id', 'structure_id'], 'ihm_cross_link_restraint_combo1_key')
+
+    utils.drop_fkey_if_exist(model, 'PDB', 'ihm_cross_link_result', 'ihm_cross_link_result_restraint_id_fkey')
+
+    utils.create_foreign_key_if_not_exists(model, 'PDB', 'ihm_cross_link_result', 'ihm_cross_link_result_cross_link_restraint_combo1_fkey',
+                                            ForeignKey.define(['Restraint_RID', 'restraint_id', 'structure_id'], 'PDB', 'ihm_cross_link_restraint', ['RID', 'id', 'structure_id'],
+                                              constraint_names=[ ['PDB', 'ihm_cross_link_result_cross_link_restraint_combo1_fkey'] ],
+                                              on_update='CASCADE',
+                                              on_delete='NO ACTION')
+                                          )
 
 def update_PDB_entry(model):
     utils.create_column_if_not_exist(model, 'PDB', 'entry',
@@ -275,6 +294,9 @@ def main(server_name, catalog_id, credentials):
     Create IHM_New_Chem_Comp table
     """
     utils.create_table_if_not_exist(model, 'PDB',  define_tdoc_IHM_New_Chem_Comp())
+
+    # To be applied after data is fixed in PDB:ihm_cross_link_result.Restraint_RID column
+    # utils.set_nullok_column_if_exists(model, 'PDB', 'ihm_cross_link_result', 'Restraint_RID', False)
 
 if __name__ == '__main__':
     args = BaseCLI("ad-hoc table creation tool", None, 1).parse_cli()
