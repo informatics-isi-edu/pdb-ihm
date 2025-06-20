@@ -1567,6 +1567,17 @@ class EntryProcessor(PipelineProcessor):
             key_cnames = pk_tables_constraint2keys[pk_tname][fkey.constraint_name]
             to_cname2from_cnames = pk_tables_to_cname2from_cnames[pk_tname][fkey.constraint_name]        
             key_from_cnames = [ to_cname2from_cnames[cname] for cname in key_cnames ]
+            # skip fkey if columns are not in mmcif or csv file
+            skip_fkey=False
+            for cname in key_from_cnames:  
+                if cname in headers: continue
+                if table.columns[cname].nullok:
+                    if self.verbose: print("missing optional fkey column: %s. Won't fill in RID column" % (cname))
+                    skip_fkey=True
+                    break
+                else:
+                    raise Exception("INPUT ERROR: table %s misses mandatory column %s" % (table.name, cname))
+            if skip_fkey: continue
             if self.verbose: print("filling fkey: %s : %s -> %s : %s" % (fkey.constraint_name, key_from_cnames, pk_tname, key_cnames))
             for row in payload:
                 pk_table_rows = pk_tables_key2rows[pk_tname][key_cnames]

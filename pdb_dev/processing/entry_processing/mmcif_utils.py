@@ -205,14 +205,14 @@ class PkTables(object):
     
     - convention:
       - cnames : column name,
-      - ctname: constraint name
+      - ctname: constraint name  
       - kcnames: key column names
-      - fk_ctname: fkey constraint names
+      - fk_ctname: fkey constraint names (referring to the fkey constraint pointing to the pk_table
     
     """
     
     # - create lookup tables based on keys used in fkey definition. The keys are sorted to get canonical key.
-    fk_ctname_to_cname2from_cnames: dict = {}   # to_cname2from_cname group by fkey constraint names 
+    fk_ctname_to_cname2from_cnames: dict = {}   # to_cname2from_cname group by inbould fkey constraint names to the pk_table
     fk_ctname2kcnames: dict = {}                # fkey constraint name to key cnames (without RID column)
     kcnames2fk_ctnames: dict = {}               # key cnames to fk constraint names
     kcnames_kcvals2rows: dict = {}              # key column values to row grouped by key cnames
@@ -333,7 +333,12 @@ class PkTables(object):
         update payload with RID columns
         Param table: table containing combo1/2 fkeys that needs to be managed        
         """
+        if not payload: return
+        
         combo_fkeys = get_mmcif_rid_optional_fkeys(table) + get_mmcif_rid_mandatory_fkeys(table)
+        
+        # not all columns in the model are in payload. Extract this to address optional column
+        headers = payload[0].keys()
         
         # -for each fkey, fill in corresponding RID column
         for fkey in combo_fkeys:
@@ -342,7 +347,17 @@ class PkTables(object):
             key_cnames = self.fk_ctname2knames[pk_tname][fkey.constraint_name]
             key_from_cnames = [ to_cname2from_cnames[cname] for cname in key_cnames ]
             rid_cname = to_cname2from_cnames["RID"]
-            
+            # skip filling in rid of this fkey if the columns are missing
+            skip_fkey = False
+            for cname in key_from_cnames:
+                if cname in headers: continue
+                if table.columns[cname].nullok:
+                    if self.verbose: print("missing optional fkey column: %s. Won't fill in RID column" % (cname))
+                    skip_fkey=True
+                    break
+                else:
+                    raise Exception("INPUT ERROR: table %s misses mandatory column %s" % (table.name, cname))
+            if skip_fkey: continue
             if self.verbose: print("filling fkey: %s : %s -> %s : %s" % (fkey.constraint_name, key_from_cnames, pk_tname, key_cnames))
             for row in payload:
                 kcvals2rows = self.kcnames_kcvals2rows[pk_tname][key_cnames]
