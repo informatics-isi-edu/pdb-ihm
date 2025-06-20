@@ -380,7 +380,18 @@ def set_PDB_entry(model):
             "submitters_read_own_entries": False,        
             "submitters_modify_based_on_workflow_status": False,
         })
-    
+
+    # -- ACL: submiters can create but not edit
+    cnames = ["Process_Status"]
+    for cname in cnames:
+        col = table.columns[cname]
+        col.acls.update({
+            "update": g["entry-updaters"],
+        })
+        col.acl_bindings.update({
+            "submitters_modify_based_on_workflow_status": False,
+        })
+        
     # ==== foreign keys =====
     
     # -- Workflow_Status/Process_Status: submitters can only choose status that they are allowed
@@ -392,7 +403,7 @@ def set_PDB_entry(model):
         fkey = table.foreign_keys[(schema, constraint_name)]
         fkey.acls.update({
             "insert": g["entry-updaters"],
-            "update": g["entry-updaters"],
+            "update": g["entry-updaters"],   # TODO: removed from Process_Status fkey
         })
         # set acl_binding policy name
         submitters_select_allowed = f"submitters_select_allowed_{status_name}" # eg submitters_select_allowed_workflow_status
@@ -459,7 +470,9 @@ def set_PDB_entry_related(model):
                                     { "filter": "Workflow_Status", "operator": "=", "operand": "DRAFT",  },
                                     { "filter": "Workflow_Status", "operator": "=", "operand": "DEPO", },
                                     { "filter": "Workflow_Status", "operator": "=", "operand": "RECORD READY", },
-                                    { "filter": "Workflow_Status", "operator": "=", "operand": "ERROR", }
+                                    { "filter": "Process_Status", "operator": "=", "operand": "Error: generating mmCIF file", },
+                                    { "filter": "Process_Status", "operator": "=", "operand": "Error: processing uploaded mmCIF file", },
+                                    { "filter": "Process_Status", "operator": "=", "operand": "Error: processing uploaded restraint files", }
                                 ]
                             },
                             "RCB"
@@ -495,7 +508,9 @@ def set_PDB_entry_related(model):
                                 { "filter": "Workflow_Status", "operator": "=", "operand": "DRAFT"  },
                                 { "filter": "Workflow_Status", "operator": "=", "operand": "DEPO" },
                                 { "filter": "Workflow_Status", "operator": "=", "operand": "RECORD READY" },
-                                { "filter": "Workflow_Status", "operator": "=", "operand": "ERROR" }
+                                { "filter": "Process_Status", "operator": "=", "operand": "Error: generating mmCIF file", },
+                                { "filter": "Process_Status", "operator": "=", "operand": "Error: processing uploaded mmCIF file", },
+                                { "filter": "Process_Status", "operator": "=", "operand": "Error: processing uploaded restraint files", }
                             ]},
                             "RCB",
                         ],
@@ -791,6 +806,19 @@ def set_PDB_Entry_Related_File(model):
     table = schema.tables["Entry_Related_File"]
 
     # == table acl and entry_fkey are set in set_pdb_entry_related()
+
+    # == column acl
+    
+    # -- ACL: submiters can create but not edit
+    cnames = ["Restraint_Process_Status"]
+    for cname in cnames:
+        col = table.columns[cname]
+        col.acls.update({
+            "update": g["entry-updaters"],
+        })
+        col.acl_bindings.update({
+            "submitters_modify_based_on_workflow_status": False,
+        })
 
     # == update restraint_workflow_status fkey
     # ACL details is controlled through database columns Submitter_Select and Entry_Related_File_Status in
