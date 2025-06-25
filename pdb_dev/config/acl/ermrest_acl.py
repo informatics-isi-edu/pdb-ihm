@@ -20,8 +20,9 @@ GROUPS = {
     "pdb-admins" : ["https://auth.globus.org/0b98092c-3c41-11e9-a8c8-0ee7d80087ee"],
     "pdb-curators" : ["https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6"],
     "pdb-submitters" : ["https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1"],
-    "pdb-writers" : ["https://auth.globus.org/c94a1e5c-3c40-11e9-a5d1-0aacc65bfe9a"],  # inactive    
-    "pdb-readers" : ["https://auth.globus.org/8875a770-3c40-11e9-a8c8-0ee7d80087ee"],  # inactive
+    "pdb-writers" : ["https://auth.globus.org/c94a1e5c-3c40-11e9-a5d1-0aacc65bfe9a"],  # inactive
+    #"pdb-readers_old": ["https://auth.globus.org/8875a770-3c40-11e9-a8c8-0ee7d80087ee"], # pdb-reader inactive    
+    "pdb-readers" : ["https://auth.globus.org/1531712d-512a-11f0-ae0a-0e8dfaec7d97"], # pdb-reader2
     "isrd-staff": ["https://auth.globus.org/176baec4-ed26-11e5-8e88-22000ab4b42b"],    
     "isrd-systems": ["https://auth.globus.org/3938e0d0-ed35-11e5-8641-22000ab4b42b"],
     "isrd-testers": ["https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"],
@@ -888,19 +889,23 @@ def set_ermrest_acl(catalog):
         #clear_table_acls(model.schemas["PDB"].tables["Entry_Related_File_Templates"])        
         set_PDB_Entry_Related_File_Templates(model)
         print_table_acls(model.schemas["PDB"].tables["Entry_Related_File_Templates"])
-        
+
     model.clear(clear_comment=False, clear_annotations=False, clear_acls=True, clear_acl_bindings=True)
 
     # -- catalog
     model.acls.update(ermrest_catalog_acls)
+    
     # -- schemas
     set_PDB_acl(model)
     set_Vocab_acl(model)        
     set_public_acl(model)
     set_WWW_acl(model)
-    # -- apply 
+    # -- apply
     model.apply()
 
+    #model = catalog.getCatalogModel()    
+    #print("after apply - catalog_acl: %s" % (json.dumps(model.acls, indent=4)))
+    
 # -- =================================================================================
         
 def main(server_name, catalog_id, credentials):

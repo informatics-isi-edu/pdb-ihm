@@ -994,25 +994,20 @@ def update_PDB_ihm_cross_link_result(model):
                 'comment' : 'A reference to table entry.id.',
                 'markdown_name' : 'Structure Id',
             },
-            'restraint_id_fkey': {
-                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_restraint_id_fkey']}, 'RID'],
+            'restraint_combo1_fkey': {
+                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_cross_link_restraint_combo1_fkey']}, 'RID'],
                 'comment' : 'A reference to table ihm_cross_link_restraint.id.',
                 'markdown_name' : 'Restraint Id',
             },
-            'model_group_id_fkey': { 
+            'model_group_combo2_fkey': { 
                 "comment": "An identifier for the group of structure models whose results are described",
                 "markdown_name": "Model Group Id",
-                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_model_group_id_combo2_fkey']}, 'RID'],
+                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_model_group_combo2_fkey']}, 'RID'],
             },
-            'ensemble_id_combo2_fkey': { 
+            'ensemble_info_combo2_fkey': { 
                 "comment": "A reference to table ihm_ensemble_info.ensemble_id.",
                 "markdown_name": "Ensemble Id",
-                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_ensemble_id_combo2_fkey']}, 'RID'],
-            },
-            'ensemble_id_fkey': {
-                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_ensemble_id_fkey']}, 'RID'],
-                'comment' : 'A reference to table ihm_ensemble_info.ensemble_id.',
-                'markdown_name' : 'Ensemble Id',
+                'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_ensemble_info_combo2_fkey']}, 'RID'],
             },
             'upload_restraint_file_fkey': {
                 'source' : [{'outbound': ['PDB', 'ihm_cross_link_result_Entry_Related_File_fkey']}, 'RID'],
@@ -1028,9 +1023,9 @@ def update_PDB_ihm_cross_link_result(model):
             'RID',
             { "sourcekey": 'structure_id_fkey' },
             'id',
-            { "sourcekey": 'restraint_id_fkey' },
-            { "sourcekey": 'model_group_id_fkey' },
-            { "sourcekey": 'ensemble_id_combo2_fkey' },                                    
+            { "sourcekey": 'restraint_combo1_fkey' },
+            { "sourcekey": 'model_group_combo2_fkey' },
+            { "sourcekey": 'ensemble_info_combo2_fkey' },                                    
             'num_models', 
             'distance_threshold', 
             'median_distance', 
@@ -1040,9 +1035,9 @@ def update_PDB_ihm_cross_link_result(model):
         'entry' :  [
             { "sourcekey": 'structure_id_fkey' },
             'id',
-            { "sourcekey": 'restraint_id_fkey' },
-            { "sourcekey": 'model_group_id_fkey' },
-            { "sourcekey": 'ensemble_id_combo2_fkey' },                                    
+            { "sourcekey": 'restraint_combo1_fkey' },
+            { "sourcekey": 'model_group_combo2_fkey' },
+            { "sourcekey": 'ensemble_info_combo2_fkey' },
             'num_models', 
             'distance_threshold', 
             'median_distance', 
@@ -1052,9 +1047,9 @@ def update_PDB_ihm_cross_link_result(model):
             'RID',
             { "sourcekey": 'structure_id_fkey' },
             'id',
-            { "sourcekey": 'restraint_id_fkey' },
-            { "sourcekey": 'model_group_id_fkey' },
-            { "sourcekey": 'ensemble_id_combo2_fkey' },                                    
+            { "sourcekey": 'restraint_combo1_fkey' },
+            { "sourcekey": 'model_group_combo2_fkey' },
+            { "sourcekey": 'ensemble_info_combo2_fkey' },
             'num_models', 
             'distance_threshold', 
             'median_distance', 
@@ -1073,17 +1068,18 @@ def update_PDB_ihm_cross_link_result(model):
     )
 
     # ----------------------------
-    schema.tables["ihm_cross_link_result"].foreign_keys[(schema,"ihm_cross_link_result_restraint_id_fkey")].foreign_key.update({
+    schema.tables["ihm_cross_link_result"].foreign_keys[(schema,"ihm_cross_link_result_cross_link_restraint_combo1_fkey")].foreign_key.update({
         'domain_filter_pattern' :  'structure_id={{structure_id}}',
     })
 
     # ----------------------------
-    if (schema,"ihm_cross_link_result_ensemble_id_fkey") in table.foreign_keys.elements:
-        table.foreign_keys[(schema,"ihm_cross_link_result_ensemble_id_fkey")].foreign_key.update({
+    if (schema,"ihm_cross_link_result_ensemble_info_combo2_fkey") in table.foreign_keys.elements:
+        table.foreign_keys[(schema,"ihm_cross_link_result_ensemble_info_combo2_fkey")].foreign_key.update({
             'domain_filter_pattern' :  'structure_id={{structure_id}}',
         })
-    if (schema,"ihm_cross_link_result_ensemble_id_combo2_fkey") in table.foreign_keys.elements:
-        table.foreign_keys[(schema,"ihm_cross_link_result_ensemble_id_combo2_fkey")].foreign_key.update({
+        
+    if (schema,"ihm_cross_link_result_model_group_combo2_fkey") in table.foreign_keys.elements:
+        table.foreign_keys[(schema,"ihm_cross_link_result_model_group_combo2_fkey")].foreign_key.update({
             'domain_filter_pattern' :  'structure_id={{structure_id}}',
         })
     

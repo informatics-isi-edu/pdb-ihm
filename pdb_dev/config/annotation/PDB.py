@@ -146,7 +146,8 @@ def update_PDB_entry(model):
             'mmCIF_File_URL', 
             'Image_File_URL', 
             ['PDB', 'entry_Workflow_Status_fkey'],
-            'Method_Details', 
+            'Method_Details',
+            ['PDB', 'entry_Process_Status_fkey'],
             'Deposit_Date', 
             'Release_Date', 
             'Submitter_Flag', 
@@ -154,7 +155,6 @@ def update_PDB_entry(model):
             'New_Chem_Comp_Pending', 
             'Manual_Processing', 
             'Notes',
-            ['PDB', 'entry_Process_Status_fkey'],
         ],
         'filter' :  {
             'and' :  [
@@ -344,6 +344,19 @@ def update_PDB_entry(model):
     schema.tables["entry"].columns["Method_Details"].display.update(
         {'name' : 'User Provided Method Details', }
     )
+
+    """
+    # TODO: uncomment for production
+    # ----------------------------
+    schema.tables["entry"].foreign_keys[(schema,"entry_Workflow_Status_fkey")].foreign_key.update({
+        'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.pdb_submitters) }}Entry_Submitter_Select=True{{/if}}',
+    })
+    
+    # ----------------------------
+    schema.tables["entry"].foreign_keys[(schema,"entry_Process_Status_fkey")].foreign_key.update({
+        'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.pdb_submitters) }}Entry_Submitter_Select=True{{/if}}',        
+    })
+    """
 
     
 # -- ==================================================================================================
@@ -664,7 +677,10 @@ def update_PDB_Entry_Latest_Archive(model):
     schema = model.schemas["PDB"]
     table = schema.tables["Entry_Latest_Archive"]
 
- 
+    table.table_display.update({
+        'compact' : { 'row_order' : [{'column': 'RCT', 'descending': True}], },
+    })
+    
     # ----------------------------
     schema.tables["Entry_Latest_Archive"].visible_columns.update({
         '*' :  [
@@ -687,11 +703,11 @@ def update_PDB_Entry_Latest_Archive(model):
             {'source' : [{'outbound': ['PDB', 'Entry_Latest_Archive_Entry_fkey']}, 'RID'], 'markdown_name' : 'Entry', },
             {'source' : [{'outbound': ['PDB', 'Entry_Latest_Archive_Archive_Submission_Time_fkey']}, 'RID'], 'markdown_name' : 'Archive', },
         ],
-        'filter' :  {
-            'and' :  [
-                {'source' : 'Submission_Time', 'markdown_name' : 'Submission Date', },
-            ],
-        },
+        #'filter' :  {
+        #    'and' :  [
+        #        {'source' : 'Submission_Time', 'markdown_name' : 'Submission Date', },
+        #    ],
+        #},
         'detailed' :  [
             'RID', 
             'Submission_Time', 
@@ -761,7 +777,8 @@ def update_PDB_Entry_Related_File(model):
             ['PDB', 'Entry_Related_File_File_Format_fkey'],
             'File_URL',             
             'Description', 
-            ['PDB', 'Entry_Related_File_Restraint_Workflow_Status_fkey'], 
+            ['PDB', 'Entry_Related_File_Restraint_Workflow_Status_fkey'],
+            ['PDB', 'Entry_Related_File_Restraint_Process_Status_fkey'],
         ],
         'detailed' :  [
             'RID', 
@@ -787,6 +804,7 @@ def update_PDB_Entry_Related_File(model):
         {'name' : 'Uploaded File', }
     )
 
+    """
     # ----------------------------
     schema.tables["Entry_Related_File"].foreign_keys[(schema,"Entry_Related_File_Restraint_Workflow_Status_fkey")].foreign_key.update({
         'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.pdb_submitters) }}Restraint_Submitter_Select=True{{else}}Restraint_Status=True{{/if}}',
@@ -796,7 +814,7 @@ def update_PDB_Entry_Related_File(model):
     schema.tables["Entry_Related_File"].foreign_keys[(schema,"Entry_Related_File_Restraint_Process_Status_fkey")].foreign_key.update({
         'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.pdb_submitters) }}Restraint_Submitter_Select=True{{else}}Restraint_Status=True{{/if}}',        
     })
-
+    """
     
 # -- -----------------------------------------------------------------------------
 def update_PDB_Entry_Related_File_Templates(model):
@@ -919,8 +937,14 @@ def update_PDB_PDB_Archive(model):
     schema = model.schemas["PDB"]
     table = schema.tables["PDB_Archive"]
 
+    
     table.display.update({
         'name_style' : { 'title_case' : False, 'underline_space' : True, },
+    })
+
+    # ----------------------------    
+    table.table_display.update({
+        'compact' : { 'row_order' : [{'column': 'Submission_Time', 'descending': True}], },
     })
     
     # ----------------------------
@@ -938,7 +962,8 @@ def update_PDB_PDB_Archive(model):
             'Re_Released_Entries', 
             'Current_File_Holdings_URL', 
             'Released_Structures_LMD_URL', 
-            'Unreleased_Entries_URL', 
+            'Unreleased_Entries_URL',
+            'Notes',
             {'source' : [{'outbound': ['PDB', 'PDB_Archive_RCB_fkey']}, 'Full_Name'], 'markdown_name' : 'RCB', },
             {'source' : [{'outbound': ['PDB', 'PDB_Archive_RMB_fkey']}, 'Full_Name'], 'markdown_name' : 'RMB', },
             'RCT', 
@@ -956,6 +981,7 @@ def update_PDB_PDB_Archive(model):
             {'source' : 'Released_Structures_LMD_Bytes', 'markdown_name' : 'Released Structures LMD Size', },
             'Unreleased_Entries_URL', 
             {'source' : 'Unreleased_Entries_Bytes', 'markdown_name' : 'Unreleased Entries Bytes Size', },
+            'Notes',
             {'source' : [{'outbound': ['PDB', 'PDB_Archive_RCB_fkey']}, 'Full_Name'], 'markdown_name' : 'RCB', },
             {'source' : [{'outbound': ['PDB', 'PDB_Archive_RMB_fkey']}, 'Full_Name'], 'markdown_name' : 'RMB', },
         ],
@@ -967,7 +993,8 @@ def update_PDB_PDB_Archive(model):
             'Re_Released_Entries', 
             'Current_File_Holdings_URL', 
             'Released_Structures_LMD_URL', 
-            'Unreleased_Entries_URL', 
+            'Unreleased_Entries_URL',
+            'Notes',
         ],
         'filter' :  {
             'and' :  [
@@ -977,15 +1004,6 @@ def update_PDB_PDB_Archive(model):
                 {'source' : 'Re_Released_Entries' },
             ],
         },
-        'entry/edit' :  [
-            'Submission_Time', 
-            'Submitted_Entries', 
-            'New_Released_Entries', 
-            'Re_Released_Entries', 
-            'Current_File_Holdings_URL', 
-            'Released_Structures_LMD_URL', 
-            'Unreleased_Entries_URL', 
-        ],
     })
 
     # ----------------------------
