@@ -346,14 +346,14 @@ def update_PDB_entry(model):
     )
 
     # ----------------------------
+    #'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.entry_updaters)}} {{else if (isUserInAcl $site_var.acl_groups.entry_submitters)}}Entry_Submitter_Select=True{{/if}}',  # doesn't work
     schema.tables["entry"].foreign_keys[(schema,"entry_Workflow_Status_fkey")].foreign_key.update({
-        #'domain_filter_pattern' :  '{{#if (and (not (isUserInAcl $site_var.acl_groups.updaters)) (isUserInAcl $site_var.acl_groups.entry_submitters) )}}Entry_Submitter_Select=True{{/if}}',
-        'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.entry_updaters){{else if (isUserInAcl $site_var.acl_groups.entry_submitters)}}Entry_Submitter_Select=True{{/if}}', 
+        'domain_filter_pattern' :  '{{#if (and (not (isUserInAcl $site_var.acl_groups.entry_updaters)) (isUserInAcl $site_var.acl_groups.entry_submitters) )}}Entry_Submitter_Select=True{{/if}}',
     })
     
     # ----------------------------
     schema.tables["entry"].foreign_keys[(schema,"entry_Process_Status_fkey")].foreign_key.update({
-        'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.entry_updaters){{else if (isUserInAcl $site_var.acl_groups.entry_submitters)}}Entry_Submitter_Select=True{{/if}}',
+        'domain_filter_pattern' :  '{{#if (and (not (isUserInAcl $site_var.acl_groups.entry_updaters)) (isUserInAcl $site_var.acl_groups.entry_submitters) )}}Entry_Submitter_Select=True{{/if}}',        
     })
 
     

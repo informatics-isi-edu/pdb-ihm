@@ -1092,8 +1092,6 @@ def update_catalog_column_defaults(model):
                 "tag:misd.isi.edu,2015:display": {
                     "name": "Creation Time",
                 },
-                "tag:isrd.isi.edu,2016:generated": True,
-                "tag:isrd.isi.edu,2016:immutable": True,
                 "tag:isrd.isi.edu,2016:column-display": {
                     "*" : {
 		        "pre_format" : {
@@ -1106,8 +1104,6 @@ def update_catalog_column_defaults(model):
                 "tag:misd.isi.edu,2015:display": {
                     "name": "Last Modified Time",
                 },
-                "tag:isrd.isi.edu,2016:generated": True,
-                "tag:isrd.isi.edu,2016:immutable": True,
                 "tag:isrd.isi.edu,2016:column-display": {
                     "*" : {
 		        "pre_format" : {
@@ -1115,10 +1111,6 @@ def update_catalog_column_defaults(model):
 		        }
                     }
 	        },
-            },
-            "Accession_Code": {
-                "tag:isrd.isi.edu,2016:generated": True,
-                "tag:isrd.isi.edu,2016:immutable": True,
             },
             "Record_Status_Detail": {
                 "tag:isrd.isi.edu,2016:generated": True,
@@ -1144,10 +1136,11 @@ def update_catalog_column_defaults(model):
 def update_generated_elements(model):
         
     generated_tables = set()
+    # consider tables: Accession_Code, Entry_Latest_Archive  --> TODO: Brinda to consider
     generated_tables.update(get_tables(model, schema_names=["PDB"], table_names=[]))
     for table in generated_tables:
         table.annotations[tag["generated"]] = True
-        #table.annotations[tag["immutable"]] = True
+        #table.annotations[tag["immutable"]] = True  
         table.annotations[tag["non_deletable"]] = True        
 
     generated_columns = set()
