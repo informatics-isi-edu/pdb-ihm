@@ -348,12 +348,12 @@ def update_PDB_entry(model):
     # ----------------------------
     schema.tables["entry"].foreign_keys[(schema,"entry_Workflow_Status_fkey")].foreign_key.update({
         #'domain_filter_pattern' :  '{{#if (and (not (isUserInAcl $site_var.acl_groups.updaters)) (isUserInAcl $site_var.acl_groups.entry_submitters) )}}Entry_Submitter_Select=True{{/if}}',
-        'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.entry_updaters){{else if (isUserInAcl $site_var.acl_groups.entry_submitters)}}Entry_Submitter_Select=True{{/if}}',        
+        'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.entry_updaters){{else if (isUserInAcl $site_var.acl_groups.entry_submitters)}}Entry_Submitter_Select=True{{/if}}', 
     })
     
     # ----------------------------
     schema.tables["entry"].foreign_keys[(schema,"entry_Process_Status_fkey")].foreign_key.update({
-        'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.entry_updaters){{else if (isUserInAcl $site_var.acl_groups.entry_submitters)}}Entry_Submitter_Select=True{{/if}}',                
+        'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.entry_updaters){{else if (isUserInAcl $site_var.acl_groups.entry_submitters)}}Entry_Submitter_Select=True{{/if}}',
     })
 
     
@@ -671,7 +671,7 @@ def update_PDB_Entry_Latest_Archive(model):
     table = schema.tables["Entry_Latest_Archive"]
 
     table.table_display.update({
-        'compact' : { 'row_order' : [{'column': 'RCT', 'descending': True}], },
+        'compact' : { 'row_order' : [{'column': 'Submission_Time', 'descending': True}], },
     })
     
     # ----------------------------

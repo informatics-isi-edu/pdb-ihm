@@ -1072,8 +1072,8 @@ def update_catalog_column_defaults(model):
                 "tag:misd.isi.edu,2015:display" : {
                     "comment": "Record ID",
                 },
-                "tag:isrd.isi.edu,2016:generated": True,
-                "tag:isrd.isi.edu,2016:immutable": True,
+                #"tag:isrd.isi.edu,2016:generated": True,
+                #"tag:isrd.isi.edu,2016:immutable": True,
                 #"tag:isrd.isi.edu,2016:non-deletable": True, # NOT COLUMN LEVEL
             },
             "RCB": {
@@ -1144,15 +1144,15 @@ def update_catalog_column_defaults(model):
 def update_generated_elements(model):
         
     generated_tables = set()
-    generated_tables.update(get_tables(model, schema_names=["PDB"], table_names=["Accession_Code", "Entry_Latest_Archive"]))
+    generated_tables.update(get_tables(model, schema_names=["PDB"], table_names=[]))
     for table in generated_tables:
         table.annotations[tag["generated"]] = True
-        table.annotations[tag["immutable"]] = True
+        #table.annotations[tag["immutable"]] = True
         table.annotations[tag["non_deletable"]] = True        
 
     generated_columns = set()
     #generated_columns.update(get_columns(model, schema_pattern=".*", table_pattern=".*", column_pattern="Accession_Code"))
-    generated_columns.update(get_columns(model, schema_names=["PDB"], table_names=["entry"], column_names=["Accession_Code"]))
+    #generated_columns.update(get_columns(model, schema_names=["PDB"], table_names=["entry"], column_names=["Accession_Code"]))
     for column in generated_columns:
         column.annotations[tag["generated"]] = True
         column.annotations[tag["immutable"]] = True
