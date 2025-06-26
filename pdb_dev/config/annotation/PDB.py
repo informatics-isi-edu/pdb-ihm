@@ -345,18 +345,16 @@ def update_PDB_entry(model):
         {'name' : 'User Provided Method Details', }
     )
 
-    """
-    # TODO: uncomment for production
     # ----------------------------
     schema.tables["entry"].foreign_keys[(schema,"entry_Workflow_Status_fkey")].foreign_key.update({
-        'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.pdb_submitters) }}Entry_Submitter_Select=True{{/if}}',
+        #'domain_filter_pattern' :  '{{#if (and (not (isUserInAcl $site_var.acl_groups.updaters)) (isUserInAcl $site_var.acl_groups.entry_submitters) )}}Entry_Submitter_Select=True{{/if}}',
+        'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.entry_updaters){{else if (isUserInAcl $site_var.acl_groups.entry_submitters)}}Entry_Submitter_Select=True{{/if}}',        
     })
     
     # ----------------------------
     schema.tables["entry"].foreign_keys[(schema,"entry_Process_Status_fkey")].foreign_key.update({
-        'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.pdb_submitters) }}Entry_Submitter_Select=True{{/if}}',        
+        'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.entry_updaters){{else if (isUserInAcl $site_var.acl_groups.entry_submitters)}}Entry_Submitter_Select=True{{/if}}',                
     })
-    """
 
     
 # -- ==================================================================================================
@@ -574,11 +572,6 @@ def update_PDB_Entry_Error_File(model):
             'File_URL',             
             ['PDB', 'Entry_Error_File_System_Generated_File_Type_fkey'], 
         ],
-        #'entry' :  [
-        #    'File_URL', 
-        #    ['PDB', 'Entry_Error_File_Entry_RID_fkey'], 
-        #    ['PDB', 'Entry_Error_File_System_Generated_File_Type_fkey'], 
-        #],
         'detailed' :  [
             'RID', 
             ['PDB', 'Entry_Error_File_Entry_RID_fkey'], 
@@ -804,17 +797,16 @@ def update_PDB_Entry_Related_File(model):
         {'name' : 'Uploaded File', }
     )
 
-    """
     # ----------------------------
     schema.tables["Entry_Related_File"].foreign_keys[(schema,"Entry_Related_File_Restraint_Workflow_Status_fkey")].foreign_key.update({
-        'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.pdb_submitters) }}Restraint_Submitter_Select=True{{else}}Restraint_Status=True{{/if}}',
+        #'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.entry_updaters) }}Restraint_Status=True{{else if (isUserInAcl $site_var.acl_groups.entry_submitters) }}Restraint_Submitter_Select=True{{else}}Restraint_Status=True{{/if}}',
+        'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.entry_updaters) }}Restraint_Status=True{{else}}Restraint_Submitter_Select=True{{/if}}',                
     })
     
     # ----------------------------
     schema.tables["Entry_Related_File"].foreign_keys[(schema,"Entry_Related_File_Restraint_Process_Status_fkey")].foreign_key.update({
-        'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.pdb_submitters) }}Restraint_Submitter_Select=True{{else}}Restraint_Status=True{{/if}}',        
+        'domain_filter_pattern' :  '{{#if (isUserInAcl $site_var.acl_groups.entry_updaters) }}Restraint_Status=True{{else}}Restraint_Submitter_Select=True{{/if}}',        
     })
-    """
     
 # -- -----------------------------------------------------------------------------
 def update_PDB_Entry_Related_File_Templates(model):
@@ -985,7 +977,6 @@ def update_PDB_PDB_Archive(model):
             {'source' : [{'outbound': ['PDB', 'PDB_Archive_RCB_fkey']}, 'Full_Name'], 'markdown_name' : 'RCB', },
             {'source' : [{'outbound': ['PDB', 'PDB_Archive_RMB_fkey']}, 'Full_Name'], 'markdown_name' : 'RMB', },
         ],
-        
         'entry' :  [
             'Submission_Time', 
             'Submitted_Entries', 

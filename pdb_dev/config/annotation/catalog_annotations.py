@@ -40,8 +40,8 @@ def get_chaise_config(catalog_id):
             "engine": "handlebars",
             "site_var": {
                 "acl_groups": {
-                    "pdb_submitters": "https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1",
-                    #"isrd_testers": "https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d",
+                    "entry_submitters": ["https://auth.globus.org/99da042e-64a6-11ea-ad5f-0ef992ed7ca1"],
+                    "entry_updaters": ["https://auth.globus.org/eef3e02a-3c40-11e9-9276-0edc9bdd56a6", "https://auth.globus.org/0b98092c-3c41-11e9-a8c8-0ee7d80087ee", "https://auth.globus.org/3938e0d0-ed35-11e5-8641-22000ab4b42b"], # pdb-curators, pdb-admins, isrd-systems
                 }  
             },
         }
@@ -1144,11 +1144,11 @@ def update_catalog_column_defaults(model):
 def update_generated_elements(model):
         
     generated_tables = set()
-    generated_tables.update(get_tables(model, schema_names=["PDB"], table_names=["Accession_Code", "PDB_Archive", "Entry_Latest_Archive"]))
+    generated_tables.update(get_tables(model, schema_names=["PDB"], table_names=["Accession_Code", "Entry_Latest_Archive"]))
     for table in generated_tables:
         table.annotations[tag["generated"]] = True
-        #table.annotations[tag["immutable"]] = True
-        #table.annotations[tag["non_deletable"]] = True        
+        table.annotations[tag["immutable"]] = True
+        table.annotations[tag["non_deletable"]] = True        
 
     generated_columns = set()
     #generated_columns.update(get_columns(model, schema_pattern=".*", table_pattern=".*", column_pattern="Accession_Code"))
