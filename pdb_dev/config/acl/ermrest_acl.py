@@ -83,7 +83,7 @@ def initialize_policies(catalog):
 
     column_curator_enumerate_curator_read_curator_write = {
         "enumerate": g["entry-updaters"],
-        "select": g["entry-updaters"],
+        "select": g["entry-updaters"] + g["entry-readers"],
         "insert": g["entry-updaters"],
         "update": g["entry-updaters"],
     }
@@ -193,7 +193,7 @@ def set_Vocab_acl(model):
     
     # Anyone can read. The rest follows catalog policy
     schema.acls.update({
-        "select": g["entry-creators"],
+        "select": g["entry-creators"] + g["entry-readers"],
     })
 
     # Block all access to ID, URI, Owner columns
@@ -219,7 +219,7 @@ def set_public_acl(model):
     print("set_public_acl")
     
     schema.acls.update({
-        "select": g["entry-updaters"],
+        "select": g["entry-updaters"] + g["entry-readers"],
         "insert": [],
         "update": [],
         "delete": [],
@@ -241,7 +241,7 @@ def set_public_acl(model):
     # -- Catalog_Group: entry-updaters can modify for now
     table = schema.tables["Catalog_Group"]
     table.acls.update({
-        "select" : g['entry-updaters'],
+        "select" : g['entry-updaters'] + g['entry-readers'],
         "insert" : g['entry-updaters'],  
         "update": g["entry-updaters"],
         "delete": g["entry-updaters"],
@@ -364,7 +364,7 @@ def set_PDB_entry(model):
     for cname in cnames:
         col = table.columns[cname]
         col.acls.update({
-            "select": g["entry-creators"],        
+            "select": g["entry-creators"] + g["entry-readers"], 
             "insert": g["entry-updaters"],
         })
         col.acl_bindings.update({
@@ -383,8 +383,7 @@ def set_PDB_entry(model):
         })
 
     # -- ACL: submiters can create but not edit
-    cnames = ["Process_Status"]
-    for cname in cnames:
+    for cname in ["Process_Status"]:
         col = table.columns[cname]
         col.acls.update({
             "update": g["entry-updaters"],
@@ -783,7 +782,7 @@ def set_tables_curators_access_only(model):
 # -- ---------------------------------------------------------------------
 # "Data_Dictionary" and "Conform_Dictionary" are needed for users to see Conform Dict associated with
 # generated mmCIF files
-
+# Also allow entry-readers to read whatever submitters can read
 def set_tables_submitters_read(model):
     """
     Set ACLs for tables that allow submitters to read the content (similar to vocab tables)
@@ -795,7 +794,7 @@ def set_tables_submitters_read(model):
         table = schema.tables[table_name]
         clear_table_acls(table)
         table.acls.update({
-            "select": g["entry-creators"],
+            "select": g["entry-creators"] + g["entry-readers"],
         })
 
 
@@ -811,14 +810,13 @@ def set_PDB_Entry_Related_File(model):
     # == column acl
     
     # -- ACL: submiters can create but not edit
-    cnames = ["Restraint_Process_Status"]
-    for cname in cnames:
+    for cname in ["Restraint_Process_Status"]:
         col = table.columns[cname]
         col.acls.update({
             "update": g["entry-updaters"],
         })
         col.acl_bindings.update({
-            "submitters_modify_based_on_workflow_status": False,
+            "submitter_update_based_on_workflow_status" : False,
         })
 
     # == update restraint_workflow_status fkey
@@ -875,7 +873,7 @@ def set_PDB_Entry_Related_File_Templates(model):
 
         # allow entry-creators to read        
         table.acls.update({
-            "select": g["entry-creators"],            
+            "select": g["entry-creators"] + g["entry-readers"],            
         })
 
 # -- ---------------------------------------------------------------------
