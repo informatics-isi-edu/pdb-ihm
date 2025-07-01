@@ -263,40 +263,42 @@ def main(server_name, catalog_id, credentials):
     catalog.dcctx['cid'] = "oneoff/model"
     model = catalog.getCatalogModel()
 
-    """
-    Create new Vocab tables
-    """
-    utils.create_table_if_not_exist(model, 'Vocab', utils.define_Vocab_table('chem_comp_pdbx_release_status', 'Chemical Component Release Status'))
-    utils.create_table_if_not_exist(model, 'Vocab', utils.define_Vocab_table('chem_comp_pdbx_processing_site', 'Chemical Component Processing Site'))
-    utils.create_table_if_not_exist(model, 'Vocab', utils.define_Vocab_table('chem_comp_ihm_created_for', 'Chemical Component Created For'))
+    if True:
+        """
+        Create new Vocab tables
+        """
+        utils.create_table_if_not_exist(model, 'Vocab', utils.define_Vocab_table('chem_comp_pdbx_release_status', 'Chemical Component Release Status'))
+        utils.create_table_if_not_exist(model, 'Vocab', utils.define_Vocab_table('chem_comp_pdbx_processing_site', 'Chemical Component Processing Site'))
+        utils.create_table_if_not_exist(model, 'Vocab', utils.define_Vocab_table('chem_comp_ihm_created_for', 'Chemical Component Created For'))
 
-    """
-    Load data into new and existing vocabulary tables
-    """
-    utils.add_rows_to_vocab_table(catalog, 'ihm_dataset_related_db_reference_db_name', ihm_dataset_related_db_reference_db_name_rows)
-    utils.add_rows_to_vocab_table(catalog, 'chem_comp_pdbx_release_status', chem_comp_pdbx_release_status_rows)
-    utils.add_rows_to_vocab_table(catalog, 'chem_comp_pdbx_processing_site', chem_comp_pdbx_processing_site_rows)
-    utils.add_rows_to_vocab_table(catalog, 'chem_comp_ihm_created_for', chem_comp_ihm_created_for_rows)
+        """
+        Load data into new and existing vocabulary tables
+        """
+        utils.add_rows_to_vocab_table(catalog, 'ihm_dataset_related_db_reference_db_name', ihm_dataset_related_db_reference_db_name_rows)
+        utils.add_rows_to_vocab_table(catalog, 'chem_comp_pdbx_release_status', chem_comp_pdbx_release_status_rows)
+        utils.add_rows_to_vocab_table(catalog, 'chem_comp_pdbx_processing_site', chem_comp_pdbx_processing_site_rows)
+        utils.add_rows_to_vocab_table(catalog, 'chem_comp_ihm_created_for', chem_comp_ihm_created_for_rows)
 
-    """
-    Alter nullok for columns in existing table
-    """
-    utils.set_nullok_column_if_exists(model, 'PDB', 'ihm_cross_link_result', 'ensemble_id', True)
-    utils.set_nullok_column_if_exists(model, 'PDB', 'ihm_cross_link_result', 'num_models', True)
+        """
+        Alter nullok for columns in existing table
+        """
+        utils.set_nullok_column_if_exists(model, 'PDB', 'ihm_cross_link_result', 'ensemble_id', True)
+        utils.set_nullok_column_if_exists(model, 'PDB', 'ihm_cross_link_result', 'num_models', True)
 
-    """
-    Update existing tables
-    """
-    update_PDB_ihm_cross_link_result(model)
-    update_PDB_entry(model)
+        """
+        Update existing tables
+        """
+        update_PDB_ihm_cross_link_result(model)
+        update_PDB_entry(model)
 
-    """
-    Create IHM_New_Chem_Comp table
-    """
-    utils.create_table_if_not_exist(model, 'PDB',  define_tdoc_IHM_New_Chem_Comp())
+        """
+        Create IHM_New_Chem_Comp table
+        """
+        utils.create_table_if_not_exist(model, 'PDB',  define_tdoc_IHM_New_Chem_Comp())
 
     # To be applied after data is fixed in PDB:ihm_cross_link_result.Restraint_RID column
-    # utils.set_nullok_column_if_exists(model, 'PDB', 'ihm_cross_link_result', 'Restraint_RID', False)
+    if False:
+        utils.set_nullok_column_if_exists(model, 'PDB', 'ihm_cross_link_result', 'Restraint_RID', False)
 
 if __name__ == '__main__':
     args = BaseCLI("ad-hoc table creation tool", None, 1).parse_cli()
