@@ -36,7 +36,7 @@ def initialize_hatrac_policies():
         "subtree-owner": GROUPS["owners"],
         "subtree-create": [],
         "subtree-update": [],
-        "subtree-read": GROUPS["entry-updaters"],
+        "subtree-read": GROUPS["entry-updaters"] + GROUPS["entry-readers"],
     }
 
     # no need to set subtree-read for curators. In herit from root.
