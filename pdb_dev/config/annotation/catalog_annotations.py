@@ -447,6 +447,7 @@ def get_navbar_menu(catalog_id):
                             "name": "Workflow",
                             "children": [
                                 {
+                                    "acls": { "show": GROUPS["owners"] + GROUPS["entry-updaters"], "enable": GROUPS["owners"] + GROUPS["entry-updaters"] },
                                     "name": "Accession Code",
                                     "url": "/chaise/recordset/#"+catalog_id+"/PDB:Accession_Code"
                                 },
@@ -1035,7 +1036,7 @@ def update_catalog_config(model):
 def update_catalog_display(model):
     model.display.update({
         "name_style" : {
-            "title_case" : False,
+            "title_case" : True,
             "underline_space" : True
         },
         "show_foreign_key_link" : {

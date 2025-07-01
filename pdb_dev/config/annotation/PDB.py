@@ -843,7 +843,7 @@ def update_PDB_IHM_New_Chem_Comp(model):
     schema = model.schemas["PDB"]
     table = schema.tables["IHM_New_Chem_Comp"]
 
-    schema.display.update({
+    table.display.update({
         'name_style' : { 'title_case' : False, 'underline_space' : True, },
     })
 

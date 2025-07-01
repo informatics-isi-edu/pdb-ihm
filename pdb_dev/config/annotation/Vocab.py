@@ -12,13 +12,14 @@ def update_Vocab(model):
     schema = model.schemas["Vocab"]
 
     # ----------------------------
+    """ # use catalog default
     schema.display.update({
         "name_style": {
             "title_case": False,
             "underline_space": True
         }
     })
-
+    """
     # -- default table behavior
     for tname, table in schema.tables.items():
         table.visible_columns.update({
@@ -26,6 +27,10 @@ def update_Vocab(model):
                 "RID",
                 "Name",
                 "Description",
+                ["Vocab", f"{tname}_term_RCB_fkey"],
+                ["Vocab", f"{tname}_term_RMB_fkey"],                
+                "RCT",
+                "RMT",
             ]
         })
 

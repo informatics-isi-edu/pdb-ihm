@@ -427,7 +427,7 @@ def update_PDB_citation(model):
 
     # ----------------------------
     schema.tables["citation"].columns["page_first"].display.update(
-        {'name' : 'First_Page', }
+        {'name' : 'First Page', }
     )
 
     # ----------------------------
