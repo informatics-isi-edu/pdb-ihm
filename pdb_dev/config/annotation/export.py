@@ -10,9 +10,13 @@ export_annotation_tags = [tag["export"], tag["export_2019"], tag["export_fragmen
 
 # -- =================================================================================
 # -- asset related annotations
+# chaise docs: https://github.com/informatics-isi-edu/ermrestjs/blob/master/docs/user-docs/export.md
+# export docs: 
 # -- =================================================================================
 
-
+"""
+Note: For the entry csv, setting path to none break chaise, while setting path to empty string break ermrest syntax
+"""
 def update_PDB_entry(model):
     schema = model.schemas["PDB"]
     table = schema.tables["entry"]    
@@ -27,7 +31,6 @@ def update_PDB_entry(model):
 			{
 			    "source": {
 				"api": "entity",
-				"table": "PDB:entry"
 			    },
 			    "destination": {
 				"name": "entry",
@@ -36,18 +39,17 @@ def update_PDB_entry(model):
 			},
 			{
 			    "source": {
-				"api": "Entry_Generated_File",
-				"table": "PDB:entry"
+				"api": "entity",
+				"path": "PDB:Entry_Generated_File",
 			    },
 			    "destination": {
-				"name": "entry",
+				"name": "Entry_Generated_File",
 				"type": "csv"
 			    }
 			},
 			{
 			    "source": {
 				"api": "attribute",
-				"table": "PDB:entry",                              
                                 "path": "id,url:=Image_File_URL,length:=Image_File_Bytes,filename:=Image_File_Name,md5:=Image_File_MD5"
 			    },
 			    "destination": {
