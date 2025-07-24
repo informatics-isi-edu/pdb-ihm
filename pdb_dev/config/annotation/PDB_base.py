@@ -442,7 +442,7 @@ def update_PDB_citation(model):
     
     # ----------------------------
     schema.tables["citation"].columns["pdbx_database_id_DOI"].column_display.update({
-        '*' : { 'markdown_pattern' : '{{#pdbx_database_id_DOI}}[{{_pdbx_database_id_DOI}}](https://doi.org/{{_pdbx_database_id_DOI}}){{/pdbx_database_id_DOI}}', },
+        '*' : { 'markdown_pattern' : '{{#if pdbx_database_id_DOI}}[{{_pdbx_database_id_DOI}}](https://doi.org/{{_pdbx_database_id_DOI}}){{/if}}', },
     })
 
     # ----------------------------

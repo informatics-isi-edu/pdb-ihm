@@ -93,6 +93,7 @@ def get_navbar_menu(catalog_id):
                             "name": "Chemical Components",                            
                             "children": [
                                 { "name": "Chem Comp", "url": "/chaise/recordset/#"+catalog_id+"/PDB:chem_comp" },
+                                { "name": "IHM New Chem Comp", "url": "/chaise/recordset/#"+catalog_id+"/PDB:IHM_New_Chem_Comp"}, # new
                                 { "name": "Chem Comp Atom", "url": "/chaise/recordset/#"+catalog_id+"/PDB:chem_comp_atom" }
                             ],
                         },
@@ -514,6 +515,11 @@ def get_navbar_menu(catalog_id):
                                 { "name": "PDBX  Polymer Type", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_atom_pdbx_polymer_type" },
                                 { "name": "PDBX  Stereo Config", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_atom_pdbx_stereo_config" },
                                 { "name": "Substruct Code", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_atom_substruct_code" },
+                                # -- new
+                                { "name": "Chem Comp Release Status", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_pdbx_release_status" },
+                                { "name": "Chem Comp Processing Site", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_pdbx_processing_site" },
+                                { "name": "Chem Comp Created For", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_ihm_created_for" },
+                                # -- end new
                                 { "name": "Type", "url": "/chaise/recordset/#"+catalog_id+"/Vocab:chem_comp_type" }
                             ],
                         },
@@ -983,7 +989,7 @@ def get_navbar_menu(catalog_id):
     }
 
     # Once deploy to staging, put the code in the appropriate place above
-    if cfg.is_dev:
+    if False or cfg.is_dev:
         navbar["navbarMenu"]["children"][1]["children"][3] = {
             "name": "Chemical Components",                            
             "children": [

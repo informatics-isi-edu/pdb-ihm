@@ -117,7 +117,6 @@ def update_Vocab_Workflow_Status(model):
             "Restraint_Status",
             "Entry_Submitter_Select",            
             "Restraint_Submitter_Select",
-            "RMT",            
         ],
         "compact/select/foreign_key": [
             "RID",
