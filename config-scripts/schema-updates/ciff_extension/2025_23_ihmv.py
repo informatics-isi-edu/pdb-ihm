@@ -2,6 +2,8 @@ import sys
 import json
 from deriva.core import ErmrestCatalog, AttrDict, get_credential, DEFAULT_CREDENTIAL_FILE, tag, urlquote, DerivaServer, BaseCLI
 from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key, ForeignKey, DomainType, ArrayType
+from deriva.utils.extras.model import create_vocab_tdoc
+from deriva.utils.extras.data import insert_if_not_exist
 import utils
 
 # ========================================================
@@ -85,13 +87,13 @@ def define_tdoc_IHMV_Structure_mmCIF():
    
     return table_def
 
-def define_tdoc_IHMV_Generated_Files():
-    table_name='Generated_Files'
+def define_tdoc_IHMV_Generated_File():
+    table_name='Generated_File'
     comment='System generated IHM validation report files'
 
     column_defs = [
         Column.define(
-            'Structure_mmCIF_RID',
+            'Structure_mmCIF',
             builtin_types.text,
             comment='RID of the uploaded structure mmCIF file',
             nullok=False
@@ -134,18 +136,18 @@ def define_tdoc_IHMV_Generated_Files():
         )
     ]
     key_defs = [
-        Key.define(['RID'], constraint_names=[['IHMV', 'Generated_Files_RID_key']]),
-        Key.define(['Structure_mmCIF_RID', 'File_Type'], constraint_names=[['IHMV', 'Generated_Files_Structure_mmCIF_RID_File_Type_key']]),
-        Key.define(['Structure_mmCIF_RID', 'File_MD5'], constraint_names=[['IHMV', 'Generated_Files_Structure_mmCIF_RID_File_MD5_key']])
+        Key.define(['RID'], constraint_names=[['IHMV', 'Generated_File_RID_key']]),
+        Key.define(['Structure_mmCIF', 'File_Type'], constraint_names=[['IHMV', 'Generated_File_Structure_mmCIF_File_Type_key']]),
+        Key.define(['Structure_mmCIF', 'File_MD5'], constraint_names=[['IHMV', 'Generated_File_Structure_mmCIF_File_MD5_key']])
     ]
     fkey_defs = [
         ForeignKey.define(["File_Type"], "Vocab", "File_Type", ["Name"],
-                          constraint_names=[["Vocab", "Generated_Files_File_Type_fkey"]],
+                          constraint_names=[["Vocab", "Generated_File_File_Type_fkey"]],
                           on_update="CASCADE",
                           on_delete="NO ACTION"
         ),
-        ForeignKey.define(['Structure_mmCIF_RID'], 'IHMV', 'Structure_mmCIF', ['RID'],
-                          constraint_names=[['IHMV', 'Generated_Files_Structure_mmCIF_RID_fkey']],
+        ForeignKey.define(['Structure_mmCIF'], 'IHMV', 'Structure_mmCIF', ['RID'],
+                          constraint_names=[['IHMV', 'Generated_File_Structure_mmCIF_fkey']],
                           on_update='CASCADE',
                           on_delete='NO ACTION'
         )
@@ -182,28 +184,36 @@ def main(server_name, catalog_id, credentials):
     catalog.dcctx['cid'] = "oneoff/model"
     model = catalog.getCatalogModel()
 
+
+    model.schemas["IHMV"].tables["Generated_Files"].drop()
+    model.schemas["IHMV"].tables["Structure_mmCIF"].drop()    
+
     if True:
         """
         Create new Vocab tables
         """
-        utils.create_table_if_not_exist(model, 'Vocab', utils.define_Vocab_table('Processing_Status', 'IHM Validation Report Generation Processing Status'))
-        utils.create_table_if_not_exist(model, 'Vocab', utils.define_Vocab_table('File_Type', 'IHM Validation Report Generated File Types'))
+        utils.create_table_if_not_exist(model, 'Vocab', create_vocab_tdoc('Vocab', 'Processing_Status', 'IHM Validation Report Generation Processing Status'))
+        utils.create_table_if_not_exist(model, 'Vocab', create_vocab_tdoc('Vocab', 'File_Type', 'IHM Validation Report Generated File Types'))
+        #utils.create_table_if_not_exist(model, 'Vocab', utils.define_Vocab_table('Processing_Status', 'IHM Validation Report Generation Processing Status'))
+        #utils.create_table_if_not_exist(model, 'Vocab', utils.define_Vocab_table('File_Type', 'IHM Validation Report Generated File Types'))
 
         """
         Load data into new and existing vocabulary tables
         """
-        utils.add_rows_to_vocab_table(catalog, 'Processing_Status', Processing_Status_rows)
-        utils.add_rows_to_vocab_table(catalog, 'File_Type', File_Type_rows)
+        insert_if_not_exist(catalog, 'Vocab', 'Processing_Status', Processing_Status_rows)
+        insert_if_not_exist(catalog, 'Vocab', 'File_Type', File_Type_rows)        
+        #utils.add_rows_to_vocab_table(catalog, 'Processing_Status', Processing_Status_rows)
+        #utils.add_rows_to_vocab_table(catalog, 'File_Type', File_Type_rows)
 
         """
         Create new table
         """
-        utils.create_table_if_not_exist(model, 'PDB',  define_tdoc_IHMV_Structure_mmCIF())
-        utils.create_table_if_not_exist(model, 'PDB',  define_tdoc_IHMV_Generated_Files())
+        utils.create_table_if_not_exist(model, 'IHMV',  define_tdoc_IHMV_Structure_mmCIF())
+        utils.create_table_if_not_exist(model, 'IHMV',  define_tdoc_IHMV_Generated_File())
 
 if __name__ == '__main__':
     args = BaseCLI("ad-hoc table creation tool", None, 1).parse_cli()
     credentials = get_credential(args.host, args.credential_file)
 
-    main(args.host, 1, credentials)
+    main(args.host, 199, credentials)
     
