@@ -8,7 +8,7 @@
   <meta rel="author" href="">
   <meta rel="publisher" href="">
 
-  <title>PDB-IHM Data Harvesting System</title>
+  <title>PDB-IHM Validation Report</title>
 
   <link rel="stylesheet" href="/assets/css/main.css">
   <link rel="icon" href="/favicon.ico" type="image/x-icon" />
@@ -17,13 +17,13 @@
 
 </head>
 <body>
-  <navbar></navbar>
+  <navbar %DEFAULT_CATALOG%></navbar>
   <div class="wrap">
 
 <header id="header">
 
   <span class="titlewrap">
-  <h1><span>PDB-IHM Data Harvesting System</span></h1>
+  <h1><span>PDB-IHM Validation Report</span></h1>
   </span>
 
 </header>
@@ -46,16 +46,16 @@
     <p align="justify"> From August 14 2024, <a href="https://pdb-ihm.org/">PDB-IHM</a> will issue 4-character PDB accession codes as part of the unification process with the PDB archive. Integrative structures processed by PDB-IHM will be made available alongside experimental structures in the <a href="https://files.wwpdb.org/pub/">PDB archive</a>. Entries that already have PDB-Dev accession codes have been issued new PDB accession codes, which are now the primary accession codes for structures in PDB-IHM. New integrative structures deposited to PDB-IHM will only be issued PDB accession codes. </p>
       Use the links below to start exploring the system.
     </p>
-<div class="demo-links">
+    <div class="demo-links">
 
-  <p class="demo">New Account: <a href="https://app.globus.org/groups/99da042e-64a6-11ea-ad5f-0ef992ed7ca1/about">Register using Globus</a> </p>
-  <p class="demo">Submit Data: <a href="https://data.pdb-ihm.org/chaise/recordset/#1/PDB:entry@sort(RID)">Create a New Entry</a> </p>
-  <p class="demo">Documentation: <a href="https://docs.google.com/document/d/1CM8-6PYqI0DvETeQEfoUpSFZ8BhLrvYnihLSK8ghVcI/">User Guide</a> </p>
+      <p class="demo">New Account: <a href="https://app.globus.org/groups/99da042e-64a6-11ea-ad5f-0ef992ed7ca1/about">Register using Globus</a> </p>
+      <p class="demo">Submit Data: <a href="https://data.pdb-ihm.org/chaise/recordset/#1/PDB:entry@sort(RID)">Create a New Entry</a> </p>
+      <p class="demo">Documentation: <a href="https://docs.google.com/document/d/1CM8-6PYqI0DvETeQEfoUpSFZ8BhLrvYnihLSK8ghVcI/">User Guide</a> </p>
 
-</div>
-  <p>Please report problems to <a href="mailto:helpdesk@pdb-ihm.org">helpdesk@pdb-ihm.org</a>. </p>
-<br>
-</div>
+    </div>
+    <p>Please report problems to <a href="mailto:helpdesk@pdb-ihm.org">helpdesk@pdb-ihm.org</a>. </p>
+    <br>
+  </div>
 <!-- </div> -->
 </section>
 
