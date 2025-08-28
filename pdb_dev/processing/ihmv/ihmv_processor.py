@@ -55,19 +55,12 @@ class IHMVProcessor(PipelineProcessor):
     # -------------------------------------------------
     def download_mmcif_file(self, data_dir):
         # -- download files
-        # hatrac_url = self.structure_row["File_URL"]
-        # filename = self.structure_row["File_Name"]
-        # print("data_dir: %s, hatrac_url: %s, filename: %s" % (data_dir, hatrac_url, filename))
-        # hf = HatracFile(self.store)
-        # hf.download_file(hatrac_url, data_dir, filename, verbose=True)
-        # file_path = hf.file_path
-        # Temp stub because hatrac is not accesible
-        import requests
-        url = 'https://pdb-ihm.org/cif/9a7r.cif'
-        r = requests.get(url)
-        hf = Path(data_dir, Path(url).name)
-        with open(Path(data_dir, Path(url).name), 'wb') as f:
-            f.write(r.content)
+        hatrac_url = self.structure_row["File_URL"]
+        filename = self.structure_row["File_Name"]
+        print("data_dir: %s, hatrac_url: %s, filename: %s" % (data_dir, hatrac_url, filename))
+        hf = HatracFile(self.store)
+        hf.download_file(hatrac_url, data_dir, filename, verbose=True)
+        file_path = hf.file_path
 
         return hf
 
@@ -88,7 +81,6 @@ class IHMVProcessor(PipelineProcessor):
         hfs = []
         for filter in filter_groups:
             for file in os.scandir(data_dir):
-                print(file)
                 if not re.search(filter, file.name): continue
                 if not file.is_file(): continue
                 uid = self.structure_row["RCB"].rsplit("/", 1)[1]
@@ -110,28 +102,35 @@ class IHMVProcessor(PipelineProcessor):
         try:
             # -- download file. Do help(HatracFile) for obj properties
             data_dir = f"{self.scratch_dir}/{self.structure_rid}"
+            # Remove old directory
             shutil.rmtree(data_dir, ignore_errors=True)
+            # Create directory structure
             Path(data_dir).mkdir(parents=True, exist_ok=True)
             for dir_ in ['input', 'output', 'cache']:
                 Path(data_dir, dir_).mkdir(parents=True, exist_ok=True)
+
+            # Download cif file
             cif_hf = self.download_mmcif_file(Path(data_dir, 'input'))
 
             # -- process: process cif and generate ihmv files. Make sure that file names follow naming conventions with appropriate prefix/suffix
-            # TODO: @Authur fill in the processing that generate outputs
-
-            filename = Path(cif_hf).name
+            filename = Path(cif_hf.file_path).name
 
             # Note: the parameter before : is the local directory in the base vm, the parameter after : is the container path
             # To test this manually, cd to the validation directory (e.g. /mnt/vdb1/validation
+
+            # Pass system ihm package
             bind_paths_ = []
             ihm_dir = '/usr/local/lib/python3.8/dist-packages/ihm/'
             if Path(ihm_dir).exists():
                 bind_paths_.append(f'{ihm_dir}:/opt/conda/lib/python3.10/site-packages/ihm/')
+            # Pass IHMValidation directory
             bind_paths_.append(f'{self.ihmvalidation_dir}:/opt/IHMValidation')
+            # Pass input, output, and cache directories
             for dir_ in ['input', 'output', 'cache']:
                 bind_paths_.append(f'{Path(data_dir, dir_)}:{Path("/ihmv", dir_)}')
             bind_paths = ','.join(bind_paths_)
 
+            # prepare call to the IHMValidation pipeline
             args = ['singularity',
                     'exec', '--pid',
                     '--bind', bind_paths,
@@ -144,6 +143,7 @@ class IHMVProcessor(PipelineProcessor):
                     ]
 #           self.logger.debug(f'Running "{" ".join(args)}" from the {self.validation_dir} directory')
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            # Set non-zero return code by-default
             returncode = 127
             try:
                 stdoutdata, stderrdata = p.communicate(timeout=self.timeout*60)
@@ -183,17 +183,16 @@ class IHMVProcessor(PipelineProcessor):
                         "File_URL": hf.hatrac_url,
                         "File_MD5": hf.md5_hex,
                         "File_Bytes": hf.file_bytes,
-                        "File_Type": "Validation: Summary PDF" if hf.file_name.endswith("summary.pdf") else "Validation: Full PDF"
+                        "File_Type": "Validation: Summary PDF" if hf.file_name.endswith("summary_validation.pdf") else "Validation: Full PDF"
                     })
                 # check whether files already exist
                 existing_files = get_ermrest_query(self.catalog, "IHMV", "Generated_File", constraints=f"Structure_mmCIF={self.structure_rid}")
-                if len(existing_files) == 0:
-                    #insert_if_not_exist(self.catalog, "IHMV", "Generated_File", ihmv_payload)
-                    pass
-                else:
-                    # do an update instead
-                    #update_table_rows(self.catalog, "IHMV", "Generated_File", payload=structure_payload, column_names=["File_URL", "File_Name", "File_Bytes", "File_MD5"])
-                    pass
+                if len(existing_files) != 0:
+                    # simply delete all old files
+                    values_ = [x['RID'] for x in existing_files]
+                    delete_table_rows(self.catalog, "IHMV", "Generated_File", key='RID', values=values_)
+
+                insert_if_not_exist(self.catalog, "IHMV", "Generated_File", ihmv_payload)
 
                 structure_payload = [{
                     "RID": self.structure_rid,
@@ -201,7 +200,7 @@ class IHMVProcessor(PipelineProcessor):
                     "Processing_Details": None
                 }]
                 update_table_rows(self.catalog, "IHMV", "Structure_mmCIF", payload=structure_payload, column_names=["Processing_Status", "Processing_Details"])
-        except ValueError as e:
+        except Exception as e:
             print("Exception: %s" % (e))
             structure_payload = [{
                 "RID": self.structure_rid,
@@ -212,7 +211,6 @@ class IHMVProcessor(PipelineProcessor):
         finally:
             # cleaup directory
             shutil.rmtree(data_dir, ignore_errors=True)
-            pass
 
 def main(server_name, catalog_id, credentials, args):
     server = DerivaServer('https', server_name, credentials)
