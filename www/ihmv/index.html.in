@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="The PDB-IHM data harvesting system enables the deposition of diverse data used in integrative modeling studies.">
+  <meta name="description" content="The PDB-IHM Validation System performs the same validation as you would observe during the deposition process. This service is designed to help you check your model and experimental files prior to start of deposition.">
   <meta rel="author" href="">
   <meta rel="publisher" href="">
 
-  <title>PDB-IHM Validation Report</title>
+  <title>PDB-IHM Validation System</title>
 
   <link rel="stylesheet" href="/assets/css/main.css">
   <link rel="icon" href="/favicon.ico" type="image/x-icon" />
@@ -23,7 +23,7 @@
 <header id="header">
 
   <span class="titlewrap">
-  <h1><span>PDB-IHM Validation Report</span></h1>
+  <h1><span>PDB-IHM Validation System</span></h1>
   </span>
 
 </header>
@@ -39,18 +39,27 @@
 -->
 <!--  <div class="explorer-content"> -->
   <div class="box">
-  	<p>Welcome to the <strong>PDB-IHM Data Harvesting System</strong>. </p>
-    <p align="justify">The PDB-IHM (formerly PDB-Dev) Data Harvesting System provides a web interface for depositors to assemble all the information required for archiving integrative structures in PDB-IHM and to create a compliant mmCIF file. This includes the submission of integrative structures, associated spatial restraints and starting models used, modeling protocols, and metadata information (citations, authors, software, data in external repositories, reference sequence information etc.).</p>
-    <p align="justify">The Data Harvesting System provides an automated mechanism for collecting diverse and heterogeneous types of integrative structures and restraint data. The system has been developed using the <a href="https://www.isi.edu/isr/research-areas/the-deriva-platform/">DERIVA</a> scientific asset management platform and is supported by the <a href="https://mmcif.wwpdb.org">PDBx/mmCIF</a> dictionary, the <a href="https://github.com/ihmwg/IHMCIF">IHMCIF dictionary</a> and the <a href="https://github.com/ihmwg/python-ihm">python-ihm</a> software library.</p>
-    <p>
-    <p align="justify"> From August 14 2024, <a href="https://pdb-ihm.org/">PDB-IHM</a> will issue 4-character PDB accession codes as part of the unification process with the PDB archive. Integrative structures processed by PDB-IHM will be made available alongside experimental structures in the <a href="https://files.wwpdb.org/pub/">PDB archive</a>. Entries that already have PDB-Dev accession codes have been issued new PDB accession codes, which are now the primary accession codes for structures in PDB-IHM. New integrative structures deposited to PDB-IHM will only be issued PDB accession codes. </p>
-      Use the links below to start exploring the system.
+  	<p>Welcome to the <strong>PDB-IHM Validation System</strong>. </p>
+    <p align="justify">
+      This server performs the same validation as you would observe during the deposition process. This service is designed to help you check your model and experimental files prior to start of deposition.
+    </p>
+    
+    <p align="justify">
+      Validation reports are generated based on guidelines and recommendations from IHM TaskForce <a href='https://pubmed.ncbi.nlm.nih.gov/31780431/'>(Berman et al. 2019)</a>. The current version of the PDB-IHM validation report consists of four categories, (i) model composition, (ii) data quality assessments, (iii) model quality assessments, and (iv) fit to data used to build the model. A fifth category, fit to data used to validate the model is under development. Data quality assessments and fit to data used for modeling categories are dependent on the different types of experimental data used in integrative modeling. We are breaking down this section based on experimental data type and addressing each method separately. The current version of the validation report is focused on validating models built using Small Angle Scattering (SAS), Chemical Crosslinking Mass Spectrometry (crosslinking-MS), and 3D Electron Microscopy (3DEM) data and is based on the model and data validation guidelines published by the <a href='https://www.wwpdb.org/task/sas'>wwPDB SAS validation task force</a> <a href='https://pubmed.ncbi.nlm.nih.gov/28876235/'>(Trewhella et al., 2017)</a>, crosslinking-MS <a href='https://pubmed.ncbi.nlm.nih.gov/33065067/'>(Leitner et al., 2020)</a>, and 3DEM communities <a href='https://pubmed.ncbi.nlm.nih.gov/38358351/'>(Kleywegt et al., 2024)</a>.
+    </p>
+
+    <p align="justify">
+      A detailed <a href='https://pdb-ihm.org/validation_help.html'>user guide</a> describing different sections of the validation report is available.
+    </p>
+
+    <p align="justify"> 
+      Use the links below to start exploring the system.:
     </p>
     <div class="demo-links">
 
       <p class="demo">New Account: <a href="https://app.globus.org/groups/99da042e-64a6-11ea-ad5f-0ef992ed7ca1/about">Register using Globus</a> </p>
-      <p class="demo">Submit Data: <a href="https://data.pdb-ihm.org/chaise/recordset/#1/PDB:entry@sort(RID)">Create a New Entry</a> </p>
-      <p class="demo">Documentation: <a href="https://docs.google.com/document/d/1CM8-6PYqI0DvETeQEfoUpSFZ8BhLrvYnihLSK8ghVcI/">User Guide</a> </p>
+      <p class="demo">Submit Data: <a href="https://data-dev.pdb-ihm.org/chaise/recordset/#199/IHMV:Structure_mmCIF@sort(RID)">Create a New Entry</a> </p>
+      <p class="demo">Documentation: <a href="https://docs.google.com/document/d/1SEFMWU4SDkOSg3Hk1ebFxy8BrPt7v-MlogS3gFDb6K8/">User Guide</a> </p>
 
     </div>
     <p>Please report problems to <a href="mailto:helpdesk@pdb-ihm.org">helpdesk@pdb-ihm.org</a>. </p>
