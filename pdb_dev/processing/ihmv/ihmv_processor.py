@@ -14,8 +14,8 @@ from deriva.core.datapath import DataPathException
 
 from deriva.utils.extras.data import insert_if_not_exist, update_table_rows, delete_table_rows, get_ermrest_query
 from deriva.utils.extras.hatrac import HatracFile
-#from ...utils.shared import PDBDEV_CLI, DCCTX
-from pdb_dev.utils.shared import PDBDEV_CLI, DCCTX
+#from ...utils.shared import PDBDEV_CLI, DCCTX, cfg
+from pdb_dev.utils.shared import PDBDEV_CLI, DCCTX, cfg
 from pdb_dev.processing.processor import PipelineProcessor, ProcessingError, ErmrestError, ErmrestUpdateError, FileError
 
 
@@ -28,30 +28,57 @@ class IHMVProcessor(PipelineProcessor):
     singularity_sif = None
     ihmvalidation_dir = None
     timeout = 30
-    hatrac_root = '/hatrac/dev'
+    hatrac_root = '/hatrac'
+    pdbihm_config_file = '/home/pdbihm/config/entry_processing/pdb_conf.json'
+    pdbihm_config = None
 
     def __init__(self, catalog=None, store=None, hostname=None, catalog_id=None, credential_file=None,
-                 scratch_dir=None, cfg=None, logger=None, log_level="info", log_file="/home/pdbihm/log/ihmv/processor.log", verbose=None,
+                 scratch_dir=None, cfg=None, logger=None, log_level="info", log_file="/home/pdbihm/log/ihmv/process_ihmv.log", verbose=None,
                  email_config="/home/pdbihm/.secrets/email.json", structure_rid=None,
+                 pdbihm_config_file: typing.Optional[str]=None,
                  singularity_sif: typing.Optional[str]=None,
                  ihmvalidation_dir: typing.Optional[str]=None,
-                 timeout: typing.Optional[int]=30,
-                 hatrac_root: typing.Optional[str]=None
+                 timeout: typing.Optional[int]=None,
                  ):
         super().__init__(hostname=hostname, catalog_id=catalog_id, credentials = credential_file, cfg=cfg)
         if scratch_dir: self.scratch_dir = scratch_dir
         if structure_rid: self.structure_rid = structure_rid
-        if singularity_sif: self.singularity_sif = singularity_sif
-        if ihmvalidation_dir: self.ihmvalidation_dir = ihmvalidation_dir
-        if timeout: self.timeout = timeout
-        if hatrac_root: self.hatrac_root = hatrac_root
-
+        self.log_file = log_file.replace(".log", "_dev.log") if cfg and cfg.is_dev else log_file        
+        if cfg: self.hatrac_root = cfg.hatrac_root
+        
         # get structure row
         rows = get_ermrest_query(self.catalog, "IHMV", "Structure_mmCIF", constraints=f"RID={structure_rid}")
         if len(rows) != 1:
             raise Exception("ERROR: RID %s doesn't exist" % (structure_rid))
         self.structure_row = rows[0]
 
+        # -- get config properties from pdb_ihm config
+        if pdbihm_config_file:
+            self.pdbihm_config_file = pdbihm_config_file
+        elif cfg.is_dev:
+            self.pdbihm_config_file = '/home/pdbihm/dev/config/entry_processing/pdb_conf.json'
+        
+        try:
+            with open(self.pdbihm_config_file, 'r') as file:
+                self.pdbihm_config = json.load(file)
+        except FileNotFoundError:
+            print(f"Error: The file '{file_path}' was not found.")
+            raise Exception("Config ERROR: pdb_ihm config file doesn't exist: %s" % (self.pdbihm_config_file))
+        except json.JSONDecodeError:
+            print(f"Error: Could not decode JSON from '{file_path}'. Check if the file contains valid JSON.")
+            raise Exception("Config ERROR: pdb_ihm config file is not a json file: %s" % (self.pdbihm_config_file))
+
+        # -- unless overwrite, use values from pdbihm_config_file
+        self.timeout = timeout if timeout else (self.pdbihm_config["timeout"] if "timeout" in self.pdbihm_config.keys() else self.timeout)
+        self.singularity_sif = singularity_sif if singularity_sif else (self.pdbihm_config["singularity_sif"] if "singularity_sif" in self.pdbihm_config.keys() else self.singularity_sif)
+        self.ihmvalidation_dir = ihmvalidation_dir if ihmvalidation_dir else (self.pdbihm_config["validation_dir"] if "validation_dir" in self.pdbihm_config.keys() else self.ihmvalidation_dir)
+
+        print("pdbihm_confif_file: %s " % (self.pdbihm_config_file))
+        print("timeout: %s, singularity_sif: %s, ihmvalidation_dir: %s " % (self.timeout, self.singularity_sif, self.ihmvalidation_dir))
+        print("cfg.host: %s, cfg.catalog_id: %s, is_dev:%s, hatrac_root: %s, log_file: %s " % (self.cfg.host, self.cfg.catalog_id, self.cfg.is_dev, self.hatrac_root, self.log_file))
+
+        #raise Exception("Die here")
+    
     # -------------------------------------------------
     def download_mmcif_file(self, data_dir):
         # -- download files
@@ -141,7 +168,7 @@ class IHMVProcessor(PipelineProcessor):
                     '--output-root', '/ihmv/output',
                     '--cache-root', '/ihmv/cache'
                     ]
-#           self.logger.debug(f'Running "{" ".join(args)}" from the {self.validation_dir} directory')
+            # self.logger.debug(f'Running "{" ".join(args)}" from the {self.validation_dir} directory')
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             # Set non-zero return code by-default
             returncode = 127
@@ -212,6 +239,8 @@ class IHMVProcessor(PipelineProcessor):
             # cleaup directory
             shutil.rmtree(data_dir, ignore_errors=True)
 
+# ===========================================================================================
+
 def main(server_name, catalog_id, credentials, args):
     server = DerivaServer('https', server_name, credentials)
     store = HatracStore('https', server_name, credentials)
@@ -219,23 +248,33 @@ def main(server_name, catalog_id, credentials, args):
     model = catalog.getCatalogModel()
 
     processor = IHMVProcessor(
-        catalog=catalog, store=store, hostname=server_name, catalog_id=catalog_id,
+        catalog=catalog, store=store, hostname=server_name, catalog_id=catalog_id, cfg=cfg,
         scratch_dir=args.scratch_dir,
         structure_rid=args.rid,
+        pdbihm_config_file=args.pdbihm_config_file,
         singularity_sif=args.singularity_sif,
         ihmvalidation_dir=args.ihmvalidation_dir,
         timeout=args.timeout
     ).run()
 
-
+# ===========================================================================================
+# usage:
+#
+# HT laptop
+#> python ihmv_processor.py --pdbihm-config-file ~/git/pdb-ihm-ops/scripts/home-config/workflow-dev/dev/config/entry_processing/pdb_conf.json --catalog-id 199 --rid 2ET
+#
+# workflow-dev: as pdbihm user
+#
+#> python ihmv_processor.py --pdbihm-config-file /home/pdbihm/dev/config/entry_processing/pdb_conf.json --catalog-id 199 --rid 2ET
+#
 
 if __name__ == '__main__':
     cli = PDBDEV_CLI("ihmv", None, 1)
     cli.parser.add_argument('--scratch-dir', metavar='<scratch_dir>', help="scratch directory path")
+    cli.parser.add_argument('--pdbihm-config-file', metavar='<pdbihm_config_file>', help="Path to PDB-IHM entry processing config file")    
     cli.parser.add_argument('--singularity-sif', metavar='<singularity_sif>', help="Path to a singularity image")
     cli.parser.add_argument('--ihmvalidation-dir', metavar='<ihmvalidation_dir>', help="Path to IHMValidation code")
-    cli.parser.add_argument('--timeout', metavar='<timeout>', help="Timeout for the IHMValidation pipeline", type=int, default=30)
-    cli.parser.add_argument('--hatrac-root', metavar='<hatrac_root>', help="Hatrac root", type=str, default="/hatrac/dev")
+    cli.parser.add_argument('--timeout', metavar='<timeout>', help="Timeout for the IHMValidation pipeline", type=int)
     args = cli.parse_cli()
     credentials = get_credential(args.host, args.credential_file)
     print("args = %s" % (args))
