@@ -22,15 +22,15 @@ from pdb_dev.processing.processor import PipelineProcessor, ProcessingError, Erm
 class IHMVProcessor(PipelineProcessor):
     """Network client for standalone PDB Validation Report
     """
-    scratch_dir = "/mnt/vdb1/ihmv_processing/scratch"
+    scratch_dir = "/mnt/vdb1/ihmv_processing"
     log_dir = "/home/pdbihm/log/ihmv"
     structure_rid = None
     singularity_sif = None
     ihmvalidation_dir = None
     timeout = 30
     hatrac_root = '/hatrac'
-    pdbihm_config_file = '/home/pdbihm/config/entry_processing/pdb_conf.json'
-    pdbihm_config = None
+    pdbihm_config_file = None #'/home/pdbihm/config/entry_processing/pdb_conf.json'
+    pdbihm_config = {}
 
     def __init__(self, catalog=None, store=None, hostname=None, catalog_id=None, credential_file=None,
                  scratch_dir=None, cfg=None, logger=None, log_level="info", log_file="/home/pdbihm/log/ihmv/process_ihmv.log", verbose=None,
@@ -41,12 +41,15 @@ class IHMVProcessor(PipelineProcessor):
                  timeout: typing.Optional[int]=None,
                  ):
         super().__init__(hostname=hostname, catalog_id=catalog_id, credentials = credential_file, cfg=cfg)
+        
         if scratch_dir: self.scratch_dir = scratch_dir
-        if structure_rid: self.structure_rid = structure_rid
-        self.log_file = log_file.replace(".log", "_dev.log") if cfg and cfg.is_dev else log_file        
-        if cfg: self.hatrac_root = cfg.hatrac_root
+        if cfg: self.hatrac_root = cfg.hatrac_root                
+        self.log_file = log_file.replace(".log", "_dev.log") if cfg and cfg.is_dev and not log_file.endswith("_dev.log")  else log_file
+        self.log_dir = self.log_file.rsplit("/")[0]
+        Path(self.log_dir).mkdir(parents=True, exist_ok=True)        
         
         # get structure row
+        if structure_rid: self.structure_rid = structure_rid        
         rows = get_ermrest_query(self.catalog, "IHMV", "Structure_mmCIF", constraints=f"RID={structure_rid}")
         if len(rows) != 1:
             raise Exception("ERROR: RID %s doesn't exist" % (structure_rid))
@@ -54,31 +57,29 @@ class IHMVProcessor(PipelineProcessor):
 
         # -- get config properties from pdb_ihm config
         if pdbihm_config_file:
-            self.pdbihm_config_file = pdbihm_config_file
-        elif cfg.is_dev:
-            self.pdbihm_config_file = '/home/pdbihm/dev/config/entry_processing/pdb_conf.json'
-        
-        try:
-            with open(self.pdbihm_config_file, 'r') as file:
-                self.pdbihm_config = json.load(file)
-        except FileNotFoundError:
-            print(f"Error: The file '{file_path}' was not found.")
-            raise Exception("Config ERROR: pdb_ihm config file doesn't exist: %s" % (self.pdbihm_config_file))
-        except json.JSONDecodeError:
-            print(f"Error: Could not decode JSON from '{file_path}'. Check if the file contains valid JSON.")
-            raise Exception("Config ERROR: pdb_ihm config file is not a json file: %s" % (self.pdbihm_config_file))
-
+            try:
+                with open(pdbihm_config_file, 'r') as file:
+                    self.pdbihm_config = json.load(file)
+            except FileNotFoundError:
+                print(f"Error: The file '{pdbihm_config_file}' was not found.")
+                raise Exception("Config ERROR: pdb_ihm config file doesn't exist: %s" % (pdbihm_config_file))
+            except json.JSONDecodeError:
+                print(f"Error: Could not decode JSON from '{pdbihm_config_path}'. Check if the file contains valid JSON.")
+                raise Exception("Config ERROR: pdb_ihm config file is not a json file: %s" % (pdbihm_config_file))
+            
         # -- unless overwrite, use values from pdbihm_config_file
         self.timeout = timeout if timeout else (self.pdbihm_config["timeout"] if "timeout" in self.pdbihm_config.keys() else self.timeout)
         self.singularity_sif = singularity_sif if singularity_sif else (self.pdbihm_config["singularity_sif"] if "singularity_sif" in self.pdbihm_config.keys() else self.singularity_sif)
         self.ihmvalidation_dir = ihmvalidation_dir if ihmvalidation_dir else (self.pdbihm_config["validation_dir"] if "validation_dir" in self.pdbihm_config.keys() else self.ihmvalidation_dir)
+        self.ihmvalidation_dir = f'{self.ihmvalidation_dir}/IHMValidation'
 
         print("pdbihm_confif_file: %s " % (self.pdbihm_config_file))
         print("timeout: %s, singularity_sif: %s, ihmvalidation_dir: %s " % (self.timeout, self.singularity_sif, self.ihmvalidation_dir))
         print("cfg.host: %s, cfg.catalog_id: %s, is_dev:%s, hatrac_root: %s, log_file: %s " % (self.cfg.host, self.cfg.catalog_id, self.cfg.is_dev, self.hatrac_root, self.log_file))
 
-        #raise Exception("Die here")
-    
+        if not self.singularity_sif or not self.ihmvalidation_dir:
+            raise Exception("CONFIG ERROR: require config for singularity and ihmv validation directory")
+        #raise Exception("DIE HERE")
     # -------------------------------------------------
     def download_mmcif_file(self, data_dir):
         # -- download files
@@ -270,6 +271,7 @@ def main(server_name, catalog_id, credentials, args):
 
 if __name__ == '__main__':
     cli = PDBDEV_CLI("ihmv", None, 1)
+    pdbihm_config_file = os.getenv("PDBIHM_CONFIG", None)
     cli.parser.add_argument('--scratch-dir', metavar='<scratch_dir>', help="scratch directory path")
     cli.parser.add_argument('--pdbihm-config-file', metavar='<pdbihm_config_file>', help="Path to PDB-IHM entry processing config file")    
     cli.parser.add_argument('--singularity-sif', metavar='<singularity_sif>', help="Path to a singularity image")
