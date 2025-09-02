@@ -30,7 +30,7 @@ def get_chaise_config(catalog_id):
         "SystemColumnsDisplayCompact": ["RID"],
         "SystemColumnsDisplayDetailed": ["RID", "RCT", "RMT"],
         "SystemColumnsDisplayEntry": [],
-        "navbarBrand": "/",
+        "navbarBrand": "/ihmv",
         "headTitle": "IHMV",
         "navbarBrandText": "IHMV",
 	"signUpURL": "https://app.globus.org/groups/99da042e-64a6-11ea-ad5f-0ef992ed7ca1/about",
