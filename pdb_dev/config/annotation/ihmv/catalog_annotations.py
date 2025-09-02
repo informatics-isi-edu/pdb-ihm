@@ -64,7 +64,7 @@ def get_navbar_menu(catalog_id):
             "newTab": False,
             "children": [
 	        {
-	            "name": "Structure",
+	            "name": "Entry",
 	            "url": "/chaise/recordset/#"+catalog_id+"/IHMV:Structure_mmCIF"
 	        },
 	        {
