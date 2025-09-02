@@ -68,8 +68,8 @@ def get_navbar_menu(catalog_id):
 	            "url": "/chaise/recordset/#"+catalog_id+"/IHMV:Structure_mmCIF"
 	        },
 	        {
-	            "name": "IHMV File",
-	            "url": "/chaise/recordset/#"+catalog_id+"/IHMV:IHMV_File"
+	            "name": "Validation Reports",
+	            "url": "/chaise/recordset/#"+catalog_id+"/IHMV:Generated_File"
 	        },
                 {
                     "name": "Vocabulary",
