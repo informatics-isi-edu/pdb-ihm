@@ -87,7 +87,7 @@ def get_navbar_menu(catalog_id):
                         {
                             "name": "User Guide",
                             "children": [
-                                { "name": "PDB-IHM", "url": "https://docs.google.com/document/d/1CM8-6PYqI0DvETeQEfoUpSFZ8BhLrvYnihLSK8ghVcI/" }
+                                { "name": "PDB-IHM", "url": "https://docs.google.com/document/d/1SEFMWU4SDkOSg3Hk1ebFxy8BrPt7v-MlogS3gFDb6K8" }
                             ],
                         }
                     ],
