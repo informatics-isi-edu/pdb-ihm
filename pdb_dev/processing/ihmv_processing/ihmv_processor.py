@@ -49,7 +49,7 @@ class IHMVProcessor(PipelineProcessor):
     pdbihm_config = {}
     email_config = {}
     email_subject_prefix = "IHMV"
-    ihmv_receivers = "hongsuda@isi.edu" #"aozalevsky@gmail.com,pdb-ihm@wwpdb.org"   # comma separated list
+    ihmv_receivers = "aozalevsky@gmail.com" #"aozalevsky@gmail.com,pdb-ihm@wwpdb.org"   # comma separated list
     
     def __init__(self, catalog=None, store=None, hostname=None, catalog_id=None, credential_file=None,
                  scratch_dir=None, cfg=None, logger=None, log_level="info", log_file=None, verbose=None,
