@@ -30,16 +30,20 @@ setup(
     maintainer=author,
     maintainer_email=author_email,
     keywords=['pdb_dev', 'ihm', 'protein structure'],
-    #package_dir={"": "pdb_dev"},    
+    #package_dir={"": "pdb_dev"},
+    # this exclude list is not supported by ubuntu (python 3.8): list(setuptools.discovery.FlatLayoutPackageFinder.DEFAULT_EXCLUDE),    
     packages=find_namespace_packages(
-        #where="pdb_dev",
-        exclude=["build", "scripts", "config-scripts", "catalog-configs", "www", "templates", "tests", "tmp"]
+        include=[
+            "pdb_dev.*",
+        ],
+        exclude= ["build", "tests", "tmp.*", "__pycache__"],
     ),
     entry_points={
         'console_scripts': [
             'pdb_dev_clear_entry_record = pdb_dev.tools.clear_entry_record:main',
             'pdb_process_entry = pdb_dev.processing.entry_processing.pdb_process_entry:main',
             'pdb_entry_processing_worker = pdb_dev.processing.entry_processing.pdb_entry_processing_worker:main',
+            'ihmv_worker = pdb_dev.processing.ihmv_worker:main',
         ]
     },
     # scripts

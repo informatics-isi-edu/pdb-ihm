@@ -37,6 +37,7 @@ class Config():
     shared_dev_env = True # This is needed for adjusting hatrac namespace for dev env.
     catalog_name = None
     hatrac_root = "/hatrac"    
+    args = None
     
     def __init__(self):
         pass
@@ -50,7 +51,7 @@ class Config():
             self.is_www = True
             self.is_prod = True
             self.catalog_name = "prod"
-        elif host in ["data-dev.pdb-ihm.org", "dev.pdb-dev.org"] and str(catalog_id) == "50":
+        elif host in ["data-dev.pdb-ihm.org", "dev.pdb-dev.org", "validate-dev.pdb-ihm.org"] and str(catalog_id) in ["50", "150"]:
             self.is_staging = True
             self.catalog_name = "staging"
         else:
@@ -91,6 +92,7 @@ class PDBDEV_CLI(BaseCLI):
         args = self.parser.parse_args()    # parsing the arguments only
 
         cfg.apply_hostname(args.host, args.catalog_id)
+        cfg.args = args
         
         return args
     

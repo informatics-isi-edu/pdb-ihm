@@ -76,30 +76,40 @@ class PipelineProcessor(object):
     cutoff_time_pacific = "Thursday 20:00"    
     release_time_utc = "Wednesday 00:00"      # In UTC, so we don't have to address day light saving time.
     timeout = 30                              # minutes
-    email_config = "/home/pdbihm/.secrets/mail.json"
+    email_config_file = "/home/pdbihm/.secrets/mail.json"  # NOT USE CURRENTLY
+    email_config = None
+    email_subject_prefix = "PDB-IHM"
     log_dir = "/home/pdbihm/log"
     verbose = False
     notify = True
+    logger = None
     
     def __init__(self, **kwargs):
         # -- ermrest and hatrac
         self.cfg = kwargs.get("cfg", None)
+        self.catalog = kwargs.get("catalog", None)
         self.host = kwargs.get("hostname")
         self.credential_file = kwargs.get("credential_file", None)
         self.catalog_id = kwargs.get("catalog_id", None)
         credentials = kwargs.get("credentials", None)
-        if not credentials: credentials = get_credential(self.host, self.credential_file)
-        if not credentials:
-            raise Exception("ERROR: a proper credential or credential file is required. Provided credential_file: %s" % (credential_file))
-        server = DerivaServer('https', self.host, credentials)
-        self.catalog = server.connect_ermrest(self.catalog_id)
+        if not self.catalog:
+            if not credentials: credentials = get_credential(self.host, self.credential_file)
+            if not credentials:
+                raise Exception("ERROR: a proper credential or credential file is required. Provided credential_file: %s" % (credential_file))
+            server = DerivaServer('https', self.host, credentials)
+            self.catalog = server.connect_ermrest(self.catalog_id)            
         self.catalog.dcctx['cid'] = 'pipeline/pdb'
-        self.store = HatracStore('https', self.host, credentials)
+        self.store = kwargs.get("store", None)
+        if not self.store:
+            self.store = HatracStore('https', self.host, credentials)
         self.hatrac_file = HatracFile(self.store)
         
         # -- local host
         self.local_hostname = socket.gethostname() # processing host
 
+        # -- email: TODO: handle email config file here instead of pdb_process_entry
+        #if kwargs.get("email", None): self.email_config = kwargs.get("email")
+        
         # -- archive/release time
         if kwargs.get('cutoff_time_pacific', None): self.cutoff_time_pacific = kwargs.get('cutoff_time_pacific') 
         if kwargs.get('release_time_utc', None): self.release_time_pacific = kwargs.get('release_time_utc')
@@ -183,16 +193,17 @@ class PipelineProcessor(object):
     # ------------------------------------------------------------------------
     # the caller sometimes need the error message to be included in ermrest.
     # HT TODO: return the error message for now
-    def log_exception(self, e, notify=False, subject=None):
+    def log_exception(self, e, notify=False, subject=None, receivers=None):
         """
         log exception, send email notificatioin if specified
         """
         error_message = str(e)
         et, ev, tb = sys.exc_info()
         tb_message = error_message + '\n' + ''.join(traceback.format_exception(et, ev, tb))
-        self.logger.error('-- Got exception "%s: %s"' % (et.__name__, str(ev)))
-        self.logger.error('%s' % (tb_message))
-        if notify: self.sendMail(subject, tb_message)
+        if self.logger:
+            self.logger.error('-- Got exception "%s: %s"' % (et.__name__, str(ev)))
+            self.logger.error('%s' % (tb_message))
+        if notify: self.sendMail(subject, tb_message, receivers)
         if self.verbose: print(tb_message)
         return tb_message
 
@@ -230,8 +241,8 @@ class PipelineProcessor(object):
         if not self.notify:
             if self.verbose: print("Send mail: subject: %s, text:%s" % (subject, text))
             return
-        if self.email_config['server'] and self.email_config['sender'] and (self.email_config['receivers'] or self.email_config['curators']):
-            subject = 'PDB-IHM %s' % (subject)
+        if self.email_config and self.email_config['server'] and self.email_config['sender'] and (self.email_config['receivers'] or self.email_config['curators']):
+            subject = '%s %s' % (self.email_subject_prefix, subject)
             if self.host in ['dev.pdb-dev.org', 'data-dev.pdb-ihm.org']:
                 subject = f'DEV:{self.catalog_id} {subject}'
             text = f'Backend hostname: {self.local_hostname}, catalog: {self.catalog_id}\n\n{text}'
