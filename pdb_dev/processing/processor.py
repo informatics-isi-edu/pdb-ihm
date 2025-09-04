@@ -47,9 +47,22 @@ pacific_timezone = "America/Los_Angeles"
 
 # ===================================================================================
 class ProcessingError(Exception):
-    """ Exception when fail to perform processing
     """
-    pass
+    Exception when fail to perform processing    
+    """
+    def __init__(self, message, details=None):
+        super().__init__(message)  # Call the base Exception's __init__
+        self.details = details
+
+    ''' # no need to custom str
+    def __str__(self):
+        """
+        Custom string representation for the exception.
+        """
+        base_message = super().__str__()
+        return f"{base_message} (Details: {self.details})"
+    '''
+    
 
 class ErmrestError(ProcessingError):
     """ Exception when fail to perform transaction with Ermrest
@@ -66,7 +79,11 @@ class FileError(ProcessingError):
     """
     pass
 
-
+class SubProcessError(ProcessingError):
+    """ Sub-process failure
+    """
+    pass
+        
 # ===================================================================================
 class PipelineProcessor(object):
     """
@@ -192,6 +209,7 @@ class PipelineProcessor(object):
 
     # ------------------------------------------------------------------------
     # the caller sometimes need the error message to be included in ermrest.
+    # Note: In this function: e = ev
     # HT TODO: return the error message for now
     def log_exception(self, e, notify=False, subject=None, receivers=None):
         """
@@ -199,12 +217,13 @@ class PipelineProcessor(object):
         """
         error_message = str(e)
         et, ev, tb = sys.exc_info()
-        tb_message = error_message + '\n' + ''.join(traceback.format_exception(et, ev, tb))
+        details = f'{e.details}\n' if isinstance(e, ProcessingError) else ''
+        tb_message = error_message + '\n' + details + ''.join(traceback.format_exception(et, ev, tb))
         if self.logger:
             self.logger.error('-- Got exception "%s: %s"' % (et.__name__, str(ev)))
             self.logger.error('%s' % (tb_message))
         if notify: self.sendMail(subject, tb_message, receivers)
-        if self.verbose: print(tb_message)
+        if self.verbose: print("tb_message: %s" % (tb_message))
         return tb_message
 
     # -------------------------------------------------------------------
@@ -270,11 +289,11 @@ class PipelineProcessor(object):
                         ready = True
                     if ready:
                         et, ev, tb = sys.exc_info()
-                        self.logger.error('got exception "%s"' % str(ev))
+                        self.logger.error('-- sendMail retry failed with exception "%s"' % str(ev))
                         self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
                 except:
                     et, ev, tb = sys.exc_info()
-                    self.logger.error('got exception "%s"' % str(ev))
+                    self.logger.error('-- got sendMail exception "%s"' % str(ev))
                     self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
                     ready = True
 

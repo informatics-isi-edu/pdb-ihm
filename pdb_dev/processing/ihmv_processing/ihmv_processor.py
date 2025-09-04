@@ -17,7 +17,7 @@ from deriva.utils.extras.hatrac import HatracFile
 from deriva.utils.extras.job_dispatcher import init_logger
 
 from ...utils.shared import PDBDEV_CLI, DCCTX, cfg
-from ..processor import PipelineProcessor, ProcessingError, ErmrestError, ErmrestUpdateError, FileError
+from ..processor import PipelineProcessor, ProcessingError, ErmrestError, ErmrestUpdateError, FileError, SubProcessError
 #from pdb_dev.utils.shared import PDBDEV_CLI, DCCTX, cfg
 #from pdb_dev.processing.processor import PipelineProcessor, ProcessingError, ErmrestError, ErmrestUpdateError, FileError
 
@@ -34,6 +34,8 @@ def read_json_config_file(config_file):
         raise Exception("Config ERROR: config file is not a json file: %s" % (config_file))
     return config
 
+
+    
 class IHMVProcessor(PipelineProcessor):
     """Network client for standalone PDB Validation Report
     """
@@ -65,6 +67,7 @@ class IHMVProcessor(PipelineProcessor):
 
         if scratch_dir: self.scratch_dir = scratch_dir
         if cfg: self.hatrac_root = cfg.hatrac_root
+        if verbose: self.verbose = verbose
         if logger:
             self.logger = logger
         elif log_file:
@@ -92,18 +95,19 @@ class IHMVProcessor(PipelineProcessor):
                 self.email_config = json.load(file)
             self.email_config["sender"] = self.email_config["sender"].replace("PDB-DEV", "PDB-IHMV")
         
-        print("pdbihm_confif_file: %s " % (self.pdbihm_config_file))
-        print("timeout: %s, singularity_sif: %s, ihmvalidation_dir: %s " % (self.timeout, self.singularity_sif, self.ihmvalidation_dir))
-        print("cfg.host: %s, cfg.catalog_id: %s, is_dev:%s, hatrac_root: %s, log_file: %s " % (self.cfg.host, self.cfg.catalog_id, self.cfg.is_dev, self.hatrac_root, self.log_file))
-        print("email_config: %s" % (self.email_config))
-        
+        if self.verbose:
+            print("pdbihm_confif_file: %s " % (self.pdbihm_config_file))
+            print("timeout: %s, singularity_sif: %s, ihmvalidation_dir: %s " % (self.timeout, self.singularity_sif, self.ihmvalidation_dir))
+            print("cfg.host: %s, cfg.catalog_id: %s, is_dev:%s, hatrac_root: %s, log_file: %s " % (self.cfg.host, self.cfg.catalog_id, self.cfg.is_dev, self.hatrac_root, self.log_file))
+            print("email_config: %s" % (self.email_config))
+            
         # assertion of input arguments
         if not self.singularity_sif or not self.ihmvalidation_dir:
-            raise Exception("CONFIG ERROR: require config for singularity and ihmv validation directory")
+            raise ProcessingError("CONFIG ERROR: singularity and ihmv validation directory configs are required")
 
         # get structure row: TODO: consider moving this to the run function so the class is initialized once
         if structure_rid: self.structure_rid = structure_rid
-        print("structure_rid = %s" % (self.structure_rid))
+        if self.verbose: print("structure_rid = %s" % (self.structure_rid))
         rows = get_ermrest_query(self.catalog, "IHMV", "Structure_mmCIF", constraints=f"RID={self.structure_rid}")
         if len(rows) != 1: raise Exception("ERROR: RID %s doesn't exist" % (self.structure_rid))
         self.structure_row = rows[0]
@@ -155,14 +159,15 @@ class IHMVProcessor(PipelineProcessor):
         """
         Run the IHMV processor logic.
         """
-
+        ihmv_process = None
+        
         try:
             data_dir = f"{self.scratch_dir}/{self.structure_rid}"
             # Remove old directory
             shutil.rmtree(data_dir, ignore_errors=True)
             
-            #print("--------IHVMProcessor.run: running IHMV validation with structure_mmCIF: %s ---------" % (self.structure_rid))
-            #raise Exception("TESTING AUTOMATION")
+            print("--------IHVMProcessor.run: running IHMV validation with structure_mmCIF: %s ---------" % (self.structure_rid))
+            #raise SubProcessError("TEST AUTOMATION", details=f'Additional details goes here')
         
             # -- download file. Do help(HatracFile) for obj properties
             # Create directory structure
@@ -202,34 +207,17 @@ class IHMVProcessor(PipelineProcessor):
                     '--output-root', '/ihmv/output',
                     '--cache-root', '/ihmv/cache'
                     ]
-            # self.logger.debug(f'Running "{" ".join(args)}" from the {self.validation_dir} directory')
-            p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            
+            self.logger.debug(f'Running "{" ".join(args)}" from the {self.validation_dir} directory')
+            ihmv_process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             # Set non-zero return code by-default
             returncode = 127
-            try:
-                stdoutdata, stderrdata = p.communicate(timeout=self.timeout*60)
-                returncode = p.returncode
-                if returncode != 0:
-                    error_msg = (f'ERROR.\nstdoutdata: {stdoutdata}\nstderrdata: {stderrdata}\n')
-                    structure_payload = [{
-                        "RID": self.structure_rid,
-                        "Processing_Status": "Error",
-                        "Processing_Details": error_msg,
-                    }]
-                    update_table_rows(self.catalog, "IHMV", "Structure_mmCIF", payload=structure_payload, column_names=["Processing_Status", "Processing_Details"])
-            except TimeoutExpired:
-                #et, ev, tb = sys.exc_info()
-                #error_msg = 'ERROR.\nTimeout exception\n' + '%s' % ''.join(traceback.format_exception(et, ev, tb))
-                error_msg = self.log_exception(e, notify=False, subject="IHMV: TIMEOUT ERROR")
-                structure_payload = [{
-                    "RID": self.structure_rid,
-                    "Processing_Status": "Error",
-                    "Processing_Details": error_msg,
-                }]
-                update_table_rows(self.catalog, "IHMV", "Structure_mmCIF", payload=structure_payload, column_names=["Processing_Status", "Processing_Details"])
-                p.kill()
-
-            if returncode == 0:
+            stdoutdata, stderrdata = ihmv_process.communicate(timeout=self.timeout*60)
+            returncode = ihmv_process.returncode
+            if returncode != 0:
+                error_msg = (f'stdoutdata: {stdoutdata}\nstderrdata: {stderrdata}\n')
+                raise SubProcessError("Non-zero return code", details=f'stdoutdata: {stdoutdata}\nstderrdata: {stderrdata}\n')
+            else:
                 # -- upload files to hatrac
                 # output location
                 pdf_loc = Path(data_dir, 'output', Path(filename).stem)
@@ -246,39 +234,57 @@ class IHMVProcessor(PipelineProcessor):
                         "File_Bytes": hf.file_bytes,
                         "File_Type": "Validation: Summary PDF" if hf.file_name.endswith("summary_validation.pdf") else "Validation: Full PDF"
                     })
+                    
                 # check whether files already exist
                 existing_files = get_ermrest_query(self.catalog, "IHMV", "Generated_File", constraints=f"Structure_mmCIF={self.structure_rid}")
-                if len(existing_files) != 0:
-                    # simply delete all old files
-                    values_ = [x['RID'] for x in existing_files]
-                    delete_table_rows(self.catalog, "IHMV", "Generated_File", key='RID', values=values_)
-
-                insert_if_not_exist(self.catalog, "IHMV", "Generated_File", ihmv_payload)
-
-                structure_payload = [{
-                    "RID": self.structure_rid,
-                    "Processing_Status": "Success",
-                    "Processing_Details": None
-                }]
-                update_table_rows(self.catalog, "IHMV", "Structure_mmCIF", payload=structure_payload, column_names=["Processing_Status", "Processing_Details"])
-                # TODO: uncomment and adjust to notify
-                #self.sendMail(f"{self.structure_rid} Success", f"Structure_mmCIF {self.structure_rid} validation report was successfully processed", receivers=self.ihmv_receivers)  
-            else:
-                # TODO: report failure or throw exception, so notification can be sent out                
-                raise Exception("IHMValidation ERROR: the validation report subprocess returns non-zero code")
-
+                if len(existing_files) == 0:
+                    insert_if_not_exist(self.catalog, "IHMV", "Generated_File", ihmv_payload)
+                else:
+                    # - option1: simply delete all old files and insert
+                    #values_ = [x['RID'] for x in existing_files]
+                    #delete_table_rows(self.catalog, "IHMV", "Generated_File", key='RID', values=values_)
+                    #insert_if_not_exist(self.catalog, "IHMV", "Generated_File", ihmv_payload)                    
+                    #
+                    # - option2: check whether the rows have changed, if so, update
+                    filetype2row = { f["File_Type"] : f for f in existing_files }
+                    update_payload = set()
+                    for row in ihmv_payload:
+                        existing_file = filetype2row[row["File_Type"]]
+                        for cname in ["File_Name", "File_URL", "File_MD5", "File_Bytes"]:
+                            if row[cname] != existing_file[cname]:
+                                row["RID"] = existing_file["RID"]  # update the row with existing RID
+                                update_payload.add(row)
+                                break
+                    updated = update_table_rows(self.catalog, "IHMV", "Generated_File", column_names=["File_Name", "File_URL", "File_Bytes", "File_MD5"], payload=list(update_payload))
+                    print("Number of files updated: %s" % (len(updated)))
+                    
+                # set processing status to be updated at the end
+                processing_status = "Success"
+                processing_details = None
+        except TimeoutExpired as e:
+            if ihmv_process: ihmv_process.kill()
+            processing_status = "Error"            
+            processing_details = self.log_exception(e)
+            subject = f"{self.structure_rid} Error: {e}"            
         except Exception as e:
-            print("Exception: %s" % (e))
-            subject = "%s Error: %s" % (self.structure_rid, e)
-            error_msg = self.log_exception(e, notify=True, subject=subject, receivers=self.ihmv_receivers) # change notify
+            processing_status = "Error"
+            processing_details = self.log_exception(e)
+            subject = f"{self.structure_rid} Error: {e}"
+        finally:
+            # - update ermrest
             structure_payload = [{
                 "RID": self.structure_rid,
-                "Processing_Status": "Error",
-                "Processing_Details": str(e),
+                "Processing_Status": processing_status,
+                "Processing_Details": processing_details
             }]
             update_table_rows(self.catalog, "IHMV", "Structure_mmCIF", payload=structure_payload, column_names=["Processing_Status", "Processing_Details"])
-        finally:
-            # cleaup directory
+            # - notify
+            if processing_status == "Success": 
+                self.sendMail(f"{self.structure_rid} Success", f"Structure_mmCIF {self.structure_rid} validation report was successfully processed", receivers=self.ihmv_receivers)
+            elif processing_status == "Error":
+                self.sendMail(subject, processing_details, receivers=self.ihmv_receivers)
+            print("Processing_Status: %s\nProcessing_details: %s" % (processing_status, processing_details))
+            # - cleaup directory
             shutil.rmtree(data_dir, ignore_errors=True)
 
 # ===========================================================================================
@@ -289,11 +295,11 @@ def main(server_name, catalog_id, credentials, args):
     catalog = server.connect_ermrest(catalog_id)
     model = catalog.getCatalogModel()
     
-    logger = init_logger(log_file=args.log_file)
+    logger = init_logger(log_level="debug", log_file=args.log_file)
     logger.info("=========== starts ihmv processor with args: %s" % (args))
     
     processor = IHMVProcessor(
-        catalog=catalog, store=store, hostname=server_name, catalog_id=catalog_id, cfg=cfg, logger=logger,
+        catalog=catalog, store=store, hostname=server_name, catalog_id=catalog_id, cfg=cfg, logger=logger, verbose=True,
         scratch_dir=args.scratch_dir, 
         structure_rid=args.rid,
         pdbihm_config_file=args.pdbihm_config_file,

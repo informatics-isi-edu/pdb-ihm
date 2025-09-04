@@ -75,12 +75,14 @@ class IHMVJobStream (JobStream):
 # =================================================================================
 #
 # HT local dir:
-# > PDB_CREDENTIALS="/home/hongsuda/.secrets/credentials_proper.json" PDB_SERVER="data-dev.pdb-ihm.org" CATALOG=199 PDBIHM_CONFIG=/home/hongsuda/git/pdb-ihm-ops/scripts/home-config/workflow-dev/dev/config/entry_processing/pdb_conf.json SCRATCH_DIR=/tmp/ihmv_processing IHMV_LOG=/tmp/log/ihmv_processing/ihmv_worker.log  ihmv_worker
+# > PDB_CREDENTIALS=/home/hongsuda/.secrets/credentials_proper.json PDB_SERVER=data-dev.pdb-ihm.org CATALOG=199 PDBIHM_CONFIG=/home/hongsuda/git/pdb-ihm-ops/scripts/home-config/workflow-dev/dev/config/entry_processing/pdb_conf.json SCRATCH_DIR=/tmp/ihmv_processing IHMV_LOG=/tmp/log/ihmv_processing/ihmv_worker.log  ihmv_worker
 #
 # workflow server:
 # switch user to pdb-ihm
 # > sudo su - pdbihm
-# > "PDB_CREDENTIALS=/home/pdbihm/.secrets/credentials_proper.json" "PDB_SERVER=data-dev.pdb-ihm.org" "CATALOG=199" "PDBIHM_CONFIG=/home/pdbihm/dev/config/entry_processing/pdb_conf.json" "SCRATCH_DIR=/mnt/vbdb1/ihmv_processing" "IHMV_LOG=/home/pdbihm/log/ihmv_processing/ihmv_worker.log"  /usr/local/bin/ihmv_worker
+# > PDB_CREDENTIALS=/home/pdbihm/.secrets/credentials_proper.json PDB_SERVER=data-dev.pdb-ihm.org CATALOG=199 PDBIHM_CONFIG=/home/pdbihm/dev/config/entry_processing/pdb_conf.json SCRATCH_DIR=/mnt/vdb1/ihmv_processing IHMV_LOG=/home/pdbihm/log/ihmv_processing/ihmv_worker.log ihmv_worker
+#
+
 
 def main():
     """
