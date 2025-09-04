@@ -247,13 +247,13 @@ class IHMVProcessor(PipelineProcessor):
                     #
                     # - option2: check whether the rows have changed, if so, update
                     filetype2row = { f["File_Type"] : f for f in existing_files }
-                    update_payload = set()
+                    update_payload = []
                     for row in ihmv_payload:
                         existing_file = filetype2row[row["File_Type"]]
-                        for cname in ["File_Name", "File_URL", "File_MD5", "File_Bytes"]:
+                        for cname in ["File_MD5", "File_Name", "File_URL", "File_Bytes"]:
                             if row[cname] != existing_file[cname]:
                                 row["RID"] = existing_file["RID"]  # update the row with existing RID
-                                update_payload.add(row)
+                                update_payload.append(row)
                                 break
                     updated = update_table_rows(self.catalog, "IHMV", "Generated_File", column_names=["File_Name", "File_URL", "File_Bytes", "File_MD5"], payload=list(update_payload))
                     print("Number of files updated: %s" % (len(updated)))
