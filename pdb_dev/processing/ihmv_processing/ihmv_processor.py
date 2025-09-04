@@ -208,7 +208,7 @@ class IHMVProcessor(PipelineProcessor):
                     '--cache-root', '/ihmv/cache'
                     ]
             
-            self.logger.debug(f'Running "{" ".join(args)}" from the {self.validation_dir} directory')
+            self.logger.debug(f'Running "{" ".join(args)}" from the {self.ihmvalidation_dir} directory')
             ihmv_process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             # Set non-zero return code by-default
             returncode = 127
