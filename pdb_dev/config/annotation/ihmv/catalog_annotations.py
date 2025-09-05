@@ -30,7 +30,7 @@ def get_chaise_config(catalog_id):
         "SystemColumnsDisplayCompact": ["RID"],
         "SystemColumnsDisplayDetailed": ["RID", "RCT", "RMT"],
         "SystemColumnsDisplayEntry": [],
-        "navbarBrand": "/",
+        "navbarBrand": "/ihmv",
         "headTitle": "IHMV",
         "navbarBrandText": "IHMV",
 	"signUpURL": "https://app.globus.org/groups/99da042e-64a6-11ea-ad5f-0ef992ed7ca1/about",
@@ -64,12 +64,12 @@ def get_navbar_menu(catalog_id):
             "newTab": False,
             "children": [
 	        {
-	            "name": "Structure",
+	            "name": "Entry",
 	            "url": "/chaise/recordset/#"+catalog_id+"/IHMV:Structure_mmCIF"
 	        },
 	        {
-	            "name": "IHMV File",
-	            "url": "/chaise/recordset/#"+catalog_id+"/IHMV:IHMV_File"
+	            "name": "Validation Reports",
+	            "url": "/chaise/recordset/#"+catalog_id+"/IHMV:Generated_File"
 	        },
                 {
                     "name": "Vocabulary",
@@ -87,7 +87,7 @@ def get_navbar_menu(catalog_id):
                         {
                             "name": "User Guide",
                             "children": [
-                                { "name": "PDB-IHM", "url": "https://docs.google.com/document/d/1CM8-6PYqI0DvETeQEfoUpSFZ8BhLrvYnihLSK8ghVcI/" }
+                                { "name": "PDB-IHM", "url": "https://docs.google.com/document/d/1SEFMWU4SDkOSg3Hk1ebFxy8BrPt7v-MlogS3gFDb6K8" }
                             ],
                         }
                     ],
