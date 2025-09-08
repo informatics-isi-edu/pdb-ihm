@@ -51,7 +51,7 @@ class IHMVProcessor(PipelineProcessor):
     pdbihm_config = {}
     email_config = {}
     email_subject_prefix = "IHMV"
-    ihmv_receivers = "aozalevsky@gmail.com" #"aozalevsky@gmail.com,pdb-ihm@wwpdb.org"   # comma separated list
+    ihmv_receivers = "ihmv@pdb-ihm.org,aozalevsky@gmail.com" #"aozalevsky@gmail.com,pdb-ihm@wwpdb.org"   # comma separated list
     
     def __init__(self, catalog=None, store=None, hostname=None, catalog_id=None, credential_file=None,
                  scratch_dir=None, cfg=None, logger=None, log_level="info", log_file=None, verbose=None,
@@ -279,7 +279,8 @@ class IHMVProcessor(PipelineProcessor):
             }]
             update_table_rows(self.catalog, "IHMV", "Structure_mmCIF", payload=structure_payload, column_names=["Processing_Status", "Processing_Details"])
             # - notify
-            if processing_status == "Success": 
+            if processing_status == "Success":
+                if self.logger: self.logger.info(f"Structure_mmCIF {self.structure_rid}: validation report successfully processed")
                 self.sendMail(f"{self.structure_rid} Success", f"Structure_mmCIF {self.structure_rid} validation report was successfully processed", receivers=self.ihmv_receivers)
             elif processing_status == "Error":
                 self.sendMail(subject, processing_details, receivers=self.ihmv_receivers)
