@@ -30,6 +30,7 @@ def get_chaise_config(catalog_id):
         "SystemColumnsDisplayCompact": ["RID"],
         "SystemColumnsDisplayDetailed": ["RID", "RCT", "RMT"],
         "SystemColumnsDisplayEntry": [],
+        "dataBrowser": "/ihmv",
         "navbarBrand": "/ihmv",
         "headTitle": "IHMV",
         "navbarBrandText": "IHMV",
