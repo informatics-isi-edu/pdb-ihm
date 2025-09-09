@@ -51,7 +51,7 @@ class IHMVProcessor(PipelineProcessor):
     pdbihm_config = {}
     email_config = {}
     email_subject_prefix = "IHMV"
-    ihmv_receivers = "ihmv@pdb-ihm.org,aozalevsky@gmail.com,brinda.vallat@rcsb.org,sekharan@rcsb.rutgers.edu" #"aozalevsky@gmail.com,pdb-ihm@wwpdb.org"   # comma separated list
+    ihmv_receivers = "ihmv@pdb-ihm.org" #"aozalevsky@gmail.com,pdb-ihm@wwpdb.org"   # comma separated list
 
     def __init__(self, catalog=None, store=None, hostname=None, catalog_id=None, credential_file=None,
                  scratch_dir=None, cfg=None, logger=None, log_level="info", log_file=None, verbose=None,
@@ -60,9 +60,9 @@ class IHMVProcessor(PipelineProcessor):
                  singularity_sif: typing.Optional[str]=None,
                  ihmvalidation_dir: typing.Optional[str]=None,
                  timeout: typing.Optional[int]=None,
-                 structure_rid: typing.Optional[str]=None,                 
+                 structure_rid: typing.Optional[str]=None,
                  ):
-        
+
         super().__init__(catalog=catalog, store=store, hostname=hostname, catalog_id=catalog_id, credentials = credential_file, cfg=cfg)
 
         if scratch_dir: self.scratch_dir = scratch_dir
