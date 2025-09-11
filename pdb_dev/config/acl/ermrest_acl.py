@@ -27,7 +27,8 @@ GROUPS = {
     "isrd-systems": ["https://auth.globus.org/3938e0d0-ed35-11e5-8641-22000ab4b42b"],
     "isrd-testers": ["https://auth.globus.org/9d596ac6-22b9-11e6-b519-22000aef184d"],
     "pdb-ihm-dev": [],     
-    "pdb-ihm": ["https://auth.globus.org/cfc89bb6-3d96-4f50-8f1d-f625ef400e40"], 
+    "pdb-ihm": ["https://auth.globus.org/cfc89bb6-3d96-4f50-8f1d-f625ef400e40"],
+    "ihmv-admins": ["https://auth.globus.org/d99c2d44-40e8-11f0-8c0d-0affcae2cfad"],     
 }
 g = GROUPS
 GROUPS["owners"] = g["isrd-systems"] + g["pdb-admins"]
@@ -68,8 +69,15 @@ def initialize_policies(catalog):
     if cfg.is_dev:
         g["owners"] = g["owners"] + g["isrd-staff"]
         g["entry-updaters"] = g["entry-updaters"] + g["isrd-testers"]
-        g["pdb-pipeline"] = g["pdb-ihm-dev"]
+        g["pdb-pipelines"] = g["pdb-ihm"]
 
+    g["ihmv-owners"] = g["owners"] + g["ihmv-admins"]
+    g["ihmv-updaters"] = g["entry-updaters"]
+    g["ihmv-updaters"] = g["entry-updaters"]    
+    g["ihmv-submitters"] = g["pdb-submitters"]
+    g["ihmv-pipelines"] = g["pdb-pipelines"]
+
+        
     ermrest_catalog_acls = {
         "owner" : g["owners"],
         "enumerate": g["public"], 
@@ -239,7 +247,7 @@ def set_public_acl(model):
     # -- ERMrest_Group inherit default policy
 
     # -- Catalog_Group: entry-updaters can modify for now
-    table = schema.tables["Catalog_Group"]
+    table = schema.tables["ERMrest_Group"]
     table.acls.update({
         "select" : g['entry-updaters'] + g['entry-readers'],
         "insert" : g['entry-updaters'],  
@@ -415,7 +423,7 @@ def set_PDB_entry(model):
                 "types": [ "insert", "update" ],
                 "scope_acl": g["pdb-submitters"],
                 "projection": [
-                    { "filter": "Entry_Submitter_Select" if cfg.is_dev else "PDB_Submitter_Allow" , "operator": "=", "operand": "True"  },
+                    { "filter": "Entry_Submitter_Select", "operator": "=", "operand": "True"  },
                     "RID"
                 ],
                 "projection_type": "nonnull"

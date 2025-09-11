@@ -141,7 +141,7 @@ def set_hatrac_acl(store, catalog):
 
     # -- new policy
     create_hatrac_namespaces_if_not_exist(store, ["/hatrac/pdb/templates", "/hatrac/pdb/submitted/uid", "/hatrac/pdb/generated/uid", "/hatrac/pdb/public/images", "/hatrac/pdb/internal"], cfg.hatrac_root)
-    set_hatrac_namespaces_acl(store, hatrac_curators_read, ["/hatrac"], cfg.hatrac_root)
+    set_hatrac_namespaces_acl(store, hatrac_curators_read, ["/hatrac/"], cfg.hatrac_root)  # need /hatrac/ to get to hatrac service
     # remove unnecessary policies    
     set_hatrac_namespaces_acl(store, hatrac_reset_acls, ["/hatrac/pdb", "/hatrac/pdb/submitted", "/hatrac/pdb/generated"], cfg.hatrac_root)
     set_hatrac_namespaces_acl(store, hatrac_curators_write_submitters_read, ["/hatrac/pdb/templates", "/hatrac/pdb/public"], cfg.hatrac_root)
