@@ -30,7 +30,8 @@ def get_chaise_config(catalog_id):
         "SystemColumnsDisplayCompact": ["RID", "RCB", "RCT"],
         "SystemColumnsDisplayDetailed": ["RID", "RCB", "RCT", "RMT"],
         "SystemColumnsDisplayEntry": [],
-        "navbarBrand": "/ihmv",
+        "dataBrowser": "/ihmv/",
+        "navbarBrand": "/ihmv/",
         "headTitle": "IHMV",
         "navbarBrandText": "IHMV",
 	"signUpURL": "https://app.globus.org/groups/99da042e-64a6-11ea-ad5f-0ef992ed7ca1/about",
@@ -64,32 +65,28 @@ def get_navbar_menu(catalog_id):
             "newTab": False,
             "children": [
 	        {
-	            "name": "Entry",
+	            "name": "Structure",
 	            "url": "/chaise/recordset/#"+catalog_id+"/IHMV:Structure_mmCIF"
 	        },
 	        {
 	            "name": "Validation Reports",
 	            "url": "/chaise/recordset/#"+catalog_id+"/IHMV:Generated_File"
 	        },
-                {
-                    "name": "Vocabulary",
-                    "acls": { "show": GROUPS["owners"] + GROUPS["entry-updaters"], "enable": GROUPS["owners"] + GROUPS["entry-updaters"] },
-                    "children": [
-                        {
-                            "name": "To be added",
-                            "url": "/chaise/recordset/#"+catalog_id+"/Vocab:entity_poly_seq_hetero"                            
-                        },
-                    ]
-                },
+            #    {
+            #        "name": "Vocabulary",
+            #        "acls": { "show": GROUPS["owners"] + GROUPS["entry-updaters"], "enable": GROUPS["owners"] + GROUPS["entry-updaters"] },
+            #        "children": [
+            #            {
+            #                "name": "To be added",
+            #                "url": "/chaise/recordset/#"+catalog_id+"/Vocab:entity_poly_seq_hetero"
+            #            },
+            #        ]
+            #    },
                 {
                     "name": "Documentation",
                     "children": [
-                        {
-                            "name": "User Guide",
-                            "children": [
-                                { "name": "PDB-IHM", "url": "https://docs.google.com/document/d/1SEFMWU4SDkOSg3Hk1ebFxy8BrPt7v-MlogS3gFDb6K8" }
-                            ],
-                        }
+                        { "name": "Validation System", "url": "https://docs.google.com/document/d/1SEFMWU4SDkOSg3Hk1ebFxy8BrPt7v-MlogS3gFDb6K8" },
+                        { "name": "Validation Reports", "url": "https://pdb-ihm.org/validation_help.html" },
                     ],
                 }
             ],
