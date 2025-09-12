@@ -217,6 +217,7 @@ def update_generated_elements(model):
     generated_columns = set()
     #generated_columns.update(get_columns(model, schema_pattern=".*", table_pattern=".*", column_pattern="Accession_Code"))
     #generated_columns.update(get_columns(model, schema_names=["PDB"], table_names=["entry"], column_names=["Accession_Code"]))
+    generated_columns.update(get_columns(model, schema_names=["IHMV"], table_names=["Structure_mmCIF"], column_names=["Processing_Details"]))
     for column in generated_columns:
         column.annotations[tag["generated"]] = True
         column.annotations[tag["immutable"]] = True
