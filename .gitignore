@@ -118,4 +118,8 @@ venv.bak/
 # emacs backup files
 *~
 
+
 # backup/tmp
+# vscode
+.vscode/
+
