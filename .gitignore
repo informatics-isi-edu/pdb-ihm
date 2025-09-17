@@ -7,7 +7,10 @@ __pycache__/
 **/*.tmp
 **/*~
 **/tmp/*
+**/temp/*
 **/explore/*
+**/*_orig*
+**/*_bk*
 
 # C extensions
 *.so
@@ -114,3 +117,5 @@ venv.bak/
 
 # emacs backup files
 *~
+
+# backup/tmp
