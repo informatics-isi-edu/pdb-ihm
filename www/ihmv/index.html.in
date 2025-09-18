@@ -54,11 +54,11 @@
     <div class="demo-links">
 
       <p class="demo">New Account: <a href="https://app.globus.org/groups/99da042e-64a6-11ea-ad5f-0ef992ed7ca1/about">Register using Globus</a> </p>
-      <p class="demo">Submit Data: <a href="https://data-dev.pdb-ihm.org/chaise/recordset/#199/IHMV:Structure_mmCIF@sort(RID)">Upload a New Structure</a> </p>
+      <p class="demo">Validate Data: <a href="https://data-dev.pdb-ihm.org/chaise/recordset/#199/IHMV:Structure_mmCIF@sort(RID)">Upload a New Structure</a> </p>
       <p class="demo">Documentation: <a href="https://docs.google.com/document/d/1SEFMWU4SDkOSg3Hk1ebFxy8BrPt7v-MlogS3gFDb6K8/">User Guide</a> </p>
 
     </div>
-    <p>Please report problems to <a href="mailto:helpdesk@pdb-ihm.org">helpdesk@pdb-ihm.org</a>. </p>
+    <p>Please report problems to <a href="mailto:ihmv@pdb-ihm.org">helpdesk@pdb-ihm.org</a>. </p>
     <br>
   </div>
 <!-- </div> -->
