@@ -11,6 +11,9 @@ from deriva.utils.extras.model import print_schema_model_extras, print_table_mod
 def update_IHMV(model):
     schema = model.schemas["IHMV"]
 
+    table = schema.tables["Structure_mmCIF"]
+    table.display.update({'markdown_name' :  'Structure mmCIF', })
+
     # ----------------------------
     """ # use catalog default
     schema.display.update({
