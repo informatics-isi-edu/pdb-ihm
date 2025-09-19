@@ -27,7 +27,7 @@ def get_chaise_config(catalog_id):
         "maxRecordsetRowHeight": 235,
         #"footerMarkdown": "[* Privacy policy](/privacy-policy){target='_blank'}",
         "exportServicePath": "/deriva/export",
-        "SystemColumnsDisplayCompact": ["RID", "RCB", "RCT"],
+        "SystemColumnsDisplayCompact": ["RID", "RCB", "RCT", "RMT"],
         "SystemColumnsDisplayDetailed": ["RID", "RCB", "RCT", "RMT"],
         "SystemColumnsDisplayEntry": [],
         "dataBrowser": "/ihmv/",
