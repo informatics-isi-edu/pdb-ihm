@@ -26,6 +26,7 @@ CREATE TRIGGER entry_trigger_before_insert
 BEFORE INSERT ON "PDB"."entry"
 FOR EACH ROW EXECUTE PROCEDURE "PDB".entry_trigger_before_insert();
 
+-- ---------------------------------------------------------------------------
 -- before update
 CREATE OR REPLACE FUNCTION "PDB".entry_trigger_before_update() RETURNS trigger LANGUAGE plpgsql
 AS $function$
@@ -46,17 +47,13 @@ BEGIN
     NEW."Submitter_Flag_Date" := NULL;
   END IF;
 
-  -- update last_mmcif_md5
-  IF OLD.mmCIF_File_MD5 != NEW.mmCIF_File_MD5  THEN
-    NEW.Last_mmCIF_File_MD5 := OLD.mmCIF_File_MD5;
-  END IF;
 
   -- The mmcif file content has changed (note: assuming that md5 is not null), trigger processing workflow
   -- If submitter forgets to reset Workflow_Status, reset to DEPO.
   -- If curators forgets to reset, ignore (let them fix it themselves)
-  IF OLD."mmCIF_File_MD5" != NEW."mmCIF_File_MD5"
+  IF coalesce(OLD."mmCIF_File_MD5", '') != coalesce(NEW."mmCIF_File_MD5", '')
   THEN
-    NEW.Last_mmCIF_File_MD5 := OLD.mmCIF_File_MD5;  
+    NEW."Last_mmCIF_File_MD5" := OLD."mmCIF_File_MD5";
     IF NEW."Manual_Processing" IS FALSE AND New."Workflow_Status" = 'ERROR'
        AND OLD."Process_Status" in ('Error: generating mmCIF file', 'Error: processing uploaded mmCIF file')
     THEN
@@ -143,7 +140,7 @@ $function$;
 DROP TRIGGER IF EXISTS entry_related_file_trigger_before_update ON "PDB"."Entry_Related_File";
 CREATE TRIGGER entry_related_file_trigger_before_update
 BEFORE UPDATE ON "PDB"."Entry_Related_File"
-FOR EACH ROW EXECUTE PROCEDURE "PDB".entry_related_file_trigger_before_update()
+FOR EACH ROW EXECUTE PROCEDURE "PDB".entry_related_file_trigger_before_update();
 
 -- ==================================================================================
 CREATE OR REPLACE FUNCTION "PDB".accession_code_trigger_before_update() RETURNS trigger LANGUAGE plpgsql
@@ -160,7 +157,7 @@ $function$;
 DROP TRIGGER IF EXISTS accession_code_trigger_before_update ON "PDB"."Accession_Code";
 CREATE TRIGGER accession_code_trigger_before_update
 BEFORE UPDATE ON "PDB"."Accession_Code"
-FOR EACH ROW EXECUTE PROCEDURE "PDB".accession_code_trigger_before_update()
+FOR EACH ROW EXECUTE PROCEDURE "PDB".accession_code_trigger_before_update();
 
 
 COMMIT;
