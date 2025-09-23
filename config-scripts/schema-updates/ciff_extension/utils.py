@@ -168,6 +168,19 @@ def alter_on_update_fkey_if_exist(model, schema_name, table_name, fkey_name, val
         pass
 
 # ----------------------------------------
+# alter on delete fkey if exist
+# if schema_name and table_name are not in the model, throw an error.
+def alter_on_delete_fkey_if_exist(model, schema_name, table_name, fkey_name, value):
+        
+    schema = model.schemas[schema_name]
+    table = schema.tables[table_name]
+    try:    
+        table.foreign_keys[(schema, fkey_name)].alter(on_delete=value)
+        print("Altered fkey %s of table %s.%s on_delete=%s" % (fkey_name, schema_name, table_name, value))
+    except KeyError:
+        pass
+
+# ----------------------------------------
 # rename fkey if exist
 # if schema_name and table_name are not in the model, throw an error.
 def rename_fkey_if_exist(model, schema_name, table_name, old_key_name, new_key_name):
@@ -382,3 +395,8 @@ def update_rows(catalog, schema_name, table_name, columns, rows, column_key='RID
     resp.raise_for_status()
     print(f'Updated rows of the {schema_name}:{table_name} table.')
 
+def create_schema_if_not_exist(model, schema_name, schema_comment=None):
+    if schema_name not in model.schemas:
+        
+        model.create_schema(Schema.define(schema_name, schema_comment))
+        print('create schema %s' % (schema_name))

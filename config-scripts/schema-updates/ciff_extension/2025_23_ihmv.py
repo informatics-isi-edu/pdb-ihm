@@ -149,7 +149,7 @@ def define_tdoc_IHMV_Generated_File():
         ForeignKey.define(['Structure_mmCIF'], 'IHMV', 'Structure_mmCIF', ['RID'],
                           constraint_names=[['IHMV', 'Generated_File_Structure_mmCIF_fkey']],
                           on_update='CASCADE',
-                          on_delete='NO ACTION'
+                          on_delete='CASCADE'
         )
     ]
 
