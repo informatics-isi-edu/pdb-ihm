@@ -2,8 +2,10 @@ import sys
 import json
 from deriva.core import ErmrestCatalog, AttrDict, get_credential, DEFAULT_CREDENTIAL_FILE, tag, urlquote, DerivaServer, BaseCLI
 from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key, ForeignKey, DomainType, ArrayType
-from deriva.utils.extras.model import create_vocab_tdoc
+from deriva.utils.extras.model import create_vocab_tdoc, create_schema_if_not_exist
 from deriva.utils.extras.data import insert_if_not_exist
+
+from pdb_dev.utils.shared import DCCTX, PDBDEV_CLI, cfg
 import utils
 
 # ========================================================
@@ -184,9 +186,8 @@ def main(server_name, catalog_id, credentials):
     catalog.dcctx['cid'] = "oneoff/model"
     model = catalog.getCatalogModel()
 
-
-    model.schemas["IHMV"].tables["Generated_Files"].drop()
-    model.schemas["IHMV"].tables["Structure_mmCIF"].drop()    
+    create_schema_if_not_exist(model, "IHMV", schema_comment=None)
+    create_schema_if_not_exist(model, "Vocab", schema_comment=None)
 
     if True:
         """
@@ -212,8 +213,9 @@ def main(server_name, catalog_id, credentials):
         utils.create_table_if_not_exist(model, 'IHMV',  define_tdoc_IHMV_Generated_File())
 
 if __name__ == '__main__':
-    args = BaseCLI("ad-hoc table creation tool", None, 1).parse_cli()
+    args = PDBDEV_CLI(DCCTX["model"], None, 1).parse_cli()
     credentials = get_credential(args.host, args.credential_file)
-
-    main(args.host, 199, credentials)
+    #print("credential: %s" % (credentials))
+    main(args.host, args.catalog_id, credentials)
+    
     
