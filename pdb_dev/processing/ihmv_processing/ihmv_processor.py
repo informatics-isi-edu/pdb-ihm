@@ -52,6 +52,7 @@ class IHMVProcessor(PipelineProcessor):
     email_config = {}
     email_subject_prefix = "IHMV"
     ihmv_receivers = "ihmv@pdb-ihm.org" #"aozalevsky@gmail.com,pdb-ihm@wwpdb.org"   # comma separated list
+    processing_details_limit = 1024
 
     def __init__(self, catalog=None, store=None, hostname=None, catalog_id=None, credential_file=None,
                  scratch_dir=None, cfg=None, logger=None, log_level="info", log_file=None, verbose=None,
@@ -167,7 +168,7 @@ class IHMVProcessor(PipelineProcessor):
             shutil.rmtree(data_dir, ignore_errors=True)
             
             print("--------IHVMProcessor.run: running IHMV validation with structure_mmCIF: %s ---------" % (self.structure_rid))
-            #raise SubProcessError("TEST AUTOMATION", details=f'Additional details goes here')
+            #raise SubProcessError("TEST AUTOMATION", details=f'Additional details goes here. Try to make this message very long { ["-0123456789-%d" % (i) for i in range(10) ] }')
         
             # -- download file. Do help(HatracFile) for obj properties
             # Create directory structure
@@ -272,10 +273,11 @@ class IHMVProcessor(PipelineProcessor):
             subject = f"{self.structure_rid} Error: {e}"
         finally:
             # - update ermrest
+            #raise Exception("ERROR: test when update fails")
             structure_payload = [{
                 "RID": self.structure_rid,
                 "Processing_Status": processing_status,
-                "Processing_Details": processing_details
+                "Processing_Details": processing_details[(0 - self.processing_details_limit):]  # truncate the message
             }]
             update_table_rows(self.catalog, "IHMV", "Structure_mmCIF", payload=structure_payload, column_names=["Processing_Status", "Processing_Details"])
             # - notify
