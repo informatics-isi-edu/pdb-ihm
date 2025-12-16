@@ -48,7 +48,7 @@ class IHMVJobStream (JobStream):
         if timeout: self.timeout = timeout
         if singularity_sif: self.singularity_sif = singularity_sif
         if ihmvalidation_dir: self.ihmvalidation_dir = ihmvalidation_dir
-        print("IHMVJobStream init: scratch_dir: %s, pdbihm_config_file: %s, timeout: %s, singularity: %s, validation_dir: %s" % (self.scratch_dir, self.pdbihm_config_file, self.timeout, self.singularity_sif, self.ihmvalidation_dir))
+        print("--- IHMVJobStream init: scratch_dir: %s, pdbihm_config_file: %s, timeout: %s, singularity: %s, validation_dir: %s" % (self.scratch_dir, self.pdbihm_config_file, self.timeout, self.singularity_sif, self.ihmvalidation_dir))
         
     def run_row_job(self, dispatcher, row):
         assert row['RID']
@@ -75,7 +75,7 @@ class IHMVJobStream (JobStream):
 # =================================================================================
 #
 # HT local dir:
-# > PDB_CREDENTIALS=/home/hongsuda/.secrets/credentials_proper.json PDB_SERVER=data-dev.pdb-ihm.org CATALOG=199 PDBIHM_CONFIG=/home/hongsuda/git/pdb-ihm-ops/scripts/home-config/workflow-dev/dev/config/entry_processing/pdb_conf.json SCRATCH_DIR=/tmp/ihmv_processing LOG_FILE=/tmp/log/ihmv_processing/ihmv_worker.log  ihmv_worker
+# > PDB_CREDENTIALS=/home/hongsuda/.secrets/credentials_proper.json PDB_SERVER=data-dev.pdb-ihm.org CATALOG=199 PDBIHM_CONFIG=/home/hongsuda/config/entry_processing/local_pdb_conf.json SCRATCH_DIR=/tmp/ihmv_processing LOG_FILE=/tmp/log/ihmv_processing/ihmv_worker.log  ihmv_worker
 #
 # workflow server:
 # switch user to pdb-ihm
