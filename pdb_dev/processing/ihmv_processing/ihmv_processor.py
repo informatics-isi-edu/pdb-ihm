@@ -52,7 +52,7 @@ class IHMVProcessor(PipelineProcessor):
     email_config = {}
     email_subject_prefix = "IHMV"
     ihmv_receivers = "ihmv@pdb-ihm.org" #"aozalevsky@gmail.com,pdb-ihm@wwpdb.org"   # comma separated list
-    processing_details_limit = 1024
+    processing_details_limit = 2500
 
     def __init__(self, catalog=None, store=None, hostname=None, catalog_id=None, credential_file=None,
                  scratch_dir=None, cfg=None, logger=None, log_level="info", log_file=None, verbose=None,
@@ -168,7 +168,7 @@ class IHMVProcessor(PipelineProcessor):
             shutil.rmtree(data_dir, ignore_errors=True)
             
             print("--------IHVMProcessor.run: running IHMV validation with structure_mmCIF: %s ---------" % (self.structure_rid))
-            #raise SubProcessError("TEST AUTOMATION", details=f'Additional details goes here. Try to make this message very long { ["-0123456789-%d" % (i) for i in range(10) ] }')
+            #raise SubProcessError("TEST AUTOMATION", details=f'Additional details goes here. Try to make this message very long { ["-0123456789-%d" % (i) for i in range(100) ] }')
         
             # -- download file. Do help(HatracFile) for obj properties
             # Create directory structure
@@ -216,8 +216,10 @@ class IHMVProcessor(PipelineProcessor):
             stdoutdata, stderrdata = ihmv_process.communicate(timeout=self.timeout*60)
             returncode = ihmv_process.returncode
             if returncode != 0:
-                error_msg = (f'stdoutdata: {stdoutdata}\nstderrdata: {stderrdata}\n')
-                raise SubProcessError("Non-zero return code", details=f'stdoutdata: {stdoutdata}\nstderrdata: {stderrdata}\n')
+                limit = self.processing_details_limit - len(stderrdata) - 100
+                stdoutdata = stdoutdata[-limit:] if limit > 0 else ""
+                error_msg = f'stdoutdata: {stdoutdata}\nstderrdata: {stderrdata}\n'
+                raise SubProcessError("Non-zero return code", details=error_msg)
             else:
                 # -- upload files to hatrac
                 # output location
@@ -277,7 +279,7 @@ class IHMVProcessor(PipelineProcessor):
             structure_payload = [{
                 "RID": self.structure_rid,
                 "Processing_Status": processing_status,
-                "Processing_Details": processing_details[(0 - self.processing_details_limit):]  # truncate the message
+                "Processing_Details": processing_details[(0 - self.processing_details_limit):] if processing_details else None # truncate message
             }]
             update_table_rows(self.catalog, "IHMV", "Structure_mmCIF", payload=structure_payload, column_names=["Processing_Status", "Processing_Details"])
             # - notify
@@ -315,7 +317,7 @@ def main(server_name, catalog_id, credentials, args):
 # usage:
 #
 # HT laptop
-#> python ihmv_processor.py --pdbihm-config-file ~/git/pdb-ihm-ops/scripts/home-config/workflow-dev/dev/config/entry_processing/pdb_conf.json --catalog-id 199 --rid 2ET
+#> python ihmv_processor.py --pdbihm-config-file ~/config/entry_processing/local_pdb_conf.json --catalog-id 199 --rid 286
 #
 # workflow-dev: as pdbihm user
 #
