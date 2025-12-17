@@ -16,11 +16,19 @@ def update_IHMV(model):
     schema = model.schemas["IHMV"]
     
     # ----------------------------
+    schema.tables["Structure_mmCIF"].columns["File_URL"].display.update({
+        'comment': 'Upload IHMCIF (.cif) file. Use python-ihm to prepare IHMCIF file. Using other tools may not provide compliant files.',
+    })
+
     schema.tables["Structure_mmCIF"].columns["File_URL"].asset.update({
         "md5": "File_MD5",
         "url_pattern": "%s/ihmv/submitted/uid/{{#if _RCB}}{{#regexFindFirst _RCB \"[^/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/structure/mmCIF/{{{File_MD5}}}{{{_File_URL.filename_ext}}}" % (cfg.hatrac_root),
         "filename_column": "File_Name",
-        "byte_count_column": "File_Bytes"
+        "byte_count_column": "File_Bytes",
+        "filename_ext_filter": [
+            ".cif",
+            ".CIF"
+        ]
     })
     
     # ----------------------------
