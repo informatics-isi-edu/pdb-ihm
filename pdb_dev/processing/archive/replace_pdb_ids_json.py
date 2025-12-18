@@ -141,10 +141,17 @@ def process_value(value, old_pdb_id, new_pdb_id):
         return value
 
 
-def process_json_file(input_path, output_path):
+def process_json_file(input_file_path, output_file_path):
     """
     Process a gzipped JSON file and replace PDB IDs.
     """
+    input_path = Path(input_file_path)
+    output_path = Path(output_file_path)
+
+    if not input_path.exists():
+        print(f"Error: Input file '{input_path}' does not exist", file=sys.stderr)
+        raise Exception(f"Error: Input file '{input_path}' does not exist")        
+    
     # Read input file
     try:
         with gzip.open(input_path, 'rt', encoding='utf-8') as f:
@@ -163,7 +170,7 @@ def process_json_file(input_path, output_path):
             json.dump(new_data, f, indent=4, ensure_ascii=False)
     except Exception as e:
         print(f"Error writing output file: {e}", file=sys.stderr)
-        raise
+        raise 
 
 
 def main():
@@ -176,17 +183,14 @@ def main():
 
     args = parser.parse_args()
 
-    input_path = Path(args.input)
-    output_path = Path(args.output)
+    input_fpath = args.input
+    output_fpath = args.output
 
-    if not input_path.exists():
-        print(f"Error: Input file '{input_path}' does not exist", file=sys.stderr)
-        sys.exit(1)
 
     # Process the file
     try:
-        process_json_file(input_path, output_path)
-        print(f"Successfully processed {input_path} -> {output_path}")
+        process_json_file(input_fpath, output_fpath)
+        print(f"Successfully processed {input_fpath} -> {output_fpath}")
     except Exception as e:
         print(f"Error processing file: {e}", file=sys.stderr)
         sys.exit(1)

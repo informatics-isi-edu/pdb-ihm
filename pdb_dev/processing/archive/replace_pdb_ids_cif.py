@@ -20,6 +20,7 @@ Usage:
 """
 
 import argparse
+import gzip
 import os
 import re
 import sys
@@ -75,12 +76,33 @@ def is_pdb_id_simple(value):
 
 def read_file_lines(filepath):
     """Read file lines with encoding fallback."""
-    try:
-        with open(filepath, 'r', encoding='utf-8') as f:
-            return f.readlines()
-    except UnicodeDecodeError:
-        with open(filepath, 'r', encoding='latin-1') as f:
-            return f.readlines()
+    
+    if not filepath.exists():
+        print(f"Error: Input file '{filepath.name}' does not exist", file=sys.stderr)        
+        raise Exception(f"Error: Input file '{filepath.name}' does not exist")
+
+    if filepath.name.endswith(".gz"):
+        # Try UTF-8 first, fall back to latin-1 if needed
+        try:
+            with gzip.open(filepath, 'rt', encoding='utf-8') as f:
+                lines = f.readlines()
+        except UnicodeDecodeError:
+            # Fall back to latin-1 which can decode any byte
+            with gzip.open(filepath, 'rt', encoding='latin-1') as f:
+                lines = f.readlines()
+    elif filepath.name.endswith(".cif"):
+        # Try UTF-8 first, fall back to latin-1 if needed
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
+        except UnicodeDecodeError:
+            # Fall back to latin-1 which can decode any byte
+            with open(filepath, 'r', encoding='latin-1') as f:
+                lines = f.readlines()
+    else:
+        raise Exception(f"ERROR: unknown file extension: {filepath.name}")
+
+    return lines
 
 
 def extract_field_name(line):
@@ -150,13 +172,16 @@ def find_pdb_ids_in_line(line, line_num):
     return pdb_ids
 
 
-def create_pdb_comparison(input_file, output_file, diff_output):
+def create_pdb_comparison(input_filepath, output_filepath, diff_output):
     """
     Create a detailed comparison showing all PDB ID occurrences.
     Writes to diff_output (file handle or stdout).
     """
-    input_lines = read_file_lines(input_file)
-    output_lines = read_file_lines(output_file)
+    input_path = Path(input_filepath)
+    output_path = Path(output_filepath)
+    
+    input_lines = read_file_lines(input_path)
+    output_lines = read_file_lines(output_path)
 
     comparisons = []
     seen_lines = set()
@@ -285,8 +310,8 @@ def create_pdb_comparison(input_file, output_file, diff_output):
     # Write comparison report
     diff_output.write(f"PDB ID Comparison Report\n")
     diff_output.write(f"{'=' * 80}\n")
-    diff_output.write(f"Input file:  {input_file}\n")
-    diff_output.write(f"Output file: {output_file}\n")
+    diff_output.write(f"Input file:  {input_filepath}\n")
+    diff_output.write(f"Output file: {output_filepath}\n")
     diff_output.write(f"{'=' * 80}\n\n")
 
     if not comparisons:
@@ -326,17 +351,13 @@ def create_pdb_comparison(input_file, output_file, diff_output):
             diff_output.write(f"\n")
 
 
-def process_cif_file(input_path, output_path):
+def process_cif_file(input_filepath, output_filepath):
     """Process a single CIF file and replace PDB IDs."""
 
-    # Try UTF-8 first, fall back to latin-1 if needed
-    try:
-        with open(input_path, 'r', encoding='utf-8') as f:
-            lines = f.readlines()
-    except UnicodeDecodeError:
-        # Fall back to latin-1 which can decode any byte
-        with open(input_path, 'r', encoding='latin-1') as f:
-            lines = f.readlines()
+    input_path = Path(input_filepath)
+    output_path = Path(output_filepath)
+    
+    lines = read_file_lines(input_path)
 
     output_lines = []
     in_loop = False
@@ -506,13 +527,22 @@ def process_cif_file(input_path, output_path):
 
     # Write output
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    try:
-        with open(output_path, 'w', encoding='utf-8') as f:
-            f.writelines(output_lines)
-    except UnicodeEncodeError:
-        # Fall back to latin-1 if UTF-8 encoding fails
-        with open(output_path, 'w', encoding='latin-1') as f:
-            f.writelines(output_lines)
+    if output_path.name.endswith(".gz"):
+        try:
+            with gzip.open(output_path, 'wt', encoding='utf-8') as f:
+                f.writelines(output_lines)
+        except UnicodeEncodeError:
+            # Fall back to latin-1 if UTF-8 encoding fails
+            with gzip.open(output_path, 'wt', encoding='latin-1') as f:
+                f.writelines(output_lines)
+    else:
+        try:
+            with open(output_path, 'w', encoding='utf-8') as f:
+                f.writelines(output_lines)
+        except UnicodeEncodeError:
+            # Fall back to latin-1 if UTF-8 encoding fails
+            with open(output_path, 'w', encoding='latin-1') as f:
+                f.writelines(output_lines)
 
 
 def main():
@@ -529,13 +559,9 @@ def main():
     input_path = Path(args.input)
     output_path = Path(args.output)
 
-    if not input_path.exists():
-        print(f"Error: Input file '{input_path}' does not exist", file=sys.stderr)
-        sys.exit(1)
-
     # Process the file
     try:
-        process_cif_file(input_path, output_path)
+        process_cif_file(args.input, args.output)
     except Exception as e:
         print(f"Error processing file: {e}", file=sys.stderr)
         sys.exit(1)
@@ -544,13 +570,13 @@ def main():
     if args.diff:
         try:
             with open(args.diff, 'w', encoding='utf-8') as diff_file:
-                create_pdb_comparison(input_path, output_path, diff_file)
+                create_pdb_comparison(args.input, args.output, diff_file)
         except Exception as e:
             print(f"Error creating diff: {e}", file=sys.stderr)
             sys.exit(1)
     else:
         # Write diff to stdout
-        create_pdb_comparison(input_path, output_path, sys.stdout)
+        create_pdb_comparison(args.input, args.output, sys.stdout)
 
 
 if __name__ == '__main__':
