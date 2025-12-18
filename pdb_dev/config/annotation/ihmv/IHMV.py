@@ -30,7 +30,7 @@ def update_IHMV(model):
 
     # Sort by the modification time
     table.table_display.update({
-        'compact' : { 'row_order' : [{'column': 'RCT', 'descending': True}], },
+        'compact' : { 'row_order' : [{'column': 'RMT', 'descending': True}], },
     })
 
     # Update comment
