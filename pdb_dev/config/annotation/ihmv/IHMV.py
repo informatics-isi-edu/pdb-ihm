@@ -11,9 +11,6 @@ from deriva.utils.extras.model import print_schema_model_extras, print_table_mod
 def update_IHMV(model):
     schema = model.schemas["IHMV"]
 
-    table = schema.tables["Structure_mmCIF"]
-    table.display.update({'markdown_name' :  'Structure mmCIF', })
-
     # ----------------------------
     """ # use catalog default
     schema.display.update({
@@ -24,15 +21,32 @@ def update_IHMV(model):
     })
     """
 
+# -- =================================================================================
+# -- individual table updates
+
+    # Structure_mmCIF
+    table = schema.tables["Structure_mmCIF"]
+    table.display.update({'markdown_name' :  'Structure mmCIF', })
+
     # Sort by the modification time
     table.table_display.update({
         'compact' : { 'row_order' : [{'column': 'RCT', 'descending': True}], },
     })
 
+    # Update comment
+    table.columns["File_URL"].display.update({
+        'comment': 'Upload IHMCIF (.cif) file. Use python-ihm to prepare IHMCIF file. Using other tools may not provide compliant files.',
+    })
+
+    # Generated_File
+    table = schema.tables["Generated_File"]
+    # TODO: remove after fixig the ACL logic
+    table.comment = "Generated validation reports. There might be up to a 1-hour delay before the files will be available for download (only for the first time)."
+    table.display.update(
+        {'comment_display' : {'*': {'table_comment_display': 'inline'}}, }
+    )
+
 # -- =================================================================================
-# -- individual table updates
-    
-# -- =================================================================================    
 def update_IHMV_annotations(model):
     update_IHMV(model)
     
