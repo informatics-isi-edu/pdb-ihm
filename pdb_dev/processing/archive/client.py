@@ -156,6 +156,16 @@ def get_configuration(fcfg, logger, args):
 
     return config
 
+
+def test_beta_archive(args):
+    config = load(args.config)
+    
+    worker_config = get_configuration(config, logger, args)
+    worker = ArchiveClient(worker_config)
+    worker.generate_pdb_beta_archive()
+
+    
+    
 def main():
     cli = PDBDEV_CLI("pdbdev", None, 1)
     cli.parser.add_argument( '--config', action='store', type=str, help='The JSON configuration file.', required=True)
@@ -163,9 +173,9 @@ def main():
     cli.parser.add_argument( '--rollback', action='store_true', help='Rollback ermrest update', default=False, required=False)
     args = cli.parse_cli()
 
-    #credentials = get_credential(args.host, args.credential_file)
-    #print("credentials = %s" % (credentials))
-    
+    credentials = get_credential(args.host, args.credential_file)
+    print("credentials = %s" % (credentials))
+
     try:
         config = load(args.config)
         if config != None:
@@ -191,8 +201,11 @@ def main():
 #    From the protein-database directory, run: 
 #        pip3 install --upgrade .
 #
+# Running the script locally:
+#    python3 -m pdb_dev.processing.archive.client --config ~/git/pdb-ihm-ops/scripts/home-config/default-workflow/config/archive_processing/local_config.json --catalog-id 99 --dry-run
+#
 # Running the script:
-#    python3 -m pdb_dev.processing.archive.client --config /home/pdbihm/pdb/config/www/pdb_archive.json --catalog-id 1
+#    python3 -m pdb_dev.processing.archive.client --config /home/pdbihm/pdb/config/www/pdb_archive.json --catalog-id 1 --dry-run
 #
 """
 

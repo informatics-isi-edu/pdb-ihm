@@ -124,13 +124,17 @@ class PipelineProcessor(object):
         # -- local host
         self.local_hostname = socket.gethostname() # processing host
 
-        # -- email: TODO: handle email config file here instead of pdb_process_entry
-        #if kwargs.get("email", None): self.email_config = kwargs.get("email")
+        if kwargs.get("email", None): self.email_config = kwargs.get("email")
+        if kwargs.get("logger", None): self.logger = kwargs.get("logger")
+        if kwargs.get("verbose", None): self.verbose = kwargs.get("verbose")
+        if kwargs.get("notify", None): self.notify = kwargs.get("notify")                
         
         # -- archive/release time
         if kwargs.get('cutoff_time_pacific', None): self.cutoff_time_pacific = kwargs.get('cutoff_time_pacific') 
         if kwargs.get('release_time_utc', None): self.release_time_pacific = kwargs.get('release_time_utc')
+        
 
+    
     @classmethod
     def same_table_rows(table, base_rows, compare_rows, key="structure_id"):
         """
@@ -160,7 +164,15 @@ class PipelineProcessor(object):
                         break
         print("same_table_rows: %s = %s" % (tname, different))
         return different
-        
+
+    @classmethod    
+    def dump_json_to_file(file_path, json_object):
+        #print("dump_json_to_file: file_path %s" % (file_path))
+        fw = open(file_path, 'w')
+        json.dump(json_object, fw, indent=4)
+        fw.write(f'\n')
+        fw.close()
+    
     # -------------------------------------------------------------------        
     def get_archive_datetime(self, utz=False, isoformat=True):
         """
@@ -211,26 +223,31 @@ class PipelineProcessor(object):
     # the caller sometimes need the error message to be included in ermrest.
     # Note: In this function: e = ev
     # HT TODO: return the error message for now
-    def log_exception(self, e, notify=False, subject=None, receivers=None):
+    def log_exception(self, e, notify=False, subject=None, body_prefix=None, receivers=None):
         """
         log exception, send email notificatioin if specified
         """
-        error_message = str(e)
+        error_message = ""
+        if e:
+            details = f'{e.details}' if isinstance(e, ProcessingError) else ''
+            error_message = f'{str(e)}. {details}\n'
         et, ev, tb = sys.exc_info()
-        details = f'{e.details}\n' if isinstance(e, ProcessingError) else ''
-        tb_message = error_message + '\n' + details + ''.join(traceback.format_exception(et, ev, tb))
+        tb_message = error_message + (body_prefix if body_prefix else "") +  ''.join(traceback.format_exception(et, ev, tb))
         if self.logger:
             self.logger.error('-- Got exception "%s: %s"' % (et.__name__, str(ev)))
             self.logger.error('%s' % (tb_message))
-        if notify: self.sendMail(subject, tb_message, receivers)
+        if notify:
+            if not subject: subject = "Processing error"
+            self.sendMail(subject, tb_message, receivers)
         if self.verbose: print("tb_message: %s" % (tb_message))
+
         return tb_message
 
     # -------------------------------------------------------------------
-    """
-    Send Linux email notification
-    """
     def sendLinuxMail(self, subject, text, receivers):
+        """
+        Send Linux email notification
+        """
         if receivers == None:
             receivers = self.email_config['receivers']
         temp_name = '/tmp/{}.txt'.format(next(tempfile._get_candidate_names()))
@@ -252,11 +269,12 @@ class PipelineProcessor(object):
         os.remove(temp_name)
 
     # -------------------------------------------------------------------        
-    """
-    Send email notification
-    HT TODO: make this not deployment specific
-    """
     def sendMail(self, subject, text, receivers=None):
+        """
+        Send email notification
+        HT TODO: make this not deployment specific
+        """
+        
         if not self.notify:
             if self.verbose: print("Send mail: subject: %s, text:%s" % (subject, text))
             return
