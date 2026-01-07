@@ -204,8 +204,11 @@ def main():
 # Running the script locally:
 #    python3 -m pdb_dev.processing.archive.client --config ~/git/pdb-ihm-ops/scripts/home-config/default-workflow/config/archive_processing/local_config.json --catalog-id 99 --dry-run
 #
-# Running the script:
-#    python3 -m pdb_dev.processing.archive.client --config /home/pdbihm/pdb/config/www/pdb_archive.json --catalog-id 1 --dry-run
+# Running the script (workflow-dev): archive folder is in /mnt/vdb1/archive
+#    python3 -m pdb_dev.processing.archive.client --config /home/pdbihm/config/pdb_archive.json --catalog-id 99 --dry-run
+#
+# Running the script (workflow-prod): archive folder is in /mnt/vdb1/archive 
+#    python3 -m pdb_dev.processing.archive.client --config /home/pdbihm/config/pdb_archive.json --catalog-id 1 --dry-run
 #
 """
 
