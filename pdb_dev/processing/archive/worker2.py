@@ -1030,12 +1030,14 @@ class ArchiveClient (PipelineProcessor):
             raise FileError("Error uploading Hatrac file", details="Unable to upload file from %s to hatrac url %s." % (file_path, new_uri))
 
     
-    def generate_pdb_beta_archive(self):
+    def generate_pdb_beta_archive(self, archive_parent_dir=None):
         """
         Generate another archive subtree according to the new pdb standard which will co-exist with the current archive subtree until Jan 2028.
         """
-        src_dir = f'{self.archive_parent}/pdb_ihm'
-        beta_parent_dir = f'{self.archive_parent}/beta'
+        # allow parent_dir to be different
+        if not archive_parent_dir: archive_parent_dir = self.archive_parent
+        src_dir = f'{archive_parent_dir}/pdb_ihm'
+        beta_parent_dir = f'{archive_parent_dir}/beta'
         beta_dir = f'{beta_parent_dir}/pdb_ihm'
         os.makedirs(beta_dir, exist_ok=True)
         rename_dirs = []

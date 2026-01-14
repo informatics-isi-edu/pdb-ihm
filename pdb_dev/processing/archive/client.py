@@ -162,8 +162,7 @@ def test_beta_archive(args):
     
     worker_config = get_configuration(config, logger, args)
     worker = ArchiveClient(worker_config)
-    worker.generate_pdb_beta_archive()
-
+    worker.generate_pdb_beta_archive(args.archive_dir)
     
     
 def main():
@@ -171,11 +170,19 @@ def main():
     cli.parser.add_argument( '--config', action='store', type=str, help='The JSON configuration file.', required=True)
     cli.parser.add_argument( '--verbose', action='store_true', help='Print status to stdout', default=False, required=False)
     cli.parser.add_argument( '--rollback', action='store_true', help='Rollback ermrest update', default=False, required=False)
+    cli.parser.add_argument( '--beta-archive-only', action='store_true', help='Generate beta archive only', default=False, required=False)
+    cli.parser.add_argument( '--archive-dir', action='store', type=str, help='PDB-IHM archive dir', default="/mnt/vdb1/archive", required=False)
     args = cli.parse_cli()
 
     credentials = get_credential(args.host, args.credential_file)
     print("credentials = %s" % (credentials))
 
+    # execute beta archive only
+    if args.beta_archive_only:
+        print("beta-archive-only: parent dir: %s " % (args.archive_dir))
+        test_beta_archive(args)
+        return 0
+    
     try:
         config = load(args.config)
         if config != None:
