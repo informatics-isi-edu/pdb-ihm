@@ -1045,7 +1045,7 @@ class ArchiveClient (PipelineProcessor):
         holding_files = []
         rename_files = []
         
-        print("pdb_beta_archive_dir: %s" % (beta_dir))
+        if self.verbose: print("Generate_pdb_beta_archive: src_dir: %s, beta_dir: %s" % (src_dir, beta_dir))
         try:
             if os.path.isdir(beta_dir): shutil.rmtree(beta_dir)
             #shutil.copytree(src_dir, beta_dir, dirs_exist_ok=False)
@@ -1066,7 +1066,8 @@ class ArchiveClient (PipelineProcessor):
                 """
                 
                 if len(files) == 0: continue
-                new_root = root.replace("/archive/pdb_ihm/", "/archive/beta/pdb_ihm/")
+                #new_root = root.replace("/archive/pdb_ihm/", "/archive/beta/pdb_ihm/")
+                new_root = root.replace(src_dir, beta_dir)    # allow different aprent dir name
                 
                 m = re.search(r"/data/entries/[0-9a-z]{2}/([0-9][0-9a-z]{3})/.*", root)
                 if m:   # rename entry folder
