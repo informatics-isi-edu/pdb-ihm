@@ -1048,8 +1048,8 @@ class ArchiveClient (PipelineProcessor):
         if self.verbose: print("Generate_pdb_beta_archive: src_dir: %s, beta_dir: %s" % (src_dir, beta_dir))
         try:
             if os.path.isdir(beta_dir): shutil.rmtree(beta_dir)
-            #shutil.copytree(src_dir, beta_dir, dirs_exist_ok=False)
-            #print(f"Directory '{src_dir}' copied to '{beta_dir}' successfully.")
+            os.makedirs(f"{beta_dir}/data", exist_ok=True)
+            os.makedirs(f"{beta_dir}/holdings", exist_ok=True)
             
             # -- iterate to replace pdb_id with a new one
             for root, dirs, files in os.walk(src_dir):
