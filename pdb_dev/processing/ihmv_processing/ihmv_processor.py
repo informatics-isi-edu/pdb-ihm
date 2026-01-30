@@ -21,21 +21,7 @@ from ..processor import PipelineProcessor, ProcessingError, ErmrestError, Ermres
 #from pdb_dev.utils.shared import PDBDEV_CLI, DCCTX, cfg
 #from pdb_dev.processing.processor import PipelineProcessor, ProcessingError, ErmrestError, ErmrestUpdateError, FileError
 
-def read_json_config_file(config_file):
-    config = None
-    try:
-        with open(config_file, 'r') as file:
-            config = json.load(file)
-    except FileNotFoundError:
-        print(f"Error: The file '{email_config_file}' was not found.")
-        raise Exception("Config ERROR: config file doesn't exist: %s" % (config_file))
-    except json.JSONDecodeError:
-        print(f"Error: Could not decode JSON from '{config_file}'. Check if the file contains valid JSON.")
-        raise Exception("Config ERROR: config file is not a json file: %s" % (config_file))
-    return config
 
-
-    
 class IHMVProcessor(PipelineProcessor):
     """Network client for standalone PDB Validation Report
     """
@@ -53,6 +39,9 @@ class IHMVProcessor(PipelineProcessor):
     email_subject_prefix = "IHMV"
     ihmv_receivers = "ihmv@pdb-ihm.org" #"aozalevsky@gmail.com,pdb-ihm@wwpdb.org"   # comma separated list
     processing_details_limit = 2500
+    structure_row = None
+    user_id = None    # user globus_id e.g. https://auth.globus.org/<uuid>
+    user_uuid = None  # user uuid to be used as part of hatrac path
 
     def __init__(self, catalog=None, store=None, hostname=None, catalog_id=None, credential_file=None,
                  scratch_dir=None, cfg=None, logger=None, log_level="info", log_file=None, verbose=None,
@@ -112,6 +101,8 @@ class IHMVProcessor(PipelineProcessor):
         rows = get_ermrest_query(self.catalog, "IHMV", "Structure_mmCIF", constraints=f"RID={self.structure_rid}")
         if len(rows) != 1: raise Exception("ERROR: RID %s doesn't exist" % (self.structure_rid))
         self.structure_row = rows[0]
+        self.user_id = self.structure_row["RCB"]
+        self.user_uuid = self.user_id.rsplit("/")[1]
         
         #raise Exception("DIE HERE")
     # -------------------------------------------------
@@ -119,41 +110,12 @@ class IHMVProcessor(PipelineProcessor):
         # -- download files
         hatrac_url = self.structure_row["File_URL"]
         filename = self.structure_row["File_Name"]
-        print("data_dir: %s, hatrac_url: %s, filename: %s" % (data_dir, hatrac_url, filename))
+        if self.verbose: print("data_dir: %s, hatrac_url: %s, filename: %s" % (data_dir, hatrac_url, filename))
         hf = HatracFile(self.store)
         hf.download_file(hatrac_url, data_dir, filename, verbose=True)
         file_path = hf.file_path
 
         return hf
-
-    # -------------------------------------------------
-    def upload_file_groups(self, data_dir, filter_groups):
-        """
-        Upload files in the directory to hatrac that match regex criteria specified in filter_groups.
-        If filter_groups are not set, allow all files to match.
-        Note: To upload an individual file, specify the data_dir and put its exact filename in the filter list.
-        Return a array of HatracFile corresponding to uploaded files.
-        """
-
-        if not filter_groups:
-            filter_groups = [".*"]
-
-        print("data_dir: %s, groups: %s" % (data_dir, filter_groups))
-        #os.chdir(data_dir)
-        hfs = []
-        for filter in filter_groups:
-            for file in os.scandir(data_dir):
-                if not re.search(filter, file.name): continue
-                if not file.is_file(): continue
-                uid = self.structure_row["RCB"].rsplit("/", 1)[1]
-                # TODO: rename files if needed. Suggest prepend with structure_mmcif RID
-                hf = HatracFile(self.store)
-                hf_file_name = f"{self.structure_rid}_{file.name}"
-                hf_file_name = hf.sanitize_filename(hf_file_name)
-                upload_url = f"{self.hatrac_root}/ihmv/generated/uid/{uid}/structure/rid/{self.structure_rid}/validation_report/{hf_file_name}"
-                hf.upload_file(file.path, upload_url, hf_file_name, verbose=True)
-                hfs.append(hf)
-        return hfs
 
     # -------------------------------------------------
     def run(self):
@@ -169,7 +131,12 @@ class IHMVProcessor(PipelineProcessor):
             
             print("--------IHVMProcessor.run: running IHMV validation with structure_mmCIF: %s ---------" % (self.structure_rid))
             #raise SubProcessError("TEST AUTOMATION", details=f'Additional details goes here. Try to make this message very long { ["-0123456789-%d" % (i) for i in range(100) ] }')
-        
+
+            # -- set hatrac namespace for this user and grant read subtree access
+            self.create_hatrac_uid_namespace("/hatrac/ihmv/generated/uid", self.user_id)
+
+            #raise Exception("DIE HERE: testing hatrac namespace")
+            
             # -- download file. Do help(HatracFile) for obj properties
             # Create directory structure
             Path(data_dir).mkdir(parents=True, exist_ok=True)
@@ -224,7 +191,8 @@ class IHMVProcessor(PipelineProcessor):
                 # -- upload files to hatrac
                 # output location
                 pdf_loc = Path(data_dir, 'output', Path(filename).stem)
-                ihmv_hfs = self.upload_file_groups(pdf_loc, [".pdf"])
+                hatrac_prefix = f"/hatrac/ihmv/generated/uid/{self.user_uuid}/structure/rid/{self.structure_rid}/validation_report"
+                ihmv_hfs = self.upload_file_groups(pdf_loc, [".pdf"], namespace_prefix=hatrac_prefix)
 
                 # -- update ermrest
                 ihmv_payload = []
@@ -317,11 +285,11 @@ def main(server_name, catalog_id, credentials, args):
 # usage:
 #
 # HT laptop
-#> python ihmv_processor.py --pdbihm-config-file ~/config/entry_processing/local_pdb_conf.json --catalog-id 199 --rid 286
+#> python -m pdb_dev.processing.ihmv_processing.ihmv_processor --pdbihm-config-file ~/config/entry_processing/local_pdb_conf.json --catalog-id 199 --rid 286
 #
 # workflow-dev: as pdbihm user
 #
-#> python ihmv_processor.py --pdbihm-config-file /home/pdbihm/dev/config/entry_processing/pdb_conf.json --catalog-id 199 --rid 2ET
+#> python3 -m pdb_dev.processing.ihmv_processing.ihmv_processor --pdbihm-config-file /home/pdbihm/dev/config/entry_processing/pdb_conf.json --catalog-id 199 --rid 2ET
 #
 
 if __name__ == '__main__':

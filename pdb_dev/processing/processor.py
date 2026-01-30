@@ -41,6 +41,7 @@ import pytz
 from deriva.core import PollingErmrestCatalog, HatracStore, urlquote, get_credential, DerivaServer
 from deriva.utils.extras.data import insert_if_not_exist, update_table_rows, delete_table_rows, get_ermrest_query
 from deriva.utils.extras.hatrac import HatracFile
+from deriva.utils.extras.hatrac_acl import set_hatrac_namespace_acl, adjust_hatrac_namespace
 from ..utils.shared import PDBDEV_CLI, DCCTX
 
 pacific_timezone = "America/Los_Angeles"
@@ -132,7 +133,6 @@ class PipelineProcessor(object):
         # -- archive/release time
         if kwargs.get('cutoff_time_pacific', None): self.cutoff_time_pacific = kwargs.get('cutoff_time_pacific') 
         if kwargs.get('release_time_utc', None): self.release_time_pacific = kwargs.get('release_time_utc')
-        
 
     
     @classmethod
@@ -165,14 +165,102 @@ class PipelineProcessor(object):
         print("same_table_rows: %s = %s" % (tname, different))
         return different
 
+    
     @classmethod    
     def dump_json_to_file(file_path, json_object):
+        """Dump a json object to a file
+
+        Args:
+            file_path (str): file path to dump the json object to
+            json_object (obj): json compatible object
+
+        """
         #print("dump_json_to_file: file_path %s" % (file_path))
         fw = open(file_path, 'w')
         json.dump(json_object, fw, indent=4)
         fw.write(f'\n')
         fw.close()
-    
+
+    @classmethod
+    def read_json_config_file(config_file):
+        """Load json file
+        Args:
+            config_file (str): config file path
+        
+        Returns:
+            dict: json file content
+        """
+        config = None
+        try:
+            with open(config_file, 'r') as file:
+                config = json.load(file)
+        except FileNotFoundError:
+            print(f"Error: The file '{email_config_file}' was not found.")
+            raise Exception("Config ERROR: config file doesn't exist: %s" % (config_file))
+        except json.JSONDecodeError:
+            print(f"Error: Could not decode JSON from '{config_file}'. Check if the file contains valid JSON.")
+            raise Exception("Config ERROR: config file is not a json file: %s" % (config_file))
+        return config
+
+
+    # -------------------------------------------------
+    def create_hatrac_uid_namespace(self, namespace_prefix, user_id):
+        """Create hatrac namespace for user_id so the user can be granted subtree-read access.
+        This function checks first whether the namespace exist. If it doesn't, create a namespace and assign subtree-read.
+        
+        Notes: UUID of the user_id is extracted and used as part of the namespace
+
+        Args:
+            namespace_prefix (str): the namespace prefix to append user uuid after        
+            user_id (str): globus user id (returned from RCB)
+
+        """
+        uuid = user_id.rsplit("/", 1)[1]
+        namespace = f"{namespace_prefix}/{uuid}"
+        namespace = adjust_hatrac_namespace(namespace, hatrac_root=self.hatrac_root)
+        
+        if not self.store.is_valid_namespace(namespace):
+            self.store.create_namespace(namespace, parents=True)
+            acl = { "subtree-read": [ user_id ] }
+            set_hatrac_namespace_acl(self.store, acl, namespace, hatrac_root=self.hatrac_root)
+        else:
+            if self.verbose: print("- create_hatrac_uid_namespace: namespace %s already exists" % (namespace))
+            pass
+        
+    # -------------------------------------------------
+    def upload_file_groups(self, data_dir, filter_groups, namespace_prefix):
+        """Upload files in the directory to hatrac that match regex criteria specified in filter_groups.
+        If filter_groups are not set, allow all files to match.
+        Note: To upload an individual file, specify the data_dir and put its exact filename in the filter list.
+
+        Args:
+            data_dir (str): local directory to upload the data from
+            filter_groups (list): a list of filters to apply to files before uploading to hatrac
+        
+        Returns:
+           list: a array of HatracFile corresponding to uploaded files.
+        """
+
+        if not filter_groups: filter_groups = [".*"]
+        namespace_prefix = adjust_hatrac_namespace(namespace_prefix, hatrac_root=self.hatrac_root)
+
+        if self.verbose: print("data_dir: %s, groups: %s, hatrac_prefix: %s" % (data_dir, filter_groups, namespace_prefix))
+        #os.chdir(data_dir)
+        
+        hfs = []
+        for filter in filter_groups:
+            for file in os.scandir(data_dir):
+                if not re.search(filter, file.name): continue
+                if not file.is_file(): continue
+                # TODO: rename files if needed. Suggest prepend with structure_mmcif RID
+                hf = HatracFile(self.store)
+                hf_file_name = f"{self.structure_rid}_{file.name}"
+                hf_file_name = hf.sanitize_filename(hf_file_name)
+                upload_url = f"{namespace_prefix}/{hf_file_name}"
+                hf.upload_file(file.path, upload_url, hf_file_name, verbose=True)
+                hfs.append(hf)
+        return hfs
+
     # -------------------------------------------------------------------        
     def get_archive_datetime(self, utz=False, isoformat=True):
         """
