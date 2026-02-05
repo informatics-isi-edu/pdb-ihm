@@ -48,6 +48,15 @@ class ConfigError(Exception):
 def load(config_filename, args):
     """
     Read the configuration file.
+
+    Notes:
+        - Set defaults for various file paths that do not expected to change 
+        - primary_access_code_mode (optional)
+        - alternate_accession_code_mode (optional)
+        - log is deprecated. It is replaced by log_dir
+    
+    Todos:
+        - Simplify config
     """
     
     # Load configuration file, or create configuration based on arguments

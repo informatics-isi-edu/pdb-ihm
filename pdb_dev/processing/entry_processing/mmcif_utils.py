@@ -83,6 +83,35 @@ def check_entry_tables_fkeys(catalog, ignore_restraints=True):
         if ignore_restraints and tname in restraint_tnames: continue
         print_restraint_table_fkeys(table)        
 
+def check_shared_fkey_columns(catalog, sname="PDB", skip_rid=True):
+    model = catalog.getCatalogModel()
+    cname2fkey_counts = {}
+    cname2fkeys = {}
+    for tname, table in model.schemas[sname].tables.items():
+        cname2fkey_counts[tname] = {}
+        cname2fkeys[tname] = {}
+        for fkey in table.foreign_keys:
+            pk_table = fkey.pk_table
+            from_cnames = [ col.name for col in fkey.column_map.keys()]            
+            to_cnames = [ col.name for col in fkey.column_map.values()]
+            if skip_rid and "RID" in to_cnames: continue # only look for natural fkey
+            if pk_table.schema.name == "Vocab": continue
+            for cname in from_cnames:
+                if cname in ["RMB", "RCB", "Owner"]: continue                
+                cname2count = cname2fkey_counts[tname].setdefault(cname, 0)
+                cname2fkey_counts[tname][cname] = cname2count+1
+                cname2fkeys[tname].setdefault(cname, []).append(fkey)
+
+    for tname, shared_cnames in cname2fkey_counts.items():
+        print("\ntname: %s" % (tname))
+        for k,v in shared_cnames.items():
+            if v > 1 and k not in ["structure_id", "entry_id"]:
+                cname_fkeys = [ fkey.constraint_name for fkey in cname2fkeys[tname][k] ]
+                print("    !! %s : %d --> %s" % (k,v, cname_fkeys))
+            else:
+                print("    %s : %d" % (k,v))
+        
+
 # -- =================================================================================
 # support for code to be deprecated in the future
 #
@@ -403,11 +432,13 @@ def main(server_name, catalog_id, credentials, args):
     catalog = server.connect_ermrest(catalog_id)
     catalog.dcctx['cid'] = 'pipeline/pdb'
     model = catalog.getCatalogModel()
+
+    check_shared_fkey_columns(catalog, sname="MA", skip_rid=False)
     
     #check_entry_tables_fkeys(catalog, ignore_restraints=True)
 
     #get_legacy_combo1_columns(catalog)
-    get_legacy_optional_fks(catalog)
+    #get_legacy_optional_fks(catalog)
     
     #pktables = PkTables()
     #for table in model.schemas["PDB"].tables:

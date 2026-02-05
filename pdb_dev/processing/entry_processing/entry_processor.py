@@ -1006,6 +1006,8 @@ class EntryProcessor(PipelineProcessor):
     3. from py_rcsb_db dir, cp rcsb/db/config/exdb-config-example-ihm-DEPO.yml to rcsb/db/config/exdb-config-example-ihm.yml
     4. run 'rcsb/db/tests-validate/testSchemaDataPrepValidate-ihm.py'
        > env PYTHONPATH=~/pdb/py-rcsb_db python3 testSchemaDataPrepValidate-ihm.py
+       Note: the output file use the entry name e.g. entry_<name> to generate the output file instead of the input filename.
+       It is important that we ensure only one json file is generated.
     5. copy output.cif to  /home/pdbihm/temp
     HT TODO: refactor code
     """
@@ -1111,6 +1113,8 @@ class EntryProcessor(PipelineProcessor):
                         json_files.append(entry.name)
             self.logger.debug('The following JSON files were generated in the {}/rcsb/db/tests-validate/test-output directory:\n\t{}'.format(self.py_rcsb_db, '\n\t'.join(json_files))) 
 
+            #TODO: throw an exception when multiple .json file is detected. Ensure that there is only one generated
+            
             for entry in os.scandir(fpath):
                     if entry.is_file() and entry.path.endswith('.json'):
                         returncode,error_message = self.loadTablesFromJSON(entry.path, entry_id, rid, user)
@@ -1186,10 +1190,18 @@ class EntryProcessor(PipelineProcessor):
         except:
             return None
 
-    """
-    Sort the tables to be loaded based on the FK dependencies.
-    """
+    
     def sortTable(self, fpath):
+        """
+        Sort the tables to be loaded based on the FK dependencies.
+
+        Args:
+            fpath (str): json file
+
+        Todo:
+            Replace this with topo_sorted
+        """
+        
         excluded_mmCIF_tables = [
             'entry', 'database_2', 'pdbx_audit_revision_details', 'pdbx_audit_revision_history', 'pdbx_database_status'
         ]
@@ -1214,6 +1226,7 @@ class EntryProcessor(PipelineProcessor):
                     if k in table_groups[group_str] and k not in excluded_mmCIF_tables:
                         tables.append(k)
                 group_no +=1
+        
         """
         Check that all the tables are in the database
         """
@@ -1265,10 +1278,19 @@ class EntryProcessor(PipelineProcessor):
                     subject = '{} {}: {} ({})'.format(entry_id, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
                     self.sendMail(subject, 'URL: %s\n%s\n' % (url, ''.join(traceback.format_exception(et, ev, tb))))
                 
-    """
-    Load data into the tables from the JSON file.
-    """
     def loadTablesFromJSON(self, fpath, entry_id, rid, user):
+        """
+        Load data into the tables from the JSON file.
+
+        Args:
+            fpath (str): json file path
+            entry_id (str): entry id
+            rid (str): entry rid
+            user (str): user email address
+        
+        TODO: make temp dir configurable
+        """
+        
         shutil.copy2(fpath, '/home/pdbihm/temp')
         
         """
@@ -1887,6 +1909,7 @@ class EntryProcessor(PipelineProcessor):
         
     """
     Store the validation error file into hatrac
+    TODO: Replace this with hatrac library. Add unit testing before cleaning up
     """
     def storeFileInHatrac(self, hatrac_namespace, file_name, file_path, rid, user):
         try:

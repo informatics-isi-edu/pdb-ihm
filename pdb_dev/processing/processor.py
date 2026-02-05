@@ -30,15 +30,16 @@ from dateutil.parser import parse
 from requests import HTTPError
 from subprocess import TimeoutExpired
 import csv
-import filecmp
 import mimetypes
 import tempfile
+from collections import deque
 
 import time
 from datetime import datetime as dt, timedelta, timezone
 import pytz
 
 from deriva.core import PollingErmrestCatalog, HatracStore, urlquote, get_credential, DerivaServer
+from deriva.utils.extras.model import topo_sort_ranked
 from deriva.utils.extras.data import insert_if_not_exist, update_table_rows, delete_table_rows, get_ermrest_query
 from deriva.utils.extras.hatrac import HatracFile
 from deriva.utils.extras.hatrac_acl import set_hatrac_namespace_acl, adjust_hatrac_namespace
@@ -137,8 +138,8 @@ class PipelineProcessor(object):
     
     @classmethod
     def same_table_rows(table, base_rows, compare_rows, key="structure_id"):
-        """
-        Check whether content are all the same before deleting.
+        """Check whether content are all the same before deleting.
+        
         TODO: look up existing content based on keys
         """
         return False
@@ -226,7 +227,29 @@ class PipelineProcessor(object):
         else:
             if self.verbose: print("- create_hatrac_uid_namespace: namespace %s already exists" % (namespace))
             pass
+
         
+    
+    def download_hatrac_file(self, hatrac_url, data_dir, filename):
+        """Download files
+
+        Args:
+            hatrac_url (str): Hatrac URL to download
+            data_dir (str): local directory to store the download file
+            filename (str): file name to download as
+
+        Returns:
+            str : Loal file path that the hatrac file was downloaded to
+        
+        """
+        if self.verbose: print("hatrac_url: %s, data_dir: %s, filename: %s" % (hatrac_url, data_dir, filename))
+        
+        hf = HatracFile(self.store)
+        hf.download_file(hatrac_url, data_dir, filename, verbose=True)
+        file_path = hf.file_path
+
+        return file_path
+    
     # -------------------------------------------------
     def upload_file_groups(self, data_dir, filter_groups, namespace_prefix):
         """Upload files in the directory to hatrac that match regex criteria specified in filter_groups.
@@ -260,6 +283,79 @@ class PipelineProcessor(object):
                 hf.upload_file(file.path, upload_url, hf_file_name, verbose=True)
                 hfs.append(hf)
         return hfs
+
+    # -------------------------------------------------------------------
+
+    def get_order2tables(self):
+        """Assign order to tables for insert operation based on fkeys e.g. tables with no fkeys should be inserted first.
+        This function should be used to replace the needs of tables_groups.json.
+
+        Returns:
+            dict: a lookup dict from rank to list of tables associated with each rank in the topological sort of
+        foreign key dependency.
+        
+        Notes: The current tables_groups.json keys are string, and the list contains PDB schema table names.
+        TODOs: Either change the keys to be string or address the type in the processing code.
+        
+        """
+        model = self.catalog.getCatalogModel()
+        tables = {
+            table
+            for sname in ["PDB"]
+            for table in model.schemas[sname].tables.values()
+        }
+        
+        # dependency map { table: [ referenced_table... ], ... }
+        table_depmap = {
+            table: {
+                # use a set to collapse references to same pk_table
+                fkey.pk_table
+                for fkey in table.foreign_keys
+                if not (
+                    # ignore references like these...
+                    fkey.table.schema.name in {'Vocab'} or
+                    fkey.pk_table.schema.name in {'public', 'Vocab'}
+                    or (
+                        fkey.pk_table.sqlite3_table_name() == 'PDB:entry'
+                        and fkey.table.sqlite3_table_name() == 'PDB:Accession_Code'
+                    )
+                    #or fkey.table.sqlite3_table_name() == 'PDB:entry'
+                    #or fkey.constraint_name == 'entry_Workflow_Status_fkey'
+                )
+            }
+            for table in tables
+        }
+
+        tname_depmap = {
+            #table.sqlite3_table_name(): [ pktable.sqlite3_table_name() for pktable in pktables ] # produce PDB:entry
+            table.name: [ pktable.name for pktable in pktables ]                # ignore schema prefix
+            for table, pktables in table_depmap.items()
+        }
+        order2tables = topo_sort_ranked(tname_depmap)
+
+        if self.verbose:
+            print("order2tables: ")
+            for order, tnames in order2tables.items():
+                print("  %d [%d]: %s" % ( order, len(tnames), json.dumps(sorted(tnames), indent=4)))
+         
+        return order2tables
+            
+    # -------------------------------------------------------------------            
+    def get_user_row(self, schema_name, table_name, rid):
+        """get ERMrest user row
+
+        Args:
+            schema_name (str): schema name
+            table_name (str): table name
+            rid (str): entry RID in the specified table name we want to retrieve row RCB from
+
+        Returns:
+            dict: user object describing user properties (e.g. ID, Email, Full_Name)
+        """
+        
+        constraints=f"RID={rid}/B:=(M:RCB)=(public:ERMrest_Client:ID)"
+        user_row = get_ermrest_query(self.catalog, schema_name, table_name, constraints=constraints, attributes=["B:ID", "B:Email","B:Full_Name"])[0]
+        return user_row
 
     # -------------------------------------------------------------------        
     def get_archive_datetime(self, utz=False, isoformat=True):
