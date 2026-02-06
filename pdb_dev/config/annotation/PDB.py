@@ -325,10 +325,16 @@ def update_PDB_entry(model):
             'template_engine' : 'handlebars',
             'markdown_pattern' : '{{#if Image_File_URL }}[![{{Image_File_Name}}]({{{Image_File_URL}}}){width=auto height=100}]({{{Image_File_URL}}}){target=_blank}{{/if}}',
         },
-        'detailed' : {
-            'template_engine' : 'handlebars',
-            'markdown_pattern' : '{{#if Image_File_URL }}[![{{Image_File_Name}}]({{{Image_File_URL}}}){width=auto height=200}]({{{Image_File_URL}}}){target=_blank}{{/if}}', },
     })
+    #  TODO once the deriva software stack on prod has been updated to have the image file-preview,
+    #       we should remove the following and always let chaise handle the image preview.
+    if cfg.is_prod:
+        schema.tables["entry"].columns["Image_File_URL"].column_display.update({
+            'detailed' : {
+                'template_engine' : 'handlebars',
+                'markdown_pattern' : '{{#if Image_File_URL }}[![{{Image_File_Name}}]({{{Image_File_URL}}}){width=auto height=300}]({{{Image_File_URL}}}){target=_blank}{{/if}}',
+            },
+        })
     
     # ----------------------------
     schema.tables["entry"].columns["mmCIF_File_URL"].display.update(
