@@ -46,7 +46,7 @@ from deriva.core.utils.core_utils import DEFAULT_CHUNK_SIZE
 from deriva.core.datapath import DataPathException
 
 from deriva.utils.extras.data import insert_if_not_exist, update_table_rows, delete_table_rows, get_ermrest_query
-from .mmcif_utils import get_mmcif_rid_optional_fkeys, print_restraint_table_fkeys, get_mmcif_rid_mandatory_fkeys, get_legacy_combo1_columns, get_legacy_optional_fks
+from .mmcif_utils import get_mmcif_rid_optional_fkeys, print_table_fkeys, get_mmcif_rid_mandatory_fkeys, get_legacy_combo1_columns, get_legacy_optional_fks, PkTables
 #from ...utils.shared import PDBDEV_CLI, DCCTX
 from pdb_dev.utils.shared import PDBDEV_CLI, DCCTX
 from pdb_dev.processing.processor import PipelineProcessor, ProcessingError, ErmrestError, ErmrestUpdateError, FileError
@@ -999,19 +999,24 @@ class EntryProcessor(PipelineProcessor):
             error_message = 'ERROR getHatracFile: "%s"' % str(ev)
             return (None,error_message)
             
-    """
-    Convert the input file to JSON.
-    1. generate mmcif file using make_mmcif
-    2. Move output.cif file to the rcsb/db/tests-validate/test-output/ihm-files
-    3. from py_rcsb_db dir, cp rcsb/db/config/exdb-config-example-ihm-DEPO.yml to rcsb/db/config/exdb-config-example-ihm.yml
-    4. run 'rcsb/db/tests-validate/testSchemaDataPrepValidate-ihm.py'
-       > env PYTHONPATH=~/pdb/py-rcsb_db python3 testSchemaDataPrepValidate-ihm.py
-       Note: the output file use the entry name e.g. entry_<name> to generate the output file instead of the input filename.
-       It is important that we ensure only one json file is generated.
-    5. copy output.cif to  /home/pdbihm/temp
-    HT TODO: refactor code
-    """
-    def convert2json(self, filename, entry_id, rid, user):
+
+    def convert2json(self, filename, entry_id, rid, user, processing_dir='/home/pdbihm/temp'):
+        """
+        Convert the input file to JSON.
+        1. generate mmcif file using make_mmcif
+        2. Move output.cif file to the rcsb/db/tests-validate/test-output/ihm-files
+        3. from py_rcsb_db dir, cp rcsb/db/config/exdb-config-example-ihm-DEPO.yml to rcsb/db/config/exdb-config-example-ihm.yml
+        4. run 'rcsb/db/tests-validate/testSchemaDataPrepValidate-ihm.py'
+        > env PYTHONPATH=~/pdb/py-rcsb_db python3 testSchemaDataPrepValidate-ihm.py
+        Note: the output file use the entry name e.g. entry_<name> to generate the output file instead of the input filename.
+        It is important that we ensure only one json file is generated.
+        5. copy output.cif to  /home/pdbihm/temp
+        
+        HT TODO:
+            - refactor code.
+            - Address /home/pdbihm/temp which currently doesn't support multiple workers
+        """
+        
         try:
             """
             Prepend the RID to the input file
@@ -1083,7 +1088,7 @@ class EntryProcessor(PipelineProcessor):
             stdoutdata, stderrdata = p.communicate()
             returncode = p.returncode
             os.chdir(currentDirectory)
-
+            
             if returncode != 0:
                 self.logger.error('Can not validate testSchemaDataPrepValidate-ihm for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (output_cif, stdoutdata, stderrdata)) 
                 subject = '{} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], user)
@@ -1099,32 +1104,33 @@ class EntryProcessor(PipelineProcessor):
             self.logger.debug('convert2json: File {}/{} was removed'.format(self.py_rcsb_db, 'rcsb/db/tests-validate/test-output/ihm-files/%s' % (output_cif)))
             '''
             
-            shutil.copy2(py_rcsb_db_input_cif_fpath, '/home/pdbihm/temp')
+            shutil.copy2(py_rcsb_db_input_cif_fpath, processing_dir)
             os.remove(py_rcsb_db_input_cif_fpath)
             self.logger.debug('convert2json: File %s was removed' % (py_rcsb_db_input_cif_fpath))
             
             """
             Load now the data from JSON files which are in the rcsb/db/tests-validate/test-output directory into the tables 
             """
-            fpath = py_rcsb_db_output_json_dir
             json_files = []
-            for entry in os.scandir(fpath):
-                    if entry.is_file() and entry.path.endswith('.json'):
-                        json_files.append(entry.name)
-            self.logger.debug('The following JSON files were generated in the {}/rcsb/db/tests-validate/test-output directory:\n\t{}'.format(self.py_rcsb_db, '\n\t'.join(json_files))) 
+            for entry in os.scandir(py_rcsb_db_output_json_dir):
+                    if entry.is_file() and entry.path.endswith('.json'): json_files.append(entry.name)
 
-            #TODO: throw an exception when multiple .json file is detected. Ensure that there is only one generated
+            # -- Throw an exception when multiple .json file is detected. Ensure that there is only one generated
+            if len(json_files) > 1:
+                raise Exception(ProcessingError, "Multiple json files exist in rcsb_db output dir (%s): %s" % (py_rcsb_db_output_json_dir, json_files))
             
-            for entry in os.scandir(fpath):
+            for entry in os.scandir(py_rcsb_db_output_json_dir):
                     if entry.is_file() and entry.path.endswith('.json'):
-                        returncode,error_message = self.loadTablesFromJSON(entry.path, entry_id, rid, user)
+                        shutil.copy2(entry.path, processing_dir)
+                        entry_new_fpath = "%s/%s" % (processing_dir, entry)
+                        returncode,error_message = self.loadTablesFromJSON(entry_new_fpath, entry_id, rid, user)
                         if returncode != 0:
                             break
-            
+                        
             """
             Remove the JSON files that were created
             """
-            for entry in os.scandir(fpath):
+            for entry in os.scandir(py_rcsb_db_output_json_dir):
                     if entry.is_file() and entry.path.endswith('.json'):
                         os.remove(entry.path)
                         self.logger.debug('Removed file {}'.format(entry.path))
@@ -1191,7 +1197,7 @@ class EntryProcessor(PipelineProcessor):
             return None
 
     
-    def sortTable(self, fpath):
+    def x_sortTable(self, fpath):
         """
         Sort the tables to be loaded based on the FK dependencies.
 
@@ -1238,7 +1244,56 @@ class EntryProcessor(PipelineProcessor):
                     raise RuntimeError('Table "{}" from mmCIF is not present in the DERIVA database. Possible mismatch versions.'.format(k))
         
         return tables
+
+    def sortTable(self, fpath):
+        """
+        Sort the tables to be loaded based on the FK dependencies.
         
+        Args:
+            fpath (str): json file
+
+        Todo:
+            Replace this with topo_sorted
+        """
+        
+        excluded_mmcif_tables = [
+            'entry', 'database_2', 'pdbx_audit_revision_details', 'pdbx_audit_revision_history', 'pdbx_database_status'
+        ]
+
+        topo_ranked_tables = self.get_topo_ranked_tables()
+        topo_sorted_tables = self.get_topo_sorted_tables()
+        
+        # read the file content
+        with open(fpath, 'r') as f:
+            pdb = json.load(f)[0]
+
+        # verify all input tables are in schema
+        for tname in  pdb.keys():
+            if tname not in ( topo_sorted_tables + excluded_mmcif_tables):
+                raise RuntimeError(f'Table {tname} from mmCIF is not present in the DERIVA database. Possible mismatch versions.')
+
+        # sort from pdb tables
+
+        sorted_tables = []
+        group_no = 0
+        while group_no < len(topo_ranked_tables):
+            for tname in pdb.keys():
+                if tname in sorted_tables: continue
+                if tname in topo_ranked_tables[group_no] and tname not in excluded_mmcif_tables:
+                    sorted_tables.append(tname)
+            group_no +=1
+
+        """
+        # sort from topo_sorted_tables
+        sorted_tables = []
+        for tname in topo_sorted_tables:
+            if tname in pdb.keys() and tname not in excluded_mmcif_tables:
+                sorted_tables.append(tname)
+        """
+        
+        return sorted_tables
+                
+                
     """
     Rollback JSON inserted rows
     """
@@ -1291,7 +1346,7 @@ class EntryProcessor(PipelineProcessor):
         TODO: make temp dir configurable
         """
         
-        shutil.copy2(fpath, '/home/pdbihm/temp')
+        #shutil.copy2(fpath, '/home/pdbihm/temp')
         
         """
         Tables that have a NOT NULL *_RID column
@@ -1405,6 +1460,86 @@ class EntryProcessor(PipelineProcessor):
         
         return (returncode,error_message)
 
+    def loadTablesFromJSON_2(self, fpath, entry_id, rid, user, processing_dir='/home/pdbihm/temp'):
+        """
+        Load data into the tables from the JSON file.
+
+        Args:
+            fpath (str): json file path
+            entry_id (str): entry id
+            rid (str): entry rid
+            user (str): user email address
+
+        Throw: 'ERROR_PROCESSING_UPLOADED_mmCIF_FILE'
+        
+        TODO: make temp dir configurable
+        """
+        
+        #processing_dir='/home/pdbihm/temp'  # take from input param
+        #shutil.copy2(fpath, processing_dir)
+        
+        # -- Read the JSON file data
+        with open(fpath, 'r') as f:
+            pdb = json.load(f)[0]
+        
+        returncode = 0
+        error_message = None
+        
+        # -- Sort the tables based on the FK dependencies
+        topo_sorted_tnames = self.sortTable(fpath)
+        
+        # -- Keep track of the inserted rows in case of rollback
+        inserted_records = []
+        pk_tables = PkTables(catalog=self.catalog)
+        
+        model = self.catalog.getCatalogModel()
+        for tname in topo_sorted_tnames:
+            table = model.schemas['PDB'].tables[tname]            
+            pk_tables.prepare_model(table)   # prepare structure to lookup data based on natural key values
+            
+            records = pdb[tname]
+            if type(records) is dict: records = [records]  # convert single row to array
+            entities = records # payload
+            
+            # fill in structure_id, defaults, and handle case-insensitive. This method updates the input row
+            for record in records:
+                self.updateRecord(tname, record, entry_id, table, inserted_records)
+                
+            # Replace the FK references to the entry table
+            pk_tables.prepare_data(table)  # prepare structure to lookup data based on natural key values            
+            pk_tables.update_payload_with_rids(table, entities)
+            
+            """
+            Insert the data
+            """
+            try:
+                self.logger.debug(f'{tname}: inserting [{len(entities)}]')
+                print(f'- {tname}: inserting [{len(entities)}]')                
+                pb = self.catalog.getPathBuilder()                
+                pb_table = pb.schemas['PDB'].tables[tname]                            
+                res = pb_table.insert(entities).fetch()
+                inserted_records.append({'name': tname, 'rows': res})
+                self.logger.debug(f'inserted table {tname} [{len(res)}]')
+                print(f'- {tname}: inserted [{len(res)}]')                
+            except:
+                et, ev, tb = sys.exc_info()
+                self.logger.error('got exception "%s"' % str(ev))
+                self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+                subject = '{} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], user)
+                self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+                returncode = 1
+                error_message = 'Error in inserting values into the table {}\n{}'.format(tname, str(ev))
+                print(f'- {tname}: error_message: {error_message}')
+                self.rollbackInsertedRows(inserted_records, entry_id, user)
+                break
+            finally:
+                # clean up processing_dir
+                filename = fpath.rsplit("/", 1)[1]
+                #os.remove(f'{processing_dir}/{filename}')
+        
+        return (returncode,error_message)
+
+
     # -----------------------------------------------------------------------------------------    
     # note: if the structure in print statement is a tuple, need to convert to string first
     def print_pk_tables_dict(self, pk_table_dict, data_dict=False, limit=50):
@@ -1468,7 +1603,7 @@ class EntryProcessor(PipelineProcessor):
         entry_rid = entry_row["RID"]
         
         """
-        Read csv file
+        Read csv file. All column values are all in text. 
         """
         try :
             csvfile = open(fpath, 'r')
@@ -1486,7 +1621,8 @@ class EntryProcessor(PipelineProcessor):
             
             """
             Create initial payload based on the file. "" is treated as NULL.
-            Note: ermrest deals with text of int/float. No need to convert.
+            Note: ermrest deals with text of int/float. Consider converting to proper type, so the
+            key values reading from Ermrest are proper. 
             """
             payload = []
             for row in reader:
@@ -1516,7 +1652,7 @@ class EntryProcessor(PipelineProcessor):
         """
         try: 
             # - Prepare raw data from parent tables
-            if self.verbose: print_restraint_table_fkeys(table)
+            if self.verbose: print_table_fkeys(table)
             combo_fkeys = get_mmcif_rid_optional_fkeys(table) + get_mmcif_rid_mandatory_fkeys(table)
             
             #  - query parent tables once
@@ -1718,6 +1854,41 @@ class EntryProcessor(PipelineProcessor):
                         break
         return row
 
+    
+    def updateRecord(self, tname, row, entry_id, table, inserted_records):
+        """ To replace getUpdatedRecord
+        Args:
+            tname (str): table name
+            row (dict): inserting row (content is from json file)
+            entry_id (str): entry ID
+            table (obj): deriva table object of inserting table
+            inserted_records (dict): dict of inserted records based on different tnames
+            fk_tables (list): a list of combo1 fkey table names
+        
+        Note: to replace getUpdatedRecord
+        """
+        
+        # -- Fill in the fkey column that points to entry.id of the row
+        for fkey in table.foreign_keys:
+            if fkey.pk_table.name != "entry": continue
+            for from_col, to_col in fkey.column_map.items():
+                if to_col == "id":
+                    if from_col in row.keys():
+                        row[from_col] = entry_id
+                        break
+
+        # -- Set the missing defaults
+        if tname in self.mmCIF_defaults.keys():
+            for col in self.mmCIF_defaults[tname]:
+                if col not in row.keys(): row[col] = '.'
+                
+        # -- Set the ucode values
+        if tname in self.vocab_ucode.keys():
+            for col in self.vocab_ucode[tname]:
+                if col in row.keys(): row[col] = row[col].upper()
+        
+        return row
+    
     """
     Get the record for the ihm_entity_poly_segment table updated with values for the Entity_Poly_Seq_RID_Begin and Entity_Poly_Seq_RID_End columns.
     """

@@ -118,6 +118,7 @@ class PipelineProcessor(object):
             server = DerivaServer('https', self.host, credentials)
             self.catalog = server.connect_ermrest(self.catalog_id)            
         self.catalog.dcctx['cid'] = 'pipeline/pdb'
+        self.model = self.catalog.getCatalogModel()
         self.store = kwargs.get("store", None)
         if not self.store:
             self.store = HatracStore('https', self.host, credentials)
@@ -285,8 +286,8 @@ class PipelineProcessor(object):
         return hfs
 
     # -------------------------------------------------------------------
-
-    def get_order2tables(self):
+    #get_topo_sorted_tables
+    def get_topo_ranked_tables(self):
         """Assign order to tables for insert operation based on fkeys e.g. tables with no fkeys should be inserted first.
         This function should be used to replace the needs of tables_groups.json.
 
@@ -331,15 +332,21 @@ class PipelineProcessor(object):
             table.name: [ pktable.name for pktable in pktables ]                # ignore schema prefix
             for table, pktables in table_depmap.items()
         }
-        order2tables = topo_sort_ranked(tname_depmap)
+        
+        rank_list = topo_sort_ranked(tname_depmap)
+        rank_dict = {i: rank_list[i] for i in range(len(rank_list))}
+   
+        return rank_dict
 
-        if self.verbose:
-            print("order2tables: ")
-            for order, tnames in order2tables.items():
-                print("  %d [%d]: %s" % ( order, len(tnames), json.dumps(sorted(tnames), indent=4)))
-         
-        return order2tables
-            
+    def get_topo_sorted_tables(self):
+        topo_sorted_tables = []
+        ranked_tables = self.get_topo_ranked_tables()
+        
+        for group_no in range(0, len(ranked_tables.keys())):
+            topo_sorted_tables.extend(sorted(ranked_tables[group_no]))
+
+        return topo_sorted_tables
+        
     # -------------------------------------------------------------------            
     def get_user_row(self, schema_name, table_name, rid):
         """get ERMrest user row
