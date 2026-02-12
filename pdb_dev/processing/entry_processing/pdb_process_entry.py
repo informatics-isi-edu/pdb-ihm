@@ -109,6 +109,7 @@ def load(config_filename, args):
     print(f'args: hostname: {config["hostname"]}, catalog_id: {config["catalog_id"]}, rid: {config["rid"]}, action: {config["action"]}')    
     
     config['verbose'] = args.verbose
+    config['notify'] = args.notify
     #config['rollback'] = args.rollback
     #config['dry_run'] = args.dry_run    
     
@@ -290,7 +291,8 @@ def main():
         cli.parser.add_argument('--action', metavar='<action>',  action='store', type=str,
                                 help='Workflow actions (entry, export, accession_code, release_mmCIF, Entry_Related_File). Default is from ACTION env variable',
                                 default=os.getenv("ACTION", None), required=False)
-        cli.parser.add_argument('--verbose', action='store_true', help='Print status to stdout', default=False, required=False)
+        cli.parser.add_argument('--verbose', action='store_true', help='Whether to print status to stdout', default=False, required=False)
+        cli.parser.add_argument('--notify', action='store_true', help='Whether to send notification', default=False, required=False)        
         #cli.parser.add_argument('--rollback', action='store_true', help='Rollback ermrest update', default=False, required=False)
         
         args = cli.parse_cli()

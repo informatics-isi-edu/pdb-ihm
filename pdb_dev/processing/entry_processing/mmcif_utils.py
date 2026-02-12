@@ -273,25 +273,24 @@ class PkTables(object):
     
     """
 
-    mandatory_fkeys: bool = True
-    optional_fkeys: bool = True
-    
-    # - create lookup tables based on keys used in fkey definition. The keys are sorted to get canonical key.
-    fk_ctname_to_cname2from_cnames: dict = {}   # to_cname2from_cname group by inbould fkey constraint names to the pk_table
-    fk_ctname2kcnames: dict = {}                # fkey constraint name to key cnames (without RID column)
-    kcnames2fk_ctnames: dict = {}               # key cnames to fk constraint names
-    kcnames_kcvals2rows: dict = {}              # key column values to row grouped by key cnames
-    raw_data: dict = {}                         # raw data of individual table
-    
-    catalog: object = None
-    verbose: boolean = True
-
-    def __init__(self, catalog=None, mandatory_fkeys=True, optional_fkeys=True, raw_data=None):
+    def __init__(self, catalog=None, mandatory_fkeys=True, optional_fkeys=True, ermrest_data=None):
         if catalog: self.catalog = catalog
         
         self.mandatory_fkeys=mandatory_fkeys
         self.optional_fkeys=optional_fkeys
-        if raw_data: self.raw_data = raw_data
+        self.ermrest_data = ermrest_data # dict(ermrest_data) if ermrest_data else {}
+
+        # - create lookup tables based on keys used in fkey definition. The keys are sorted to get canonical key.
+        self.fk_ctname_to_cname2from_cnames: dict = {}   # to_cname2from_cname group by inbould fkey constraint names to the pk_table
+        self.fk_ctname2kcnames: dict = {}                # fkey constraint name to key cnames (without RID column)
+        self.kcnames2fk_ctnames: dict = {}               # key cnames to fk constraint names
+        self.kcnames_kcvals2rows: dict = {}              # key column values to row grouped by key cnames
+        self.ermrest_data: dict = {}                     # raw data of individual table
+        
+        self.catalog: object = None
+        self.verbose: boolean = True
+        
+        print("------- PkTables: ermrest_data: %s ---" % (self.ermrest_data.keys()))
 
     
     # TODO: split data from model book keeping? 
@@ -302,15 +301,15 @@ class PkTables(object):
         combo_fkeys=[]
         if self.mandatory_fkeys: combo_fkeys.extend(get_mmcif_rid_mandatory_fkeys(table))
         if self.optional_fkeys: combo_fkeys.extend(get_mmcif_rid_optional_fkeys(table))
-        print("prepare_model: combo_fkeys: %s" % (combo_fkeys))
+        print("- prepare_model: tname: %s, combo_fkeys [%d]: %s" % (table.name, len(combo_fkeys), combo_fkeys))
         
         for fkey in combo_fkeys:
             pk_tname = fkey.pk_table.name
             from_cnames = [ col.name for col in fkey.column_map.keys() ]        
             to_cnames = [ col.name for col in fkey.column_map.values() ]
-            print(" %s -> %s (%s): %s -> %s" % (table.name, pk_tname, fkey.constraint_name, from_cnames, to_cnames))
+            if self.verbose: print("  - fk: %s -> %s (%s): %s -> %s" % (table.name, pk_tname, fkey.constraint_name, from_cnames, to_cnames))
             to_cname2from_cnames = { to_col.name : from_col.name for from_col, to_col in fkey.column_map.items() }
-            if self.verbose: print("fkey: name:%s %s -> %s : %s" % (fkey.constraint_name, from_cnames, pk_tname, to_cnames))
+            #if self.verbose: print("    - fkey: name:%s %s -> %s : %s" % (fkey.constraint_name, from_cnames, pk_tname, to_cnames))
             rid_index = to_cnames.index("RID")
 
             # -- create key_cnames without RID; sorted for cannonical list
@@ -330,8 +329,8 @@ class PkTables(object):
             self.kcnames2fk_ctnames[pk_tname][key_cnames] = self.kcnames2fk_ctnames[pk_tname].get(key_cnames, [])
             self.kcnames2fk_ctnames[pk_tname][key_cnames].append(fkey.constraint_name)
             
-    def set_raw_data(self, raw_data):
-        self.raw_data = raw_data
+    def set_ermrest_data(self, ermrest_data):
+        self.ermrest_data = ermrest_data
     
     def prepare_data(self, table):
         """
@@ -341,23 +340,23 @@ class PkTables(object):
         combo_fkeys=[]
         if self.mandatory_fkeys: combo_fkeys.extend(get_mmcif_rid_mandatory_fkeys(table))
         if self.optional_fkeys: combo_fkeys.extend(get_mmcif_rid_optional_fkeys(table))
-        
+
         for fkey in combo_fkeys:
             pk_tname = fkey.pk_table.name
             key_cnames = self.fk_ctname2kcnames[pk_tname][fkey.constraint_name]
 
             # -- key column values to individual rows group by key_column_name
-            self.kcnames_kcvals2rows[pk_tname] = self.kcnames_kcvals2rows.get(pk_tname, {})
-            if key_cnames in self.kcnames_kcvals2rows[pk_tname].keys(): continue  # pk_table_dict already generated
-            if pk_tname not in self.raw_data.keys():
+            if pk_tname not in self.ermrest_data.keys():
                 print("\nWARNING: %s: There is no parent rows %s to extract RID from" % (table.name, pk_tname))
             else:
+                self.kcnames_kcvals2rows[pk_tname] = self.kcnames_kcvals2rows.get(pk_tname, {})
+                if key_cnames in self.kcnames_kcvals2rows[pk_tname].keys(): continue  # pk_table_dict already generated
                 cvals2rows = {}    # - create a dict based on cannonical key
-                for row in self.raw_data[pk_tname]:
+                for row in self.ermrest_data[pk_tname]:
                     k = tuple([ str(row[cname]) for cname in key_cnames ])  # convert to text
                     cvals2rows[k] = row
                 self.kcnames_kcvals2rows[pk_tname][key_cnames] = cvals2rows
-
+                print("%s: kcvals2rows[ %s ] : %s" % (pk_tname, key_cnames, cvals2rows))
     
     # note: if the structure in print statement is a tuple, need to convert to string first
     @classmethod
@@ -420,7 +419,7 @@ class PkTables(object):
             key_cnames = self.fk_ctname2kcnames[pk_tname][fkey.constraint_name]
             key_from_cnames = [ to_cname2from_cnames[cname] for cname in key_cnames ]
             rid_cname = to_cname2from_cnames["RID"]
-            # skip filling in rid of this fkey if the columns are missing
+            # skip filling in rid of this fkey if the column values are missing
             skip_fkey = False
             for cname in key_from_cnames:
                 if cname in headers: continue
@@ -431,21 +430,22 @@ class PkTables(object):
                 else:
                     raise Exception("INPUT ERROR: table %s misses mandatory column %s" % (table.name, cname))
             if skip_fkey: continue
-            if self.verbose: print("filling fkey: %s : %s -> %s : %s" % (fkey.constraint_name, key_from_cnames, pk_tname, key_cnames))
+            if self.verbose: print("- update_payload_with_rids: filling fkey: %s : %s -> %s : %s" % (fkey.constraint_name, key_from_cnames, pk_tname, key_cnames))
             for row in payload:
+                if pk_tname not in self.kcnames_kcvals2rows.keys(): continue
                 kcvals2rows = self.kcnames_kcvals2rows[pk_tname][key_cnames]
                 #print("kcvals2rows: %s" % (kcvals2rows))
                 key = tuple([ str(row[cname]) for cname in key_from_cnames ])  # convert to str
-                #print("key : %s <- %s" % (key, key_from_cnames))
+                print("  - update_payload_with_rids: key %s : %s (from %s)" % (key_from_cnames, key, { k: v["RID"] for k,v in kcvals2rows.items() } ))
                 # In case of optional fkey, the key column could have null value. In this case, don't fill in RID value
                 if None in key: continue
                 if key not in kcvals2rows.keys():
                     raise Exception("DATA ERROR: reference table: %s, do not contain columns: %s with reference values: %s" % (pk_tname, key_cnames, str(key)))
                 else:
                     row[rid_cname] = kcvals2rows[key]["RID"]
+                    print("  - update_payload_with_rids: pk_tname: %s -> row[%s] = %s" % (pk_tname, rid_cname, row[rid_cname]))
         
-        
-    def get_raw_data(self, catalog, from_tables, entry_id):
+    def get_ermrest_data(self, catalog, from_tables, entry_id):
         """Get raw data from from_tables (tables containing mandatory/optional fkeys to be filled in).
         The pk_tables are consolidated into a single list to avoid redundant calls
         
@@ -453,26 +453,26 @@ class PkTables(object):
         pk_tables = []
         for table in from_tables:
             combo_fkeys = get_mmcif_rid_optional_fkeys(table) + get_mmcif_rid_mandatory_fkeys(table)
-            print("get_raw_data: %s combo_fkeys: %s" % (table.name, [fkey.pk_table.name for fkey in combo_fkeys]))            
+            print("get_ermrest_data: %s combo_fkeys: %s" % (table.name, [fkey.pk_table.name for fkey in combo_fkeys]))            
             for fkey in combo_fkeys:
                 pk_table = fkey.pk_table
                 if pk_table not in pk_tables: pk_tables.append(pk_table)
 
-        print("get_raw_data: pk_tables: %s" % ([table.name for table in pk_tables]))
+        print("get_ermrest_data: pk_tables: %s" % ([table.name for table in pk_tables]))
         # get raw data based on entry_id
-        raw_data = {}
+        ermrest_data = {}
         try:
             for pk_table in pk_tables:
                 if "structure_id" in pk_table.columns.elements:
-                    raw_data[pk_table.name] = get_ermrest_query(catalog, "PDB", pk_table.name, "structure_id=%s" % (entry_id))
+                    ermrest_data[pk_table.name] = get_ermrest_query(catalog, "PDB", pk_table.name, "structure_id=%s" % (entry_id))
                 elif "entry_id" in pk_table.columns.elements:
-                    raw_data[pk_table.name] = get_ermrest_query(catalog, "PDB", pk_table.tname, "entry_id=%s" % (entry_id))
+                    ermrest_data[pk_table.name] = get_ermrest_query(catalog, "PDB", pk_table.tname, "entry_id=%s" % (entry_id))
                 else:
                     print("WARNING: can't form a query for table %s " % (pk_table.name))
         except Exception as e:
             raise ErmrestError("Unable to read data from parent tables of %s (%s)" % (pk_table.name, e))
 
-        return raw_data
+        return ermrest_data
     
     
 # -- =================================================================================

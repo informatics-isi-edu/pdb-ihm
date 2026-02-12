@@ -171,7 +171,20 @@ class EntryProcessor(PipelineProcessor):
         if kwargs.get("log_dir", None): self.log_dir = kwargs.get("log_dir")
         if kwargs.get("verbose", None): self.verbose = kwargs.get("verbose")
         if kwargs.get("notify", None): self.notify = kwargs.get("notify")
+
+        self.tname2inserting = {}  # inserting rows, used for debugging
+        self.tname2inserted = {}   # inserted rows
+
+        self.processing_tname = "Entry_Related_File" if self.action == "Entry_Related_File" else "entry"
+        self.processing_row = get_ermrest_query(self.catalog, "PDB", self.processing_tname, constraints=f'RID={self.rid}')[0]
+        self.entry_id = self.processing_row["id"] if self.processing_tname == "entry" else None
+        self.entry_rid = self.processing_row["RID"] if self.processing_tname == "entry" else None
+        self.user_row = self.get_user_row("PDB", self.processing_tname, self.rid)
+        self.user_email = self.user_row["Email"]
         
+        print("------- EntryProcessor: notify: %s, verbose: %s" % (self.notify, self.verbose))
+        print("- processing_row: %s" % (self.processing_row))
+        print("- user_row: %s" % (self.user_row))
 
     """
     Trace into the log_dir e.g. /home/pdbihm/log/trace.log file 
@@ -182,10 +195,12 @@ class EntryProcessor(PipelineProcessor):
             fa.write(message)
             fa.write('\n')
             fa.close()
-    """
-    Get the user email or full name
-    """
+        
     def getUser(self, schema, table, rid):
+        """
+        Get the user email or full name
+        """
+        
         user = None
         try:
             """
@@ -858,127 +873,76 @@ class EntryProcessor(PipelineProcessor):
     """
     Process the mmCIF file of the entry table
     """
-    def process_mmCIF(self, schema, table, rid):
+    def process_mmCIF(self):
         """
         Get the RCB user
         """
-        user = self.getUser(schema, table, rid)
-        
-        """
-        Query for detecting the record to be processed
-        """
-        url = '/entity/%s:%s/RID=%s' % (urlquote(schema), urlquote(table), urlquote(rid))
-        self.logger.debug('Query URL: "%s"' % url) 
-        
-        resp = self.catalog.get(url)
-        resp.raise_for_status()
-        row = resp.json()[0]
-        filename = row['mmCIF_File_Name']
-        file_url = row['mmCIF_File_URL']
-        md5 = row['mmCIF_File_MD5']
-        last_md5 = row['Last_mmCIF_File_MD5']
-        id = row['id']
-        creation_time = row['RCT']
-        
-        if self.is_catalog_dev == True:
-            subject = '{}: {} ({})'.format(rid, row['Process_Status'], user)
-            self.sendMail(subject, 'The Process Status of the Entry with RID={} was changed to "{}".'.format(rid, row['Process_Status']), receivers=self.email_config['curators'])
+        user = self.getUser(schema, table, self.rid)
+        sname = "PDB"
+        tname = "entry"
+        processing_dir = f'{self.scratch}/process_mmcif/{self.rid}'
+        os.makedirs(processing_dir, exist_ok=True)
 
-        """
-        Check if we have a new mmCIF file
-        """
+        # == Query for detecting the record to be processed
+        filename = self.processing_row['mmCIF_File_Name']
+        hatrac_url = self.processing_row['mmCIF_File_URL']
+        md5 = self.processing_row['mmCIF_File_MD5']
+        last_md5 = self.processing_row['Last_mmCIF_File_MD5']
+
+        status = Process_Status_Terms['SUCCESS']
+        subject = '%s %s: %s (%s)' % (self.rid, 'RECORD READY', status, self.user_email)
+        messages = f'The workflow status of the entry with RID={self.rid} was changed to RECORD READY.'
+        updating_row = {
+            'RID' : self.rid
+            'Workflow_Status' = 'RECORD READY'
+            'Process_Status' = Process_Status_Terms['SUCCESS']
+            'Record_Status_Detail' = None            
+        }
+        # == Check if we have a new mmCIF file
         if md5 == last_md5:
-            self.logger.debug('RID="{}", Skipping loading the table as the mmCIF file is unchanged'.format(rid))
-            obj = {}
-            obj['RID'] = rid
-            obj['Workflow_Status'] = 'RECORD READY'
-            obj['Process_Status'] = Process_Status_Terms['SUCCESS']
-            columns = ['Workflow_Status', 'Process_Status']
-            self.updateAttributes(schema,
-                             table,
-                             rid,
-                             columns,
-                             obj,
-                             user)
-       
-            subject = '{} {}: {} ({})'.format(rid, 'RECORD READY', Process_Status_Terms['SUCCESS'], user)
-            self.sendMail(subject, 'The workflow status of the entry with RID={} was changed to RECORD READY. Same mmCIF file content.'.format(rid), receivers=self.email_config['curators'])
-            self.logger.debug('RID="{}", mmCIF file is the same. Ended PDB Processing for the {}:{} table.'.format(rid, schema, table)) 
+            messages = f'The workflow status of the entry with RID={self.rid} was changed to RECORD READY. Same mmCIF file content.'
+            self.log_exception(e, notify=False, subject=subject, body_prefix=message)
+            self.update_processing_row(updating_row)            
+            self.logger.debug('RID="{}", Skipping processing mmcif as the mmCIF file is unchanged'.format(self.rid))
+            self.logger.debug(f'== Ended process_mmCIF RID="{self.rid}" with status = {status} ')
             return
-        
-        """
-        Cleanup the self.make_mmCIF directory 
-        """
-        for entry in os.scandir(self.make_mmCIF):
-            if entry.is_file() and entry.path.endswith('.cif'):
-                os.remove(entry.path)
-                self.logger.debug('Removed file {}'.format(entry.path))
+
+        try:
+            # == Cleanup the self.make_mmCIF directory 
+            for entry in os.scandir(self.make_mmCIF):
+                if entry.is_file() and entry.path.endswith('.cif'):
+                    os.remove(entry.path)
+                    self.logger.debug('Removed file {}'.format(entry.path))
+
+            # == Extract the file from hatrac
+            hf = HatracFile(self.store)
+            input_cif_fname = "%s_%s" % (self.rid, self.processing_row["mmCIF_File_Name"])
+            hf.download_file(hatrac_url, processing_dir, input_cif_fname, verbose=True)
+
+            # Convert the file to JSON and load the data into the tnames
+            self.convert2json(hf.file_path, entry_id, self.rid, processing_dir=processing_dir)
+
+            # load json to ermrest
+            self.loadTablesFromJSON(hf.file_path)
+                
+            updating_row['Last_mmCIF_File_MD5'] = hf.md5_hex
+            if not self.processing_row["mmCIF_File_MD5"]: updating_row['mmCIF_File_MD5'] = hf.md5_hex
             
-        """
-        Extract the file from hatrac
-        """
-        f,error_message = self.getHatracFile(filename, file_url, self.make_mmCIF, rid, user)
-        
-        if f == None:
-            self.updateAttributes(schema,
-                                  table,
-                                  rid,
-                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
-                                  {'RID': rid,
-                                  'Process_Status': Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'],
-                                  'Record_Status_Detail': error_message,
-                                  'Workflow_Status': 'ERROR'
-                                  },
-                                  user)
-            return
-        
-        """
-        Get the md5 if necessary
-        """
-        if md5 == None:
-            md5 = self.md5hex(f)
-            self.logger.debug("The MD5 was computed and it is: %s" % md5)
-            
-        """
-        Convert the file to JSON and load the data into the tables
-        """
-        returncode,error_message = self.convert2json(filename, id, rid, user)
-        
-        if returncode != 0:
-            """
-            Update the slide table with the failure result.
-            """
-            self.updateAttributes(schema,
-                                  table,
-                                  rid,
-                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
-                                  {'RID': rid,
-                                  'Process_Status': Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'],
-                                  'Record_Status_Detail': error_message,
-                                  'Workflow_Status': 'ERROR'
-                                  },
-                                  user)
-            return
-                        
-                            
-        obj = {}
-        obj['RID'] = rid
-        obj['Workflow_Status'] = 'RECORD READY'
-        obj['Process_Status'] = Process_Status_Terms['SUCCESS']
-        obj['mmCIF_File_MD5'] = md5
-        obj['Record_Status_Detail'] = None
-        obj['Last_mmCIF_File_MD5'] = md5
-        columns = ['Workflow_Status', 'Process_Status', 'mmCIF_File_MD5', 'Record_Status_Detail', 'Last_mmCIF_File_MD5']
-        self.updateAttributes(schema,
-                         table,
-                         rid,
-                         columns,
-                         obj,
-                         user)
-   
-        subject = '{} {}: {} ({})'.format(rid, 'RECORD READY', Process_Status_Terms['SUCCESS'], user)
-        self.sendMail(subject, 'The workflow status of the entry with RID={} was changed to RECORD READY.'.format(rid), receivers=self.email_config['curators'])
-        self.logger.debug('Ended PDB Processing for the %s:%s table.' % (schema, table)) 
+        except Exception e:
+            status = Process_Status_Terms['ERROR']
+            subject = '%s %s: %s (%s)' % (self.rid, self.processing_row["Process_Status"], status, self.user_email) # should this be DEPO? 
+            updating_row = {
+                'RID': self.rid,
+                'Process_Status': Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'],
+                'Record_Status_Detail': error_message,
+                'Workflow_Status': 'ERROR'
+            }
+            self.log_exception(e, notify=False, subject=subject, body_prefix=message)
+        finally:
+            self.update_processing_row(updating_row)
+            self.logger.debug(f'== Ended process_mmCIF RID="{self.rid}" with status = {status} ')            
+            # clean up directory
+            shutil.rmtree(processing_dir)
         
     """
     Extract the file from hatrac
@@ -999,8 +963,8 @@ class EntryProcessor(PipelineProcessor):
             error_message = 'ERROR getHatracFile: "%s"' % str(ev)
             return (None,error_message)
             
-
-    def convert2json(self, filename, entry_id, rid, user, processing_dir='/home/pdbihm/temp'):
+    
+    def convert2json(self, filepath, processing_dir='/home/pdbihm/temp'):
         """
         Convert the input file to JSON.
         1. generate mmcif file using make_mmcif
@@ -1017,141 +981,87 @@ class EntryProcessor(PipelineProcessor):
             - Address /home/pdbihm/temp which currently doesn't support multiple workers
         """
         
-        try:
-            """
-            Prepend the RID to the input file
-            """
-            shutil.move('{}/{}'.format(self.make_mmCIF, filename), '{}/{}_{}'.format(self.make_mmCIF, rid, filename))
-            filename = '{}_{}'.format(rid, filename)
-            output_cif = '%s_output.cif' % (rid)
-
-            """
-            Apply make_mmcif.py
-            """
-            error_message = None
-            currentDirectory=os.getcwd()
-            os.chdir('{}'.format(self.make_mmCIF))
-            args = [self.python_bin, '-m', 'ihm.util.make_mmcif', '--histidines', filename, output_cif]
-            self.logger.debug('Running "{}" from the {} directory'.format(' '.join(args), self.make_mmCIF)) 
-            p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdoutdata, stderrdata = p.communicate()
-            returncode = p.returncode
-            os.chdir(currentDirectory)
-            
-            if returncode != 0:
-                self.logger.error('Can not make mmCIF for entry id = "%s" and file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (entry_id, filename, stdoutdata, stderrdata)) 
-                subject = '{} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], user)
-                self.sendMail(subject, 'Can not make mmCIF for entry id = "%s" and file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (entry_id, filename, stdoutdata, stderrdata))
-                os.remove('{}/{}'.format(self.make_mmCIF, filename))
-                error_message = 'ERROR convert2json: {}'.format(stderrdata)
-                return (returncode,error_message)
-            
-            os.remove('{}/{}'.format(self.make_mmCIF, filename))
-
-            output_cif_fpath = '%s/%s' % (self.make_mmCIF, output_cif)
-            py_rcsb_db_input_cif_dir = '%s/rcsb/db/tests-validate/test-output/ihm-files' % (self.py_rcsb_db)
-            py_rcsb_db_input_cif_fpath = '%s/%s' % (py_rcsb_db_input_cif_dir, output_cif)
-            py_rcsb_db_output_json_dir = '%s/rcsb/db/tests-validate/test-output' % (self.py_rcsb_db)            
-            
-            """
-            Cleanup the rcsb/db/tests-validate/test-output/ihm-files (*.cif) and rcsb/db/tests-validate/test-output directories (*.json)
-            Since we will use the .cif and .json in those dirs for processing (instead of specifying as arguments). 
-            """
-            fpath = py_rcsb_db_input_cif_dir
-            for entry in os.scandir(fpath):
-                if entry.is_file() and entry.path.endswith('.cif'):
-                    os.remove(entry.path)
-                    self.logger.debug('Removed file {}'.format(entry.path))
-            
-            fpath = py_rcsb_db_output_json_dir
-            for entry in os.scandir(fpath):
-                if entry.is_file() and entry.path.endswith('.json'):
-                    os.remove(entry.path)
-                    self.logger.debug('Removed file {}'.format(entry.path))
-
-            """
-            Move the output.cif file to the rcsb/db/tests-validate/test-output/ihm-files directory and apply testSchemaDataPrepValidate-ihm.py
-            """
-            '''HT TODO: CLEANUP
-            shutil.move('{}/output.cif'.format(self.make_mmCIF), '{}/rcsb/db/tests-validate/test-output/ihm-files/'.format(self.py_rcsb_db))
-            self.logger.debug('convert2json: File {} was moved to the {} directory'.format(output_cif_fpath, '{}/rcsb/db/tests-validate/test-output/ihm-files/'.format(self.py_rcsb_db)))
-            '''
-            shutil.move(output_cif_fpath, py_rcsb_db_input_cif_dir)
-            self.logger.debug('convert2json: File %s was moved to the %s directory' % (output_cif, py_rcsb_db_input_cif_dir))
-            
-            currentDirectory=os.getcwd()
-            os.chdir('{}'.format(self.py_rcsb_db))
-            shutil.copy2(f'{self.py_rcsb_db}/rcsb/db/config/exdb-config-example-ihm-DEPO.yml', f'{self.py_rcsb_db}/rcsb/db/config/exdb-config-example-ihm.yml')
-            args = ['env', 'PYTHONPATH={}'.format(self.py_rcsb_db), self.python_bin, 'rcsb/db/tests-validate/testSchemaDataPrepValidate-ihm.py']
-            self.logger.debug('Running "{}" from the {} directory'.format(' '.join(args), self.py_rcsb_db)) 
-            p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdoutdata, stderrdata = p.communicate()
-            returncode = p.returncode
-            os.chdir(currentDirectory)
-            
-            if returncode != 0:
-                self.logger.error('Can not validate testSchemaDataPrepValidate-ihm for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (output_cif, stdoutdata, stderrdata)) 
-                subject = '{} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], user)
-                self.sendMail(subject, 'Can not make testSchemaDataPrepValidate-ihm for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (output_cif, stdoutdata, stderrdata))
-                #os.remove('%s/rcsb/db/tests-validate/test-output/ihm-files/%s' % (self.py_rcsb_db, output_cif))
-                os.remove(py_rcsb_db_input_cif_fpath)
-                error_message = 'ERROR convert2json: {}'.format(stderrdata)
-                return (returncode,error_message)
-
-            '''TODO: CLEANUP
-            shutil.copy2('%s/rcsb/db/tests-validate/test-output/ihm-files/%s' % (self.py_rcsb_db, output_cif), '/home/pdbihm/temp')
-            os.remove('%s/rcsb/db/tests-validate/test-output/ihm-files/%s' % (self.py_rcsb_db, output_cif))
-            self.logger.debug('convert2json: File {}/{} was removed'.format(self.py_rcsb_db, 'rcsb/db/tests-validate/test-output/ihm-files/%s' % (output_cif)))
-            '''
-            
-            shutil.copy2(py_rcsb_db_input_cif_fpath, processing_dir)
-            os.remove(py_rcsb_db_input_cif_fpath)
-            self.logger.debug('convert2json: File %s was removed' % (py_rcsb_db_input_cif_fpath))
-            
-            """
-            Load now the data from JSON files which are in the rcsb/db/tests-validate/test-output directory into the tables 
-            """
-            json_files = []
-            for entry in os.scandir(py_rcsb_db_output_json_dir):
-                    if entry.is_file() and entry.path.endswith('.json'): json_files.append(entry.name)
-
-            # -- Throw an exception when multiple .json file is detected. Ensure that there is only one generated
-            if len(json_files) > 1:
-                raise Exception(ProcessingError, "Multiple json files exist in rcsb_db output dir (%s): %s" % (py_rcsb_db_output_json_dir, json_files))
-            
-            for entry in os.scandir(py_rcsb_db_output_json_dir):
-                    if entry.is_file() and entry.path.endswith('.json'):
-                        shutil.copy2(entry.path, processing_dir)
-                        entry_new_fpath = "%s/%s" % (processing_dir, entry)
-                        returncode,error_message = self.loadTablesFromJSON(entry_new_fpath, entry_id, rid, user)
-                        if returncode != 0:
-                            break
-                        
-            """
-            Remove the JSON files that were created
-            """
-            for entry in os.scandir(py_rcsb_db_output_json_dir):
-                    if entry.is_file() and entry.path.endswith('.json'):
-                        os.remove(entry.path)
-                        self.logger.debug('Removed file {}'.format(entry.path))
-        except:
-            et, ev, tb = sys.exc_info()
-            self.logger.error('got unexpected exception "%s"' % str(ev))
-            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            subject = '{} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], user)
-            self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
-            os.chdir(currentDirectory)
-            returncode = 1
-            error_message = 'ERROR convert2json: "%s"' % str(ev) 
-            
-        return (returncode,error_message)
-            
+        # == Prepend the RID to the input file
+        #shutil.copy2(f'{filepath}', self.make_mmCIF)
+        filename = filepath.rsplit('/', 1)[1]
+        output_cif = '%s_output.cif' % (self.rid)
+        output_cif_fpath = '%s/%s' % (processing_dir, output_cif)
         
+        # == Apply make_mmcif.py
+        args = [self.python_bin, '-m', 'ihm.util.make_mmcif', '--histidines', filepath, output_cif]
+        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdoutdata, stderrdata = p.communicate()
+        returncode = p.returncode
+        
+        if returncode != 0:
+            os.remove('{}/{}'.format(self.make_mmCIF, filename))                
+            raise SubProcessError('ERROR convert2json: make_mmcif failed for entry id = "%s" and file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (self.entry_id, filename, stdoutdata, stderrdata))
+
+        py_rcsb_db_input_cif_dir = '%s/rcsb/db/tests-validate/test-output/ihm-files' % (self.py_rcsb_db)
+        py_rcsb_db_input_cif_fpath = '%s/%s' % (py_rcsb_db_input_cif_dir, output_cif)
+        py_rcsb_db_output_json_dir = '%s/rcsb/db/tests-validate/test-output' % (self.py_rcsb_db)            
+        
+
+        # == Cleanup the rcsb/db/tests-validate/test-output/ihm-files (*.cif) and rcsb/db/tests-validate/test-output directories (*.json)
+        # Since we will use the .cif and .json in those dirs for processing (instead of specifying as arguments). 
+
+        fpath = py_rcsb_db_input_cif_dir
+        for entry in os.scandir(fpath):
+            if entry.is_file() and entry.path.endswith('.cif'):
+                os.remove(entry.path)
+                self.logger.debug('Removed file {}'.format(entry.path))
+            
+        fpath = py_rcsb_db_output_json_dir
+        for entry in os.scandir(fpath):
+            if entry.is_file() and entry.path.endswith('.json'):
+                os.remove(entry.path)
+                self.logger.debug('Removed file {}'.format(entry.path))
+
+
+        # == Move the output.cif file to the rcsb/db/tests-validate/test-output/ihm-files directory and apply testSchemaDataPrepValidate-ihm.py
+        shutil.copy2(output_cif_fpath, py_rcsb_db_input_cif_dir)
+        self.logger.debug('convert2json: File %s was moved to the %s directory' % (output_cif, py_rcsb_db_input_cif_dir))
+            
+        currentDirectory=os.getcwd()
+        os.chdir('{}'.format(self.py_rcsb_db))
+        shutil.copy2(f'{self.py_rcsb_db}/rcsb/db/config/exdb-config-example-ihm-DEPO.yml', f'{self.py_rcsb_db}/rcsb/db/config/exdb-config-example-ihm.yml')
+        args = ['env', 'PYTHONPATH={}'.format(self.py_rcsb_db), self.python_bin, 'rcsb/db/tests-validate/testSchemaDataPrepValidate-ihm.py']
+        self.logger.debug('Running "{}" from the {} directory'.format(' '.join(args), self.py_rcsb_db)) 
+        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdoutdata, stderrdata = p.communicate()
+        returncode = p.returncode
+        os.chdir(currentDirectory)
+        
+        if returncode != 0:
+            os.remove(py_rcsb_db_input_cif_fpath)
+            raise SubProcessError('ERROR convert2json: pyrcsb testSchemaDataPrepValidate-ihm failed for file "%s".\nstdoutdata: %s\nstderrdata: %s\n' % (output_cif, stdoutdata, stderrdata)) 
+
+        shutil.remove(py_rcsb_db_input_cif_fpath, processing_dir)
+        self.logger.debug('convert2json: remove pyrcsb_db cif file %s ' % (py_rcsb_db_input_cif_fpath))
+
+        # == Load now the data from JSON files which are in the rcsb/db/tests-validate/test-output directory into the tables 
+        json_files = []
+        for entry in os.scandir(py_rcsb_db_output_json_dir):
+            if entry.is_file() and entry.path.endswith('.json'): json_files.append(entry.name)
+
+        # -- Throw an exception when 0 or more than 1 .json file found. Ensure that there is only one generated
+        if len(json_files) > 1:
+            # - remove files and raise exception
+            for fname in json_files:
+                os.remove("%s/%s" % (py_rcsb_db_output_json_dir, fname))
+            self.logger.debug('Removed json files found: dir: %s, fiiles: %s' % (py_rcsb_db_output_json_dir, json_files))
+            raise ProcessingError("ERROR convert2json: Multiple json files exist in rcsb_db output dir (%s): %s" % (py_rcsb_db_output_json_dir, json_files))
+        elif len(json_files) == 0:
+            raise ProcessingError("ERROR convert2json: No json files found in rcsb_db output dir (%s)" % (py_rcsb_db_output_json_dir))
+        else:
+            shutil.move('%s/%s' % (py_rcsb_db_output_json_dir, json_files[0]), processing_dir)
+        
+            
     """
     Update the ermrest attributes
     HT TODO: consider re-raise in the exception block
     """
-    def updateAttributes (self, schema, table, rid, columns, row, user):
+    def updateAttributes(self, schema, table, rid, columns, row, user):
         """
         Update the ermrest attributes with the row values.
         """
@@ -1172,12 +1082,24 @@ class EntryProcessor(PipelineProcessor):
             subject = '{} {}: {} ({}) - updateAttributes'.format(rid, 'ERROR', status, user)
             self.log_exception(e, notify=False, subject=subject)
             raise
-            #et, ev, tb = sys.exc_info()
-            #self.logger.error('got exception "%s"' % str(ev))
-            #self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            #self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
-            
 
+    def update_processing_row(self, row):
+        changed = False        
+        cnames = [ k for k in row.keys() if k not in ["RID", "RCB", "RMB", "RCT", "RMT"] ]
+        
+        # check whether the value have changed
+        for cname in cnames:
+            if self.processing_row[cname] != row[cname]:
+                changed = True
+                break
+        if changed:
+            updated = update_table_rows(self.catalog, "PDB", self.processing_tname, payload=[row], column_names=cnames)
+            print("- update_processing_row: updated [%d]" % (len(updated)))
+        else:
+            print("- update_processing_row: no change. updated [0]")
+            updated = []
+        return updated
+        
     """
     Get the hexa md5 checksum of the file.
     """
@@ -1297,7 +1219,7 @@ class EntryProcessor(PipelineProcessor):
     """
     Rollback JSON inserted rows
     """
-    def rollbackInsertedRows(self, records, entry_id, user):
+    def x_rollbackInsertedRows(self, records, entry_id, user):
         records.reverse()
         for record in records:
             tname = record['name']
@@ -1332,8 +1254,39 @@ class EntryProcessor(PipelineProcessor):
                     self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
                     subject = '{} {}: {} ({})'.format(entry_id, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
                     self.sendMail(subject, 'URL: %s\n%s\n' % (url, ''.join(traceback.format_exception(et, ev, tb))))
-                
-    def loadTablesFromJSON(self, fpath, entry_id, rid, user):
+
+    
+    def rollbackInsertedRows(self, tname2rows, entry_id):
+        """Rollback JSON inserted rows by deleting inserted rows from ERMrest.
+        We will assume that there is no user update to these tables through the UI before and druing the DEPO step.
+        Terefore we will delete all rows in tables based on structure_id
+        
+        Args:
+            tname2rows (dict): inserted rows based on different tables
+
+        Notes: This is to replace x_rollbackInsertdRows
+        """
+
+        model = self.catalog.getCatalogModel()
+        # -- Reverse sort the tables based on the FK dependencies        
+        topo_sorted_tnames = self.get_topo_sorted_tables()
+        reverse_sorted_tnames = reversed(topo_sorted_tnames)
+        
+        print("- rollbackInsertedRows: %s" % (reverse_sorted_tnames))
+        for tname in reverse_sorted_tnames:
+            if tname not in tname2rows: continue
+            try: 
+                table = model.schemas["PDB"].tables[tname]
+                entry_id_cname = "structure_id" if "structure_id" in table.columns.elements else "entry_id"
+                constraints = "%s=%s" % (entry_id_cname, urlquote(entry_id))
+                delete_table_rows(self.catalog, "PDB", tname, constraints=constraints)
+            except Exception as e:
+                subject = '%s %s: %s (%s)' % (self.rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], self.user_email)
+                self.log_exception(e, notify=False, subject=subject)
+                raise ErmrestError('Error in rolling back table %s' % (tname))
+        
+                    
+    def x_loadTablesFromJSON(self, fpath, entry_id, rid, user):
         """
         Load data into the tables from the JSON file.
 
@@ -1435,7 +1388,7 @@ class EntryProcessor(PipelineProcessor):
                 self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
                 returncode = 1
                 error_message = 'Error in inserting values into the table {}\n{}'.format(tname, e.message)
-                self.rollbackInsertedRows(inserted_records, entry_id, user)
+                self.x_rollbackInsertedRows(inserted_records, entry_id, user)
                 break
             except HTTPError as e:
                 et, ev, tb = sys.exc_info()
@@ -1445,7 +1398,7 @@ class EntryProcessor(PipelineProcessor):
                 self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
                 returncode = 1
                 error_message = 'Error in inserting values into the table {}\n{}'.format(tname, e.response.text)
-                self.rollbackInsertedRows(inserted_records, entry_id, user)
+                self.x_rollbackInsertedRows(inserted_records, entry_id, user)
                 break
             except:
                 et, ev, tb = sys.exc_info()
@@ -1455,29 +1408,28 @@ class EntryProcessor(PipelineProcessor):
                 self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
                 returncode = 1
                 error_message = 'Error in inserting values into the table {}\n{}'.format(tname, str(ev))
-                self.rollbackInsertedRows(inserted_records, entry_id, user)
+                self.x_rollbackInsertedRows(inserted_records, entry_id, user)
                 break
         
         return (returncode,error_message)
 
-    def loadTablesFromJSON_2(self, fpath, entry_id, rid, user, processing_dir='/home/pdbihm/temp'):
+    def loadTablesFromJSON(self, fpath, entry_id=None, processing_dir='/home/pdbihm/temp', ermrest_insert=True, ermrest_data=None):
         """
         Load data into the tables from the JSON file.
 
         Args:
             fpath (str): json file path
-            entry_id (str): entry id
-            rid (str): entry rid
-            user (str): user email address
+            entry_id (str): entry id corresponding to this json file located in fpath
 
         Throw: 'ERROR_PROCESSING_UPLOADED_mmCIF_FILE'
-        
         TODO: make temp dir configurable
         """
         
         #processing_dir='/home/pdbihm/temp'  # take from input param
         #shutil.copy2(fpath, processing_dir)
-        
+
+        if not entry_id: entry_id = self.entry_id
+            
         # -- Read the JSON file data
         with open(fpath, 'r') as f:
             pdb = json.load(f)[0]
@@ -1489,56 +1441,57 @@ class EntryProcessor(PipelineProcessor):
         topo_sorted_tnames = self.sortTable(fpath)
         
         # -- Keep track of the inserted rows in case of rollback
-        inserted_records = []
-        pk_tables = PkTables(catalog=self.catalog)
+        print("- loadTablesFromJSON_2: begin")
+        pk_tables_ref_data = ermrest_data if ermrest_data else self.tname2inserted  # refer to external ermrest sources if provided
+        pk_tables = PkTables(catalog=self.catalog, ermrest_data=pk_tables_ref_data)
+        pk_tables.set_ermrest_data(pk_tables_ref_data)  
+        print("- loadTablesFromJSON_2: pk_tables.ermrest_data: %s" % (pk_tables.ermrest_data.keys()))
         
         model = self.catalog.getCatalogModel()
         for tname in topo_sorted_tnames:
-            table = model.schemas['PDB'].tables[tname]            
-            pk_tables.prepare_model(table)   # prepare structure to lookup data based on natural key values
-            
-            records = pdb[tname]
-            if type(records) is dict: records = [records]  # convert single row to array
-            entities = records # payload
-            
-            # fill in structure_id, defaults, and handle case-insensitive. This method updates the input row
-            for record in records:
-                self.updateRecord(tname, record, entry_id, table, inserted_records)
-                
-            # Replace the FK references to the entry table
-            pk_tables.prepare_data(table)  # prepare structure to lookup data based on natural key values            
-            pk_tables.update_payload_with_rids(table, entities)
-            
-            """
-            Insert the data
-            """
             try:
-                self.logger.debug(f'{tname}: inserting [{len(entities)}]')
-                print(f'- {tname}: inserting [{len(entities)}]')                
+                table = model.schemas['PDB'].tables[tname]            
+                pk_tables.prepare_model(table)   # prepare structure to lookup data based on natural key values
+            
+                records = pdb[tname]
+                if type(records) is dict: records = [records]  # convert single row to array
+            
+                # - fill in structure_id, defaults, and handle case-insensitive. This method updates the input row
+                self.updateRecordsBasic(table, records, entry_id)
+                
+                # - Replace the FK references to the entry table
+                pk_tables.prepare_data(table)  # prepare structure to lookup data based on natural key values
+                print("- loadTablesFromJSON_2: tname: %s pk_tables.ermrest_data [%d]: %s" % (tname, len(pk_tables.ermrest_data), pk_tables.ermrest_data.keys()))
+                pk_tables.update_payload_with_rids(table, records)
+                
+                # -- Insert data to ermrest
+                if self.verbose: print(f'- {tname}: inserting [{len(records)}]: {json.dumps(records[0:2], indent=4)}')
+                self.logger.debug(f'{tname}: inserting [{len(records)}]')
+                if not ermrest_insert:
+                    self.tname2inserting[tname] = records
+                    continue
                 pb = self.catalog.getPathBuilder()                
-                pb_table = pb.schemas['PDB'].tables[tname]                            
-                res = pb_table.insert(entities).fetch()
-                inserted_records.append({'name': tname, 'rows': res})
-                self.logger.debug(f'inserted table {tname} [{len(res)}]')
-                print(f'- {tname}: inserted [{len(res)}]')                
-            except:
-                et, ev, tb = sys.exc_info()
-                self.logger.error('got exception "%s"' % str(ev))
-                self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-                subject = '{} {}: {} ({})'.format(rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], user)
-                self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
+                pb_table = pb.schemas['PDB'].tables[tname]
+                res = pb_table.insert(records).fetch() 
+                self.tname2inserted[tname] = res
+                self.logger.debug(f'inserted table {tname} [{len(res)}]: {res[0:2]}')
+                if self.verbose: print(f'- {tname}: inserted [{len(res)}]')
+            except Exception as e:
                 returncode = 1
-                error_message = 'Error in inserting values into the table {}\n{}'.format(tname, str(ev))
+                error_message = 'Error in inserting values into the table %s' % (tname)            
+                subject = '%s %s: %s (%s)' % (self.rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], self.user_email)
+                self.log_exception(e, notify=False, subject=subject, body_prefix=error_message)  # check exception
                 print(f'- {tname}: error_message: {error_message}')
-                self.rollbackInsertedRows(inserted_records, entry_id, user)
+                self.rollbackInsertedRows(self.tname2rows, entry_id)
                 break
             finally:
-                # clean up processing_dir
-                filename = fpath.rsplit("/", 1)[1]
-                #os.remove(f'{processing_dir}/{filename}')
-        
-        return (returncode,error_message)
+                pass
 
+        if False:
+            print("tname2inserting: ")
+            for k, v in self.tname2inserting.items():
+                print(" %s [%d] : %s\n" % (k, len(v), json.dumps(v[0:2], indent=4)))
+            
 
     # -----------------------------------------------------------------------------------------    
     # note: if the structure in print statement is a tuple, need to convert to string first
@@ -1855,39 +1808,43 @@ class EntryProcessor(PipelineProcessor):
         return row
 
     
-    def updateRecord(self, tname, row, entry_id, table, inserted_records):
+    def updateRecordsBasic(self, table, rows, entry_id):
         """ To replace getUpdatedRecord
         Args:
-            tname (str): table name
+            table (obj): deriva table object of inserting table        
             row (dict): inserting row (content is from json file)
             entry_id (str): entry ID
-            table (obj): deriva table object of inserting table
-            inserted_records (dict): dict of inserted records based on different tnames
-            fk_tables (list): a list of combo1 fkey table names
         
         Note: to replace getUpdatedRecord
         """
+        tname = table.name
         
         # -- Fill in the fkey column that points to entry.id of the row
+        entry_id_cnames = []
         for fkey in table.foreign_keys:
             if fkey.pk_table.name != "entry": continue
             for from_col, to_col in fkey.column_map.items():
-                if to_col == "id":
-                    if from_col in row.keys():
-                        row[from_col] = entry_id
-                        break
+                if to_col.name == "id":
+                    entry_id_cnames.append(from_col.name)
+                    #print("  - Found entry id fkey: %s -> %s" % (from_col.name, to_col.name))
+                    break
 
-        # -- Set the missing defaults
-        if tname in self.mmCIF_defaults.keys():
-            for col in self.mmCIF_defaults[tname]:
-                if col not in row.keys(): row[col] = '.'
+        for row in rows:
+            # -- set entry_id
+            for cname in entry_id_cnames:
+                if cname in row.keys(): row[cname] = entry_id
                 
-        # -- Set the ucode values
-        if tname in self.vocab_ucode.keys():
-            for col in self.vocab_ucode[tname]:
-                if col in row.keys(): row[col] = row[col].upper()
+            # -- Set the missing defaults
+            if tname in self.mmCIF_defaults.keys():
+                for col in self.mmCIF_defaults[tname]:
+                    if col not in row.keys(): row[col] = '.'
+                
+            # -- Set the ucode (case insensitive) values to upper case
+            if tname in self.vocab_ucode.keys():
+                for col in self.vocab_ucode[tname]:
+                    if col in row.keys(): row[col] = row[col].upper()
         
-        return row
+        return rows
     
     """
     Get the record for the ihm_entity_poly_segment table updated with values for the Entity_Poly_Seq_RID_Begin and Entity_Poly_Seq_RID_End columns.
