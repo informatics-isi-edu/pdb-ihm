@@ -100,7 +100,7 @@ class PipelineProcessor(object):
     email_subject_prefix = "PDB-IHM"
     log_dir = "/home/pdbihm/log"
     verbose = False
-    notify = True
+    notify = False
     logger = None
     
     def __init__(self, **kwargs):
@@ -287,7 +287,7 @@ class PipelineProcessor(object):
 
     # -------------------------------------------------------------------
     #get_topo_sorted_tables
-    def get_topo_ranked_tables(self):
+    def get_topo_ranked_tables(self, tname_only=False):
         """Assign order to tables for insert operation based on fkeys e.g. tables with no fkeys should be inserted first.
         This function should be used to replace the needs of tables_groups.json.
 
@@ -326,26 +326,29 @@ class PipelineProcessor(object):
             }
             for table in tables
         }
-
+        
         tname_depmap = {
             #table.sqlite3_table_name(): [ pktable.sqlite3_table_name() for pktable in pktables ] # produce PDB:entry
             table.name: [ pktable.name for pktable in pktables ]                # ignore schema prefix
             for table, pktables in table_depmap.items()
         }
         
-        rank_list = topo_sort_ranked(tname_depmap)
+        rank_list = topo_sort_ranked(tname_depmap) if tname_only else topo_sort_ranked(table_depmap)
         rank_dict = {i: rank_list[i] for i in range(len(rank_list))}
    
         return rank_dict
 
-    def get_topo_sorted_tables(self):
+    def get_topo_sorted_tables(self, tname_only=False, reverse=False):
         topo_sorted_tables = []
-        ranked_tables = self.get_topo_ranked_tables()
+        ranked_tables = self.get_topo_ranked_tables(tname_only=tname_only)
         
         for group_no in range(0, len(ranked_tables.keys())):
             topo_sorted_tables.extend(sorted(ranked_tables[group_no]))
 
-        return topo_sorted_tables
+        if not reverse:
+            return topo_sorted_tables
+        else:
+            return reversed(topo_sorted_tables)
         
     # -------------------------------------------------------------------            
     def get_user_row(self, schema_name, table_name, rid):
@@ -420,18 +423,18 @@ class PipelineProcessor(object):
         """
         error_message = ""
         if e:
-            details = f'{e.details}' if isinstance(e, ProcessingError) else ''
+            details = f'{e.details}' if isinstance(e, ProcessingError) and e.details else ''
             error_message = f'{str(e)}. {details}\n'
         et, ev, tb = sys.exc_info()
-        tb_message = error_message + (body_prefix if body_prefix else "") +  ''.join(traceback.format_exception(et, ev, tb))
+        tb_message = error_message + (body_prefix if body_prefix else "") + '\n' + ''.join(traceback.format_exception(et, ev, tb))
         if self.logger:
             self.logger.error('-- Got exception "%s: %s"' % (et.__name__, str(ev)))
             self.logger.error('%s' % (tb_message))
         if notify:
             if not subject: subject = "Processing error"
             self.sendMail(subject, tb_message, receivers)
-        if self.verbose: print("tb_message: %s" % (tb_message))
-
+        if self.verbose: print("- subject: %s\n- tb_message: %s" % (subject, tb_message))
+        #print("log_exception: verbose:%s: tb_message: %s" % (self.verbose, tb_message))
         return tb_message
 
     # -------------------------------------------------------------------
