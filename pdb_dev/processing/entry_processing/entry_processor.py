@@ -113,6 +113,13 @@ Process_Status_Terms = {
     'ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES': 'Error: processing uploaded restraint files'
     }
 
+Next_Workflow_Status = {
+    'DEPO': 'RECORD READY',
+    'SUBMIT': 'mmCIF CREATED',
+    'SUBMISSION COMPLETE': 'HOLD',
+    'RELEASE READY': 'REL'
+}
+
 """
 TODO:
 1) replace self.entry with ReferencedBy API to get a list of tables that point to entry
@@ -277,10 +284,10 @@ class EntryProcessor(PipelineProcessor):
         try:
             if action == 'entry':
                 self.action = 'DEPO'
-                self.process_mmCIF('PDB','entry', rid)
+                self.process_mmCIF()
             elif action == 'Entry_Related_File':
                 self.action = 'DEPO'
-                self.process_Entry_Related_File('PDB', 'Entry_Related_File', rid)
+                self.process_Entry_Related_File()
             elif action == 'export':
                 self.action = 'SUBMIT'
                 self.export_mmCIF('PDB', 'entry', rid)
@@ -292,36 +299,30 @@ class EntryProcessor(PipelineProcessor):
                 self.addReleaseRecords(rid)
             else:
                 self.logger.error('Unknown action: "%s".' % action)
-        except:
-            if action == 'Entry_Related_File':
-                table = 'Entry_Related_File'
-            else:
-                table = 'entry'
-            user = self.getUser('PDB', table, rid)
-            et, ev, tb = sys.exc_info()
-            self.logger.error('start: got unexpected exception "%s"' % str(ev))
-            self.logger.error('start: %s' % ''.join(traceback.format_exception(et, ev, tb)))
-            subject = '{} {}: {} ({})'.format(rid, 'unexpected exception', 'Error', user)
-            self.sendMail(subject, '%s\nThe process might have been stopped\n' % ''.join(traceback.format_exception(et, ev, tb)))
+        except Exception as e:
+            subject = '{} {}: {} ({})'.format(rid, 'Unexpected Exception', 'Error', self.user_email)
+            self.log_exception(e, notify=True, subject=subject)
+            self.logger.error('start: --- processing ended dues to unexpected exception ---')
             raise
+
         
-    """
-    Process the csv/tsv file of the Entry_Related_File table
-    """
-    def process_Entry_Related_File(self, sname, related_file_tname, related_file_rid):
-        """
-        Get the RCB user
-        """
-        user = self.getUser(sname, related_file_tname, related_file_rid)
+    def process_Entry_Related_File(self):
+        """Process the csv/tsv file of the Entry_Related_File table
         
         """
-        Query for detecting the record to be processed
-        """
+        
+        sname = "PDB"
+        related_file_tname = "Entry_Related_File"
+        related_file_rid = self.rid
+        user = self.user_email
+        
+        # == Query for detecting the record to be processed
         constraints='RID=%s/T:=(M:File_Type)=(Vocab:File_Type:Name)' % (related_file_rid)
-        rows = get_ermrest_query(self.catalog, sname, related_file_tname, constraints=constraints,
-                                 attributes=['M:File_Name','M:File_URL','M:File_MD5','M:structure_id','M:RCT','M:File_Format','M:Restraint_Process_Status','M:Restraint_Workflow_Status','T:Table_Name'] )
-        row = rows[0]
+        attributes=['M:File_Name','M:File_URL','M:File_MD5','M:structure_id','M:RCT','M:File_Format','M:Restraint_Process_Status','M:Restraint_Workflow_Status','T:Table_Name']
+        row = get_ermrest_query(self.catalog, sname, related_file_tname, constraints=constraints, attributes=attributes)[0]
+        self.processing_row = row
         if self.verbose: print(json.dumps(row, indent=4))
+        
         structure_id = row['structure_id']
         filename = row['File_Name']
         file_url = row['File_URL']
@@ -334,46 +335,40 @@ class EntryProcessor(PipelineProcessor):
             subject = '{}: DEV ONLY: START restraint file status {} ({})'.format(related_file_rid, row['Restraint_Process_Status'], user)
             self.sendMail(subject, 'The Restraint Process Status of the Entry Related File with RID={} was changed to "{}".'.format(row['RID'], row['Restraint_Process_Status']), receivers=self.email_config['curators'])
 
-        """
-        prepare update row (assuming success)
-        """
+        # == prepare update row (assuming success)
         update_cnames = ["Restraint_Process_Status", "Record_Status_Detail", "Restraint_Workflow_Status"]
-        update_file_row = {}
-        update_file_row['RID'] = related_file_rid
-        update_file_row['Restraint_Workflow_Status'] = 'RECORD READY'
-        update_file_row['Restraint_Process_Status'] = Process_Status_Terms['SUCCESS']
-        update_file_row['Record_Status_Detail'] = None        
+        update_file_row = {
+            'RID': related_file_rid,
+            'Restraint_Workflow_Status' : 'RECORD READY',
+            'Restraint_Process_Status' : Process_Status_Terms['SUCCESS'],
+            'Record_Status_Detail' : None,
+        }
         
-        
-        """
-        Download file and Load data from the csv/tsv files
-        """
+        # == Download file and Load data from the csv/tsv files
         try:
             self.hatrac_file.download_file(file_url, self.make_mmCIF, filename)
             delimiter = '\t' if file_format=='TSV' else ','        
             self.loadTableFromCSV(self.hatrac_file.file_path, delimiter, csv_tname, structure_id, related_file_rid, user)
             
             self.updateAttributes(sname, related_file_tname, related_file_rid, update_cnames, update_file_row, user)
-            self.logger.debug('Ended PDB Processing for the %s:%s table with RID %s.' % (sname, related_file_tname, related_file_rid))
-            
-            if self.verbose: print("Good processing")
-            if self.verbose: print('Ended PDB Processing for the %s:%s:%s with status:%s' % (sname, related_file_tname, related_file_rid, update_file_row))
+            self.logger.debug('Successfully ended PDB processing for %s:%s with RID %s.' % (sname, related_file_tname, related_file_rid))
+            if self.verbose: print('Successfully ended PDB processing for %s:%s:%s with status: %s' % (sname, related_file_tname, related_file_rid, update_file_row))
             
         except Exception as e:
             error_message = str(e)
             update_file_row['Restraint_Workflow_Status'] = 'ERROR'
             update_file_row['Restraint_Process_Status'] = Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES']
             update_file_row['Record_Status_Detail'] = error_message
-            subject = '%s %s: %s (%s)' % (related_file_rid, 'ERROR', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
+            subject = '%s %s: %s (%s)' % (related_file_rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
             self.log_exception(e, notify=False, subject=subject)
-            if self.verbose: print("process_entry_related_fiie: fail with subject: %s" % (subject))            
+            if self.verbose: print("process_entry_related_fiie: fail with subject: %s" % (subject))
             try:
                 self.updateAttributes(sname, related_file_tname, related_file_rid, update_cnames, update_file_row, user)
                 constraints="structure_id=%s&Entry_Related_File=%s" % (structure_id, related_file_rid)
                 # HT TODO: delete might fail due to dependency of child tables. We decided to go forward since it is less confusing to users
                 self.delete_rows(sname, csv_tname, constraints=constraints)
             except Exception as e:
-                subject = '%s %s: %s (%s)' % (related_file_rid, 'ERROR', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
+                subject = '%s %s: %s (%s)' % (related_file_rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
                 self.log_exception(e, notify=False, subject=subject)
                 raise ErmrestError("ERROR: Fail to update status in table %s or cleanup restraint table %s while handling error (%s)." % (related_file_tname, csv_tname, error_message))
             raise
@@ -874,26 +869,30 @@ class EntryProcessor(PipelineProcessor):
         
     def process_mmCIF(self):
         """Process the mmCIF file of the entry table
-        
         """
+        # == set per-rid processing dir
         processing_dir = f'{self.scratch}/process_mmcif/{self.rid}'
         os.makedirs(processing_dir, exist_ok=True)
 
-        # == Query for detecting the record to be processed
+        # == initialize parameters for success case
+        current_workflow_status = 'DEPO'                                     # incase the code is run manually without proper status
+        next_workflow_status = Next_Workflow_Status[current_workflow_status] # RECORD READY
+        process_status = Process_Status_Terms['SUCCESS']
+        subject = '%s %s: %s (%s)' % (self.rid, next_workflow_status, process_status, self.user_email)
+        messages = f'The workflow status of the entry with RID={self.rid} was changed to RECORD READY.'
+        updating_row = {
+            'RID' : self.rid,
+            'Workflow_Status' : next_workflow_status,
+            'Process_Status' : process_status, 
+            'Record_Status_Detail' : None,
+        }
+
+        # == info from record to be processed
         filename = self.processing_row['mmCIF_File_Name']
         hatrac_url = self.processing_row['mmCIF_File_URL']
         md5 = self.processing_row['mmCIF_File_MD5']
         last_md5 = self.processing_row['Last_mmCIF_File_MD5']
-
-        process_status = Process_Status_Terms['SUCCESS']
-        subject = '%s %s: %s (%s)' % (self.rid, 'RECORD READY', process_status, self.user_email)
-        messages = f'The workflow status of the entry with RID={self.rid} was changed to RECORD READY.'
-        updating_row = {
-            'RID' : self.rid,
-            'Workflow_Status' : 'RECORD READY',
-            'Process_Status' : process_status, 
-            'Record_Status_Detail' : None,
-        }
+        
         # == Check if we have a new mmCIF file
         if md5 == last_md5:
             message = f'The workflow status of the entry with RID={self.rid} was changed to RECORD READY. Same mmCIF file content. No processing performed.'
@@ -910,30 +909,33 @@ class EntryProcessor(PipelineProcessor):
             print("process_mmcif: download file from %s to %s/%s" % (hatrac_url, processing_dir, input_cif_fname))
             hf.download_file(hatrac_url, processing_dir, input_cif_fname, verbose=True, hashes=["md5"])
             
-            # Convert the file to JSON and load the data into the tnames
+            # == Convert the file to JSON and load the data into the tnames
             json_fpath = self.convert2json(hf.file_path, processing_dir=processing_dir)
 
-            # load json to ermrest
+            # == load json to ermrest
             #self.loadTablesFromJSON(json_fpath)  #TODO: uncomment
                 
-            print("md5 = %s" % (hf.md5_hex))
             if hf.md5_hex: updating_row['Last_mmCIF_File_MD5'] = hf.md5_hex
             if not self.processing_row["mmCIF_File_MD5"] and hf.md5_hex: updating_row['mmCIF_File_MD5'] = hf.md5_hex
-
+            print("md5: %s, Last_mmCIF_File_MD5: %s" % (hf.md5_hex, updating_row['Last_mmCIF_File_MD5']))
             
         except Exception as e:
+            # == setup updating_row and notifications
+            # Note: Brinda wants the subject line to have the current status when it fails, but the Workflow_Status should be updated to ERROR in ermrest
             process_status = Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE']
-            subject = '%s %s: %s (%s)' % (self.rid, 'ERROR', process_status, self.user_email) # should this be DEPO?             
+            subject = '%s %s: %s (%s)' % (self.rid, current_workflow_status, process_status, self.user_email) # DEPO
             updating_row = {
                 'RID': self.rid,
-                'Workflow_Status': 'ERROR',                
+                'Workflow_Status': 'ERROR',
                 'Process_Status': process_status,
                 'Record_Status_Detail': str(e),
             }
             self.log_exception(e, notify=False, subject=subject, body_prefix="Error occured in processing_mmCIF.")
         finally:
+            # == update ermrest
             self.update_processing_row(updating_row)
-            self.logger.debug(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')            
+            self.logger.debug(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')
+            self.verbose: print(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')            
             # clean up directory
             #shutil.rmtree(processing_dir)
         

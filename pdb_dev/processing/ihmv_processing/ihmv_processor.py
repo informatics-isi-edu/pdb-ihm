@@ -88,7 +88,7 @@ class IHMVProcessor(PipelineProcessor):
         if self.verbose:
             print("pdbihm_confif_file: %s " % (self.pdbihm_config_file))
             print("timeout: %s, singularity_sif: %s, ihmvalidation_dir: %s " % (self.timeout, self.singularity_sif, self.ihmvalidation_dir))
-            print("cfg.host: %s, cfg.catalog_id: %s, is_dev:%s, hatrac_root: %s, log_file: %s " % (self.cfg.host, self.cfg.catalog_id, self.cfg.is_dev, self.hatrac_root, self.log_file))
+            #print("cfg.host: %s, cfg.catalog_id: %s, is_dev:%s, hatrac_root: %s, log_file: %s " % (self.cfg.host, self.cfg.catalog_id, self.cfg.is_dev, self.hatrac_root, self.log_file))
             print("email_config: %s" % (self.email_config))
             
         # assertion of input arguments

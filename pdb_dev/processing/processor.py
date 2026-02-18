@@ -225,8 +225,9 @@ class PipelineProcessor(object):
             self.store.create_namespace(namespace, parents=True)
             acl = { "subtree-read": [ user_id ] }
             set_hatrac_namespace_acl(self.store, acl, namespace, hatrac_root=self.hatrac_root)
+            if self.verbose: print("- create_hatrac_uid_namespace: namespace %s: set subtree-read to %s" % (namespace, user_id))            
         else:
-            if self.verbose: print("- create_hatrac_uid_namespace: namespace %s already exists" % (namespace))
+            if self.verbose: print("- create_hatrac_uid_namespace: namespace %s already exists. Do nothing" % (namespace))
             pass
 
         
