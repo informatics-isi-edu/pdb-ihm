@@ -2403,7 +2403,8 @@ class EntryProcessor(PipelineProcessor):
                     '-f', f'/ihmv/input/{filename}', 
                     '--force',
                     '--output-root', '/ihmv/output', 
-                    '--cache-root', '/ihmv/cache'
+                    '--cache-root', '/ihmv/cache',
+                    '--watermark', 'confidential' if hold else 'none'
                     ]
             self.logger.debug(f'Running "{" ".join(args)}" from the {self.validation_dir} directory') 
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
