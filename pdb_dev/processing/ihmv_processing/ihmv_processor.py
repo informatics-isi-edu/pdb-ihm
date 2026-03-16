@@ -85,11 +85,6 @@ class IHMVProcessor(PipelineProcessor):
                 self.email_config = json.load(file)
             self.email_config["sender"] = self.email_config["sender"].replace("PDB-DEV", "PDB-IHMV")
         
-        if self.verbose:
-            print("pdbihm_confif_file: %s " % (self.pdbihm_config_file))
-            print("timeout: %s, singularity_sif: %s, ihmvalidation_dir: %s " % (self.timeout, self.singularity_sif, self.ihmvalidation_dir))
-            print("cfg.host: %s, cfg.catalog_id: %s, is_dev:%s, hatrac_root: %s, log_file: %s " % (self.cfg.host, self.cfg.catalog_id, self.cfg.is_dev, self.hatrac_root, self.log_file))
-            print("email_config: %s" % (self.email_config))
             
         # assertion of input arguments
         if not self.singularity_sif or not self.ihmvalidation_dir:
@@ -102,7 +97,15 @@ class IHMVProcessor(PipelineProcessor):
         if len(rows) != 1: raise Exception("ERROR: RID %s doesn't exist" % (self.structure_rid))
         self.structure_row = rows[0]
         self.user_id = self.structure_row["RCB"]
-        self.user_uuid = self.user_id.rsplit("/")[1]
+        self.user_uuid = self.user_id.rsplit("/", 1)[1]
+        if not self.user_uuid: raise Exception("ERROR: user_uuid cannot be derived from structure_id: %s" % (self.structure_rid))
+
+        if self.verbose:
+            print("pdbihm_confif_file: %s " % (self.pdbihm_config_file))
+            print("timeout: %s, singularity_sif: %s, ihmvalidation_dir: %s " % (self.timeout, self.singularity_sif, self.ihmvalidation_dir))
+            print("cfg.host: %s, cfg.catalog_id: %s, is_dev:%s, hatrac_root: %s, log_file: %s " % (self.cfg.host, self.cfg.catalog_id, self.cfg.is_dev, self.hatrac_root, self.log_file))
+            print("email_config: %s" % (self.email_config))
+            print("structure_rid: %s, user_id: %s, user_uuid: %s" % (self.structure_rid, self.user_id, self.user_uuid))
         
         #raise Exception("DIE HERE")
     # -------------------------------------------------
