@@ -21,18 +21,18 @@ from urllib.parse import urlparse
 import sys
 import traceback
 import shutil
-import hashlib
 import smtplib
 from email.mime.text import MIMEText
 import socket
 from socket import gaierror, EAI_AGAIN
 from dateutil.parser import parse
-from requests import HTTPError
-from subprocess import TimeoutExpired
+#from requests import HTTPError
+#from subprocess import TimeoutExpired
 import csv
 import mimetypes
 import tempfile
 from collections import deque
+import re
 
 import time
 from datetime import datetime as dt, timedelta, timezone
