@@ -101,7 +101,7 @@ class TestEntryProcessor(unittest.TestCase):
 
     def test_sortTable(self):
         print("- test_sortTable")
-        sorted_tables = self.processor.sortTable("/scratch/pdb/entry_processing/9A9V.json")
+        sorted_tables = self.processor.sortTable("/scratch/pdb/entry_processing/test_data/9A9V_output.json")
                 
         
     def test_loadTablesFromJSON(self):
@@ -124,6 +124,12 @@ class TestEntryProcessor(unittest.TestCase):
     def test_process_mmCIF(self):
         print("- test_process_mmCIF")
 
+"""
+python -m unittest test_entry_processor.py
+python -m unittest test_entry_processor.TestEntryProcessor
+python -m unittest test_entry_processor.TestEntryProcessor.test_sortTable
+
+"""
 
         
 if __name__ == '__main__':
