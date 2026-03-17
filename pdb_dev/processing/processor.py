@@ -135,6 +135,8 @@ class PipelineProcessor(object):
         if kwargs.get('cutoff_time_pacific', None): self.cutoff_time_pacific = kwargs.get('cutoff_time_pacific') 
         if kwargs.get('release_time_utc', None): self.release_time_pacific = kwargs.get('release_time_utc')
 
+        self.hatrac_root = self.cfg.hatrac_root if self.cfg else "/hatrac"
+        print("host: %s, catalog_id: %s, catalog: %s" % (self.host, self.catalog_id, self.catalog))
     
     @classmethod
     def same_table_rows(table, base_rows, compare_rows, key="structure_id"):
