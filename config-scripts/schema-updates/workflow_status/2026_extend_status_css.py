@@ -7,8 +7,8 @@ from pdb_dev.utils.shared import DCCTX, PDBDEV_CLI
 CSS_CLASSES = {
     "DEFAULT": ".chaise-record-status-default",
     "DEFAULT_COMPACT": ".chaise-record-status-compact-default",
-    "ERROR": ".chaise-record-status-warning",
-    "ERROR_COMPACT": ".chaise-record-status-compact-warning",
+    "ERROR": ".chaise-record-status-danger",
+    "ERROR_COMPACT": ".chaise-record-status-compact-danger",
     "SUCCESS": ".chaise-record-status-success",
     "SUCCESS_COMPACT": ".chaise-record-status-compact-success",
 }
