@@ -1,8 +1,9 @@
+from deriva.core import init_logging, logging
 from deriva.core import ErmrestCatalog, AttrDict, get_credential, DEFAULT_CREDENTIAL_FILE, tag, urlquote, DerivaServer, get_credential, BaseCLI
 from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key, ForeignKey
 from deriva.core import urlquote, urlunquote
 import requests.exceptions
-from ...utils.shared import DCCTX, PDBDEV_CLI
+from pdb_dev.utils.shared import DCCTX, PDBDEV_CLI
 from deriva.utils.extras.model import print_schema_model_extras, print_table_model_extras, print_schema_annotations, per_schema_annotation_tags, clear_schema_annotations
 
 # -- =================================================================================
@@ -71,15 +72,22 @@ def update_Vocab_System_Generated_File_Type(model):
 def update_Vocab_Process_Status(model):
     schema = model.schemas["Vocab"]
     table = schema.tables["Process_Status"]
+
     # ----------------------------
-    schema.tables["Process_Status"].table_display.update({
+    table.table_display.update({
         "*": {
             "row_order": [{ "column": "Rank", "descending": False }]
-        }
+        },
+        "row_name/detailed": {
+            "row_markdown_pattern": ":span:{{{Name}}}:/span:{ {{{CSS_Class}}} }"
+        },
+        "row_name/compact": {
+            "row_markdown_pattern": ":span:{{{Name}}}:/span:{ {{{CSS_Class_Compact}}} }"
+        },
     })
     
     # ----------------------------
-    schema.tables["Process_Status"].visible_columns.update({
+    table.visible_columns.update({
         "*": [
             "RID",
             "Name",
@@ -88,6 +96,8 @@ def update_Vocab_Process_Status(model):
             "Restraint_Status",
             "Entry_Submitter_Select",
             "Restraint_Submitter_Select",
+            "CSS_Class",
+            "CSS_Class_Compact",
         ],
         "compact/select/foreign_key": [
             "RID",
@@ -100,15 +110,22 @@ def update_Vocab_Process_Status(model):
 def update_Vocab_Workflow_Status(model):
     schema = model.schemas["Vocab"]
     table = schema.tables["Workflow_Status"]
+
     # ----------------------------
-    schema.tables["Workflow_Status"].table_display.update({
+    table.table_display.update({
         "*": {
             "row_order": [ {"column": "Rank",  "descending": False } ]
-        }
+        },
+        "row_name/detailed": {
+            "row_markdown_pattern": ":span:{{{Name}}}:/span:{ {{{CSS_Class}}} }"
+        },
+        "row_name/compact": {
+            "row_markdown_pattern": ":span:{{{Name}}}:/span:{ {{{CSS_Class_Compact}}} }"
+        },
     })
     
     # ----------------------------
-    schema.tables["Workflow_Status"].visible_columns.update({
+    table.visible_columns.update({
         "*": [
             "RID",
             "Name",
@@ -117,6 +134,8 @@ def update_Vocab_Workflow_Status(model):
             "Restraint_Status",
             "Entry_Submitter_Select",            
             "Restraint_Submitter_Select",
+            "CSS_Class",
+            "CSS_Class_Compact",
         ],
         "compact/select/foreign_key": [
             "RID",

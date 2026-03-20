@@ -87,7 +87,7 @@ def update_PDB_entry(model):
             'Image_File_URL', 
             ['PDB', 'entry_Accession_Code_fkey'], 
             ['PDB', 'entry_Workflow_Status_fkey'], 
-            'Process_Status',
+            ['PDB', 'entry_Process_Status_fkey'],
             { 'sourcekey': 'entry_error_file_fkey', },            
             {
                 'entity' : True,
@@ -117,7 +117,7 @@ def update_PDB_entry(model):
             { 'source' : 'Image_File_Bytes', 'markdown_name' : 'Image File Size',  },
             ['PDB', 'entry_Accession_Code_fkey'], 
             ['PDB', 'entry_Workflow_Status_fkey'], 
-            'Process_Status',
+            ['PDB', 'entry_Process_Status_fkey'],
             { 'sourcekey' : 'entry_error_file_fkey'  },                        
             'Deposit_Date', 
             'Release_Date', 
