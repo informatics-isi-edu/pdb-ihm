@@ -767,7 +767,7 @@ def update_PDB_Entry_Related_File(model):
             'File_MD5', 
             'Description', 
             ['PDB', 'Entry_Related_File_Restraint_Workflow_Status_fkey'], 
-            'Restraint_Process_Status', 
+            ['PDB', 'Entry_Related_File_Restraint_Process_Status_fkey'],
             'Record_Status_Detail', 
         ],
         'entry' :  [
@@ -789,7 +789,7 @@ def update_PDB_Entry_Related_File(model):
             'File_MD5', 
             'Description', 
             ['PDB', 'Entry_Related_File_Restraint_Workflow_Status_fkey'], 
-            'Restraint_Process_Status', 
+            ['PDB', 'Entry_Related_File_Restraint_Process_Status_fkey'],
             'Record_Status_Detail', 
             ['PDB', 'Entry_Related_File_RCB_fkey'], 
             ['PDB', 'Entry_Related_File_RMB_fkey'], 
