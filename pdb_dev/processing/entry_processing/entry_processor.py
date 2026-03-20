@@ -900,20 +900,20 @@ class EntryProcessor(PipelineProcessor):
             self.update_processing_row(updating_row)
             self.logger.debug('RID="{}", Skipping processing mmcif as the mmCIF file is unchanged'.format(self.rid))
             self.logger.debug(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')
-            #return    #TODO: uncomment
+            return    #TODO: uncomment
 
         try:
             # == Extract the file from hatrac
             hf = HatracFile(self.store)
             input_cif_fname = "%s_%s" % (self.rid, self.processing_row["mmCIF_File_Name"])
             print("process_mmcif: download file from %s to %s/%s" % (hatrac_url, processing_dir, input_cif_fname))
-            hf.download_file(hatrac_url, processing_dir, input_cif_fname, verbose=True, hashes=["md5"])
+            hf.download_file(hatrac_url, processing_dir, input_cif_fname, verbose=False, hashes=["md5"])
             
             # == Convert the file to JSON and load the data into the tnames
             json_fpath = self.convert2json(hf.file_path, processing_dir=processing_dir)
 
             # == load json to ermrest
-            #self.loadTablesFromJSON(json_fpath)  #TODO: uncomment
+            self.loadTablesFromJSON(json_fpath)  #TODO: uncomment
                 
             if hf.md5_hex: updating_row['Last_mmCIF_File_MD5'] = hf.md5_hex
             if not self.processing_row["mmCIF_File_MD5"] and hf.md5_hex: updating_row['mmCIF_File_MD5'] = hf.md5_hex
@@ -937,7 +937,7 @@ class EntryProcessor(PipelineProcessor):
             self.logger.debug(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')
             self.verbose: print(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')            
             # clean up directory
-            #shutil.rmtree(processing_dir)
+            shutil.rmtree(processing_dir)  #TODO: uncomment
         
     """
     Extract the file from hatrac
@@ -971,7 +971,7 @@ class EntryProcessor(PipelineProcessor):
         It is important that we ensure only one json file is generated.
         5. copy output.cif to  /home/pdbihm/temp
         
-        HT TODO:
+        HT TODO (DONE):
             - refactor code.
             - Address /home/pdbihm/temp which currently doesn't support multiple workers
         """
@@ -1408,7 +1408,7 @@ class EntryProcessor(PipelineProcessor):
         
         return (returncode,error_message)
 
-    def loadTablesFromJSON(self, fpath,  processing_dir='/home/pdbihm/temp', ermrest_insert=True, ermrest_data=None):
+    def loadTablesFromJSON(self, fpath, ermrest_insert=True, ermrest_data=None):
         """
         Load data into the tables from the JSON file.
 
@@ -1462,7 +1462,7 @@ class EntryProcessor(PipelineProcessor):
                 self.logger.debug(f'inserted table {tname} [{len(res)}]: {res[0:2]}')
                 if self.verbose: print(f'- {tname}: inserted [{len(res)}]')
             except Exception as e:
-                # TODO: Check whether the subject should be ERROR instead of DEPO
+                # TODO: Check whether the subject should be ERROR instead of DEPO. Answer: DEPO
                 error_message = 'Error in inserting values into table %s' % (tname)            
                 subject = '%s %s: %s (%s)' % (self.rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], self.user_email)
                 self.log_exception(e, notify=False, subject=subject, body_prefix=error_message)  # check exception
