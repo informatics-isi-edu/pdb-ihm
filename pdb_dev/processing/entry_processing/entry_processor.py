@@ -2400,7 +2400,7 @@ class EntryProcessor(PipelineProcessor):
             # To test this manually, cd to the validation directory (e.g. /mnt/vdb1/validation
             args = ['singularity', 
                     'exec', '--pid',
-                    '--bind', f'IHMValidation/:/opt/IHMValidation,{ihm_path}/:/opt/conda/lib/python3.10/site-packages/ihm/,input:/ihmv/input,cache:/ihmv/cache,output:/ihmv/output', 
+                    '--bind', f'IHMValidation/:/opt/IHMValidation,{self.ihm_path}/:/opt/conda/lib/python3.10/site-packages/ihm/,input:/ihmv/input,cache:/ihmv/cache,output:/ihmv/output', 
                     self.singularity_sif, #'ihmv_20231222.sif', 
                     '/opt/IHMValidation/ihm_validation/ihm_validator.py',
                     '-f', f'/ihmv/input/{filename}', 

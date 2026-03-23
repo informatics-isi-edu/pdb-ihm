@@ -160,8 +160,8 @@ class IHMVProcessor(PipelineProcessor):
 
             # Pass system ihm package
             bind_paths_ = []
-            if Path(ihm_path).exists():
-                bind_paths_.append(f'{ihm_path}/:/opt/conda/lib/python3.10/site-packages/ihm/')
+            if Path(self.ihm_path).exists():
+                bind_paths_.append(f'{self.ihm_path}/:/opt/conda/lib/python3.10/site-packages/ihm/')
             # Pass IHMValidation directory
             bind_paths_.append(f'{self.ihmvalidation_dir}:/opt/IHMValidation')
             # Pass input, output, and cache directories
