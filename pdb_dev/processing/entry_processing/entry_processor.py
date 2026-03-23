@@ -40,7 +40,7 @@ import filecmp
 import mimetypes
 import tempfile
 import ihm # for validation report
-from pathlib import Part
+from pathlib import Path
 
 from deriva.core import PollingErmrestCatalog, HatracStore, urlquote
 from deriva.core.utils import hash_utils as hu
