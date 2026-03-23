@@ -269,10 +269,9 @@ class Worker (object):
     def blocking_poll(cls):
         return cls.catalog.blocking_poll(cls.look_for_work, polling_seconds=cls.poll_seconds)
 
-
 # switch user to pdb-ihm
 # > sudo su - pdbihm
-# > PDB_CREDENTIALS="/home/pdbihm/.secrets/credentials.json" PDB_SERVER="data-dev.pdb-ihm.org" CATALOG="99" PDB_CONFIG="/home/pdbihm/pdb/config/staging/pdb_conf.json" PDB_LOG="/home/pdbihm/pdb/log/staging/pdb.log" /usr/local/bin/pdb_entry_processing_worker
+# > PDB_CREDENTIALS="/home/pdbihm/.secrets/credentials_proper.json" PDB_SERVER="data-dev.pdb-ihm.org" CATALOG="50" PDB_CONFIG="/home/pdbihm/config/entry_processing/pdb_conf.json" PDB_LOG="/home/pdbihm/log/entry_processing/pdb_test.log" pdb_entry_processing_worker
 #
 def main():
     DESC = "Curation processing worker"

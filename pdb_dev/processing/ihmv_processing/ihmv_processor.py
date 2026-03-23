@@ -8,6 +8,8 @@ from pathlib import Path
 import shutil
 import typing
 import re
+import ihm
+
 
 from deriva.core import PollingErmrestCatalog, DerivaServer, HatracStore, urlquote, get_credential
 from deriva.core.datapath import DataPathException
@@ -42,7 +44,8 @@ class IHMVProcessor(PipelineProcessor):
     structure_row = None
     user_id = None    # user globus_id e.g. https://auth.globus.org/<uuid>
     user_uuid = None  # user uuid to be used as part of hatrac path
-
+    ihm_path = str(Path(ihm.__file__).parent)
+    
     def __init__(self, catalog=None, store=None, hostname=None, catalog_id=None, credential_file=None,
                  scratch_dir=None, cfg=None, logger=None, log_level="info", log_file=None, verbose=None,
                  email_config_file: typing.Optional[str]=None,
@@ -157,9 +160,8 @@ class IHMVProcessor(PipelineProcessor):
 
             # Pass system ihm package
             bind_paths_ = []
-            ihm_dir = '/usr/local/lib/python3.8/dist-packages/ihm/'
-            if Path(ihm_dir).exists():
-                bind_paths_.append(f'{ihm_dir}:/opt/conda/lib/python3.10/site-packages/ihm/')
+            if Path(ihm_path).exists():
+                bind_paths_.append(f'{ihm_path}/:/opt/conda/lib/python3.10/site-packages/ihm/')
             # Pass IHMValidation directory
             bind_paths_.append(f'{self.ihmvalidation_dir}:/opt/IHMValidation')
             # Pass input, output, and cache directories
