@@ -39,7 +39,7 @@ import csv
 import filecmp
 import mimetypes
 import tempfile
-import ihmv # for validation report
+import ihm # for validation report
 from pathlib import Part
 
 from deriva.core import PollingErmrestCatalog, HatracStore, urlquote
