@@ -119,6 +119,7 @@ def update_PDB_entry(model):
             {
                 "source": [{ "outbound": ["PDB", "entry_Workflow_Status_fkey"]}, "Name" ],
                 "comment" : "Do not proceed with manual data entry when this status displays ERROR",
+                "comment_display": "inline",
                 "markdown_name": "Workflow Status"
             },
             ['PDB', 'entry_Process_Status_fkey'],
