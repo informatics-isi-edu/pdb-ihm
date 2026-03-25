@@ -116,7 +116,11 @@ def update_PDB_entry(model):
             'Image_File_URL', 
             { 'source' : 'Image_File_Bytes', 'markdown_name' : 'Image File Size',  },
             ['PDB', 'entry_Accession_Code_fkey'], 
-            { 'sourcekey' : 'entry_Workflow_Status_fkey',  'markdown_name' : 'Workflow Status', 'comment' : 'Do not proceed with manual data entry when this status displays ERROR',  },
+            {
+                "source": [{ "outbound": ["Vocab", "entry_Workflow_Status_fkey"]}, "Name" ],
+                "comment" : "Do not proceed with manual data entry when this status displays ERROR",
+                "markdown_name": "Workflow Status"
+            },
             ['PDB', 'entry_Process_Status_fkey'],
             { 'sourcekey' : 'entry_error_file_fkey'  },                        
             'Deposit_Date', 
