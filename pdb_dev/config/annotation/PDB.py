@@ -122,7 +122,12 @@ def update_PDB_entry(model):
                 "comment_display": "inline",
                 "markdown_name": "Workflow Status",
                 "display": {
-                    "markdown_pattern": "{{#if (eq $self.values.Name 'ERROR')}}:span::/span:{.fa-solid .fa-ban style=\"color:red;font-size:1.4rem;margin-right:2px\" data-chaise-tooltip-no-icon data-chaise-tooltip=\"Do not proceed with manual data entry!\" }{{/if}}[{{{$self.rowName}}}]({{{$self.uri.detailed}}})",
+                    "markdown_pattern": "".join([
+                        "{{#if (eq $self.values.Name 'ERROR')}}",
+                        ":span::/span:{.fa-solid .fa-ban style=\"color:red;font-size:1.4rem;margin-right:2px\" data-chaise-tooltip-no-icon data-chaise-tooltip=\"Do not proceed with manual data entry!\" }",
+                        "{{/if}}",
+                        "[{{{$self.rowName}}}]({{{$self.uri.detailed}}})",
+                    ]),
                 }
             },
             ['PDB', 'entry_Process_Status_fkey'],
