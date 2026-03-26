@@ -39,6 +39,8 @@ import csv
 import filecmp
 import mimetypes
 import tempfile
+import ihm # for validation report
+from pathlib import Path
 
 from deriva.core import PollingErmrestCatalog, HatracStore, urlquote
 from deriva.core.utils import hash_utils as hu
@@ -136,6 +138,7 @@ class EntryProcessor(PipelineProcessor):
     py_rcsb_db = "/home/pdbihm/pdb/py-rcsb_db"
     scratch = "/mnt/vdb1/entry_processing/scratch"
     log_dir = "/home/pdbihm/log/entry_processing"
+    ihm_path = str(Path(ihm.__file__).parent)
     
     def __init__(self, **kwargs):
         self.action = kwargs.get("action")
@@ -2509,13 +2512,14 @@ class EntryProcessor(PipelineProcessor):
             # To test this manually, cd to the validation directory (e.g. /mnt/vdb1/validation
             args = ['singularity', 
                     'exec', '--pid',
-                    '--bind', 'IHMValidation/:/opt/IHMValidation,/usr/local/lib/python3.8/dist-packages/ihm/:/opt/conda/lib/python3.10/site-packages/ihm/,input:/ihmv/input,cache:/ihmv/cache,output:/ihmv/output', 
+                    '--bind', f'IHMValidation/:/opt/IHMValidation,{self.ihm_path}/:/opt/conda/lib/python3.10/site-packages/ihm/,input:/ihmv/input,cache:/ihmv/cache,output:/ihmv/output', 
                     self.singularity_sif, #'ihmv_20231222.sif', 
                     '/opt/IHMValidation/ihm_validation/ihm_validator.py',
                     '-f', f'/ihmv/input/{filename}', 
                     '--force',
                     '--output-root', '/ihmv/output', 
-                    '--cache-root', '/ihmv/cache'
+                    '--cache-root', '/ihmv/cache',
+                    '--watermark', 'confidential' if hold else 'none'
                     ]
             self.logger.debug(f'Running "{" ".join(args)}" from the {self.validation_dir} directory') 
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

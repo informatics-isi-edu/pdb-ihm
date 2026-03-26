@@ -21,18 +21,18 @@ from urllib.parse import urlparse
 import sys
 import traceback
 import shutil
-import hashlib
 import smtplib
 from email.mime.text import MIMEText
 import socket
 from socket import gaierror, EAI_AGAIN
 from dateutil.parser import parse
-from requests import HTTPError
-from subprocess import TimeoutExpired
+#from requests import HTTPError
+#from subprocess import TimeoutExpired
 import csv
 import mimetypes
 import tempfile
-from collections import deque
+#from collections import deque
+import re
 
 import time
 from datetime import datetime as dt, timedelta, timezone
@@ -136,6 +136,8 @@ class PipelineProcessor(object):
         if kwargs.get('cutoff_time_pacific', None): self.cutoff_time_pacific = kwargs.get('cutoff_time_pacific') 
         if kwargs.get('release_time_utc', None): self.release_time_pacific = kwargs.get('release_time_utc')
 
+        self.hatrac_root = self.cfg.hatrac_root if self.cfg else "/hatrac"
+        print("host: %s, catalog_id: %s, catalog: %s" % (self.host, self.catalog_id, self.catalog))
     
     @classmethod
     def same_table_rows(table, base_rows, compare_rows, key="structure_id"):

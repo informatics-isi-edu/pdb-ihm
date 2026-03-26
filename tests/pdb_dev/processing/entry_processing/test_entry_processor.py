@@ -139,6 +139,7 @@ class TestEntryProcessor(TestProcessor):
         """Compare the previous implementation with the new one
         """
         print("- test_sortTable")
+
         expected_results = {
             "4-K8M2": ['atom_type', 'chem_comp', 'entity', 'ihm_modeling_protocol', 'ihm_model_group', 'ihm_model_representation', 'ihm_struct_assembly', 'struct', 'entity_poly', 'ihm_model_list', 'struct_asym', 'entity_poly_seq', 'ihm_model_group_link', 'ihm_entity_poly_segment', 'ihm_struct_assembly_details', 'ihm_model_representation_details'],
             "4-ETK0": ['atom_type', 'chem_comp', 'entity', 'ihm_modeling_protocol', 'ihm_model_group', 'ihm_model_representation', 'ihm_struct_assembly', 'struct', 'entity_poly', 'ihm_model_list', 'struct_asym', 'entity_poly_seq', 'ihm_model_group_link', 'ihm_entity_poly_segment', 'ihm_struct_assembly_details', 'ihm_model_representation_details']
@@ -359,6 +360,13 @@ class TestEntryProcessor(TestProcessor):
         print("- test_process_mmCIF")
         process_mmCIF_tester("4-X83E")
         
+
+"""
+python -m unittest test_entry_processor.py
+python -m unittest test_entry_processor.TestEntryProcessor
+python -m unittest test_entry_processor.TestEntryProcessor.test_sortTable
+
+"""
         
 if __name__ == '__main__':
     cli = PDBDEV_CLI("test_entry_processor", None, 1)

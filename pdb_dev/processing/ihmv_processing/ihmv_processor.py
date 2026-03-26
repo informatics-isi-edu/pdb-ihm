@@ -8,6 +8,8 @@ from pathlib import Path
 import shutil
 import typing
 import re
+import ihm
+
 
 from deriva.core import PollingErmrestCatalog, DerivaServer, HatracStore, urlquote, get_credential
 from deriva.core.datapath import DataPathException
@@ -42,7 +44,8 @@ class IHMVProcessor(PipelineProcessor):
     structure_row = None
     user_id = None    # user globus_id e.g. https://auth.globus.org/<uuid>
     user_uuid = None  # user uuid to be used as part of hatrac path
-
+    ihm_path = str(Path(ihm.__file__).parent)
+    
     def __init__(self, catalog=None, store=None, hostname=None, catalog_id=None, credential_file=None,
                  scratch_dir=None, cfg=None, logger=None, log_level="info", log_file=None, verbose=None,
                  email_config_file: typing.Optional[str]=None,
@@ -85,6 +88,7 @@ class IHMVProcessor(PipelineProcessor):
                 self.email_config = json.load(file)
             self.email_config["sender"] = self.email_config["sender"].replace("PDB-DEV", "PDB-IHMV")
         
+
         if self.verbose:
             print("pdbihm_confif_file: %s " % (self.pdbihm_config_file))
             print("timeout: %s, singularity_sif: %s, ihmvalidation_dir: %s " % (self.timeout, self.singularity_sif, self.ihmvalidation_dir))
@@ -102,7 +106,15 @@ class IHMVProcessor(PipelineProcessor):
         if len(rows) != 1: raise Exception("ERROR: RID %s doesn't exist" % (self.structure_rid))
         self.structure_row = rows[0]
         self.user_id = self.structure_row["RCB"]
-        self.user_uuid = self.user_id.rsplit("/")[1]
+        self.user_uuid = self.user_id.rsplit("/", 1)[1]
+        if not self.user_uuid: raise Exception("ERROR: user_uuid cannot be derived from structure_id: %s" % (self.structure_rid))
+
+        if self.verbose:
+            print("pdbihm_confif_file: %s " % (self.pdbihm_config_file))
+            print("timeout: %s, singularity_sif: %s, ihmvalidation_dir: %s " % (self.timeout, self.singularity_sif, self.ihmvalidation_dir))
+            print("cfg.host: %s, cfg.catalog_id: %s, is_dev:%s, hatrac_root: %s, log_file: %s " % (self.cfg.host, self.cfg.catalog_id, self.cfg.is_dev, self.hatrac_root, self.log_file))
+            print("email_config: %s" % (self.email_config))
+            print("structure_rid: %s, user_id: %s, user_uuid: %s" % (self.structure_rid, self.user_id, self.user_uuid))
         
         #raise Exception("DIE HERE")
     # -------------------------------------------------
@@ -154,9 +166,8 @@ class IHMVProcessor(PipelineProcessor):
 
             # Pass system ihm package
             bind_paths_ = []
-            ihm_dir = '/usr/local/lib/python3.8/dist-packages/ihm/'
-            if Path(ihm_dir).exists():
-                bind_paths_.append(f'{ihm_dir}:/opt/conda/lib/python3.10/site-packages/ihm/')
+            if Path(self.ihm_path).exists():
+                bind_paths_.append(f'{self.ihm_path}/:/opt/conda/lib/python3.10/site-packages/ihm/')
             # Pass IHMValidation directory
             bind_paths_.append(f'{self.ihmvalidation_dir}:/opt/IHMValidation')
             # Pass input, output, and cache directories
