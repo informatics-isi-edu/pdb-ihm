@@ -118,9 +118,12 @@ def update_PDB_entry(model):
             ['PDB', 'entry_Accession_Code_fkey'], 
             {
                 "source": [{ "outbound": ["PDB", "entry_Workflow_Status_fkey"]}, "Name" ],
-                "comment" : "Do not proceed with manual data entry when this status displays ERROR",
+                "comment" : "Do not proceed with manual data entry when this status shows ERROR-data loss will occur.",
                 "comment_display": "inline",
-                "markdown_name": "Workflow Status"
+                "markdown_name": "Workflow Status",
+                "display": {
+                    "markdown_pattern": "{{#if (eq $self.values.Name 'ERROR')}}:span::/span:{.fa-solid .fa-ban style=\"color:red;font-size:1.4rem;margin-right:2px\" data-chaise-tooltip-no-icon data-chaise-tooltip=\"Do not proceed with manual data entry!\" }{{/if}}[{{{$self.rowName}}}]({{{$self.uri.detailed}}})",
+                }
             },
             ['PDB', 'entry_Process_Status_fkey'],
             { 'sourcekey' : 'entry_error_file_fkey'  },                        
