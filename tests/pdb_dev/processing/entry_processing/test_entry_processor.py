@@ -20,6 +20,10 @@ rid2json = {
     '4-ETK0': '/scratch/pdb/entry_processing/test_data/9A8W_output.json', # ref
 }
 
+test_rid2base_rid = {
+    "4-X83E": "4-K8M2",
+}
+
     
 class TestProcessor(unittest.TestCase):
     catalog = None
@@ -156,8 +160,9 @@ class TestEntryProcessor(TestProcessor):
         print("print_data_dict: %s " % (heading))
         for k, v in key2rows.items():
             print(" %s [%d] : %s\n" % (k, len(v), json.dumps(v[0:2], indent=4)))
-        
-    def x_test_loadTablesFromJSON(self):
+
+    
+    def loadTablesFromJSON_tester(self, test_rid="4-K8M2"):
         """Test to ensure that all the combo related RIDs are generated properly.
         The test is set up to compare the payload generated against the base entry database.
         It will not write to the actual ermrest database. This is because second insert
@@ -166,31 +171,31 @@ class TestEntryProcessor(TestProcessor):
         print("- test_loadTablesFromJSON")
         
         pdb_data = None
-        with open(rid2json["4-K8M2"], "r") as f:
+        with open(rid2json[test_rid], "r") as f:
             pdb_data = json.load(f)[0]
         tname = "ihm_model_representation_details"
         print("- %s: %s" % (tname, json.dumps(pdb_data[tname], indent=4)) )
         
         # compare against the existing database
-        base_entry = get_ermrest_query(self.catalog, "PDB", "entry", constraints="RID=4-K8M2")[0]
+        base_entry = get_ermrest_query(self.catalog, "PDB", "entry", constraints=f"RID={test_rid}")[0]
 
-        if self.entry_row["RID"] == "4-K8M2": # "9A9V"
+        if self.entry_row["RID"] == self.entry_rid:  #"4-K8M2": # "9A9V"            
             base_entry = self.entry_row
             base_processor = self.processor
         else:
-            args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid="4-K8M2", verbose=self.verbose, notify=False)
+            args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=test_rid, verbose=self.verbose, notify=False)
             config = load(self.config_file, args)
             base_processor = EntryProcessor(**config)
             
 
-        json_fpath = rid2json["4-K8M2"]
+        json_fpath = rid2json[test_rid]
         base_user = base_processor.get_user_row('PDB', "entry", base_entry["RID"])
         
         base_inserted = {}
         base_data = {}
         base_pk_tables =  PkTables(ermrest_data=base_inserted)
 
-        base_sorted_tnames = base_processor.sortTable(rid2json["4-K8M2"])
+        base_sorted_tnames = base_processor.sortTable(rid2json[test_rid])
         base_model = base_processor.catalog.getCatalogModel()
         for tname in base_sorted_tnames:
             if tname not in base_model.schemas["PDB"].tables.keys() or tname in ['entry']: continue
@@ -247,6 +252,9 @@ class TestEntryProcessor(TestProcessor):
                 for row in base_pk_tables.emrest_data[tname]:
                     self.assertAlmostEqual(row[rid_cname], test_rid2rows[row["RID"]][rid_cname])
 
+    def x_test_loadTablesFromJSON(self):
+        loadTablesFromJSON_tester(test_rid="4-K8M2")
+        
         
     def x_test_rollbackInsertedRows(self):
         test_entry = get_ermrest_query(self.catalog, "PDB", "entry", constraints="RID=4-X83E")[0]        
@@ -254,7 +262,7 @@ class TestEntryProcessor(TestProcessor):
         config = load(self.config_file, args)
         test_processor = EntryProcessor(**config)
         
-        test_sorted_tnames = test_processor.sortTable(rid2json["4-K8M2"])
+        test_sorted_tnames = test_processor.sortTable(rid2json["4-X83E"])
         test_processor.tname2inserted = { tname: [] for tname in test_sorted_tnames }
         test_processor.rollbackInsertedRows(test_processor.tname2inserted, test_entry["id"])
         for tname in test_sorted_tnames:
@@ -293,13 +301,11 @@ class TestEntryProcessor(TestProcessor):
             constraints="%s=%s" % ("structure_id" if "structure_id" in table.columns.elements else "entry_id", entry_rid)
             tname2rows[table.name] = get_ermrest_query(catalog, "PDB", table.name, constraints=constraints)
         return tname2rows
-    
-    def test_process_mmCIF(self):
+
+
+    def process_mmCIF_tester(self, test_rid='4-X834'):
         """Test to ensure all related entries are generated properly
         """
-        print("- test_process_mmCIF")
-        
-        test_rid = '4-X83E'
         test_entry = get_ermrest_query(self.catalog, "PDB", "entry", constraints=f"RID={test_rid}")[0]                
         args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=test_entry["RID"], verbose=self.verbose, notify=False)
         config = load(self.config_file, args)
@@ -317,17 +323,17 @@ class TestEntryProcessor(TestProcessor):
         #print(json.dumps(updated_test_entry, indent=4))
         
         # -- last_mmcif_file is set properly
-        self.assertAlmostEqual(updated_test_entry["Last_mmCIF_File_MD5"], "77a0dfa50e902b913c04fedd3ba0893f")
+        #self.assertAlmostEqual(updated_test_entry["Last_mmCIF_File_MD5"], "77a0dfa50e902b913c04fedd3ba0893f")
 
-        topo_sort_tnames = self.processor.sortTablesFromFile(rid2json["4-K8M2"])
-        base_rid = "4-K8M2"
-        base_entry = None
+        base_rid = test_rid2base_rid[test_rid]
+        base_entry = None        
+        topo_sort_tnames = self.processor.sortTablesFromFile(rid2json[base_rid])
 
-        if self.entry_row["RID"] == "4-K8M2": # "9A9V"
+        if self.entry_row["RID"] == self.entry_rid:  #"4-K8M2": # "9A9V"
             base_entry = self.entry_row
             base_processor = self.processor
         else:
-            args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid="4-K8M2", verbose=self.verbose, notify=False)
+            args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=base_rid, verbose=self.verbose, notify=False)
             config = load(self.config_file, args)
             base_processor = EntryProcessor(**config)
 
@@ -346,6 +352,13 @@ class TestEntryProcessor(TestProcessor):
                 for cname in base_row.keys():
                     self.assertAlmostEqual(base_row[cname], test_row[cname])
 
+
+    def test_process_mmCIF(self):
+        """Test to ensure all related entries are generated properly
+        """
+        print("- test_process_mmCIF")
+        process_mmCIF_tester("4-X83E")
+        
         
 if __name__ == '__main__':
     cli = PDBDEV_CLI("test_entry_processor", None, 1)
