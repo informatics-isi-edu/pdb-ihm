@@ -137,6 +137,7 @@ class TestEntryProcessor(TestProcessor):
 
     def x_test_sortTable(self):
         """Compare the previous implementation with the new one
+        TODO: change the script after old functions are removed
         """
         print("- test_sortTable")
 
@@ -196,7 +197,7 @@ class TestEntryProcessor(TestProcessor):
         base_data = {}
         base_pk_tables =  PkTables(ermrest_data=base_inserted)
 
-        base_sorted_tnames = base_processor.sortTable(rid2json[test_rid])
+        base_sorted_tnames = base_processor.sortTablesFromFile(rid2json[test_rid])
         base_model = base_processor.catalog.getCatalogModel()
         for tname in base_sorted_tnames:
             if tname not in base_model.schemas["PDB"].tables.keys() or tname in ['entry']: continue
@@ -208,7 +209,7 @@ class TestEntryProcessor(TestProcessor):
                 base_data[tname] = get_ermrest_query(base_processor.catalog, "PDB", tname, constraints=f'entry_id={base_entry["id"]}')
 
         # check the values aginst itself
-        base_processor.loadTablesFromJSON(json_fpath, processing_dir='/home/pdb/entry_processing/temp', ermrest_insert=False, ermrest_data=base_data)
+        base_processor.loadTablesFromJSON(json_fpath, ermrest_insert=False, ermrest_data=base_data)
         
         # check inserting data
         base_tname2inserting = base_processor.tname2inserting
@@ -253,8 +254,8 @@ class TestEntryProcessor(TestProcessor):
                 for row in base_pk_tables.emrest_data[tname]:
                     self.assertAlmostEqual(row[rid_cname], test_rid2rows[row["RID"]][rid_cname])
 
-    def x_test_loadTablesFromJSON(self):
-        loadTablesFromJSON_tester(test_rid="4-K8M2")
+    def test_loadTablesFromJSON(self):
+        self.loadTablesFromJSON_tester(test_rid="4-K8M2")
         
         
     def x_test_rollbackInsertedRows(self):
@@ -358,9 +359,12 @@ class TestEntryProcessor(TestProcessor):
         """Test to ensure all related entries are generated properly
         """
         print("- test_process_mmCIF")
-        process_mmCIF_tester("4-X83E")
+        self.process_mmCIF_tester("4-X83E")
         
 
+    def test_set_accession_code(self):
+        """
+        """
 """
 python -m unittest test_entry_processor.py
 python -m unittest test_entry_processor.TestEntryProcessor
