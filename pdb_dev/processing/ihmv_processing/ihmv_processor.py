@@ -88,7 +88,6 @@ class IHMVProcessor(PipelineProcessor):
                 self.email_config = json.load(file)
             self.email_config["sender"] = self.email_config["sender"].replace("PDB-DEV", "PDB-IHMV")
         
-
         if self.verbose:
             print("pdbihm_confif_file: %s " % (self.pdbihm_config_file))
             print("timeout: %s, singularity_sif: %s, ihmvalidation_dir: %s " % (self.timeout, self.singularity_sif, self.ihmvalidation_dir))

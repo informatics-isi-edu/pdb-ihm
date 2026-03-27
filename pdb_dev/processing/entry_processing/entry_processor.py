@@ -296,7 +296,7 @@ class EntryProcessor(PipelineProcessor):
                 self.export_mmCIF('PDB', 'entry', rid)
             elif action == 'accession_code':
                 self.action = 'SUBMISSION COMPLETE'
-                self.set_accession_code(rid)
+                self.set_accession_code()
             elif action == 'release_mmCIF':
                 self.action = 'RELEASE READY'
                 self.addReleaseRecords(rid)
@@ -313,7 +313,6 @@ class EntryProcessor(PipelineProcessor):
         """Process the csv/tsv file of the Entry_Related_File table
         
         """
-        
         sname = "PDB"
         related_file_tname = "Entry_Related_File"
         related_file_rid = self.rid
@@ -382,6 +381,7 @@ class EntryProcessor(PipelineProcessor):
     def export_mmCIF(self, schema_pdb, table_entry, rid, release=False, user_id=None):
         """
         Get the RCB user
+        
         """
         user = self.getUser(schema_pdb, table_entry, rid)
         if user_id == None:
@@ -870,7 +870,7 @@ class EntryProcessor(PipelineProcessor):
             return None
 
         
-    def process_mmCIF(self):
+    def process_mmCIF(self, cleanup=True):
         """Process the mmCIF file of the entry table
         """
         # == set per-rid processing dir
@@ -909,7 +909,7 @@ class EntryProcessor(PipelineProcessor):
             # == Extract the file from hatrac
             hf = HatracFile(self.store)
             input_cif_fname = "%s_%s" % (self.rid, self.processing_row["mmCIF_File_Name"])
-            print("process_mmcif: download file from %s to %s/%s" % (hatrac_url, processing_dir, input_cif_fname))
+            print("process_mmcif: download file from %s --> %s/%s" % (hatrac_url, processing_dir, input_cif_fname))
             hf.download_file(hatrac_url, processing_dir, input_cif_fname, verbose=False, hashes=["md5"])
             
             # == Convert the file to JSON and load the data into the tnames
@@ -934,13 +934,14 @@ class EntryProcessor(PipelineProcessor):
                 'Record_Status_Detail': str(e),
             }
             self.log_exception(e, notify=False, subject=subject, body_prefix="Error occured in processing_mmCIF.")
+            # consider raise? 
         finally:
             # == update ermrest
             self.update_processing_row(updating_row)
             self.logger.debug(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')
             self.verbose: print(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')            
             # clean up directory
-            shutil.rmtree(processing_dir)  #TODO: uncomment
+            if cleanup: shutil.rmtree(processing_dir)  # in case we want to leave the files for further investigation
         
     """
     Extract the file from hatrac
@@ -1418,6 +1419,8 @@ class EntryProcessor(PipelineProcessor):
         Args:
             fpath (str): json file path
             entry_id (str): entry id corresponding to this json file located in fpath
+            emrest_insert (bool): whether ermrest insert will be performed. This is extended to support testing
+            ermrest_data (list): ermrest data to be used for preparing RIDs. This is extended to support testing
 
         Throw: 'ERROR_PROCESSING_UPLOADED_mmCIF_FILE'
         """
@@ -1962,65 +1965,38 @@ class EntryProcessor(PipelineProcessor):
             
         return '%s/%s' % (self.scratch, output_cif)
             
-    """
-    Get the accession serial value
-    """
-    def getNextAccessionSerial(self, rid, user):
-        try:
-            url = '/entity/PDB:Accession_Code/Entry::null::@sort(Accession_Serial)?limit=1'
-            resp = self.catalog.get(url)
-            resp.raise_for_status()
-            if len(resp.json()) == 1:
-                row = resp.json()[0]
-                row['Entry'] = rid
-                self.updateAttributes('PDB', 'Accession_Code', row['RID'], ['Entry'], row, user)
-                self.logger.debug('SUCCEEDED updated the table Accession_Code with Entry "%s".' % (rid))
-                accession_serial_value = row['Accession_Code']
-                return (accession_serial_value, None)
-            else:
-                error_message = f'No accession codes available'
-                self.logger.error(error_message)
-                subject = '{} {}: {} ({})'.format(row['RID'], 'SUBMISSION COMPLETE', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'], user)
-                self.sendMail(subject, error_message)
-                return (None, error_message)
-        except:
-            et, ev, tb = sys.exc_info()
-            self.logger.error('got exception "%s"' % str(ev))
-            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            self.export_error_message = 'ERROR getNextAccessionSerial: "%s"' % str(ev)
-            subject = '{} {}: {} ({})'.format(rid, 'SUBMIT', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'], user)
-            self.sendMail(subject, 'RID: %s\n%s\n' % (rid, ''.join(traceback.format_exception(et, ev, tb))))
-            return (None, str(ev))
-        
-    """
-    Get the accession code value
-    """
-    def getAccessionCode(self, row, user):
-        try:
-            #value = 'PDBDEV_' + ('00000000' + str(row['Accession_Serial']))[-8:]
-            """
-            Check if we have already an Accession Code
-            """
-            url = '/entity/PDB:Accession_Code/Entry={}'.format(row['RID'])
-            resp = self.catalog.get(
-                url
-            )
-            resp.raise_for_status()
-            rows = resp.json()
-            if len(rows) == 1:
-                row = rows[0]
-                return (row['Accession_Code'], None)
+    def getNextAccessionCode(self, entry_rid):
+        """Get the next accession code
 
-            value, error_message = self.getNextAccessionSerial(row['RID'], user)
-            self.logger.debug('Accession Code = {}'.format(value))
-            return (value, error_message)
-        except:
-            et, ev, tb = sys.exc_info()
-            self.logger.error('got exception "%s"' % str(ev))
-            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            subject = '{} {}: {} ({})'.format(row['RID'], 'SUBMISSION COMPLETE', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'], user)
-            self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
-            return (None, str(ev))
+        Args:
+            entry_rid (str): entry RID
+        
+        """
+        rows = get_ermrest_query(self.catalog, "PDB", "Accession_Code", constraints="Entry::null::", sort=["Accession_Serial"], limit=1)
+        if len(rows) == 1:  
+            row = rows[0]
+            row['Entry'] = entry_rid
+            updated = update_table_rows(self.catalog, "PDB", "Accession_Code", column_names=["Entry"], payload=[row])
+            self.logger.debug('getNextAccessionCode: SUCCEEDED - updated table Accession_Code with Accession_Code:%s, Entry:"%s".' % (row['Accession_Code'], entry_rid))
+            return row['Accession_Code']
+        else:
+            raise ErmrestError("ERROR: No PDB accession code is available!"))
+
+        
+    def getAccessionCode(self, entry_rid):
+        """Get the accession code value
+        
+        """
+        
+        # Check if we have already an Accession Code
+        rows = get_ermrest_query(self.catalog, "PDB", "Accession_Code", constraints=f"Entry={entry_rid}")
+        if len(rows) == 1:
+            accession_code =  row['Accession_Code']
+        else:
+            accession_code = self.getNextAccessionCode(entry_rid)
+            
+        self.logger.debug('- getAccessionCode: entry_rid: %s is assigned accession_code = %s' % (entry_rid, accession_code))
+        return accession_code
         
     """
     Store the validation error file into hatrac
@@ -3023,70 +2999,44 @@ class EntryProcessor(PipelineProcessor):
                                   },
                                   user)
             
-    def set_accession_code(self, rid):
+    def set_accession_code(self):
         """
         Get the RCB user
         """
-        user = self.getUser('PDB', 'entry', rid)
+        current_workflow_status = 'SUBMISSION COMPLETE'
+        next_workflow_status = Next_Workflow_Status[current_workflow_status] # HOLD
+        process_status = Process_Status_Terms['SUCCESS']
+        subject = '%s %s: %s (%s)' % (self.rid, next_workflow_status, process_status, self.user_email)
         
         try:
-            """
-            Query for detecting the record to be processed
-            """
-            url = '/entity/PDB:entry/RID={}'.format(urlquote(rid))
-            self.logger.debug('Query URL: "%s"' % url) 
-            
-            resp = self.catalog.get(url)
-            resp.raise_for_status()
-            row = resp.json()[0]
-            accession_code, error_message = self.getAccessionCode(row, user)
+            row = self.entry_row
+            accession_code = self.getAccessionCode(self.rid)
             if accession_code == None:
-                self.updateAttributes('PDB',
-                                      'entry',
-                                      rid,
-                                      ["Process_Status", "Accession_Code", "Workflow_Status", "Record_Status_Detail"],
-                                      {'RID': rid,
-                                      'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'],
-                                      'Accession_Code': None,
-                                      'Record_Status_Detail': error_message,
-                                      'Workflow_Status': 'ERROR'
-                                      },
-                                      user)
-                return
-
-            """
-            if self.is_catalog_dev == True:
-                subject = '{}: {} ({})'.format(rid, row['Process_Status'], user)
-                self.sendMail(subject, 'The Process Status of the entry with RID={} was changed to "{}".'.format(rid, row['Process_Status']), receivers=self.email_config['curators'])
-            """
-
-            self.updateAttributes('PDB',
-                                  'entry',
-                                  rid,
-                                  ["Accession_Code"],
-                                  {'RID': rid,
-                                  'Accession_Code': accession_code
-                                  },
-                                  user)
-            self.addReleaseRecords(rid, hold=True, user_id=None)
-            self.logger.debug('Ended PDB Processing to set the accession code for the PDB:entry table with RID="{}".'.format(rid)) 
-        except:
-            et, ev, tb = sys.exc_info()
-            self.logger.error('got unexpected exception "%s"' % str(ev))
-            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            subject = '{} {}: {} ({})'.format(rid, 'SUBMISSION COMPLETE', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'], user)
-            self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
-            error_message = 'ERROR set_accession_code: "%s"' % str(ev)
-            self.updateAttributes('PDB',
-                                  entry,
-                                  rid,
-                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
-                                  {'RID': rid,
-                                  'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'],
-                                  'Record_Status_Detail': error_message,
-                                  'Workflow_Status': 'ERROR'
-                                  },
-                                  user)
+                raise ProcessError("ERROR set_accession_code. No PDB accession code found.")
+            updating_row = {
+                'RID' : self.rid,
+                'Workflow_Status' : next_workflow_status,
+                'Process_Status' : process_status, 
+                'Record_Status_Detail' : None,
+                "Accession_Code": accession_code                
+            }
+            self.addReleaseRecords(self.rid, hold=True, user_id=None)
+        except Exception as e:
+            process_status = Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES']
+            subject = '%s %s: %s (%s)' % (self.rid, current_workflow_status, process_status, self.user_email) # SUBMISSION COMPLETE
+            error_message = self.log_exception(e, notify=True, subject=subject, body_prefix="Error occured in set_accession_code")
+            updating_row = {
+                'RID': self.rid,
+                'Workflow_Status': 'ERROR',
+                'Process_Status': process_status,
+                'Record_Status_Detail': error_message,
+            }
+        finally:
+            # == update ermrest
+            self.update_processing_row(updating_row)
+            self.logger.debug(f'== Ended set_accession_code RID="{self.rid}" with process_status = {process_status} ')
+            self.verbose: print(f'== Ended set_accession_code RID="{self.rid}" with process_status = {process_status} ')            
+            
         
     def clear_entry(self, rid, id, user):
         try:
