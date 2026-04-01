@@ -202,7 +202,7 @@ class IHMVProcessor(PipelineProcessor):
                 # output location
                 pdf_loc = Path(data_dir, 'output', Path(filename).stem)
                 hatrac_prefix = f"/hatrac/ihmv/generated/uid/{self.user_uuid}/structure/rid/{self.structure_rid}/validation_report"
-                ihmv_hfs = self.upload_file_groups(pdf_loc, [".pdf"], namespace_prefix=hatrac_prefix)
+                ihmv_hfs = self.upload_file_groups(pdf_loc, [".pdf"], namespace_prefix=hatrac_prefix, add_rid_prefix=True)
 
                 # -- update ermrest
                 ihmv_payload = []

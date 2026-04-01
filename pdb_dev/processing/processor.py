@@ -233,7 +233,7 @@ class PipelineProcessor(object):
             pass
 
         
-    
+    # -------------------------------------------------    
     def download_hatrac_file(self, hatrac_url, data_dir, filename):
         """Download files
 
@@ -255,7 +255,7 @@ class PipelineProcessor(object):
         return file_path
     
     # -------------------------------------------------
-    def upload_file_groups(self, data_dir, filter_groups, namespace_prefix):
+    def upload_file_groups(self, data_dir, filter_groups, namespace_prefix, add_rid_prefix=False):
         """Upload files in the directory to hatrac that match regex criteria specified in filter_groups.
         If filter_groups are not set, allow all files to match.
         Note: To upload an individual file, specify the data_dir and put its exact filename in the filter list.
@@ -281,7 +281,7 @@ class PipelineProcessor(object):
                 if not file.is_file(): continue
                 # TODO: rename files if needed. Suggest prepend with structure_mmcif RID
                 hf = HatracFile(self.store)
-                hf_file_name = f"{self.structure_rid}_{file.name}"
+                hf_file_name = f"{self.rid}_{file.name}" if add_rid_prefix else file.name
                 hf_file_name = hf.sanitize_filename(hf_file_name)
                 upload_url = f"{namespace_prefix}/{hf_file_name}"
                 hf.upload_file(file.path, upload_url, hf_file_name, verbose=True)
@@ -352,6 +352,12 @@ class PipelineProcessor(object):
             return topo_sorted_tables
         else:
             return reversed(topo_sorted_tables)
+
+    # -------------------------------------------------------------------
+    def RCB2user_id(self, RCB):
+        if not RCB:
+            raise Exception("RCB ERROR: RCB is None")
+        return RCB.rsplit("/", 1)[1]
         
     # -------------------------------------------------------------------            
     def get_user_row(self, schema_name, table_name, rid):
