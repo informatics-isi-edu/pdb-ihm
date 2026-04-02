@@ -149,17 +149,16 @@ class EntryProcessor(PipelineProcessor):
         self.vocab_ucode = kwargs.get("vocab_ucode")
         self.make_mmCIF = kwargs.get("make_mmCIF")
         #self.mmCIF_Schema_Version = kwargs.get("mmCIF_Schema_Version")  # deprecated -- replace by Supported_Dictionary
-        self.tables_groups = kwargs.get("tables_groups")
+        #self.tables_groups = kwargs.get("tables_groups")       # deprecated
         self.export_tables = kwargs.get("export_tables")        # tables from ermrest to be exported
         self.cif_tables = kwargs.get("cif_tables")              # tables from submited files to be exported
         self.export_order_by = kwargs.get("export_order_by")
         #self.combo1_columns = kwargs.get("combo1_columns")     # deprecated
         #self.optional_fk_file = kwargs.get("optional_fk_file") # deprecated
         self.dictSdb = kwargs.get("dictSdb")
-        self.entry = kwargs.get("entry")
+        #self.entry = kwargs.get("entry")                        # deprecated
         self.hatrac_namespace = kwargs.get("hatrac_namespace")
         self.validation_dir = kwargs.get("validation_dir")
-        self.reportValidation = True if kwargs.get("reportValidation")=='Yes' else False
         
         if kwargs.get("python_bin", None): self.python_bin = kwargs.get("python_bin")
         if kwargs.get("py_rcsb_db", None): self.py_rcsb_db = kwargs.get("py_rcsb_db")
@@ -189,17 +188,26 @@ class EntryProcessor(PipelineProcessor):
         self.tname2inserted = {}   # inserted rows
 
         self.processing_tname = "Entry_Related_File" if self.action == "Entry_Related_File" else "entry"
-        self.processing_row = get_ermrest_query(self.catalog, "PDB", self.processing_tname, constraints=f'RID={self.rid}')[0]
+        self.initialize_processing_row(self.rid)
+        
+        print("------- EntryProcessor: notify: %s, verbose: %s" % (self.notify, self.verbose))
+        print("- processing_row: %s" % (self.processing_row))
+        print("- user_row: %s" % (self.user_row))
+
+        
+    def initialize_processing_row(self, rid):
+        if self.action in ["Entry_Related_File"]:
+            constraints='RID=%s/T:=(M:File_Type)=(Vocab:File_Type:Name)' % (related_file_rid)
+            attributes=['M:File_Name','M:File_URL','M:File_MD5','M:structure_id','M:RCT','M:File_Format','M:Restraint_Process_Status','M:Restraint_Workflow_Status','T:Table_Name']
+            self.processing_row = get_ermrest_query(self.catalog, "PDB", related_file_tname, constraints=constraints, attributes=attributes)[0]
+        else:
+            self.processing_row = get_ermrest_query(self.catalog, "PDB", self.processing_tname, constraints=f'RID={self.rid}')[0]
         self.entry_id = self.processing_row["id"] if self.processing_tname == "entry" else None
         self.entry_rid = self.processing_row["RID"] if self.processing_tname == "entry" else None
         self.user_row = self.get_user_row("PDB", self.processing_tname, self.rid)
         self.user_email = self.user_row["Email"]
         self.user_id = self.RCB2user_id(self.processing_row["RCB"])
         
-        print("------- EntryProcessor: notify: %s, verbose: %s" % (self.notify, self.verbose))
-        print("- processing_row: %s" % (self.processing_row))
-        print("- user_row: %s" % (self.user_row))
-
     """
     Trace into the log_dir e.g. /home/pdbihm/log/trace.log file 
     """
@@ -289,20 +297,20 @@ class EntryProcessor(PipelineProcessor):
         action = self.action
         try:
             if action == 'entry':
-                self.action = 'DEPO'
+                self.workflow_status = 'DEPO'
                 self.process_mmCIF()
             elif action == 'Entry_Related_File':
-                self.action = 'DEPO'
+                self.workflow_status = 'DEPO'
                 self.process_Entry_Related_File()
             elif action == 'export':
-                self.action = 'SUBMIT'
-                self.export_mmCIF('PDB', 'entry', rid)
+                self.workflow_status = 'SUBMIT'
+                self.export_mmCIF()
             elif action == 'accession_code':
-                self.action = 'SUBMISSION COMPLETE'
-                self.set_accession_code(rid)
+                self.workflow_status = 'SUBMISSION COMPLETE'
+                self.set_accession_code()
             elif action == 'release_mmCIF':
-                self.action = 'RELEASE READY'
-                self.addReleaseRecords(rid)
+                self.workflow_status = 'RELEASE READY'
+                self.addReleaseRecords()
             else:
                 self.logger.error('Unknown action: "%s".' % action)
         except Exception as e:
@@ -316,33 +324,27 @@ class EntryProcessor(PipelineProcessor):
         """Process the csv/tsv file of the Entry_Related_File table
 
         """
-        sname = "PDB"
         related_file_tname = "Entry_Related_File"
         related_file_rid = self.rid
         user = self.user_email
+
+        current_workflow_status = self.workflow_status
+        next_workflow_status = Next_Workflow_Status[current_workflow_status]
+        subject = '%s %s: %s (%s)' % (self.rid, next_workflow_status, process_status, self.user_email)
+        message = f'The workflow status of the entry with RID={self.rid} was changed to {next_workflow_status}'
+        process_status = Process_Status_Terms['SUCCESS']
         
         # == Query for detecting the record to be processed
-        constraints='RID=%s/T:=(M:File_Type)=(Vocab:File_Type:Name)' % (related_file_rid)
-        attributes=['M:File_Name','M:File_URL','M:File_MD5','M:structure_id','M:RCT','M:File_Format','M:Restraint_Process_Status','M:Restraint_Workflow_Status','T:Table_Name']
-        row = get_ermrest_query(self.catalog, sname, related_file_tname, constraints=constraints, attributes=attributes)[0]
-        self.processing_row = row
-        if self.verbose: print(json.dumps(row, indent=4))
+        row = self.processing_row
+        structure_id = self.processing_row['structure_id']
+        filename = self.processing_row['File_Name']
+        file_url = self.processing_row['File_URL']
+        file_format = self.processing_row['File_Format']
+        csv_tname = self.processing_row['Table_Name']
         
-        structure_id = row['structure_id']
-        filename = row['File_Name']
-        file_url = row['File_URL']
-        #md5 = row['File_MD5']
-        #creation_time = row['RCT']
-        file_format = row['File_Format']
-        csv_tname = row['Table_Name']
-        
-        if self.cfg.is_dev:       #if self.is_catalog_dev == True:
-            subject = '{}: DEV ONLY: START restraint file status {} ({})'.format(related_file_rid, row['Restraint_Process_Status'], user)
-            self.sendMail(subject, 'The Restraint Process Status of the Entry Related File with RID={} was changed to "{}".'.format(row['RID'], row['Restraint_Process_Status']), receivers=self.email_config['curators'])
-
         # == prepare update row (assuming success)
         update_cnames = ["Restraint_Process_Status", "Record_Status_Detail", "Restraint_Workflow_Status"]
-        update_file_row = {
+        updating_row = {
             'RID': related_file_rid,
             'Restraint_Workflow_Status' : 'RECORD READY',
             'Restraint_Process_Status' : Process_Status_Terms['SUCCESS'],
@@ -353,51 +355,97 @@ class EntryProcessor(PipelineProcessor):
         try:
             self.hatrac_file.download_file(file_url, self.make_mmCIF, filename)
             delimiter = '\t' if file_format=='TSV' else ','        
-            self.loadTableFromCSV(self.hatrac_file.file_path, delimiter, csv_tname, structure_id, related_file_rid, user)
+            self.loadTableFromCSV(self.hatrac_file.file_path, delimiter, csv_tname, structure_id, related_file_rid, self.user_email)
             
-            self.updateAttributes(sname, related_file_tname, related_file_rid, update_cnames, update_file_row, user)
-            self.logger.debug('Successfully ended PDB processing for %s:%s with RID %s.' % (sname, related_file_tname, related_file_rid))
-            if self.verbose: print('Successfully ended PDB processing for %s:%s:%s with status: %s' % (sname, related_file_tname, related_file_rid, update_file_row))
+            self.logger.debug('Successfully ended PDB processing for %s:%s with RID %s.' % ("PDB", related_file_tname, related_file_rid))
+            if self.verbose: print('Successfully ended PDB processing for %s:%s:%s with status: %s' % ("PDB", related_file_tname, related_file_rid, updating_row))
             
         except Exception as e:
-            error_message = str(e)
-            update_file_row['Restraint_Workflow_Status'] = 'ERROR'
-            update_file_row['Restraint_Process_Status'] = Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES']
-            update_file_row['Record_Status_Detail'] = error_message
-            subject = '%s %s: %s (%s)' % (related_file_rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
-            self.log_exception(e, notify=False, subject=subject)
+            process_status = Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES']
+            subject = '%s %s: %s (%s)' % (self.rid, current_workflow_status, process_status, self.user_email)            
+            message = self.log_exception(e, notify=False, subject=subject, body_prefix="Error occured in process_Entry_Related_File")
+            updating_row.update({
+                'Restraint_Workflow_Status' : 'ERROR',
+                'Restraint_Process_Status' : Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'],
+                'Record_Status_Detail' : message,
+            })
             if self.verbose: print("process_entry_related_fiie: fail with subject: %s" % (subject))
             try:
-                self.updateAttributes(sname, related_file_tname, related_file_rid, update_cnames, update_file_row, user)
-                constraints="structure_id=%s&Entry_Related_File=%s" % (structure_id, related_file_rid)
                 # HT TODO: delete might fail due to dependency of child tables. We decided to go forward since it is less confusing to users
-                self.delete_rows(sname, csv_tname, constraints=constraints)
+                constraints="structure_id=%s&Entry_Related_File=%s" % (structure_id, related_file_rid)
+                self.delete_rows("PDB", csv_tname, constraints=constraints)
             except Exception as e:
-                subject = '%s %s: %s (%s)' % (related_file_rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
-                self.log_exception(e, notify=False, subject=subject)
+                message = self.log_exception(e, notify=True, subject=subject)
                 raise ErmrestError("ERROR: Fail to update status in table %s or cleanup restraint table %s while handling error (%s)." % (related_file_tname, csv_tname, error_message))
-            raise
+        finally:
+            self.update_processing_row(updating_row)
+            self.logger.debug(f'== Ended process_Entry_Related_File RID="{self.rid}" with process_status = {process_status} ')
+            self.verbose: print(f'== Ended process_Entry_Related_File RID="{self.rid}" with process_status = {process_status} ')
+            self.sendMail(subject, message)
+
+            
+    def getColumnValue(self, table_name, column_name, column_type, column_value):
+        """ Format column value based on type; mostly to handle text
+        """
+        if column_value == None:
+            return '.'
+        if column_type in ['int4', 'float4']:
+            return str(column_value)
+        if column_type == 'text':
+            if '\t' in column_value:
+                self.logger.debug('tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
+                self.export_error_message = 'ERROR getColumnValue: tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value)
+                raise ProcessingError('ERROR getColumnValue: tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
+            if '\n' in column_value:
+                return '\n;{}\n;\n'.format(column_value)
+            if '"' not in column_value and "“" not in column_value and "”" not in column_value and "'" not in column_value and ' ' not in column_value and not column_value.startswith('_'):
+                return column_value
+            if '"' not in column_value and "“" not in column_value and "”" not in column_value:
+                return '"{}"'.format(column_value)
+            if "'" not in column_value:
+                return "'{}'".format(column_value)
+            else:
+                self.logger.debug('Both " and \' are in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
+                return '\n;{}\n;\n'.format(column_value)
+            raise ProcessingError('ERROR getColumnValue: Unhandled value in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
+        else:
+            self.logger.debug('unknown type: {}, table: {}, column: {}'.format(column_type, table_name, column_name))
+            raise ProcessingError('ERROR getColumnValue: unknown type: {}, table: {}, column: {}'.format(column_type, table_name, column_name))
+
+            
+    def export_mmCIF(self):
+        """Export the mmCIF file of the entry table
+
+        Returns:
+            export_fpath (str): exported file path if workflow_status is not SUBMIT.
+        """
         
-    """
-    Export the mmCIF file of the entry table
-    """
-    def export_mmCIF(self, schema_pdb, table_entry, entry_rid, release=False, user_id=None):
+        entry_rid = self.rid
         processing_dir = "%s/%s" % (self.scratch, entry_rid)
         os.makedirs(processing_dir, exist_ok=True)
-        entry_id = self.processing_row["id"]
-        entry_row = self.processing_row
+        entry_row = self.processing_row        
+        entry_id = entry_row["id"]
         user_id = self.RCB2user_id(entry_row["RCB"])
+        
+        #creation_time = entry_row['RCT']
+        #year = parse(creation_time).strftime("%Y")
 
-        current_workflow_status = self.action
+        current_workflow_status = self.workflow_status
         process_status = Process_Status_Terms['SUCCESS']
-        if release == True:
-            process_status_error = Process_Status_Terms['ERROR_RELEASING_ENTRY']
-        elif self.action == 'SUBMIT':
+
+        if self.workflow_status == 'SUBMIT':
             process_status_error = Process_Status_Terms['ERROR_GENERATING_mmCIF_FILE']
+        elif self.workflow_status  == 'SUBMISSION COMPLETE':
+            process_status_error = Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES']            
+        elif self.workflow_status  == 'RELEASE READY':
+            process_status_error = Process_Status_Terms['ERROR_RELEASING_ENTRY']
         else:
-            process_status_error = Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES']
+            raise ProcessingError("ERROR export_mmCIF: unknown workflow status: %s" % (self.workflow_status))
+        
         next_workflow_status = Next_Workflow_Status[current_workflow_status]
         subject = '%s %s: %s (%s)' % (entry_rid, next_workflow_status, process_status, self.user_email)
+        message = f'The workflow status of the entry with RID={self.rid} was changed to {next_workflow_status}'
+        
         updating_row = {
             'RID' : entry_rid,
             'Workflow_Status' : next_workflow_status,
@@ -417,7 +465,6 @@ class EntryProcessor(PipelineProcessor):
         matrix_tables = ['ihm_2dem_class_average_fitting', 'ihm_geometric_object_transformation']
         collections_tables = ['ihm_entry_collection', 'ihm_entry_collection_mapping']
 
-        
         def writeLine(line, loopLine=None):
             table_name = line[1:].split('.')[0]
             if table_name not in mmCIF_tables:
@@ -450,36 +497,11 @@ class EntryProcessor(PipelineProcessor):
             else:
                 return False
         
-        def getColumnValue(table_name, column_name, column_type, column_value):
-            """ Format column value based on type; mostly to handle text
-            """
-            if column_value == None:
-                return '.'
-            if column_type in ['int4', 'float4']:
-                return '{}'.format(column_value)
-            if column_type == 'text':
-                if '\t' in column_value:
-                    self.logger.debug('tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
-                    self.export_error_message = 'ERROR getColumnValue: tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value)
-                    return None
-                if '\n' in column_value:
-                    return '\n;{}\n;\n'.format(column_value)
-                if '"' not in column_value and "“" not in column_value and "”" not in column_value and "'" not in column_value and ' ' not in column_value and not column_value.startswith('_'):
-                    return column_value
-                if '"' not in column_value and "“" not in column_value and "”" not in column_value:
-                    return '"{}"'.format(column_value)
-                if "'" not in column_value:
-                    return "'{}'".format(column_value)
-                else:
-                    self.logger.debug('Both " and \' are in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
-                    return '\n;{}\n;\n'.format(column_value)
-                raise ProcessingError('ERROR export_mmCIF.getColumnValue: Unhandled value in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
-            else:
-                self.logger.debug('unknown type: {}, table: {}, column: {}'.format(column_type, table_name, column_name))
-                raise ProcessingError('ERROR export_mmCIF.getColumnValue: unknown type: {}, table: {}, column: {}'.format(column_type, table_name, column_name))
-
         def exportData(rid, user):
             """ Export data from ermrest database
+            
+            self.export_tables contains a list of tables to be exported from ermrest
+            TODO: replace self.export_tables
             """
             try:
                 tables = self.export_tables
@@ -553,15 +575,7 @@ class EntryProcessor(PipelineProcessor):
                                 if column_name not in table.column_definitions.keys():
                                     continue
                                 column_value = row[column_name]
-                                value = getColumnValue(table_name, column_name, column_type, column_value)
-                                """
-                                if value == None:
-                                    self.logger.debug('Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
-                                    subject = '{} {}: {} ({})'.format(rid, 'SUBMIT', process_status_error, user)
-                                    self.sendMail(subject, 'Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
-                                    self.export_error_message = 'ERROR exportData: Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value)
-                                    return 1
-                                """
+                                value = self.getColumnValue(table_name, column_name, column_type, column_value)
                                 line.append(value)
                             fw.write('{}\n'.format('\t'.join(line)))
                     elif len(results) == 1:
@@ -574,30 +588,13 @@ class EntryProcessor(PipelineProcessor):
                             if column_name not in table.column_definitions.keys():
                                 continue
                             column_value = row[column_name]
-                            value = getColumnValue(table_name, column_name, column_type, column_value)
-                            """
-                            if value == None:
-                                self.logger.debug('Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
-                                subject = '{} {}: {} ({})'.format(rid, 'SUBMIT', process_status_error, user)
-                                self.sendMail(subject, 'Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
-                                self.export_error_message = 'ERROR exportData: Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value)
-                                return 1
-                            """
+                            value = self.getColumnValue(table_name, column_name, column_type, column_value)
                             fw.write('_{}.{}\t{}\n'.format(table_name, column['name'], value))
                         
                     fw.write('#\n')    
                 
                 return 0
             except Exception as e:
-                """
-                et, ev, tb = sys.exc_info()
-                self.logger.debug('exportData got exception "%s"' % str(ev))
-                self.logger.debug('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-                subject = '{} {}: {} ({})'.format(rid, 'SUBMIT', process_status_error, user)
-                self.sendMail(subject, '%s\nThe process might have been stopped\n' % ''.join(traceback.format_exception(et, ev, tb)))
-                self.export_error_message = 'ERROR exportData: "%s"' % str(ev)
-                return 1
-                """
                 raise ProcessingError("ERROR export_mmCIF.export_data: fail to export data")            
 
         def exportCIF(rid, user):
@@ -624,12 +621,6 @@ class EntryProcessor(PipelineProcessor):
                     else:
                         self.logger.debug('Unexpected line after loop_:\n{}'.format(line))
                         fr.close()
-                        """                    
-                        subject = '{} {}: {} ({})'.format(rid, 'SUBMIT', process_status_error, user)
-                        self.sendMail(subject, 'status = {}\nThe process might have been stopped\n'.format(status))
-                        self.export_error_message = 'ERROR exportCIF: Unknown status', 'status = {}'.format(status)
-                        return 1
-                        """
                         raise FileError(f"ERROR export_mmCIF.exportCIF: Unknown status: {status}")
                 elif status == 'columns':
                     if line.startswith('_'):
@@ -640,7 +631,6 @@ class EntryProcessor(PipelineProcessor):
                     else:
                         fw.write('{}'.format(line))
                         status = 'rows'
-            
                 elif status == 'rows':
                     if line.strip() == 'loop_':
                         status = 'loop'
@@ -653,41 +643,26 @@ class EntryProcessor(PipelineProcessor):
                         fw.write('{}'.format(line))
                 else:
                     self.logger.debug('Unknown status: {}'.format(status))
-                    """
-                    subject = '{} {}: {} ({})'.format(rid, 'SUBMIT', process_status_error, user)
-                    self.sendMail(subject, 'status = {}\nThe process might have been stopped\n'.format(status))
-                    self.export_error_message = 'ERROR exportCIF: Unknown status', 'status = {}'.format(status)
-                    return 1
-                    """
-                    raise FileError(f"ERROR export_mmCIF.exportCIF: Unknown status: {status}")                    
+                    fr.close()
+                    raise FileError(f"ERROR export_mmCIF.exportCIF: Unknown status: {status}")
         
             fr.close()
             return 0
         
         try: 
-            # == cif file information
-            file_url = entry_row['mmCIF_File_URL']
-            filename = entry_row['mmCIF_File_Name']
-            entry_id = entry_row['id']
-            creation_time = entry_row['RCT']
-            year = parse(creation_time).strftime("%Y")
             fw = None
-        
-            if self.is_catalog_dev == True:
-                subject = '{}: {} ({})'.format(entry_rid, entry_row['Process_Status'], self.user_email)
-                self.sendMail(subject, 'The Process Status of the Entry with RID={} was changed to "{}".'.format(entry_rid, entry_row['Process_Status']), receivers=self.email_config['curators'])
-
+            
+            # == get make_mmcif cif file
             cif_fpath = f"{processing_dir}/{entry_rid}_output.cif"
-            hatracFile = self.getOutputCIF(entry_rid, file_url, cif_fpath, self.user_email)
+            hatracFile = self.getOutputCIF(entry_rid, entry_row['mmCIF_File_URL'], cif_fpath, self.user_email)
 
+            # == perform final export
             export_fname = f'{entry_id}.cif'
             export_fpath = f'{processing_dir}/{export_fname}'
             fw = open(export_fpath, 'w')
-
             fw.write('data_{}\n\n'.format(entry_id))
-            value = getColumnValue('entry', 'id', 'text', str(entry_id))
+            value = self.getColumnValue('entry', 'id', 'text', str(entry_id))
             fw.write('#\n_entry.id  {}\n#\n'.format(value))
-
             exportData(entry_rid, self.user_email)
             exportCIF(entry_rid, self.user_email)
             fw.close()
@@ -697,37 +672,50 @@ class EntryProcessor(PipelineProcessor):
                 for table_name in sorted(mmCIF_ignored):
                     self.logger.debug('\t{}'.format(table_name))
 
-            print("-- export_mmCIF: about to validateExportmmCIF with %s: %s (%s) " % (processing_dir, export_fname, os.path.isfile(export_fpath)))
 
-            self.validateExportmmCIF(processing_dir, export_fname, year, entry_id, entry_rid, self.user_email, process_status_error, user_id)
+            if self.workflow_status in ["SUBMIT"]:
+                # == validateExportmmCIF. Note: Do not update cif file information unless it is in SUBMIT state
+                self.validateExportmmCIF(processing_dir, export_fname, entry_id, entry_rid, user_id, update_cif=True)
 
-            # == Generate the Conform_Dictionary entries
-            self.generateConformDictionary ('PDB', 'entry', entry_id, process_status_error, entry_rid, self.user_email)
-
+                # == Generate the Conform_Dictionary entries if update_cif is true                
+                self.generateConformDictionary(entry_id, entry_rid)
+            
         except Exception as e:
             process_status = process_status_error
-            subject = '%s %s: %s (%s)' % (entry_rid, current_workflow_status, process_status, self.user_email) 
-            error_message = self.log_exception(e, notify=True, subject=subject, body_prefix="Error occured in export_mmCIF")
+            subject = '%s %s: %s (%s)' % (entry_rid, current_workflow_status, process_status, self.user_email)
+            message = self.log_exception(e, notify=False, subject=subject, body_prefix="Error occured in export_mmCIF")
             updating_row = {
                 'RID': entry_rid,
                 'Workflow_Status': 'ERROR',               
                 'Process_Status': process_status,
-                'Record_Status_Detail': error_message,
+                'Record_Status_Detail': message,
             }
         finally:
-            if self.action in ["SUBMIT"]:
-                self.sendMail(subject, 'The workflow status of the entry with RID={} was changed to mmCIF CREATED.'.format(entry_rid), receivers=self.email_config['curators'])            
-            self.update_processing_row(updating_row)
-            self.logger.debug(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
-            self.verbose: print(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')            
-            if fw: fw.close()
-            if self.cleanup and os.path.isfile(hatracFile): os.remove(hatracFile)
+            if fw and not fw.closed: fw.close()
+            if self.cleanup and os.path.isfile(hatracFile): os.remove(hatracFile)            
+            if self.workflow_status in ["SUBMIT"]:
+                self.update_processing_row(updating_row)
+                self.logger.debug(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
+                self.verbose: print(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
+                self.sendMail(subject, message)
+                self.clean_directory(processing_dir, remove_dir=True)
+                export_fpath = None
+            else:
+                # re-raise in case it is not final processing step
+                if process_status != Process_Status_Terms['SUCCESS']:
+                    raise ProcessingException("ERROR export_mmCIF: unable to export mmCIF file")
+            return export_fpath
         
         
-    def generateConformDictionary (self, schema_pdb, table_entry, entry_id, process_status_error, rid, user):
-        """Update Conform_Dictionary entries
-        """
+    def generateConformDictionary (self, entry_id, entry_rid):
+        """Update Conform_Dictionary entries associated with entry_id
 
+        Args:
+            entry_id (str): entry id
+            entry_rid (str): entry RID
+
+        """
+        
         # == Get the RID of Entry_Generated_File
         constraints=f'Structure_Id={entry_id}&File_Type=mmCIF'        
         rows = get_ermrest_query(self.catalog, "PDB", "Entry_Generated_File", constraints=constraints)
@@ -739,12 +727,12 @@ class EntryProcessor(PipelineProcessor):
         # == Get the current conform dict entries
         constraints=f'D:=Data_Dictionary/$M/Exported_mmCIF_RID={urlquote(mmcif_rid)}'
         rows = get_ermrest_query(self.catalog, "PDB", "Conform_Dictionary", constraints=constraints, attributes=["Exported_mmCIF_RID", "Data_Dictionary_RID", "Category:=D:Category"])
-        print("conform_dicts ==> %s" % (json.dumps(rows, indent=4)))
+        print("- conform_dicts ==> %s" % (rows))
         category2cdict = { row["Category"]: row for row in rows}
 
         # == Get supported dict entries
         rows = get_ermrest_query(self.catalog, "PDB", "Supported_Dictionary", attributes=["Data_Dictionary_RID","Data_Dictionary_Category"])
-        print("supported_dicts ==> %s" % (json.dumps(rows, indent=4)))
+        print("- generateConformDictionary: supported_dicts ==> %s" % (rows))
         category2sdict = { row["Data_Dictionary_Category"]: row  for row in rows}
 
         sdict_categories = set(category2sdict.keys())
@@ -754,17 +742,17 @@ class EntryProcessor(PipelineProcessor):
         inserting = []
         for category in  sdict_categories - cdict_categories:
             inserting.append({ "Exported_mmCIF_RID": mmcif_rid, "Data_Dictionary_RID": category2sdict[category]["Data_Dictionary_RID"] })
-        #print("inserting: %s" % (json.dumps(inserting, indent=4)))
+        print("- generateConformDictionary: inserting: %s" % (json.dumps(inserting, indent=4)))
         inserted = insert_if_not_exist(self.catalog, "PDB", "Conform_Dictionary", payload=inserting)
-        self.logger.debug("inserted: %s" % (json.dumps(inserted, indent=4)))
+        self.logger.debug("- generateConformDictionary: inserted: %s" % (json.dumps(inserted, indent=4)))
 
         # == Delete what's in conform dict but not supported dict 
         deleting = []
         for category in cdict_categories - sdict_categories:
             deleting.append(category2cdict[category])
         constraints="RID=any(%s)" % ( ",".join([ urlquote(row["RID"]) for row in deleting]) )            
-        self.logger.debug("deleting rows: %s" % (json.dumps(deleting, indent=4)))
-        #print("deleting_rids: constraints=%s" % constraints)
+        self.logger.debug("generateConformDictionary: deleting rows: %s" % (json.dumps(deleting, indent=4)))
+        print("- generateConformDictionary: deleting_rids: constraints=%s" % constraints)
         delete_table_rows(self.catalog, "PDB", "Conform_Dictionary", constraints=constraints)
 
         # == Update the categories that are in both conform dict and support dict with support dict Data_Dictionary_RID
@@ -772,11 +760,8 @@ class EntryProcessor(PipelineProcessor):
         for category in cdict_categories & sdict_categories: # intersection
             if category2sdict[category]["Data_Dictionary_RID"] == category2cdict[category]["Data_Dictionary_RID"]: continue
             updating.append({ "RID": category2cdict[category]["RID"], "Exported_mmCIF_RID": mmcif_rid, "Data_Dictionary_RID": category2sdict[category]["Data_Dictionary_RID"] })
-        self.logger.debug("updating Conform_Dictionary: %s" % (json.dumps(updating, indent=4)))
+        self.logger.debug("generateConformDictionary: updating %s" % (json.dumps(updating, indent=4)))
         
-        return
-    
-    
     """
     Insert a row in a table
     """
@@ -816,7 +801,7 @@ class EntryProcessor(PipelineProcessor):
         next_workflow_status = Next_Workflow_Status[current_workflow_status] # RECORD READY
         process_status = Process_Status_Terms['SUCCESS']
         subject = '%s %s: %s (%s)' % (self.rid, next_workflow_status, process_status, self.user_email)
-        messages = f'The workflow status of the entry with RID={self.rid} was changed to RECORD READY.'
+        message = f'The workflow status of the entry with RID={self.rid} was changed to {next_workflow_status}.'
         updating_row = {
             'RID' : self.rid,
             'Workflow_Status' : next_workflow_status,
@@ -861,19 +846,20 @@ class EntryProcessor(PipelineProcessor):
             # Note: Brinda wants the subject line to have the current status when it fails, but the Workflow_Status should be updated to ERROR in ermrest
             process_status = Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE']
             subject = '%s %s: %s (%s)' % (self.rid, current_workflow_status, process_status, self.user_email) # DEPO
+            message = self.log_exception(e, notify=False, subject=subject, body_prefix="Error occured in processing_mmCIF.")            
             updating_row = {
                 'RID': self.rid,
                 'Workflow_Status': 'ERROR',
-                'Process_Status': process_status,
+                'Process_Status': message,
                 'Record_Status_Detail': str(e),
             }
-            self.log_exception(e, notify=False, subject=subject, body_prefix="Error occured in processing_mmCIF.")
             # consider raise? 
         finally:
             # == update ermrest
             self.update_processing_row(updating_row)
             self.logger.debug(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')
-            self.verbose: print(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')            
+            self.verbose: print(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')
+            self.sendMail(subject, message)
             # clean up directory
             if cleanup: shutil.rmtree(processing_dir)  # in case we want to leave the files for further investigation
         
@@ -1317,9 +1303,9 @@ class EntryProcessor(PipelineProcessor):
     # -----------------------------------------------------------------------------------------    
     # constraints="structure_id=%s&Entry_Related_File=%s" % (structure_id, related_file_rid)    
     def delete_rows(self, sname, tname, constraints, check_first=False):
-        """
-        delete table rows of specified constraints.
-        - parameter:
+        """delete table rows of specified constraints.
+        
+        Args:
           Check_first is not supported yet.
         """
         if not constraints:
@@ -1791,8 +1777,11 @@ class EntryProcessor(PipelineProcessor):
 
         
     def getAccessionCode(self, entry_rid):
-        """Get the accession code value
-        
+        """Get the assigned accession code value.
+        If the accession code is not assigned to the provided entry_rid, it will trigger an accession code assignment.
+
+        Args:
+           entry_rid (str): entry RID that we want to get accession code for
         """
         
         # Check if we have already an Accession Code
@@ -1871,54 +1860,22 @@ class EntryProcessor(PipelineProcessor):
 
         
     def cleanupEntryFileTables(self, entry_id, entry_rid):
+        """Cleanup Ermrest the entry file tables
+        
         """
-        Cleanup the entry file tables
-        """
-
         constraints=f"Structure_Id={entry_id}"
-        delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=constraints)
+        #delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=constraints)
         constraints=f"Entry_RID={entry_rid}"        
         delete_table_rows(self.catalog, "PDB", "Entry_Error_File", constraints=constraints)            
 
-        """
-        try:
-            user = self.user_email
-            url = '/entity/PDB:Entry_Generated_File/Structure_Id={}'.format(urlquote(entry_id))
-            self.logger.debug('Query URL: "%s"' % url) 
-            
-            resp = self.catalog.get(url)
-            resp.raise_for_status()
-            if len(resp.json()) > 0:
-                resp = self.catalog.delete(
-                    url
-                )
-                resp.raise_for_status()
-                self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
-                
-            url = '/entity/PDB:Entry_Error_File/Entry_RID={}'.format(urlquote(rid))
-            self.logger.debug('Query URL: "%s"' % url) 
-            
-            resp = self.catalog.get(url)
-            resp.raise_for_status()
-            if len(resp.json()) > 0:
-                resp = self.catalog.delete(
-                    url
-                )
-                resp.raise_for_status()
-                self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
-            return 0
-        except:
-            et, ev, tb = sys.exc_info()
-            self.logger.error('got unexpected exception "%s"' % str(ev))
-            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            subject = '{} {}: {} ({})'.format(rid, 'SUBMIT', Process_Status_Terms['ERROR_GENERATING_mmCIF_FILE'], user)
-            self.sendMail(subject, 'RID={}, Can not cleanup the entry file tables:\n{}'.format(rid, ''.join(traceback.format_exception(et, ev, tb))))
-            return 1
-        """
         
-    def validateExportmmCIF(self, input_dir, filename, year, entry_id, rid, user, process_status_error, user_id):
-        """
-        Validate the exported mmCIF file
+    def validateExportmmCIF(self, input_dir, filename, entry_id, entry_rid, user_id, update_cif=True):
+        """Validate and update the exported mmCIF file.
+        If the validation fails, the corresponding error files are uploaded to hatrac and Entry_Error_Files are updated.
+        Else, the exported mmcif file is upload and Entry_Related_File is updated.
+
+        Args:
+            update_cif (bool): Whether to update mmcif to hatrac and ermrest
         
         TODO: turn this process into an update (instead of delete and insert)
         """
@@ -1933,7 +1890,8 @@ class EntryProcessor(PipelineProcessor):
         print("-- validateExportmmCIF: %s/%s (%s)" % (input_dir, filename, os.path.isfile(cif_fpath)))
         
         # == clean up files before running cifcheck. The existence of error files indicate an error
-        self.cleanupEntryFileTables(entry_id, rid)
+        delete_table_rows(self.catalog, "PDB", "Entry_Error_File", constraints=f"Entry_RID={entry_rid}")        
+        
         for (fname, ftype) in cifcheck_error_files:
             fpath = f"{input_dir}/fname"
             if os.path.isfile(fpath): os.remove(fpath)
@@ -1943,15 +1901,16 @@ class EntryProcessor(PipelineProcessor):
         os.chdir('{}'.format(input_dir))
         args = [self.CifCheck, '-f', cif_fpath, '-dictSdb', self.dictSdb]
         print("- validateExportmmCIF: running subprocess: %s" % (args))
-        self.logger.debug('Running "{}" from the {} directory'.format(' '.join(args), input_dir)) 
+        self.logger.debug('- Running "{}" from the {} directory'.format(' '.join(args), input_dir)) 
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdoutdata, stderrdata = p.communicate()
         returncode = p.returncode
         os.chdir(currentDirectory)
 
-        returncode = 0 # TODO: COMMENT when cifcheck is working in dev environment
-        print("**************** WARNING WARNING TURN ON CifCheck *************************** ")
-        
+        # DEBUGGING TO BYPASS CifCheck
+        #returncode = 0 # TODO: COMMENT when cifcheck is working in dev environment
+        #print("**************** WARNING WARNING TURN ON CifCheck *************************** ")
+
         # TODO: check whether the error files get generated if the return code is not 0
         if returncode != 0:
             raise SubProcessError('ERROR convert2json: pyrcsb testSchemaDataPrepValidate-ihm failed for file "%s".\nstdout: %s\nstderr: %s\n' % (output_cif, stdoutdata, stderrdata))
@@ -1970,37 +1929,33 @@ class EntryProcessor(PipelineProcessor):
             }
             payload.append(file_row)
             
+        # == TODO: turn this into an update if already exist
         # -- there is an error: insert to ermrest
         if len(payload) > 0:
             inserted = insert_if_not_exist(self.catalog, "PDB", "Entry_Error_File", payload=payload)
-            self.logger.debug("validateExportmmCIF: created Entry_Error_File [%d]: %s" % (len(inserted), inserted))
+            self.logger.debug("- validateExportmmCIF: created Entry_Error_File [%d]: %s" % (len(inserted), inserted))
             raise ProcessingError("ERROR validateExportmmCIF: CifCheck error files found")
 
-        # == insert good entry to ermrest
+        if not update_cif: return
+        
+        # == insert good entry to ermrest or update if already exist
         hatrac_namespace = '/{}/generated/uid/{}/entry/id/{}/final_mmCIF'.format(self.hatrac_namespace, user_id, entry_id)
         hfs = self.upload_file_groups(input_dir, [filename], namespace_prefix=hatrac_namespace)
         hf = hfs[0]
         file_row = {
             'File_URL': hf.hatrac_url, 'File_Name': hf.file_name, 'File_MD5': hf.md5_hex, 'File_Bytes': hf.file_bytes,
-            'File_Type': ftype, 'Structure_Id': entry_id, 'Entry_RCB': self.processing_row["RCB"]
+            'File_Type': "mmCIF", 'Structure_Id': entry_id, 'Entry_RCB': self.processing_row["RCB"]
         }
         inserted = insert_if_not_exist(self.catalog, "PDB", "Entry_Generated_File", payload=[file_row])
         print("validateExportmmCIF: inserted Entry_Generated_File [%d]: %s" % (len(inserted), json.dumps(inserted, indent=4)))
-        
-    """
-    Cleanup the scratch directory.
-    """
-    def cleanupDataScratch(self, dir_path):
-        if not self.cleanup: return
-        
-        for file_name in os.listdir(dir_path):
-            file_path = '{}/{}'.format(dir_path, file_name)
-            if os.path.isfile(file_path):
-                self.logger.debug('Removing file "{}"\n'.format(file_path))
-                os.remove(file_path)
-            elif os.path.isdir(file_path):
-                self.logger.debug('Removing directory "{}"\n'.format(file_path))
-                shutil.rmtree(file_path)
+        if len(inserted) == 0:
+            existing = get_ermrest_query(self.catalog, "PDB", "Entry_Generated_File", constraints=f"File_Type=mmCIF/Structure_Id={entry_id}")[0]
+            if file_row["File_MD5"] != existing["File_MD5"] or file_row["File_Name"] != existing["File_Name"]:
+                file_row["RID"] = existing["RID"]
+                updated = update_table_rows(self.catalog, "PDB", "Entry_Generated_File", payload=[file_row], column_names=["File_URL", "File_Name", "File_MD5", "File_Bytes"])
+                print("- updated  Entry_Generated_File with %s" % (json.dumps(file_row, indent=4)))
+            else:
+                print("-- validateExportmmCIF: cif file is unchanged: %s " % (file_row))
         
     """
     Cleanup the singularity directory.
@@ -2014,12 +1969,13 @@ class EntryProcessor(PipelineProcessor):
             elif os.path.isdir(file_path):
                 self.logger.debug(f'Removing directory "{file_path}"\n')
                 shutil.rmtree(file_path)
-        
+
+    
     """
     Add a table that is not specified in the initial json schema (json-full-db-ihm_dev_full-col-ihm_dev_fulljson file).
     """
     def addTable(self, rid, results, table_name, columns, fw):
-        def getColumnValue(table_name, column_name, column_type, column_value):
+        def x_getColumnValue(table_name, column_name, column_type, column_value):
             if column_value == None:
                 return '.'
             if column_type in ['int4', 'float4']:
@@ -2062,7 +2018,7 @@ class EntryProcessor(PipelineProcessor):
                     column_name = column['name']
                     column_type = column['type']
                     column_value = row[column_name]
-                    value = getColumnValue(table_name, column_name, column_type, column_value)
+                    value = self.getColumnValue(table_name, column_name, column_type, column_value)
                     if value == None:
                         self.logger.debug('Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
                         subject = '{} {}: {} ({})'.format(rid, 'SUBMIT', process_status_error, user)
@@ -2077,7 +2033,7 @@ class EntryProcessor(PipelineProcessor):
                 column_name = column['name']
                 column_type = column['type']
                 column_value = row[column_name]
-                value = getColumnValue(table_name, column_name, column_type, column_value)
+                value = self.getColumnValue(table_name, column_name, column_type, column_value)
                 if value == None:
                     self.logger.debug('Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
                     subject = '{} {}: {} ({})'.format(rid, 'SUBMIT', process_status_error, user)
@@ -2089,106 +2045,58 @@ class EntryProcessor(PipelineProcessor):
         fw.write('#\n')    
         return 0
 
-    def addCollectionRecords(self, rid, entry_id, fw, hold):
+    def addCollectionRecords(self, rid, entry_id, fw):
         """
         Get the RCB user
         """
         user = self.getUser('PDB', 'entry', rid)
 
-        try:
-            url = '/attribute/A:=PDB:entry/id={}/B:=PDB:ihm_entry_collection_mapping/C:=PDB:ihm_entry_collection/C:id,C:name,C:details'.format(urlquote(entry_id))
-            self.logger.debug('ihm_entry_collection Query URL: "%s"' % url) 
-            resp = self.catalog.get(url)
-            resp.raise_for_status()
-            results = resp.json()
-            if len(results) > 0:
-                table_name = 'ihm_entry_collection'
-                columns = [
-                    {'name': 'id', 'type': 'text'},
-                    {'name': 'name', 'type': 'text'},
-                    {'name': 'details', 'type': 'text'}
-                    ]
-                if self.addTable(rid, results, table_name, columns, fw) != 0:
-                    error_message = 'ERROR addCollectionRecords: "%s"' % self.export_error_message
-                    self.updateAttributes('PDB',
-                                          'entry',
-                                          rid,
-                                          ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
-                                          {'RID': rid,
-                                          'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'],
-                                          'Record_Status_Detail': error_message,
-                                          'Workflow_Status': 'ERROR'
-                                          },
-                                          user)
-                    return False
+        url = '/attribute/A:=PDB:entry/id={}/B:=PDB:ihm_entry_collection_mapping/C:=PDB:ihm_entry_collection/C:id,C:name,C:details'.format(urlquote(entry_id))
+        self.logger.debug('ihm_entry_collection Query URL: "%s"' % url) 
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        results = resp.json()
+        if len(results) > 0:
+            table_name = 'ihm_entry_collection'
+            columns = [
+                {'name': 'id', 'type': 'text'},
+                {'name': 'name', 'type': 'text'},
+                {'name': 'details', 'type': 'text'}
+            ]
+            if self.addTable(rid, results, table_name, columns, fw) != 0:
+                raise ProcessingError('ERROR addCollectionRecords: "%s"' % self.export_error_message)
 
-            url = '/attribute/A:=PDB:entry/id={}/B:=PDB:ihm_entry_collection_mapping/C:=PDB:ihm_entry_collection/B:collection_id,entry_id:=A:Accession_Code'.format(urlquote(entry_id))
-            self.logger.debug('ihm_entry_collection_mapping Query URL: "%s"' % url) 
-            resp = self.catalog.get(url)
-            resp.raise_for_status()
-            results = resp.json()
-            if len(results) > 0:
-                table_name = 'ihm_entry_collection_mapping'
-                columns = [
-                    {'name': 'collection_id', 'type': 'text'},
-                    {'name': 'entry_id', 'type': 'text'}
-                    ]
-                if self.addTable(rid, results, table_name, columns, fw) != 0:
-                    error_message = 'ERROR addCollectionRecords: "%s"' % self.export_error_message
-                    self.updateAttributes('PDB',
-                                          'entry',
-                                          rid,
-                                          ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
-                                          {'RID': rid,
-                                          'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'],
-                                          'Record_Status_Detail': error_message,
-                                          'Workflow_Status': 'ERROR'
-                                          },
-                                          user)
-                    return False
-            
-            return True
-        except:
-            et, ev, tb = sys.exc_info()
-            self.logger.error('got unexpected exception "%s"' % str(ev))
-            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            subject = '{} {}: {} ({})'.format(rid, 'SUBMISSION COMPLETE' if hold else 'RELEASE READY', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
-            self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
-            error_message = 'ERROR addCollectionRecords: "%s"' % str(ev)
-            self.updateAttributes('PDB',
-                                  'entry',
-                                  rid,
-                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
-                                  {'RID': rid,
-                                  'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'],
-                                  'Record_Status_Detail': error_message,
-                                  'Workflow_Status': 'ERROR'
-                                  },
-                                  user)
-            return False
+        url = '/attribute/A:=PDB:entry/id={}/B:=PDB:ihm_entry_collection_mapping/C:=PDB:ihm_entry_collection/B:collection_id,entry_id:=A:Accession_Code'.format(urlquote(entry_id))
+        self.logger.debug('ihm_entry_collection_mapping Query URL: "%s"' % url) 
+        resp = self.catalog.get(url)
+        resp.raise_for_status()
+        results = resp.json()
+        if len(results) > 0:
+            table_name = 'ihm_entry_collection_mapping'
+            columns = [
+                {'name': 'collection_id', 'type': 'text'},
+                {'name': 'entry_id', 'type': 'text'}
+            ]
+            if self.addTable(rid, results, table_name, columns, fw) != 0:
+                raise ProcessingError('ERROR addCollectionRecords: "%s"' % self.export_error_message)                    
+        return True
 
     """
     Execute report validation.
     """
-    def report_validation(self, rid, entry_id, user, user_id, hold):
+    def report_validation(self, rid, entry_id, user, user_id):
+        processing_dir = "%s/%s" % (self.scratch, rid)
+        os.makedirs(processing_dir, exist_ok=True)
+        process_status_error = Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if self.workflow_status=="SUBMISSION COMPLETE" else Process_Status_Terms['ERROR_RELEASING_ENTRY']        
+        
         try:
             """
             Get the System Generated mmCIF File
             """
-            entry_RCB = self.getUserRCB('PDB', 'entry', rid)
-            url = f'/entity/PDB:entry/RID={rid}/PDB:Entry_Generated_File/File_Type=mmCIF'
-            self.logger.debug(f'Query URL: {url}') 
-            resp = self.catalog.get(url)
-            resp.raise_for_status()
-            row = resp.json()[0]
-            filename = row['File_Name']
-            file_url = row['File_URL']
-            file_path,error_message = self.getHatracFile(filename, file_url, self.scratch, rid, user)
-            if file_path == None:
-                self.logger.error(f'Can not get the mmCIF Entry_Generated_File RID={row["File_Name"]} for entry RID={rid}')
-                subject = f'{rid} Scientific Validation Error ({user})'
-                self.sendMail(subject, f'Can not get the mmCIF Entry_Generated_File RID={row["File_Name"]} for entry RID={rid}')
-                return(None, None, None)
+            entry_RCB = self.processing_row["RCB"]
+            rows = get_ermrest_query(self.catalog, "PDB", "entry", constraints=f'RID={rid}/PDB:Entry_Generated_File/File_Type=mmCIF')
+            row = rows[0]
+            file_path = self.download_hatrac_file(row["File_URL"], processing_dir, row["File_Name"])
     
             self.cleanupSingularityDir(f'{self.validation_dir}/input')
             self.cleanupSingularityDir(f'{self.validation_dir}/output')
@@ -2210,7 +2118,7 @@ class EntryProcessor(PipelineProcessor):
                     '--force',
                     '--output-root', '/ihmv/output', 
                     '--cache-root', '/ihmv/cache',
-                    '--watermark', 'confidential' if hold else 'none'
+                    '--watermark', 'confidential' if self.workflow_status=="SUBMISSION COMPLETE" else 'none'
                     ]
             self.logger.debug(f'Running "{" ".join(args)}" from the {self.validation_dir} directory') 
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -2219,21 +2127,8 @@ class EntryProcessor(PipelineProcessor):
                 returncode = p.returncode
                 os.chdir(currentDirectory)
                 if returncode != 0:
-                    self.logger.debug(f'ERROR.\nstdoutdata: {stdoutdata}\nstderrdata: {stderrdata}\n') 
-                    subject = '{} {}: {} ({})'.format(rid, 'REPORT VALIDATION', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
-                    error_message = f'ERROR IN REPORT VALIDATION.\nstdoutdata: {stdoutdata}\nstderrdata: {stderrdata}\n'
-                    self.sendMail(subject, error_message)
-                    self.updateAttributes('PDB',
-                                      'entry',
-                                      rid,
-                                      ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
-                                      {'RID': rid,
-                                      'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'],
-                                      'Record_Status_Detail': error_message,
-                                      'Workflow_Status': 'ERROR'
-                                      },
-                                      user)
-                    return(None, None, None)
+                    raise SubProcessError(f'ERROR report_validation: IHMV failed.\nstdoutdata: {stdoutdata}\nstderrdata: {stderrdata}\n')
+                
                 self.logger.debug('SUCCESS in executing the scientific validation')
                 output_files = []
                 filename, _ext = os.path.splitext(os.path.basename(file_path))
@@ -2248,9 +2143,8 @@ class EntryProcessor(PipelineProcessor):
                         file_type = 'Validation: HTML tar.gz'
                     else:
                         self.logger.debug(f'Unknown file type got from the scientific validation: {file_name}')
-                        subject = f'{rid} Scientific Validation Error ({user})'
-                        self.sendMail(subject, f'Unknown file type got from the scientific validation: {file_name}')
-                        return(None, None, None)
+                        raise SubProcessError(f'ERROR report_validation: IHMV generated unknown file type: {file_name}')
+                    
                     output_file_path = f'{output_path}/{file_name}'
                     if os.path.isfile(output_file_path):
                         output_files.append(output_file_path)
@@ -2271,43 +2165,23 @@ class EntryProcessor(PipelineProcessor):
                                                       rid,
                                                       ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
                                                       {'RID': rid,
-                                                      'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'],
-                                                      'Record_Status_Detail': 'Error in createEntity(Entry_Generated_File)',
-                                                      'Workflow_Status': 'ERROR'
+                                                       'Process_Status': process_status_error,
+                                                       'Record_Status_Detail': 'Error in createEntity(Entry_Generated_File)',
+                                                       'Workflow_Status': 'ERROR'
                                                       },
                                                       user)
-                                return(None, None, None) 
+                                raise ErmrestError(f"ERROR report_validation: can't create an Entry_Generated_File entry: {row}" )
                         else:
-                            return(None, None, None) 
+                            raise HatracError(f"ERROR report_validation: can't upload Hatrac file: {output_file_path} -> {hatrac_namespace}" )
                             
                 return tuple(output_files)
             except TimeoutExpired:
-                et, ev, tb = sys.exc_info()
-                self.logger.error('got TimeoutExpired exception "%s"' % str(ev))
-                self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-                subject = '{} {}: {} ({})'.format(rid, 'REPORT VALIDATION TimeoutExpired', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
-                error_message = '%s\n' % ''.join(traceback.format_exception(et, ev, tb))
-                self.sendMail(subject, error_message)
-                self.updateAttributes('PDB',
-                                  'entry',
-                                  rid,
-                                  ["Process_Status", "Record_Status_Detail", "Workflow_Status"],
-                                  {'RID': rid,
-                                  'Process_Status': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'],
-                                  'Record_Status_Detail': error_message,
-                                  'Workflow_Status': 'ERROR'
-                                  },
-                                  user)
                 p.kill()
                 os.chdir(currentDirectory)
-                return(None, None, None)
+                self.logger.error('got TimeoutExpired exception "%s"' % str(ev))
+                raise SubProcessError("ERROR report_validation: IHMV TimeoutExpired")
         except:
-            et, ev, tb = sys.exc_info()
-            self.logger.error('got unexpected exception "%s"' % str(ev))
-            self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-            subject = '{} {}: {} ({})'.format(rid, 'SUBMISSION COMPLETE' if hold else 'RELEASE READY', Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY'], user)
-            self.sendMail(subject, '%s\n' % ''.join(traceback.format_exception(et, ev, tb)))
-            return(None, None, None)
+            raise ProcessingError("ERROR report_validation: unable to generate IHMV validation reports")            
 
         
     def mmcif2json(self, cif_fpath, json_fpath, exdb_fname=None):
@@ -2318,7 +2192,7 @@ class EntryProcessor(PipelineProcessor):
         """
         cif_fname = cif_fpath.rsplit("/", 1)[1]
         if not exdb_fname:
-            if self.action == 'DEPO':
+            if self.workflow_status == 'DEPO':
                 exdb_fname="exdb-config-example-ihm-DEPO.yml"
             else:
                 exdb_fname="exdb-config-example-ihm-HOLD-REL.yml"
@@ -2344,7 +2218,7 @@ class EntryProcessor(PipelineProcessor):
         
         # == Move the output.cif file to the rcsb/db/tests-validate/test-output/ihm-files directory and apply testSchemaDataPrepValidate-ihm.py
         shutil.copy2(cif_fpath, py_rcsb_db_input_cif_dir)
-        self.logger.debug('mmcif2json: File %s was copied to the %s directory' % (output_cif, py_rcsb_db_input_cif_dir))
+        self.logger.debug('mmcif2json: File %s was copied to the %s directory' % (cif_fpath, py_rcsb_db_input_cif_dir))
             
         currentDirectory=os.getcwd()
         os.chdir('{}'.format(self.py_rcsb_db))
@@ -2382,52 +2256,67 @@ class EntryProcessor(PipelineProcessor):
         return json_fpath
         
         
-
-    """
-    Execute JSON mmCIF content (for pdb website).
-    1. download .cif file from hatrac
-    2. prepare py_rcsb_db for processing (remove .cif, .json, and prepare yml config)
-    3. run rcsb/db/tests-validate/testSchemaDataPrepValidate-ihm.py
-    4. renaming .json file
-    5. upload to hatrac and update ermrest
-
-    TODO: py_rcsb_db still hardcode input/output. Therefore, can only perform one worker at a time
-    """
-    def generate_JSON_mmCIF_content(self, entry_rid, entry_id, processing_dir=None):
+    def generate_PDB_JSON(self, entry_row, processing_dir=None):
+        """
+        Generate PDB JSON content (for pdb website).
+        1. download .cif file from hatrac
+        2. prepare py_rcsb_db for processing (remove .cif, .json, and prepare yml config)
+        3. run rcsb/db/tests-validate/testSchemaDataPrepValidate-ihm.py
+        4. renaming .json file
+        5. upload to hatrac and update ermrest
+        
+        TODO: py_rcsb_db still hardcode input/output. Therefore, can only perform one worker at a time
+        """
+        entry_rid = entry_row["RID"]
+        entry_id = entry_row["id"]
+        user_id = self.RCB2user_id(entry_row["RCB"])
+        
         try:
             if not processing_dir:
                 processing_dir = "%s/%s" % (self.scratch, entry_rid)
                 os.makedirs(processing_dir, exist_ok=True)
             
             # == Get the System Generated mmCIF File
-            constraints = f'/RID={entry_rid}/PDB:Entry_Generated_File/File_Type=mmCIF'
+            constraints = f'RID={entry_rid}/PDB:Entry_Generated_File/File_Type=mmCIF'
             rows = get_ermrest_query(self.catalog, "PDB", "entry", constraints=constraints)
-            if len(rows) != 1:
-                raise ProcessError(f"ERROR addReleaseRecords: entry {entry_rid}: nvalid number of mmCIF files: {len(rows)}")
             cif_file_row = rows[0]
             cif_file_rid = cif_file_row['RID']
-            cif_file_fname = cif_file_row['File_Name']
-            cif_file_base_name = cif_file_fname.rsplit('.', 1)[0]
+            cif_base_name = cif_file_row['File_Name'].split('.', 1)[0]
             
             cif_fpath = self.download_hatrac_file(cif_file_row['File_URL'], processing_dir, cif_file_row['File_Name'])
-            json_fpath = f'{processing_dir}/{cif_file_base_name}.json'
+            json_fname = f'{cif_base_name}.json'
+            json_fpath = f'{processing_dir}/{json_fname}'
     
             # == convert mmCIF to json file
             self.mmcif2json(cif_fpath, json_fpath)
-            
+
+            # == update json entry in hatrac and ermrest
+            file_type = 'JSON: mmCIF content'
             hatrac_namespace = f'/{self.hatrac_namespace}/generated/uid/{user_id}/entry/id/{entry_id}/final_mmCIF'
-            hfs = self.upload_file_groups(processing_dir, [cif_file_fname], namespace_prefix=hatrac_namespace)
+            hfs = self.upload_file_groups(processing_dir, [json_fname], namespace_prefix=hatrac_namespace)
             hf = hfs[0]
-            json_file_row = { 'File_URL': hf.hatrac_url, 'File_Name': hf.file_name, 'File_MD5': hf.md5_hex, 'File_Bytes': hf.file_bytes,
-                              'File_Type': 'JSON: mmCIF content', 'Structure_Id': entry_id
-                             }
-            inserted = insert_if_not_exist(self.catalog, "PDB", "Entry_Generated_File", payload=[json_file_row])
-            self.logger.debug("generate_JSON_mmCIF_content: created Entry_Generated_File: %s" % (inserted))
-        
-            os.chdir(currentDirectory)
+            file_row = { 'File_URL': hf.hatrac_url, 'File_Name': hf.file_name, 'File_MD5': hf.md5_hex, 'File_Bytes': hf.file_bytes,
+                         'File_Type': file_type, 'Structure_Id': entry_id, 'Entry_RCB': entry_row["RCB"]
+                        }
+            inserting = [file_row]
+            print("- generate_PDB_JSON: inserting Entry_Generated_File: %s" % (inserting))            
+            inserted = insert_if_not_exist(self.catalog, "PDB", "Entry_Generated_File", payload=inserting)
+            self.logger.debug("generate_PDB_JSON: created Entry_Generated_File: %s" % (inserted))
+            print("- generate_PDB_JSON: inserted Entry_Generated_File: %s" % (json.dumps(inserted, indent=4)))
+            
+            if len(inserted) == 0:
+                existing = get_ermrest_query(self.catalog, "PDB", "Entry_Generated_File", constraints=f"File_Type={urlquote(file_type)}/Structure_Id={urlquote(entry_id)}")[0]
+                if file_row["File_MD5"] != existing["File_MD5"] or file_row["File_Name"] != existing["File_Name"]:
+                    file_row["RID"] = existing["RID"]
+                    updated = update_table_rows(self.catalog, "PDB", "Entry_Generated_File", payload=[file_row], column_names=["File_URL", "File_Name", "File_MD5", "File_Bytes"])
+                    print("- updated  Entry_Generated_File with %s" % (json.dumps(file_row, indent=4)))
+                else:
+                    print("-- generate_PDB_JSON: JSON file is unchanged: %s " % (file_row))
+            
             return json_fpath
         except Exception as e: 
-            raise ProcessingError("ERROR generate_JSON_mmCIF_content: unable to successfully generate JSON from mmCIF content")
+            raise ProcessingError("ERROR generate_PDB_JSON: unable to successfully generate JSON from mmCIF content")
+        
         
     def get_primary_accession_code(self, mode, accesion_code_row):
         """
@@ -2465,64 +2354,56 @@ class EntryProcessor(PipelineProcessor):
             else f'PDB {accesion_code_row["PDB_Accession_Code"]} {self.get_lower_accession_code(accesion_code_row["PDB_Extended_Code"])} 10.2210/pdb{self.get_lower_accession_code(accesion_code_row["PDB_Code"])}/pdb'
 
     
-    def addReleaseRecords(self, entry_rid, hold=False):
+    def addReleaseRecords(self):
         """Update generated cif file with release information and rerun file validation and validation report.
-        The cif file should have the accession number, release date and database_2 section updated
+        The cif file should have the accession number, release date and database_2 section updated.
 
+        This function performs the following steps:
+            - re-export the file so the content is up-to-date
+            - gather extra information to put in during the release process
+            - update the export cif file
         Args:
             entry_rid (str): entry RID to be processed
-            hold (bool): indicates the current workflow status. If true, the status is SUBMISSION COMPLETE, else it is RELEASE READY.
 
         TODO: _pdbx_database (with release info) is only written after _audit_conform. Check that we always write _audit_conform in the earlier process
 
         """
+        entry_rid = self.rid
         processing_dir = "%s/%s" % (self.scratch, entry_rid)
         os.makedirs(processing_dir, exist_ok=True)
+        self.clean_directory(processing_dir)
+        entry_row = self.processing_row        
         entry_id = self.processing_row["id"]
-        entry_row = self.processing_row
-        user_id = self.RCB2user_id(entry_row["RCB"])
+        user_id = self.user_id
 
         print("addReleaseRecords: processing dir: %s" % (processing_dir))
         
-        current_workflow_status = 'SUBMISSION COMPLETE' if hold else 'RELEASE READY'
+        current_workflow_status = self.workflow_status
         next_workflow_status = Next_Workflow_Status[current_workflow_status] # HOLD or REL
         process_status = Process_Status_Terms['SUCCESS']
-        process_status_error = Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if hold else Process_Status_Terms['ERROR_RELEASING_ENTRY']
+        process_status_error = Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'] if self.workflow_status=="SUBMISSION COMPLETE" else Process_Status_Terms['ERROR_RELEASING_ENTRY']
         subject = '%s %s: %s (%s)' % (entry_rid, next_workflow_status, process_status, self.user_email)
+        message = f'The workflow status of the entry with RID={entry_rid} was changed to {next_workflow_status}'
         updating_row = {
             'RID' : entry_rid,
             'Workflow_Status' : next_workflow_status,
             'Process_Status' : process_status, 
             'Record_Status_Detail' : None,
         }
+        fr = None
+        fw = None
         
         try:
-            if self.export_mmCIF('PDB', 'entry', entry_rid, release=not hold, user_id=user_id) != 0:
-                # We can not recreate the mmCIF exported file
-                return
-
             # == Get the Accession_Code record
             rows = get_ermrest_query(self.catalog, "PDB", "Accession_Code", constraints=f"Entry={entry_rid}")
             if len(rows) == 1:
                 accession_code_row = rows[0]
-                primary_accession_code = self.get_primary_accession_code(self.primary_accession_code_mode, accesion_code_row)
+                primary_accession_code = self.get_primary_accession_code(self.primary_accession_code_mode, accession_code_row)
                 if accession_code_row['Accession_Code'] not in [primary_accession_code]:
                     raise ProcessError(f'ERROR addReleaseRecords: primary_accession_code {primary_accession_code} different from Accession_Code column: {accesion_code_row["Accession_Code"]}')
             else:
                 raise ProcessError('ERROR addReleaseRecords: entry %s: Invalid number of accession codes assigned: %s' %s (entry_rid, len(rows)))
 
-            # == Query for detecting the mmCIF file
-            constraints = f'/RID={entry_rid}/PDB:Entry_Generated_File/File_Type=mmCIF'
-            rows = get_ermrest_query(self.catalog, "PDB", "entry", constraints=constraints)
-            if len(rows) != 1:
-                raise ProcessError(f"ERROR addReleaseRecords: entry {entry_rid}: invalid number of mmCIF files: {len(rows)}")
-            cif_file_row = rows[0]
-            cif_file_rid = cif_file_row['RID']            
-            cif_file_base_name = cif_file_row['File_Name'].rsplit('.', 1)[0]
-
-            file_path = self.download_hatrac_file(cif_file_row['File_URL'], processing_dir, cif_file_row['File_Name'])
-            print("addReleaseRecords: download cif file to: %s" % (file_path))
-            
             # == update database_2 and release info
             creation_time = self.processing_row['RCT']
             year = parse(creation_time).strftime("%Y")
@@ -2531,14 +2412,13 @@ class EntryProcessor(PipelineProcessor):
             
             database_2_primary_accession_code = self.get_database_2_string(self.primary_accession_code_mode, accession_code_row)
             database_2_alternative_accession_code = self.get_database_2_string(self.alternative_accession_code_mode, accession_code_row)
-            if hold==True:
-                record_status = 'HOLD'
+            record_status = next_workflow_status # 'HOLD' or 'REL'
+            if current_workflow_status == "SUBMISSION COMPLETE":
                 records_release = mmCIF_hold_records.replace('<status_code>', record_status) \
                     .replace('<entry_id>', entry_row['Accession_Code']) \
                     .replace('<deposition_date>', deposition_date)
                 records_release = self.database_2_accession_code(records_release, database_2_primary_accession_code, database_2_alternative_accession_code)
             else:
-                record_status = 'REL'
                 revision_date = entry_row['Release_Date']
                 if revision_date == None:
                     # revision_date = parse(str(datetime.now())).strftime("%Y-%m-%d")  
@@ -2550,10 +2430,17 @@ class EntryProcessor(PipelineProcessor):
                     .replace('<revision_date>', revision_date)
                 records_release = self.database_2_accession_code(records_release, database_2_primary_accession_code, database_2_alternative_accession_code)
 
-            # == update current cif file 
-            file_name = '{}.cif'.format(entry_row['Accession_Code'])
-            fr = open('{}/{}'.format(processing_dir, filename), 'r')
-            fw = open('{}/{}'.format(processing_dir, file_name), 'w')
+            # == export the file with the current content (<entry_id>.cif)
+            export_fpath = self.export_mmCIF()
+            print("--- addReleaseRecords: export mmCIF: %s" % (export_fpath))
+            if not os.path.isfile(export_fpath):
+                raise Exception("ERROR addReleaseRecords: export_file_path not found: %s" % (export_fpath))
+            
+            # == update current cif file with release and extra information
+            final_fname = f'{entry_row['Accession_Code']}.cif'
+            final_fpath = f'{processing_dir}/{final_fname}'
+            fr = open(export_fpath, 'r')
+            fw = open(final_fpath, 'w')
             audit_conform = False
             
             while True:
@@ -2576,66 +2463,56 @@ class EntryProcessor(PipelineProcessor):
                     if line == '#\n':
                         audit_conform = False
                         fw.write(records_release)
-                        if self.addCollectionRecords(entry_rid, entry_id, fw, hold) == False:
-                            fr.close()
-                            fw.close()
-                            return
+                        self.addCollectionRecords(entry_rid, entry_id, fw)
                 else:
                     fw.write(line)
             fr.close()
             fw.close()
-            
-            hatrac_namespace = '/{}/generated/uid/{}/entry/id/{}/final_mmCIF'.format(self.hatrac_namespace, user_id, entry_id)
-            hfs = self.upload_file_groups(processing_dir, [file_name], namespace_prefix=hatrac_namespace)
-            hf = hfs[0]
-            updating_file_row = { 'RID': cif_file_rid, 'File_URL': hf.hatrac_url, 'File_Name': hf.file_name, 'File_MD5': hf.md5_hex, 'File_Bytes': hf.file_bytes }
-            updated = self.update_processing_row(updating_file_row, tname="Entry_Generated_File")
-            # TODO: add logging
 
-            # == validate cif file
-            self.validateExportmmCIF(processing_dir, file_name, year, entry_id, entry_rid, self.user_email, process_status_error, user_id)
-            if returncode != 0:
-                raise ProcessingError(error_message)
-            else:
-                # == Generate the Conform_Dictionary entries
-                self.generateConformDictionary('PDB', 'entry', entry_id, process_status_error, entry_rid, self.user_email)
+            # == validate and update exported cif file
+            self.validateExportmmCIF(processing_dir, final_fname, entry_id, entry_rid, user_id, update_cif=True)
+            
+            # == Generate the Conform_Dictionary entries -- already done in export earlier
+            self.generateConformDictionary(entry_id, entry_rid)
                 
-            # TODO: make this Exception style
-            if self.reportValidation:
-                # -- generate json for pdb publication
-                json_fpath = f'{processing_dir}/{cif_file_base_name}.json'
-                self.generate_JSON_mmCIF_content(entry_rid, entry_id, processing_dir)
+            # == re-generate validation report. TODO: UNCOMMENT
+            #self.report_validation(entry_rid, entry_id, self.user_email, user_id)
                 
-                # -- generate validation report. TODO: UNCOMMENT
-                #if not self.report_validation(entry_rid, entry_id, self.user_email, user_id, hold) != (None, None, None):
-                #    raise ProcessingError("ERROR addReleaseRecords: unable to successfully generate validation report")
-                    
+            # == generate json for pdb publication
+            self.generate_PDB_JSON(entry_row, processing_dir)
+            
         except Exception as e:
             process_status = process_status_error
             subject = '%s %s: %s (%s)' % (entry_rid, current_workflow_status, process_status, self.user_email) 
-            error_message = self.log_exception(e, notify=True, subject=subject, body_prefix="Error occured in addReleaseRecords")
+            message = self.log_exception(e, notify=False, subject=subject, body_prefix="Error occured in addReleaseRecords")
             updating_row = {
                 'RID': entry_rid,
                 'Workflow_Status': 'ERROR',               
                 'Process_Status': process_status,
-                'Record_Status_Detail': error_message,
+                'Record_Status_Detail': message,
             }
         finally:
             # == update ermrest
-            self.update_processing_row(updating_row)
-            self.logger.debug(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
-            self.verbose: print(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
-            if self.cleanup:
-                if os.path.isdir(processing_dir): shutil.rmtree(processing_dir)  # in case we want to leave the files for further investigation
+            if current_workflow_status == "RELEASE READY":
+                self.update_processing_row(updating_row)
+                self.logger.debug(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
+                self.verbose: print(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
+                self.sendMail(subject, message)
+            self.clean_directory(processing_dir, remove_dir=True)
+            if fr and not fr.closed: fr.close()
+            if fw and not fw.closed: fw.close()
             
-    def set_accession_code(self, entry_rid):
+    def set_accession_code(self):
         """
         Get the RCB user
         """
-        current_workflow_status = 'SUBMISSION COMPLETE'
+        entry_rid = self.rid
+        
+        current_workflow_status = self.workflow_status # 'SUBMISSION COMPLETE'
         next_workflow_status = Next_Workflow_Status[current_workflow_status] # HOLD
         process_status = Process_Status_Terms['SUCCESS']
         subject = '%s %s: %s (%s)' % (entry_rid, next_workflow_status, process_status, self.user_email)
+        message = f'The workflow status of the entry with RID={self.rid} was changed to {next_workflow_status}.'
         
         try:
             accession_code = self.getAccessionCode(entry_rid)
@@ -2648,22 +2525,24 @@ class EntryProcessor(PipelineProcessor):
                 'Record_Status_Detail' : None,
                 "Accession_Code": accession_code                
             }
-            self.addReleaseRecords(entry_rid, hold=True, user_id=None)
+            self.addReleaseRecords()
         except Exception as e:
             process_status = Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES']
-            subject = '%s %s: %s (%s)' % (entry_rid, current_workflow_status, process_status, self.user_email) # SUBMISSION COMPLETE
-            error_message = self.log_exception(e, notify=True, subject=subject, body_prefix="Error occured in set_accession_code")
+            subject = '%s %s: %s (%s)' % (entry_rid, current_workflow_status, process_status, self.user_email) 
+            message = self.log_exception(e, notify=False, subject=subject, body_prefix="Error occured in set_accession_code")
             updating_row = {
                 'RID': entry_rid,
                 'Workflow_Status': 'ERROR',
                 'Process_Status': process_status,
-                'Record_Status_Detail': error_message,
+                'Record_Status_Detail': message,
             }
         finally:
             # == update ermrest
             self.update_processing_row(updating_row)
             self.logger.debug(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
-            self.verbose: print(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')            
+            self.verbose: print(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
+            self.sendMail(subject, message)
+            
             
         
     def clear_entry(self, rid, id, user):

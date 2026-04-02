@@ -70,7 +70,7 @@ class ErmrestError(ProcessingError):
     """ Exception when fail to perform transaction with Ermrest
     """
     pass
-    
+
 class ErmrestUpdateError(ErmrestError):
     """ Exception when fail to update to Ermrest
     """
@@ -85,7 +85,12 @@ class SubProcessError(ProcessingError):
     """ Sub-process failure
     """
     pass
-        
+
+class HatracError(ProcessingError):
+    """ Exception when fail to upload or download files from hatrac
+    """
+    pass
+
 # ===================================================================================
 class PipelineProcessor(object):
     """
@@ -140,7 +145,7 @@ class PipelineProcessor(object):
         print("host: %s, catalog_id: %s, catalog: %s" % (self.host, self.catalog_id, self.catalog))
     
     @classmethod
-    def same_table_rows(table, base_rows, compare_rows, key="structure_id"):
+    def same_table_rows(cls, table, base_rows, compare_rows, key="structure_id"):
         """Check whether content are all the same before deleting.
         
         TODO: look up existing content based on keys
@@ -171,7 +176,7 @@ class PipelineProcessor(object):
 
     
     @classmethod    
-    def dump_json_to_file(file_path, json_object):
+    def dump_json_to_file(cls, file_path, json_object):
         """Dump a json object to a file
 
         Args:
@@ -186,7 +191,7 @@ class PipelineProcessor(object):
         fw.close()
 
     @classmethod
-    def read_json_config_file(config_file):
+    def read_json_config_file(cls, config_file):
         """Load json file
         Args:
             config_file (str): config file path
@@ -207,6 +212,25 @@ class PipelineProcessor(object):
         return config
 
 
+    def clean_directory(self, dir_path, remove_dir=False):
+        """Clean up files and directories in a dir_path unless self.cleanup is False
+        
+        """
+        if not self.cleanup: return
+
+        if remove_dir:
+            shutil.rmtree(dir_path)
+            return
+        
+        for file_name in os.listdir(dir_path):
+            file_path = f'{dir_path}/{file_name}'
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+                self.logger.debug(f'- Removed file {file_path}')                
+            elif os.path.isdir(file_path):
+                self.logger.debug(f'Removing directory {file_path}')
+                shutil.rmtree(file_path)
+        
     # -------------------------------------------------
     def create_hatrac_uid_namespace(self, namespace_prefix, user_id):
         """Create hatrac namespace for user_id so the user can be granted subtree-read access.

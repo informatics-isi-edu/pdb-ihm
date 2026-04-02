@@ -239,8 +239,7 @@ def load(config_filename, args):
     else:
         hatrac_namespace = 'hatrac/{}/pdb'.format(hatrac_namespace)
     config['hatrac_namespace'] = hatrac_namespace
-    
-    config['reportValidation'] = conf.get('reportValidation', 'Yes')
+
     email_file = conf.get('mail', None)
     if not email_file or not os.path.isfile(email_file):
         raise ConfigError('email file must be provided and exist.')
