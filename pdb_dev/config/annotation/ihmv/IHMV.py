@@ -40,8 +40,7 @@ def update_IHMV(model):
 
     # Generated_File
     table = schema.tables["Generated_File"]
-    # TODO: remove after fixig the ACL logic
-    table.comment = "Generated validation reports. There might be up to a 1-hour delay before the files will be available for download (only for the first time)."
+    table.comment = "Generated validation reports."
     table.display.update(
         {'comment_display' : {'*': {'table_comment_display': 'inline'}}, }
     )
