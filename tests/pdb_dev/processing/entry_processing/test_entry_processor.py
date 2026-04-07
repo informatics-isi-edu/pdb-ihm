@@ -11,6 +11,10 @@ entry_processor = None
 entry_row = None
 entry_related_file_row = None
 
+test_processor = None
+test_entry_row = None
+
+
 HERE = os.path.abspath(os.path.dirname(__file__))
 TOPDIR = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))
 
@@ -34,32 +38,44 @@ class TestProcessor(unittest.TestCase):
     entry_ciff_filepath = os.getenv("CIF_FILE", "pdb_test_entry.cif")
     entry_rid = os.getenv("RID", "4-K8M2")    # 9A9V (500K)
     #entry_rid = os.getenv("RID", "4-ETK0")    # 9A8W (1MB)
+    verbose = bool(os.getenv("VERBOSE", False))    
     entry_row = None
-    verbose = bool(os.getenv("VERBOSE", False))
-
+    test_rid = os.getenv("RID", "4-X83E")
+    test_entry_row = None
+    
     def setUp(self):
         """
         This method is called before each test function (methods starting with 'test_') 
         is run.
         """
-        global entry_processor, entry_row
+        global entry_processor, entry_row, test_processor, test_entry_row
         
         if not entry_processor:
             args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=self.entry_rid, verbose=self.verbose, notify=False)
             config = load(self.config_file, args)
             # setup a test entry if not exist            
             entry_processor = EntryProcessor(**config)
-            print("---------- initialize EntryProcessor ----------")
-            print("args: %s" % (args))
+            print("---------- initialize EntryProcessor in TestProcessor ----------")
+            print("** args: %s" % (args))
             print("**__file__: %s, HERE: %s, TOPDIR: %s" % (__file__, HERE, TOPDIR))
 
+        
+        if not test_processor:
+            args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=self.test_rid, verbose=self.verbose, notify=False)
+            config = load(self.config_file, args)
+            test_processor = EntryProcessor(**config)
+            print("** test processor args: %s" % (args))
+            
         if not entry_row:
-            entry_row = get_ermrest_query(entry_processor.catalog, "PDB", "entry", constraints=f'RID={self.entry_rid}')[0]
+            entry_row = entry_processor.processing_row
+        if not test_entry_row:
+            test_entry_row = test_processor.processing_row
             
         self.processor = entry_processor
         self.catalog = self.processor.catalog
         self.model = self.catalog.getCatalogModel()
         self.entry_row = entry_row
+        self.test_entry_row = test_entry_row
         
         
         # You can also set up other resources here
@@ -305,7 +321,7 @@ class TestEntryProcessor(TestProcessor):
         return tname2rows
 
 
-    def process_mmCIF_tester(self, test_rid='4-X834'):
+    def process_mmCIF_tester(self, test_rid='4-X83E'):
         """Test to ensure all related entries are generated properly
         """
         test_entry = get_ermrest_query(self.catalog, "PDB", "entry", constraints=f"RID={test_rid}")[0]                
@@ -354,17 +370,139 @@ class TestEntryProcessor(TestProcessor):
                 for cname in base_row.keys():
                     self.assertAlmostEqual(base_row[cname], test_row[cname])
 
+    def test_getAccessionCode(self):
+        """test getAccessionCode
+        get_accession_code doesn't update the entry table. It only allocate an accession_code for the entry in the Accession_Code table.
 
-    def test_process_mmCIF(self):
-        """Test to ensure all related entries are generated properly
+        For predictability, we will unassigned an existing accession_code if it is already assigned
         """
-        print("- test_process_mmCIF")
-        self.process_mmCIF_tester("4-X83E")
+        global test_processor
+        
+        # remove accession code before testing
+        test_rid=test_processor.rid
+        test_entry = test_processor.processing_row
+        
+        print("test entry: %s" % (json.dumps(test_entry, indent=4)))
+            
+        rows = get_ermrest_query(self.catalog, "PDB", "Accession_Code", constraints=f"Entry={test_rid}")
+        if len(rows) == 1:
+            accession_code_row = rows[0]
+            payload = [{"RID": accession_code_row["RID"], "Entry": None}]
+            updated = update_table_rows(test_processor.catalog, "PDB", "Accession_Code", payload=payload, column_names=["Entry"])
+            print("updated Accession_Code: %s" % (json.dumps(updated, indent=4)))
+        
+        # now test
+        row = get_ermrest_query(self.catalog, "PDB", "Accession_Code", constraints="Entry::null::", sort=["Accession_Serial"], limit=1)[0]
+        next_accession_code = row["Accession_Code"]
+        
+        test_entry = get_ermrest_query(self.catalog, "PDB", "entry", constraints=f"RID={test_rid}")[0]
+        accession_code = test_processor.getAccessionCode(test_rid)
+        print("-- Assign a new accession code: %s v.s. next_accession_code: %s" % (accession_code, next_accession_code))                    
+        self.assertAlmostEqual(accession_code, next_accession_code)
+
+        test_entry = get_ermrest_query(self.catalog, "PDB", "entry", constraints=f"RID={test_rid}")[0]        
+        accession_code = test_processor.getAccessionCode(test_rid)
+        print("-- Same accession code: %s v.s. original: %s" % (accession_code, test_entry["Accession_Code"]))
+        self.assertAlmostEqual(accession_code, next_accession_code)
+
+        accession_code_row = get_ermrest_query(self.catalog, "PDB", "Accession_Code", constraints=f"Accession_Code={next_accession_code}")[0]            
+        self.assertAlmostEqual(accession_code_row["Entry"], test_rid)
         
 
     def test_set_accession_code(self):
+        """test get_accession_code
+
+        For predictability, we will unassigned an existing accession_code in the test_entry and unassigned the accession_code associated with
+        the entry in the Accession_Code table to set up the test.
         """
-        """
+        global test_processor
+        
+        # remove accession code before testing
+        test_rid=test_processor.rid
+        test_entry = test_processor.processing_row
+        
+        if test_entry["Accession_Code"]:
+            accession_code = test_entry["Accession_Code"]            
+            print("-- Accession_code has already been assigned (%s). Will delete" % (accession_code))
+            payload = [{"RID": test_rid, "Accession_Code": None}]
+            updated = update_table_rows(test_processor.catalog, "PDB", "entry", payload=payload, column_names=["Accession_Code"])
+            print("updated entry: %s" % (json.dumps(updated, indent=4)))
+        else:
+            print("unexpected entry (no accession_code): %s" % (json.dumps(test_entry, indent=4)))
+            
+        rows = get_ermrest_query(self.catalog, "PDB", "Accession_Code", constraints=f"Entry={test_rid}")
+        if len(rows) == 1:
+            accession_code_row = rows[0]
+            payload = [{"RID": accession_code_row["RID"], "Entry": None}]
+            updated = update_table_rows(test_processor.catalog, "PDB", "Accession_Code", payload=payload, column_names=["Entry"])
+            print("updated Accession_Code: %s" % (json.dumps(updated, indent=4)))
+        else:
+            print("There is no row in Accession_Code with Entry: %s" % (test_rid))
+        
+        # now test
+        row = get_ermrest_query(self.catalog, "PDB", "Accession_Code", constraints="Entry::null::", sort=["Accession_Serial"], limit=1)[0]
+        next_accession_code = row["Accession_Code"]
+
+        # update test_processor.processing_row since it has been changed due to test process
+        test_processor.processing_row = get_ermrest_query(self.catalog, "PDB", "entry", constraints=f"RID={test_rid}")[0]
+        test_processor.set_accession_code(test_rid)        
+        test_entry = get_ermrest_query(self.catalog, "PDB", "entry", constraints=f"RID={test_rid}")[0]
+        accession_code = test_entry["Accession_Code"]
+        print("-- Assign a new accession code: %s v.s. next_accession_code: %s" % (accession_code, next_accession_code))                    
+        self.assertAlmostEqual(accession_code, next_accession_code)
+
+        # update test_processor.processing_row since it has been changed due to test process        
+        test_processor.processing_row = get_ermrest_query(self.catalog, "PDB", "entry", constraints=f"RID={test_rid}")[0]        
+        test_processor.set_accession_code(test_rid)
+        test_entry = get_ermrest_query(self.catalog, "PDB", "entry", constraints=f"RID={test_rid}")[0]
+        accession_code = test_entry["Accession_Code"]
+        print("-- Same accession code: %s v.s. original: %s" % (accession_code, test_entry["Accession_Code"]))
+        self.assertAlmostEqual(accession_code, next_accession_code)
+
+
+        def check_file_for_regex_set(filepath, regex_patterns):
+            # Pre-compile patterns for speed
+            compiled_patterns = {p: re.compile(p) for p in regex_patterns}
+            required_found = set()
+    
+            with open(filepath, 'r') as f:
+                for line in f:
+                    # Check only the patterns we haven't found yet
+                    remaining = set(compiled_patterns.keys()) - required_found
+                    for p_str in remaining:
+                        if compiled_patterns[p_str].search(line):
+                            required_found.add(p_str)
+                            
+                    # Early exit: stop reading if all are found
+                    if len(required_found) == len(regex_patterns):
+                        return True
+                
+            return False
+
+        def test_addReleaseRecord(self):
+            """
+            """
+            global test_processor
+
+            # download file
+
+            # use it for checking
+            release_status = 'HOLD'
+            accession_code = '9A9V'
+            # Example usage
+            requirements = [
+                f"_pdbx_database_status.status_code\s+{release_status}",
+                f"_pdbx_database_status.entry_id\s+{accession_code}",
+                f"1 'Structure model' 1 0 {release_date}",
+                f"PDB {accession_code} .*",
+            ]
+            
+            is_valid = check_file_for_regex_set("server.log", requirements)
+            print(f"All patterns present: {is_valid}")
+
+        def test_generate_JSON_mmCIF_content(self):
+            pass
+
 """
 python -m unittest test_entry_processor.py
 python -m unittest test_entry_processor.TestEntryProcessor
