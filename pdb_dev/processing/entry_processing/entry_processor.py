@@ -49,7 +49,9 @@ from deriva.core.datapath import DataPathException
 
 from deriva.utils.extras.data import insert_if_not_exist, update_table_rows, delete_table_rows, get_ermrest_query
 from deriva.utils.extras.hatrac import HatracFile
-from .mmcif_utils import get_mmcif_rid_optional_fkeys, print_table_fkeys, get_mmcif_rid_mandatory_fkeys, get_legacy_combo1_columns, get_legacy_optional_fks, PkTables
+from deriva.utils.extras.pdb_ma.mmcif_model import mmCIFErmrestModel
+
+from .mmcif_utils import get_mmcif_rid_optional_fkeys, print_table_fkeys, get_mmcif_rid_mandatory_fkeys, get_legacy_combo1_columns, get_legacy_optional_fks, PkTables, get_shortest_key
 #from ...utils.shared import PDBDEV_CLI, DCCTX
 from pdb_dev.utils.shared import PDBDEV_CLI, DCCTX
 from pdb_dev.processing.processor import PipelineProcessor, ProcessingError, ErmrestError, ErmrestUpdateError, FileError, SubProcessError
@@ -145,21 +147,25 @@ class EntryProcessor(PipelineProcessor):
     def __init__(self, **kwargs):
         self.action = kwargs.get("action")
         self.rid = kwargs.get("rid")
+        
         self.mmCIF_defaults = kwargs.get("mmCIF_defaults")     # TODO: generate directly
         self.vocab_ucode = kwargs.get("vocab_ucode")
-        self.make_mmCIF = kwargs.get("make_mmCIF")
-        #self.mmCIF_Schema_Version = kwargs.get("mmCIF_Schema_Version")  # deprecated -- replace by Supported_Dictionary
-        #self.tables_groups = kwargs.get("tables_groups")       # deprecated
-        self.export_tables = kwargs.get("export_tables")        # tables from ermrest to be exported
         self.cif_tables = kwargs.get("cif_tables")              # tables from submited files to be exported
         self.export_order_by = kwargs.get("export_order_by")
+        self.ihm_json_schema_doc = kwargs.get("ihm_json_schema_doc") # NEW - Replacing export_tables
+        
+        #self.mmCIF_Schema_Version = kwargs.get("mmCIF_Schema_Version")  # deprecated -- replace by Supported_Dictionary        
         #self.combo1_columns = kwargs.get("combo1_columns")     # deprecated
         #self.optional_fk_file = kwargs.get("optional_fk_file") # deprecated
-        self.dictSdb = kwargs.get("dictSdb")
+        #self.export_tables = kwargs.get("export_tables")        # tables from ermrest to be exported
         #self.entry = kwargs.get("entry")                        # deprecated
-        self.hatrac_namespace = kwargs.get("hatrac_namespace")
-        self.validation_dir = kwargs.get("validation_dir")
+        #self.tables_groups = kwargs.get("tables_groups")       # deprecated
         
+        self.hatrac_namespace = kwargs.get("hatrac_namespace")
+        
+        self.dictSdb = kwargs.get("dictSdb")
+        self.make_mmCIF = kwargs.get("make_mmCIF")
+        self.validation_dir = kwargs.get("validation_dir")
         if kwargs.get("python_bin", None): self.python_bin = kwargs.get("python_bin")
         if kwargs.get("py_rcsb_db", None): self.py_rcsb_db = kwargs.get("py_rcsb_db")
         if kwargs.get("CifCheck", None): self.CifCheck = kwargs.get("CifCheck")
@@ -454,14 +460,11 @@ class EntryProcessor(PipelineProcessor):
         }
 
         # == variables for sub functions
-        pb = self.catalog.getPathBuilder()
-        schema = pb.PDB
         deriva_tables = ['entry']
         mmCIF_tables = []
         mmCIF_ignored = []
         self.export_error_message = None
         mmCIF_export = self.cif_tables
-        pks_map = self.export_order_by
         matrix_tables = ['ihm_2dem_class_average_fitting', 'ihm_geometric_object_transformation']
         collections_tables = ['ihm_entry_collection', 'ihm_entry_collection_mapping']
 
@@ -497,105 +500,122 @@ class EntryProcessor(PipelineProcessor):
             else:
                 return False
         
-        def exportData(rid, user):
+        def exportErmrestData():
             """ Export data from ermrest database
+            Accessing entry_id and deriva_tables from parent function
             
             self.export_tables contains a list of tables to be exported from ermrest
             TODO: replace self.export_tables
+
             """
-            try:
-                tables = self.export_tables
-                for table_name, table_body in tables.items():
-                    pk = table_body['pkey_columns']
-                    try:
-                        pk.remove('structure_id')
-                    except:
-                        pass
+            # == parameters for exporting ermrest data
+            export_column_orders = self.export_order_by   # per-table column order (only with keys > 2 cnames)
+            export_custom_tnames = ['entry', 'database_2', 'ihm_entry_collection', 'ihm_entry_collection_mapping', 'pdbx_audit_revision_details',
+                                    'pdbx_audit_revision_history', 'pdbx_database_status']
+            export_ignore_tnames = ["chem_comp_atom"]  # tnames to be ignored in ermrest data export
+            exclude_tnames = export_custom_tnames + export_ignore_tnames
+
+            # == ermrest model
+            ermrest_model = self.catalog.getCatalogModel()
+            pdb_schema = ermrest_model.schemas["PDB"]
+            pb = self.catalog.getPathBuilder()
+            pb_schema = pb.PDB
+            
+            # == read model from json schema and get list of tables, columns, and types
+            # Note: cname is removed if it is not in ermrest or if it is structure_id
+            
+            mmcif = mmCIFErmrestModel
+            cif_model = mmcif.load_mmcif(self.ihm_json_schema_doc)
+            cif_tdefs = mmcif.get_tdefs(cif_model)
+            tname2ctypes = {}
+            for tname, tdef in cif_tdefs.items():
+                if tname not in pdb_schema.tables.keys(): continue  
+                cdefs = mmcif.get_cdefs(tdef)
+                table = pdb_schema.tables[tname]
+                ctypes = {}
+                for cname, cdef in cdefs.items():
+                    if cname not in table.columns.elements: continue
+                    if cname == 'structure_id': continue                    
+                    col = mmcif.get_ermrest_column_def(cif_model, tname, tdef, cname)
+                    ctypes[cname] = col["type"]["typename"]
+                tname2ctypes[tname] = ctypes
+            
+            # == go over each table and export ermrest content
+            # Note: datapath is used to retrieve data
+            for tname, ctype in tname2ctypes.items():
+                if tname in exclude_tnames: continue
+                if tname not in pb_schema.tables.keys(): continue  # not in model
+                pb_table = pb_schema.tables[tname]
+                path = pb_table.path
+                self.logger.debug('Exporting table: {}'.format(tname))
+
+                # -- get key columns
+                key = get_shortest_key(ermrest_model.schemas["PDB"].tables[tname]) # instead of = table_body['pkey_columns']                
+                pk = [ c.name for c in key.columns ]
+                if 'structure_id' in pk: pk.remove('structure_id')
                     
-                    """
-                    if len(pk) == 0:
-                        self.logger.debug('No PK Table {}, PK: {}'.format(table_name,pk))
-                    elif len(pk) == 2:
-                        self.logger.debug('2 PK Table {}, PK: {}'.format(table_name,pk))
-                    elif len(pk) == 3:
-                        self.logger.debug('3 PK Table {}, PK: {}'.format(table_name,pk))
-                    elif len(pk) != 1:
-                        self.logger.debug('More than 3 PK Table {}, PK: {}'.format(table_name,pk))
-                    """
-                            
-                    if table_name in ['entry', 'chem_comp_atom', 'database_2', 'ihm_entry_collection', 'ihm_entry_collection_mapping', 'pdbx_audit_revision_details',
-                                      'pdbx_audit_revision_history', 'pdbx_database_status']:
-                        continue
-                    table = schema.tables[table_name]
-                    self.logger.debug('Exporting table: {}'.format(table_name))
-                    path = table.path
-                    if table_name in ['struct', 'pdbx_entry_details']:
-                        entry_id_column = table.column_definitions['entry_id']
-                        path.filter(entry_id_column == entry_id)
-                    else:
-                        structure_id = table.column_definitions['structure_id']
-                        path.filter(structure_id == entry_id)
-                    #self.logger.debug('Query Export Data URL: {}'.format(path.uri))
-                    if table_name != 'audit_conform':
-                        results = path.entities()
-                        if len(pk) == 1:
-                            #self.logger.debug('Sorting results based on: {}'.format(table.column_definitions[pk[0]]))
-                            results.sort(table.column_definitions[pk[0]])
-                        else:
-                            pk = pks_map[table_name]
-                            #self.logger.debug('Sorting results based on: ({}, {})'.format(table.column_definitions[pk[0]], table.column_definitions[pk[1]]))
-                            results.sort(table.column_definitions[pk[0]], table.column_definitions[pk[1]])
-                        results.fetch()
-                        if len(results) == 0:
-                            continue
-                    else:
-                        url = '/attribute/PDB:Supported_Dictionary/A:=PDB:Data_Dictionary/B:=Vocab:Data_Dictionary_Name/dict_location:=B:Location,dict_name:=B:Name,dict_version:=A:Version@sort(dict_name,dict_version)'
-                        self.logger.debug('Query URL: "%s"' % url) 
-                        resp = self.catalog.get(url)
-                        resp.raise_for_status()
-                        results = resp.json()
-                        if len(results) == 0:
-                            continue
-                    deriva_tables.append(table_name)
-                    if len(results) > 1:
-                        fw.write('loop_\n')
-                        for column in table_body['columns']:
-                            if column['name'] == 'structure_id':
-                                continue
-                            if column['name'] not in table.column_definitions.keys():
-                                continue
-                            fw.write('_{}.{}\n'.format(table_name,column['name']))
-                        for row in results:
-                            line = []
-                            for column in table_body['columns']:
-                                column_name = column['name']
-                                column_type = column['type']
-                                if column_name == 'structure_id':
-                                    continue
-                                if column_name not in table.column_definitions.keys():
-                                    continue
-                                column_value = row[column_name]
-                                value = self.getColumnValue(table_name, column_name, column_type, column_value)
-                                line.append(value)
-                            fw.write('{}\n'.format('\t'.join(line)))
-                    elif len(results) == 1:
-                        row = results[0]
-                        for column in table_body['columns']:
-                            column_name = column['name']
-                            column_type = column['type']
-                            if column_name == 'structure_id':
-                                continue
-                            if column_name not in table.column_definitions.keys():
-                                continue
-                            column_value = row[column_name]
-                            value = self.getColumnValue(table_name, column_name, column_type, column_value)
-                            fw.write('_{}.{}\t{}\n'.format(table_name, column['name'], value))
-                        
-                    fw.write('#\n')    
+                # == set up filter in the path
+                if tname in ['struct', 'pdbx_entry_details']:
+                    entry_id_column = pb_table.column_definitions['entry_id']
+                    path.filter(entry_id_column == entry_id)
+                else:
+                    structure_id = pb_table.column_definitions['structure_id']
+                    path.filter(structure_id == entry_id)
+                #self.logger.debug('Query Export Data URL: {}'.format(path.uri))
                 
+                # == get sort columns to sort the ermrest rows
+                if tname == 'audit_conform':
+                    # url = '/attribute/PDB:Supported_Dictionary/A:=PDB:Data_Dictionary/B:=Vocab:Data_Dictionary_Name/dict_location:=B:Location,dict_name:=B:Name,dict_version:=A:Version@sort(dict_name,dict_version)#@sort(dict_name,dict_version)'                    
+                    constraints="A:=PDB:Data_Dictionary/B:=Vocab:Data_Dictionary_Name" 
+                    results = get_ermrest_query(
+                        self.catalog, "PDB", "Supported_Dictionary", constraints=constraints,
+                        attributes=["dict_name:=B:Name","dict_location:=B:Location","dict_version:=A:Version"],
+                        sort=["dict_name","dict_version"]
+                    )
+                    if len(results) == 0: continue
+                else:
+                    results = path.entities()
+                    if len(pk) == 1:
+                        #self.logger.debug('Sorting results based on: %s' % (pk))                            
+                        results.sort(pb_table.column_definitions[pk[0]])
+                    elif tname in export_column_orders:
+                        pk = export_column_orders[tname]
+                        #self.logger.debug('Sorting results based on: %s' % (pk))
+                        if len(pk) == 2:
+                            results.sort(pb_table.column_definitions[pk[0]], pb_table.column_definitions[pk[1]])
+                        elif len(pk) == 3:
+                            results.sort(pb_table.column_definitions[pk[0]], pb_table.column_definitions[pk[1]], pb_table.column_definiations[pk[2]])
+                    else: 
+                        pass # no sorting specified
+                    
+                    # == get data
+                    results.fetch() # get data
+                    if len(results) == 0: continue
+                    
+                # == track export table
+                deriva_tables.append(tname)
+                
+                # == write results
+                if len(results) > 1:
+                    fw.write('loop_\n')
+                    for cname, ctype in tname2ctypes[tname].items():
+                        fw.write('_{}.{}\n'.format(tname, cname))
+                    for row in results:
+                        line = []
+                        for cname, ctype in tname2ctypes[tname].items():
+                            cvalue = row[cname]
+                            value = self.getColumnValue(tname, cname, ctype, cvalue)
+                            line.append(value)
+                        fw.write('{}\n'.format('\t'.join(line)))
+                elif len(results) == 1:
+                    row = results[0]
+                    for cname, ctype in tname2ctypes[tname].items():                    
+                        cvalue = row[cname]
+                        value = self.getColumnValue(tname, cname, ctype, cvalue)
+                        fw.write('_{}.{}\t{}\n'.format(tname, cname, value))
+                        
+                fw.write('#\n')    
                 return 0
-            except Exception as e:
-                raise ProcessingError("ERROR export_mmCIF.export_data: fail to export data")            
 
         def exportCIF(rid, user):
             """ Export data using user upload mmcif file
@@ -663,14 +683,14 @@ class EntryProcessor(PipelineProcessor):
             fw.write('data_{}\n\n'.format(entry_id))
             value = self.getColumnValue('entry', 'id', 'text', str(entry_id))
             fw.write('#\n_entry.id  {}\n#\n'.format(value))
-            exportData(entry_rid, self.user_email)
+            exportErmrestData()
             exportCIF(entry_rid, self.user_email)
             fw.close()
             
             if len(mmCIF_ignored) > 0:
                 self.logger.debug('Tables from the mmCIF file that were not included in the export:')
-                for table_name in sorted(mmCIF_ignored):
-                    self.logger.debug('\t{}'.format(table_name))
+                for tname in sorted(mmCIF_ignored):
+                    self.logger.debug('\t{}'.format(tname))
 
 
             if self.workflow_status in ["SUBMIT"]:
@@ -1137,46 +1157,6 @@ class EntryProcessor(PipelineProcessor):
         
         return sorted_tables
                 
-                
-    """
-    Rollback JSON inserted rows
-    """
-    def x_rollbackInsertedRows(self, records, entry_id, user):
-        records.reverse()
-        for record in records:
-            tname = record['name']
-            rows = record['rows']
-            for row in rows:
-                rid = row['RID']
-                try:
-                    if 'structure_id' in row.keys():
-                        path = '%s:%s/%s=%s' % (urlquote('PDB'), urlquote(tname), urlquote('structure_id'), urlquote(entry_id))
-                    else:
-                        path = '%s:%s/%s=%s' % (urlquote('PDB'), urlquote(tname), urlquote('RID'), urlquote(rid))
-                    url = '/entity/%s' % (path)
-                    resp = self.catalog.delete(
-                        url
-                    )
-                    resp.raise_for_status()
-                    self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
-                    if 'structure_id' in row.keys():
-                        break
-                except HTTPError as e:
-                    if e.response.status_code == HTTPStatus.NOT_FOUND:
-                        self.logger.debug('No rows found to delete from the URL "%s".' % (url))
-                    else:
-                        et, ev, tb = sys.exc_info()
-                        self.logger.error('got exception "%s"' % str(ev))
-                        self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-                        subject = '{} {}: {} ({})'.format(entry_id, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
-                        self.sendMail(subject, 'URL: %s\n%s\n' % (url, ''.join(traceback.format_exception(et, ev, tb))))
-                except:
-                    et, ev, tb = sys.exc_info()
-                    self.logger.error('got exception "%s"' % str(ev))
-                    self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-                    subject = '{} {}: {} ({})'.format(entry_id, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'], user)
-                    self.sendMail(subject, 'URL: %s\n%s\n' % (url, ''.join(traceback.format_exception(et, ev, tb))))
-
     
     def rollbackInsertedRows(self, tname2rows, entry_id):
         """Rollback JSON inserted rows by deleting inserted rows from ERMrest.
@@ -1511,88 +1491,6 @@ class EntryProcessor(PipelineProcessor):
         except Exception as e:
             raise ErmrestUpdateError("Fail to insert CSV file to table %s (%s)" % (tname, e))
         
-             
-    """
-    Get the the entry child table foreign keys and update the entry_id/structure_id column with the entry id.
-    If the FK is missing, add it.
-    """
-    def x_getRecordUpdatedWithFK(self, tname, row, entry_id):
-        with open('{}'.format(self.entry), 'r') as f:
-            pdb = json.load(f)
-        referenced_by = pdb['Catalog {}'.format(self.catalog_id)]['schemas']['PDB']['tables']['entry']['referenced_by']
-        columns = []
-        for k,v in referenced_by.items():
-            if v['table'] == tname:
-                col = v['columns'][1:-1]
-                columns.append(col)
-        for col in columns:
-            if tname == 'struct' and col == 'structure_id':
-                continue
-            row[col] = entry_id
-                
-        return row
-
-    """
-    Get the record with the foreign key updated to the entry id.
-    TODO: This approach is fragile and make assumption about the size of fkey columns
-    """
-    def x_getUpdatedRecord(self, tname, row, entry_id, table, inserted_records, fk_tables):
-        with open('{}'.format(self.entry), 'r') as f:
-            pdb = json.load(f)
-        referenced_by = pdb['Catalog {}'.format(self.catalog_id)]['schemas']['PDB']['tables']['entry']['referenced_by']
-        columns = []
-        for k,v in referenced_by.items():
-            if v['table'] == tname:
-                col = v['columns'][1:-1]
-                columns.append(col)
-        for col in columns:
-            if tname == 'struct' and col == 'structure_id':
-                continue
-            if col in row.keys():
-                row[col] = entry_id
-        
-        """
-        Set the missing defaults
-        """
-        if tname in self.mmCIF_defaults.keys():
-            for col in self.mmCIF_defaults[tname]:
-                if col not in row.keys():
-                    row[col] = '.'
-        """
-        Set the ucode values
-        """
-        if tname in self.vocab_ucode.keys():
-            for col in self.vocab_ucode[tname]:
-                if col in row.keys():
-                    row[col] = row[col].upper()
-        
-        """
-        Set the values for the *_RID columns
-        """
-        if tname in fk_tables:
-            entry = self.combo1_columns[tname]
-            for col,value in entry.items():
-                for pk_table,mappings in value.items():
-                    rid_found = False
-                    for inserted_record in inserted_records:
-                        if inserted_record['name'] == pk_table:
-                            for pk_row in inserted_record['rows']:
-                                found = True
-                                for fk_col, pk_col in mappings.items():
-                                    if row[fk_col] != pk_row[pk_col]:
-                                        found = False
-                                        break
-                                if found == True:
-                                    row[col] = pk_row['RID']
-                                    rid_found = True
-                                    break
-                            if rid_found == False:
-                                self.logger.debug('Could not find a RID value for {} column in the {} table'.format(col, tname))
-                                break
-                    if rid_found == False:
-                        break
-        return row
-
     
     def updateRecordsBasic(self, table, rows, entry_id):
         """ To replace getUpdatedRecord
@@ -1632,69 +1530,6 @@ class EntryProcessor(PipelineProcessor):
         
         return rows
     
-    """
-    Get the record for the ihm_entity_poly_segment table updated with values for the Entity_Poly_Seq_RID_Begin and Entity_Poly_Seq_RID_End columns.
-    Deprecated!
-    """
-    def x_getUpdatedEntityPolySegment(self, row):
-        structure_id = row['structure_id']
-        entity_id = row['entity_id']
-        comp_id_begin = row ['comp_id_begin']
-        comp_id_end = row ['comp_id_end']
-        seq_id_begin = row['seq_id_begin']
-        seq_id_end = row['seq_id_end']
-        
-        url = '/attribute/PDB:entity_poly_seq/structure_id={}&entity_id={}&mon_id={}&num={}/RID'.format(urlquote(structure_id), urlquote(entity_id), urlquote(comp_id_begin), seq_id_begin)
-        self.logger.debug('Query URL: "%s"' % url) 
-        resp = self.catalog.get(url)
-        resp.raise_for_status()
-        row['Entity_Poly_Seq_RID_Begin'] = resp.json()[0]['RID']
-
-        url = '/attribute/PDB:entity_poly_seq/structure_id={}&entity_id={}&mon_id={}&num={}/RID'.format(urlquote(structure_id), urlquote(entity_id), urlquote(comp_id_end), seq_id_end)
-        self.logger.debug('Query URL: "%s"' % url) 
-        resp = self.catalog.get(url)
-        resp.raise_for_status()
-        row['Entity_Poly_Seq_RID_End'] = resp.json()[0]['RID']
-
-        return row
-
-    """
-    Update the record for the optional composite FK
-    Deprecated!
-    """
-    def x_getUpdatedOptional(self, optional_fks, tname, row, entry_id):
-        if tname in optional_fks:
-            for fk in optional_fks[tname]:
-                url_structure_pattern = fk['url_structure_pattern']
-                url_pattern = fk['url_pattern']
-                fk_RID_column_name = fk['fk_RID_column_name']
-                fk_other_column_name = fk['fk_other_column_name']
-                ref_table = fk['ref_table']
-                ref_other_column_name = fk['ref_other_column_name']
-                """
-                if fk_RID_column_name not in row.keys():
-                    continue
-                """
-                if fk_other_column_name not in row.keys():
-                    continue
-                fk_other_value = row[fk_other_column_name]
-                if type(fk_other_value).__name__ == 'str':
-                    fk_other_value = urlquote(fk_other_value)
-                url = url_structure_pattern.format(urlquote(ref_table), urlquote(ref_other_column_name), fk_other_value, entry_id)
-                self.logger.debug('Query URL with structure_id for OPTIONAL FK: "%s"' % url) 
-                resp = self.catalog.get(url)
-                resp.raise_for_status()
-                if len(resp.json()) > 0:
-                    row[fk_RID_column_name] = resp.json()[0]['RID']
-                    continue
-                url = url_pattern.format(urlquote(ref_table), urlquote(ref_other_column_name), fk_other_value)
-                self.logger.debug('Query URL for OPTIONAL FK: "%s"' % url) 
-                resp = self.catalog.get(url)
-                resp.raise_for_status()
-                if len(resp.json()) > 0:
-                    row[fk_RID_column_name] = resp.json()[0]['RID']
-
-        return row
 
     def getOutputCIF(self, rid, file_url, dest_fpath, user):
         """Get the output.cif file from make_mmcif and put it in self.scratch directory
@@ -1859,16 +1694,6 @@ class EntryProcessor(PipelineProcessor):
             return (None, None, None, None)
 
         
-    def cleanupEntryFileTables(self, entry_id, entry_rid):
-        """Cleanup Ermrest the entry file tables
-        
-        """
-        constraints=f"Structure_Id={entry_id}"
-        #delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=constraints)
-        constraints=f"Entry_RID={entry_rid}"        
-        delete_table_rows(self.catalog, "PDB", "Entry_Error_File", constraints=constraints)            
-
-        
     def validateExportmmCIF(self, input_dir, filename, entry_id, entry_rid, user_id, update_cif=True):
         """Validate and update the exported mmCIF file.
         If the validation fails, the corresponding error files are uploaded to hatrac and Entry_Error_Files are updated.
@@ -1956,11 +1781,12 @@ class EntryProcessor(PipelineProcessor):
                 print("- updated  Entry_Generated_File with %s" % (json.dumps(file_row, indent=4)))
             else:
                 print("-- validateExportmmCIF: cif file is unchanged: %s " % (file_row))
-        
-    """
-    Cleanup the singularity directory.
-    """
+
+                
     def cleanupSingularityDir(self, dir_path):
+        """
+        Cleanup the singularity directory.
+        """
         for file_name in os.listdir(dir_path):
             file_path = f'{dir_path}/{file_name}'
             if os.path.isfile(file_path):
@@ -1971,10 +1797,11 @@ class EntryProcessor(PipelineProcessor):
                 shutil.rmtree(file_path)
 
     
-    """
-    Add a table that is not specified in the initial json schema (json-full-db-ihm_dev_full-col-ihm_dev_fulljson file).
-    """
     def addTable(self, rid, results, table_name, columns, fw):
+        """
+        Add a table that is not specified in the initial json schema (json-full-db-ihm_dev_full-col-ihm_dev_fulljson file).
+        """
+        # TODO: DELETE
         def x_getColumnValue(table_name, column_name, column_type, column_value):
             if column_value == None:
                 return '.'
@@ -2003,10 +1830,6 @@ class EntryProcessor(PipelineProcessor):
                 self.export_error_message = 'ERROR getColumnValue: unknown type: {}, table: {}, column: {}'.format(column_type, table_name, column_name)
                 return None
 
-        """
-        Get the RCB user
-        """
-        user = self.getUser('PDB', 'entry', rid)
 
         if len(results) > 1:
             fw.write('loop_\n')
@@ -2019,12 +1842,6 @@ class EntryProcessor(PipelineProcessor):
                     column_type = column['type']
                     column_value = row[column_name]
                     value = self.getColumnValue(table_name, column_name, column_type, column_value)
-                    if value == None:
-                        self.logger.debug('Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
-                        subject = '{} {}: {} ({})'.format(rid, 'SUBMIT', process_status_error, user)
-                        self.sendMail(subject, 'Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
-                        self.export_error_message = 'ERROR exportData: Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value)
-                        return 1
                     line.append(value)
                 fw.write('{}\n'.format('\t'.join(line)))
         elif len(results) == 1:
@@ -2034,12 +1851,6 @@ class EntryProcessor(PipelineProcessor):
                 column_type = column['type']
                 column_value = row[column_name]
                 value = self.getColumnValue(table_name, column_name, column_type, column_value)
-                if value == None:
-                    self.logger.debug('Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
-                    subject = '{} {}: {} ({})'.format(rid, 'SUBMIT', process_status_error, user)
-                    self.sendMail(subject, 'Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value))
-                    self.export_error_message = 'ERROR exportData: Could not find column value for ({}, {}, {}, {})'.format(table_name, column_name, column_type, column_value)
-                    return 1
                 fw.write('_{}.{}\t{}\n'.format(table_name, column['name'], value))
             
         fw.write('#\n')    

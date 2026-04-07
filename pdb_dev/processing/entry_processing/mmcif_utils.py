@@ -3,6 +3,7 @@ import json
 from deriva.core import ErmrestCatalog, HatracStore, AttrDict, get_credential, DEFAULT_CREDENTIAL_FILE, tag, urlquote, DerivaServer, BaseCLI
 from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key, ForeignKey, tag, AttrDict
 from deriva.utils.extras.data import insert_if_not_exist, update_table_rows, delete_table_rows, get_ermrest_query
+from deriva.utils.extras.pdb_ma.mmcif_model import mmCIFErmrestModel
 
 #from pdb_dev.utils.shared import PDBDEV_CLI, DCCTX, cfg
 from ...utils.shared import PDBDEV_CLI, DCCTX, cfg
@@ -473,8 +474,39 @@ class PkTables(object):
             raise ErmrestError("Unable to read data from parent tables of %s (%s)" % (pk_table.name, e))
 
         return ermrest_data
+
     
+def get_shortest_key(table, none_ok=True, exclude_cnames=["RID"]):
+    """Get the table natural key (e.g. a key that doesn't have RID in its column list).
     
+    Strategy: If the key constraint with "primary_key" exist, returns that key, else return the shortest key that do not have RID in it.
+    """
+    candidates = []
+    for key in table.keys:
+        cnames = [c.name for c in key.columns]
+        if set(cnames).intersection(set(exclude_cnames)): continue
+        candidates.append([key] + cnames)
+    if not len(candidates):
+        if none_ok: return None
+        raise Exception("No natural key found")
+    sorted_candidates = sorted(candidates, key=len)
+    #print("*** %s: : %s" % (table.name, [ f"{i[0].constraint_name}[{len(i)-1}] => {i[1:]}" for i in sorted_candidates] ))
+
+    return sorted_candidates[0][0]
+
+def introspect_keys():
+    # check primary keys
+    for tname in model.schemas["PDB"].tables:
+        table = model.schemas["PDB"].tables[tname]
+        key = get_shortest_key(table, none_ok=True)
+        if key == None:
+            print("0 : tname: %s -> no key" % (tname))
+        elif key.constraint_name.endswith("primary_key"):
+            print("p %d tname: %s -> key: %s" % (len(key.columns), tname, (key.constraint_name, [c.name for c in key.columns]) if key else None))
+        else:
+            print("* %d tname: %s -> key: %s" % (len(key.columns), tname, (key.constraint_name, [c.name for c in key.columns]) if key else None))            
+
+
 # -- =================================================================================
 def main(server_name, catalog_id, credentials, args):
     server = DerivaServer('https', server_name, credentials)
@@ -483,7 +515,18 @@ def main(server_name, catalog_id, credentials, args):
     catalog.dcctx['cid'] = 'pipeline/pdb'
     model = catalog.getCatalogModel()
 
-    check_shared_fkey_columns(catalog, sname="MA", skip_rid=False)
+    mmcif = mmCIFErmrestModel
+    model_cif = mmcif.load_mmcif('/home/hongsuda/git/pdb-ihm-ops/scripts/home-config/default-workflow/config/entry_processing/deprecated/json-full-db-ihm_dev_full-col-ihm_dev_full.json')
+    tdefs = mmcif.get_tdefs(model_cif)
+
+    for tname, tdef in tdefs.items():
+        cdefs = mmcif.get_cdefs(tdef)
+        print(" - tname: %s" % (tname))
+        for cname, cdef in cdefs.items():
+            col = mmcif.get_ermrest_column_def(model_cif, tname, tdef, cname)
+            print("  x cname: %s, type: %s " % (cname, col["type"]["typename"]))
+        
+    #check_shared_fkey_columns(catalog, sname="MA", skip_rid=False)
     
     #check_entry_tables_fkeys(catalog, ignore_restraints=True)
 

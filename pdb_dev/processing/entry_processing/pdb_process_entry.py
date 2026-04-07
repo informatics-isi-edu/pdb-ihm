@@ -154,23 +154,29 @@ def load(config_filename, args):
         raise ConfigError('validation_dir directory must be provided and exist.')
     config['validation_dir'] = validation_dir
     
-    python_bin = conf.get('python3', None)
+    python_bin = conf.get('python3', '/usr/bin/python3')
     if not python_bin or not os.path.isfile(python_bin):
         raise ConfigError('python3 executable must be provided and exist.')
     config['python_bin'] = python_bin
-    
+
+    """
+    # -- DEPRECATED. TO BE REMOVED
     tables_groups = conf.get('tables_groups', None)
     if not tables_groups or not os.path.isfile(tables_groups):
         raise ConfigError('tables_groups file must be provided and exist.')
     config['tables_groups'] = tables_groups
+    """
 
+    """
+    # -- DEPRECATED. TO BE REMOVED    
     # Deprecated. Replace by python function that dynimically create this config
     if False:
         optional_fk_file = conf.get('optional_fk_file', None)
         if not optional_fk_file or not os.path.isfile(optional_fk_file):
             raise ConfigError('optional_fk_file file must be provided and exist.')
         config['optional_fk_file'] = optional_fk_file
-
+    """
+    
     CifCheck = conf.get('CifCheck', None)
     if not CifCheck or not os.path.isfile(CifCheck):
         raise ConfigError('CifCheck file must be provided and exist.')
@@ -186,17 +192,28 @@ def load(config_filename, args):
         if not os.path.isfile(singularity_sif):
             raise ConfigError('singularity_sif file must exist.')
     config['singularity_sif'] = singularity_sif
+
+    ihm_json_schema_doc = conf.get('ihm_json_schema_doc', None)
+    if not ihm_json_schema_docs or not os.path.isfile(ihm_json_schema_docs):
+        raise ConfigError('ihm_json_schema_doc file must be provided and exist.')
+    config['ihm_json_schema_docs'] = ihm_json_schema_doc
     
+    """
+    # -- DEPRECATED. TO BE REMOVED    
     entry = conf.get('entry', None)
     if not entry or not os.path.isfile(entry):
         raise ConfigError('entry file must be provided and exist.')
     config['entry'] = entry
+    """
     
+    """
+    # -- DEPRECATED. TO BE REMOVED
     export_tables_file = conf.get('export_tables', None)
     if not export_tables_file or not os.path.isfile(export_tables_file):
         raise ConfigError('export_tables file must be provided and exist.')
     export_tables = json.load(open(export_tables_file))
     config['export_tables'] = export_tables
+    """
     
     cif_tables_file = conf.get('cif_tables', None)
     if not cif_tables_file or not os.path.isfile(cif_tables_file):
@@ -210,13 +227,16 @@ def load(config_filename, args):
     export_order_by = json.load(open(export_order_by_file))
     config['export_order_by'] = export_order_by
 
-    # Deprecated. Replace by python function that dynimically create this config    
+    """
+    # -- DEPRECATED. TO BE REMOVED    
+    # Deprecated. Replace by python function that dynimically create this config
     if False:
         combo1_columns_file = conf.get('combo1_columns', None)
         if not combo1_columns_file or not os.path.isfile(combo1_columns_file):
             raise ConfigError('combo1_columns file must be provided and exist.')
         combo1_columns = json.load(open(combo1_columns_file))
         config['combo1_columns'] = combo1_columns
+    """
     
     mmCIF_defaults = conf.get('mmCIF_defaults', None)
     if not mmCIF_defaults or not os.path.isfile(mmCIF_defaults):
@@ -230,9 +250,10 @@ def load(config_filename, args):
     vocab_ucode = json.load(open(vocab_ucode))
     config['vocab_ucode'] = vocab_ucode
 
-    # Deprecated.
+    # -- DEPRECATED. TO BE REMOVED        
     #config['mmCIF_Schema_Version'] = conf.get('mmCIF_Schema_Version', '1.0')  
-    
+
+
     hatrac_namespace = conf.get('hatrac_namespace', None)
     if hatrac_namespace == None:
         hatrac_namespace = 'hatrac/pdb'
