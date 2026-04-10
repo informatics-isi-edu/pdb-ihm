@@ -61,14 +61,15 @@ def load(config_filename, args):
     
     # Load configuration file, or create configuration based on arguments
     conf = {}
+    processor_id = args.processor_id if hasattr(args, "processor_id") else "p0"
     if os.path.exists(config_filename):
         f = open(config_filename, 'r')
         try:
             conf = json.load(f)
-            loglevel = conf.get('loglevel', None)
+            loglevel = conf.get('loglevel', 'info')
             #logfile = conf.get('log', None)            
             log_dir = conf.get('log_dir', '/home/pdbihm/log/entry_processing')
-            logfile = "%s/process_entry_%s.log" % (log_dir, cfg.catalog_name)
+            logfile = "%s/process_entry_%s_%s.log" % (log_dir, cfg.catalog_name, processor_id)
             if loglevel and os.path.isdir(log_dir):
                 handler=logging.handlers.TimedRotatingFileHandler(logfile,when='D',backupCount=7)
                 logger.addHandler(handler)
@@ -121,6 +122,7 @@ def load(config_filename, args):
     config['credentials'] = credentials
     config['timeout'] = conf.get('timeout', 30)
 
+    # == accession_code related
     primary_accession_code_mode = conf.get('primary_accession_code_mode', 'PDB')    
     if primary_accession_code_mode not in ['PDBDEV', 'PDB']:
         raise ConfigError(f'Invalid value for the primary_accession_code_mode: {config["primary_accession_code_mode"]}.')
@@ -134,16 +136,7 @@ def load(config_filename, args):
     if config['primary_accession_code_mode'] == config['alternative_accession_code_mode']:
         raise ConfigError(f'primary_accession_code_mode {config["primary_accession_code_mode"]} must be different from alternative_accession_code_mode {config["alternative_accession_code_mode"]}.')
 
-    make_mmCIF = conf.get('make_mmCIF', None)
-    if not make_mmCIF or not os.path.isdir(make_mmCIF):
-        raise ConfigError(f'make_mmCIF directory {make_mmCIF} must be provided and exist.')
-    config['make_mmCIF'] = make_mmCIF
-    
-    py_rcsb_db = conf.get('py_rcsb_db', None)
-    if not py_rcsb_db or not os.path.isdir(py_rcsb_db):
-        raise ConfigError('py_rcsb_db directory must be provided and exist.')
-    config['py_rcsb_db'] = py_rcsb_db
-    
+    # == processing dir
     scratch = conf.get('scratch', None)
     if not scratch or not os.path.isdir(scratch):
         raise ConfigError('scratch directory must be provided and exist.')
@@ -153,11 +146,72 @@ def load(config_filename, args):
     if not validation_dir or not os.path.isdir(validation_dir):
         raise ConfigError('validation_dir directory must be provided and exist.')
     config['validation_dir'] = validation_dir
-    
+
+    """
+    make_mmCIF = conf.get('make_mmCIF', None)
+    if not make_mmCIF or not os.path.isdir(make_mmCIF):
+        raise ConfigError(f'make_mmCIF directory {make_mmCIF} must be provided and exist.')
+    config['make_mmCIF'] = make_mmCIF
+    """
+    # == script paths
     python_bin = conf.get('python3', '/usr/bin/python3')
     if not python_bin or not os.path.isfile(python_bin):
         raise ConfigError('python3 executable must be provided and exist.')
     config['python_bin'] = python_bin
+
+    py_rcsb_db = conf.get('py_rcsb_db', None)
+    if not py_rcsb_db or not os.path.isdir(py_rcsb_db):
+        raise ConfigError('py_rcsb_db directory must be provided and exist.')
+    config['py_rcsb_db'] = py_rcsb_db
+    
+    CifCheck = conf.get('CifCheck', None)
+    if not CifCheck or not os.path.isfile(CifCheck):
+        raise ConfigError('CifCheck file must be provided and exist.')
+    config['CifCheck'] = CifCheck
+    
+    dictSdb = conf.get('dictSdb', None)
+    if not dictSdb or not os.path.isfile(dictSdb):
+        raise ConfigError('dictSdb file must be provided and exist.')
+    config['dictSdb'] = dictSdb
+
+    singularity_sif = conf.get('singularity_sif', None)
+    if singularity_sif:
+        if not os.path.isfile(singularity_sif):
+            raise ConfigError('singularity_sif file must exist.')
+    config['singularity_sif'] = singularity_sif
+
+    # == config docs
+    ihm_json_schema_doc = conf.get('ihm_json_schema_doc', None)
+    if not ihm_json_schema_doc or not os.path.isfile(ihm_json_schema_doc):
+        raise ConfigError('ihm_json_schema_doc file must be provided and exist.')
+    config['ihm_json_schema_doc'] = ihm_json_schema_doc
+
+    cif_tables_file = conf.get('cif_tables', None)
+    if not cif_tables_file or not os.path.isfile(cif_tables_file):
+        raise ConfigError('cif_tables file must be provided and exist.')
+    cif_tables = json.load(open(cif_tables_file))
+    config['cif_tables'] = cif_tables
+    
+    export_order_by_file = conf.get('export_order_by', None)
+    if not export_order_by_file or not os.path.isfile(export_order_by_file):
+        raise ConfigError('export_order_by file must be provided and exist.')
+    export_order_by = json.load(open(export_order_by_file))
+    config['export_order_by'] = export_order_by
+
+    mmCIF_defaults = conf.get('mmCIF_defaults', None)
+    if not mmCIF_defaults or not os.path.isfile(mmCIF_defaults):
+        raise ConfigError('mmCIF_defaults file must be provided and exist.')
+    mmCIF_defaults = json.load(open(mmCIF_defaults))
+    config['mmCIF_defaults'] = mmCIF_defaults
+    
+    vocab_ucode = conf.get('vocab_ucode', None)
+    if not vocab_ucode or not os.path.isfile(vocab_ucode):
+        raise ConfigError('vocab_ucode file must be provided and exist.')
+    vocab_ucode = json.load(open(vocab_ucode))
+    config['vocab_ucode'] = vocab_ucode
+
+    # Ermrest tname list to be ignored during export
+    config['export_ermrest_ignore_tnames'] = conf.get('export_ermrest_ignore_tnames', None)
 
     """
     # -- DEPRECATED. TO BE REMOVED
@@ -177,27 +231,6 @@ def load(config_filename, args):
         config['optional_fk_file'] = optional_fk_file
     """
     
-    CifCheck = conf.get('CifCheck', None)
-    if not CifCheck or not os.path.isfile(CifCheck):
-        raise ConfigError('CifCheck file must be provided and exist.')
-    config['CifCheck'] = CifCheck
-    
-    dictSdb = conf.get('dictSdb', None)
-    if not dictSdb or not os.path.isfile(dictSdb):
-        raise ConfigError('dictSdb file must be provided and exist.')
-    config['dictSdb'] = dictSdb
-
-    singularity_sif = conf.get('singularity_sif', None)
-    if singularity_sif:
-        if not os.path.isfile(singularity_sif):
-            raise ConfigError('singularity_sif file must exist.')
-    config['singularity_sif'] = singularity_sif
-
-    ihm_json_schema_doc = conf.get('ihm_json_schema_doc', None)
-    if not ihm_json_schema_docs or not os.path.isfile(ihm_json_schema_docs):
-        raise ConfigError('ihm_json_schema_doc file must be provided and exist.')
-    config['ihm_json_schema_docs'] = ihm_json_schema_doc
-    
     """
     # -- DEPRECATED. TO BE REMOVED    
     entry = conf.get('entry', None)
@@ -214,18 +247,6 @@ def load(config_filename, args):
     export_tables = json.load(open(export_tables_file))
     config['export_tables'] = export_tables
     """
-    
-    cif_tables_file = conf.get('cif_tables', None)
-    if not cif_tables_file or not os.path.isfile(cif_tables_file):
-        raise ConfigError('cif_tables file must be provided and exist.')
-    cif_tables = json.load(open(cif_tables_file))
-    config['cif_tables'] = cif_tables
-    
-    export_order_by_file = conf.get('export_order_by', None)
-    if not export_order_by_file or not os.path.isfile(export_order_by_file):
-        raise ConfigError('export_order_by file must be provided and exist.')
-    export_order_by = json.load(open(export_order_by_file))
-    config['export_order_by'] = export_order_by
 
     """
     # -- DEPRECATED. TO BE REMOVED    
@@ -238,29 +259,20 @@ def load(config_filename, args):
         config['combo1_columns'] = combo1_columns
     """
     
-    mmCIF_defaults = conf.get('mmCIF_defaults', None)
-    if not mmCIF_defaults or not os.path.isfile(mmCIF_defaults):
-        raise ConfigError('mmCIF_defaults file must be provided and exist.')
-    mmCIF_defaults = json.load(open(mmCIF_defaults))
-    config['mmCIF_defaults'] = mmCIF_defaults
-    
-    vocab_ucode = conf.get('vocab_ucode', None)
-    if not vocab_ucode or not os.path.isfile(vocab_ucode):
-        raise ConfigError('vocab_ucode file must be provided and exist.')
-    vocab_ucode = json.load(open(vocab_ucode))
-    config['vocab_ucode'] = vocab_ucode
-
     # -- DEPRECATED. TO BE REMOVED        
     #config['mmCIF_Schema_Version'] = conf.get('mmCIF_Schema_Version', '1.0')  
 
-
+    # == other configs
+    config['hatrac_namespace'] = f"{cfg.hatrac_root}/pdb" 
+    """# DEPRECATED. TO BE REMOVED
     hatrac_namespace = conf.get('hatrac_namespace', None)
     if hatrac_namespace == None:
         hatrac_namespace = 'hatrac/pdb'
     else:
         hatrac_namespace = 'hatrac/{}/pdb'.format(hatrac_namespace)
     config['hatrac_namespace'] = hatrac_namespace
-
+    """
+    
     email_file = conf.get('mail', None)
     if not email_file or not os.path.isfile(email_file):
         raise ConfigError('email file must be provided and exist.')
@@ -268,7 +280,6 @@ def load(config_filename, args):
     with open(email_file, 'r') as f:
         email = json.load(f)
     config['email'] = email
-
 
     # print config object
     '''
@@ -311,6 +322,8 @@ def main():
         cli.parser.add_argument('--action', metavar='<action>',  action='store', type=str,
                                 help='Workflow actions (entry, export, accession_code, release_mmCIF, Entry_Related_File). Default is from ACTION env variable',
                                 default=os.getenv("ACTION", None), required=False)
+        cli.parser.add_argument('--processor-id', metavar='<processor_id>', action='store', type=str, help='assigned processor_id',
+                                default=os.getenv("PROCESSOR_ID", "p0"), required=False)
         cli.parser.add_argument('--verbose', action='store_true', help='Whether to print status to stdout', default=False, required=False)
         cli.parser.add_argument('--notify', action='store_true', help='Whether to send notification', default=False, required=False)        
         #cli.parser.add_argument('--rollback', action='store_true', help='Rollback ermrest update', default=False, required=False)
@@ -325,12 +338,9 @@ def main():
         print ('The client will be started')
         entry_processor.start()
         return 0
-    except ConfigError as e:
-        sys.stderr.write(str(e))
-        logger.error(str(e))
-        return 1
-    except:
+    except Exception as e:
         et, ev, tb = sys.exc_info()
+        logger.error('pdb_process_entry: got exception "%s"' % str(ev))        
         sys.stderr.write('pdb_process_entry: got exception "%s"' % str(ev))
         sys.stderr.write('pdb_process_entry: %s' % ''.join(traceback.format_exception(et, ev, tb)))
         sys.stderr.write('\nusage: URL=https://foo.org/ermrest/catalog/N pdb_process_workflow --config config-file\n\n')
