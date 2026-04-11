@@ -111,6 +111,7 @@ def load(config_filename, args):
     
     config['verbose'] = args.verbose
     config['notify'] = args.notify
+    config['preserve'] = args.preserve
     #config['rollback'] = args.rollback
     #config['dry_run'] = args.dry_run    
     
@@ -325,7 +326,8 @@ def main():
         cli.parser.add_argument('--processor-id', metavar='<processor_id>', action='store', type=str, help='assigned processor_id',
                                 default=os.getenv("PROCESSOR_ID", "p0"), required=False)
         cli.parser.add_argument('--verbose', action='store_true', help='Whether to print status to stdout', default=False, required=False)
-        cli.parser.add_argument('--notify', action='store_true', help='Whether to send notification', default=False, required=False)        
+        cli.parser.add_argument('--notify', action='store_true', help='Whether to send notification', default=False, required=False)
+        cli.parser.add_argument('--preserve', action='store_true', help='Whether to preserve files generated during processing', default=False, required=False)
         #cli.parser.add_argument('--rollback', action='store_true', help='Rollback ermrest update', default=False, required=False)
         
         args = cli.parse_cli()

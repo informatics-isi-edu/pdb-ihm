@@ -142,7 +142,6 @@ class EntryProcessor(PipelineProcessor):
     scratch = "/mnt/vdb1/entry_processing/scratch"
     log_dir = "/home/pdbihm/log/entry_processing"
     ihm_path = str(Path(ihm.__file__).parent)
-    cleanup = False
     
     def __init__(self, **kwargs):
         self.action = kwargs.get("action")
@@ -180,40 +179,48 @@ class EntryProcessor(PipelineProcessor):
         super().__init__(hostname=kwargs.get("hostname"), catalog_id=kwargs.get("catalog_id"), credentials = kwargs.get("credentials"),
                          cfg=kwargs.get("cfg"))
 
-        self.combo1_columns = get_legacy_combo1_columns(self.catalog)
-        self.optional_fks = get_legacy_optional_fks(self.catalog)
-        
-        self.is_catalog_dev = True if self.catalog_id in catalog_dev_number else False
+        #self.combo1_columns = get_legacy_combo1_columns(self.catalog)  # deprecated
+        #self.optional_fks = get_legacy_optional_fks(self.catalog)      # deprecated
+
+        if kwargs.get("log_dir", None): self.log_dir = kwargs.get("log_dir")        
         self.logger = kwargs.get("logger")
         self.logger.debug('Client initialized.')
-        if kwargs.get("log_dir", None): self.log_dir = kwargs.get("log_dir")
-        if kwargs.get("verbose", None): self.verbose = kwargs.get("verbose")
-        if kwargs.get("notify", None): self.notify = kwargs.get("notify")
 
+        self.verbose = kwargs.get("verbose", False)        
+        self.notify = kwargs.get("notify", False)
+        self.preserve = kwargs.get("preserve", False)
+    
         self.tname2inserting = {}  # inserting rows, used for debugging
         self.tname2inserted = {}   # inserted rows
 
-        self.processing_tname = "Entry_Related_File" if self.action == "Entry_Related_File" else "entry"
         self.initialize_processing_row(self.rid)
 
-        print("------- EntryProcessor: rid: %s, action: %s, notify: %s, verbose: %s" % (self.rid, self.action, self.notify, self.verbose))
+        print("------- EntryProcessor: rid: %s, action: %s, notify: %s, verbose: %s, preserve: %s" % (self.rid, self.action, self.notify, self.verbose, self.preserve))
         print("- processing_row: %s" % (self.processing_row))
-        print("- user_row: %s" % (self.user_row))
+        print("- user_row: %s\n" % (self.user_row))
 
         
     def initialize_processing_row(self, rid):
+        """
+        """
         if self.action in ["Entry_Related_File"]:
-            constraints='RID=%s/T:=(M:File_Type)=(Vocab:File_Type:Name)' % (related_file_rid)
+            self.processing_tname = "Entry_Related_File" 
+            constraints='RID=%s/T:=(M:File_Type)=(Vocab:File_Type:Name)' % (self.rid)
             attributes=['M:File_Name','M:File_URL','M:File_MD5','M:structure_id','M:RCT','M:File_Format','M:Restraint_Process_Status','M:Restraint_Workflow_Status','T:Table_Name']
-            self.processing_row = get_ermrest_query(self.catalog, "PDB", related_file_tname, constraints=constraints, attributes=attributes)[0]
+            self.processing_row = get_ermrest_query(self.catalog, "PDB", self.processing_tname, constraints=constraints, attributes=attributes)[0]
         else:
+            self.processing_tname = "entry"
             self.processing_row = get_ermrest_query(self.catalog, "PDB", self.processing_tname, constraints=f'RID={self.rid}')[0]
-        self.entry_id = self.processing_row["id"] if self.processing_tname == "entry" else None
+            
+        self.entry_id = self.processing_row["id"] if self.processing_tname == "entry" else self.processing_row["structure_id"]
         self.entry_rid = self.processing_row["RID"] if self.processing_tname == "entry" else None
         self.user_row = self.get_user_row("PDB", self.processing_tname, self.rid)
         self.user_email = self.user_row["Email"]
-        self.user_id = self.RCB2user_id(self.processing_row["RCB"])
-        self.hatrac_generated_prefix = f"{self.hatrac_root}/pdb/generated/uid/{self.user_id}/entry/id/{self.entry_id}"
+        self.user_uuid = self.RCB2user_uuid(self.processing_row["RCB"]) # only the GUID
+        self.hatrac_generated_prefix = f"{self.hatrac_root}/pdb/generated/uid/{self.user_uuid}/entry/id/{self.entry_id}"
+
+        self.create_hatrac_uid_namespace(f"{self.hatrac_root}/pdb/generated/uid", self.processing_row["RCB"])
+        
         
     """
     Trace into the log_dir e.g. /home/pdbihm/log/trace.log file 
@@ -344,6 +351,7 @@ class EntryProcessor(PipelineProcessor):
             self.verbose: print(f'== Ended process_Entry_Related_File RID="{self.rid}" with process_status = {process_status} ')
             self.sendMail(subject, message)
             self.clean_directory(processing_dir, remove_dir=True)
+
             
     def getColumnValue(self, table_name, column_name, column_type, column_value):
         """ Format column value based on type; mostly to handle text
@@ -373,7 +381,40 @@ class EntryProcessor(PipelineProcessor):
             self.logger.debug('unknown type: {}, table: {}, column: {}'.format(column_type, table_name, column_name))
             raise ProcessingError('ERROR getColumnValue: unknown type: {}, table: {}, column: {}'.format(column_type, table_name, column_name))
 
-            
+        
+    def writeTableToCif(self, tname, cname2ctypes, results, fw):
+        """Write results corresponding to a table in CIF format
+
+        Args:
+            fw (stream): file point to write to
+            tname (str): table name
+            cname2types (dict): column name to column type mapping
+            results (list): data payload to be written
+        """
+        # == write results
+        if len(results) == 0:
+            return
+        elif len(results) > 1:
+            fw.write('loop_\n')
+            for cname, ctype in cname2ctypes.items():
+                fw.write(f'_{tname}.{cname}\n')
+            for row in results:
+                line = []
+                for cname, ctype in cname2ctypes.items():                
+                    cvalue = row[cname]
+                    cvalue_str = self.getColumnValue(tname, cname, ctype, cvalue)                    
+                    line.append(cvalue_str)
+                fw.write(f'{"\t".join(line)}\n')
+        elif len(results) == 1:
+            row = results[0]
+            for cname, ctype in cname2ctypes.items():
+                cvalue = row[cname]
+                cvalue_str = self.getColumnValue(tname, cname, ctype, cvalue)
+                fw.write(f'_{tname}.{cname}\t{cvalue_str}\n')
+                        
+        fw.write('#\n')
+        
+        
     def export_mmCIF(self):
         """Export the mmCIF file of the entry table
 
@@ -386,7 +427,6 @@ class EntryProcessor(PipelineProcessor):
         os.makedirs(processing_dir, exist_ok=True)
         entry_row = self.processing_row        
         entry_id = entry_row["id"]
-        user_id = self.RCB2user_id(entry_row["RCB"])
         
         #creation_time = entry_row['RCT']
         #year = parse(creation_time).strftime("%Y")
@@ -423,6 +463,7 @@ class EntryProcessor(PipelineProcessor):
         matrix_tables = ['ihm_2dem_class_average_fitting', 'ihm_geometric_object_transformation']
         collections_tables = ['ihm_entry_collection', 'ihm_entry_collection_mapping']
 
+        # TODO: REVIEW
         def writeLine(line, loopLine=None):
             table_name = line[1:].split('.')[0]
             if table_name not in mmCIF_tables:
@@ -454,7 +495,7 @@ class EntryProcessor(PipelineProcessor):
                 return True
             else:
                 return False
-        
+
         def exportErmrestData():
             """ Export data from ermrest database
             Accessing entry_id and deriva_tables from parent function
@@ -478,7 +519,6 @@ class EntryProcessor(PipelineProcessor):
             
             # == read model from json schema and get list of tables, columns, and types
             # Note: cname is removed if it is not in ermrest or if it is structure_id
-            
             mmcif = mmCIFErmrestModel
             cif_model = mmcif.load_mmcif(self.ihm_json_schema_doc)
             cif_tdefs = mmcif.get_tdefs(cif_model)
@@ -555,7 +595,11 @@ class EntryProcessor(PipelineProcessor):
                     
                 # == track export table
                 deriva_tables.append(tname)
+
+                # == write table content to cif file
+                self.writeTableToCif(tname, tname2ctypes[tname], results, fw)
                 
+                """Convert to writeTableToCif
                 # == write results
                 if len(results) > 1:
                     fw.write('loop_\n')
@@ -574,9 +618,8 @@ class EntryProcessor(PipelineProcessor):
                         cvalue = row[cname]
                         value = self.getColumnValue(tname, cname, ctype, cvalue)
                         fw.write('_{}.{}\t{}\n'.format(tname, cname, value))
-                        
                 fw.write('#\n')
-         
+                """
 
         def exportCIFContent(submitted_cif_fpath):
             """ Export data using user upload mmcif file
@@ -727,17 +770,20 @@ class EntryProcessor(PipelineProcessor):
         for category in  sdict_categories - cdict_categories:
             inserting.append({ "Exported_mmCIF_RID": mmcif_rid, "Data_Dictionary_RID": category2sdict[category]["Data_Dictionary_RID"] })
         print("- generateConformDictionary: inserting: %s" % (json.dumps(inserting, indent=4)))
-        inserted = insert_if_not_exist(self.catalog, "PDB", "Conform_Dictionary", payload=inserting)
-        self.logger.debug("- generateConformDictionary: inserted: %s" % (json.dumps(inserted, indent=4)))
-
+        if len(inserting):
+            inserted = insert_if_not_exist(self.catalog, "PDB", "Conform_Dictionary", payload=inserting)
+            self.logger.debug("- generateConformDictionary: inserted: %s" % (json.dumps(inserted, indent=4)))
+            print("- generateConformDictionary: inserted [%d]: %s" % (len(inserted), json.dumps(inserted, indent=4)))
+            
         # == Delete what's in conform dict but not supported dict 
         deleting = []
         for category in cdict_categories - sdict_categories:
             deleting.append(category2cdict[category])
-        constraints="RID=any(%s)" % ( ",".join([ urlquote(row["RID"]) for row in deleting]) )            
+        constraints="RID=any(%s)" % ( ",".join([ urlquote(row["RID"]) for row in deleting]) )
         self.logger.debug("generateConformDictionary: deleting rows: %s" % (json.dumps(deleting, indent=4)))
         print("- generateConformDictionary: deleting_rids: constraints=%s" % constraints)
-        delete_table_rows(self.catalog, "PDB", "Conform_Dictionary", constraints=constraints)
+        if len(deleting):
+            delete_table_rows(self.catalog, "PDB", "Conform_Dictionary", constraints=constraints)
 
         # == Update the categories that are in both conform dict and support dict with support dict Data_Dictionary_RID
         updating = []
@@ -745,6 +791,9 @@ class EntryProcessor(PipelineProcessor):
             if category2sdict[category]["Data_Dictionary_RID"] == category2cdict[category]["Data_Dictionary_RID"]: continue
             updating.append({ "RID": category2cdict[category]["RID"], "Exported_mmCIF_RID": mmcif_rid, "Data_Dictionary_RID": category2sdict[category]["Data_Dictionary_RID"] })
         self.logger.debug("generateConformDictionary: updating %s" % (json.dumps(updating, indent=4)))
+        updated = update_table_rows(self.catalog, "PDB", "Conform_Dictionary", column_names=["Exported_mmCIF_RID", "Data_Dictionary_RID"], payload=updating)
+        print("- generateConformDictionary: updated [%d]: %s" % (len(updated), json.dumps(updated, indent=4)))
+        
         
     """
     Insert a row in a table
@@ -1578,7 +1627,7 @@ class EntryProcessor(PipelineProcessor):
     Store the validation error file into hatrac
     TODO: Replace this with hatrac library. Add unit testing before cleaning up
     """
-    def storeFileInHatrac(self, hatrac_namespace, file_name, file_path, rid, user):
+    def x_storeFileInHatrac(self, hatrac_namespace, file_name, file_path, rid, user):
         try:
             newFile = '{}/{}'.format(file_path, file_name)
             file_size = os.path.getsize(newFile)
@@ -1676,7 +1725,7 @@ class EntryProcessor(PipelineProcessor):
         currentDirectory=os.getcwd()
         os.chdir('{}'.format(input_dir))
         args = [self.CifCheck, '-f', cif_fpath, '-dictSdb', self.dictSdb]
-        print("- validateExportmmCIF: running subprocess: %s" % (args))
+        print("- validateExportmmCIF: running subprocess: %s" % (' '.join(args)))
         self.logger.debug('- Running "{}" from the {} directory'.format(' '.join(args), input_dir)) 
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdoutdata, stderrdata = p.communicate()
@@ -1753,7 +1802,7 @@ class EntryProcessor(PipelineProcessor):
             else:
                 print("- validateExportmmCIF: Entry_Generated_File: cif file is unchanged: %s " % (file_row))
 
-    def cleanupSingularityDir(self, dir_path):
+    def x_cleanupSingularityDir(self, dir_path):
         """
         Cleanup the singularity directory.
         """
@@ -1767,9 +1816,9 @@ class EntryProcessor(PipelineProcessor):
                 shutil.rmtree(file_path)
 
     
-    def addTable(self, rid, results, table_name, columns, fw):
-        """
-        Add a table that is not specified in the initial json schema (json-full-db-ihm_dev_full-col-ihm_dev_fulljson file).
+    def x_addTable(self, rid, results, table_name, columns, fw):
+        """Add a table that is not specified in the initial json schema (json-full-db-ihm_dev_full-col-ihm_dev_fulljson file).
+        
         """
         # TODO: DELETE
         def x_getColumnValue(table_name, column_name, column_type, column_value):
@@ -1826,43 +1875,47 @@ class EntryProcessor(PipelineProcessor):
         fw.write('#\n')    
         return 0
 
-    def addCollectionRecords(self, rid, entry_id, fw):
+    def addCollectionRecords(self, entry_id, fw):
         """Add collection data as part of the export
         
         """
-        
-        url = '/attribute/A:=PDB:entry/id={}/B:=PDB:ihm_entry_collection_mapping/C:=PDB:ihm_entry_collection/C:id,C:name,C:details'.format(urlquote(entry_id))
-        self.logger.debug('ihm_entry_collection Query URL: "%s"' % url) 
-        resp = self.catalog.get(url)
-        resp.raise_for_status()
-        results = resp.json()
-        if len(results) > 0:
-            table_name = 'ihm_entry_collection'
-            columns = [
-                {'name': 'id', 'type': 'text'},
-                {'name': 'name', 'type': 'text'},
-                {'name': 'details', 'type': 'text'}
-            ]
-            if self.addTable(rid, results, table_name, columns, fw) != 0:
-                raise ProcessingError('ERROR addCollectionRecords: "%s"' % self.export_error_message)
+        # == create cname2ctypes for tables to be written to cif
+        tname2ctypes = {
+            "ihm_entry_collection": {
+                "id": "text",
+                "name": "text",
+                "details": "text",
+            },
+            "ihm_entry_collection_mapping": {
+                "collection_id": "text",
+                "entry_id": "text",
+            },
+        }
+        # == write collection information
+        #url = '/attribute/A:=PDB:entry/id={}/B:=PDB:ihm_entry_collection_mapping/C:=PDB:ihm_entry_collection/C:id,C:name,C:details'.format(urlquote(entry_id))
+        tname = 'ihm_entry_collection'
+        constraints = f'id={entry_id}/B:=PDB:ihm_entry_collection_mapping/C:=PDB:ihm_entry_collection'
+        results = get_ermrest_query(self.catalog, "PDB", "entry", constraints=constraints, attributes=["id", "name", "details"])
+        if len(results) == 0: return
+        self.writeTableToCif(tname, tname2ctypes[tname], results, fw)            
 
-        url = '/attribute/A:=PDB:entry/id={}/B:=PDB:ihm_entry_collection_mapping/C:=PDB:ihm_entry_collection/B:collection_id,entry_id:=A:Accession_Code'.format(urlquote(entry_id))
-        self.logger.debug('ihm_entry_collection_mapping Query URL: "%s"' % url) 
-        resp = self.catalog.get(url)
-        resp.raise_for_status()
-        results = resp.json()
-        if len(results) > 0:
-            table_name = 'ihm_entry_collection_mapping'
-            columns = [
-                {'name': 'collection_id', 'type': 'text'},
-                {'name': 'entry_id', 'type': 'text'}
-            ]
-            if self.addTable(rid, results, table_name, columns, fw) != 0:
-                raise ProcessingError('ERROR addCollectionRecords: "%s"' % self.export_error_message)                    
-        return True
+        # == write mapping. Need to replace entry_id to accession code 
+        #url = '/attribute/A:=PDB:entry/id={}/B:=PDB:ihm_entry_collection_mapping/C:=PDB:ihm_entry_collection/B:collection_id,entry_id:=A:Accession_Code'.format(urlquote(entry_id))
+        tname = 'ihm_entry_collection_mapping'
+        constraints = f'id={entry_id}/B:=PDB:ihm_entry_collection_mapping'
+        results = get_ermrest_query(self.catalog, "PDB", "entry", constraints=constraints, attributes=[":collection_id", "entry_id:=M:=Accession_Code"])
+        self.writeTableToCif(tname, tname2ctypes[tname], results, fw)
 
     @classmethod
     def fname2ftype(cls, fname):
+        """Return system generated file type based on file name
+
+        Args:
+            fname (str): file name
+
+        Returns:
+            file_type (str)
+        """
         if fname.endswith('_full_validation.pdf'):
             file_type = 'Validation: Full PDF'
         elif fname.endswith('_summary_validation.pdf'):
@@ -1923,10 +1976,11 @@ class EntryProcessor(PipelineProcessor):
             self.logger.debug(f'Running "{" ".join(args)}" from the {processing_dir} directory')
             print("- generate_ihmv_report: running subprocess: %s" % (' '.join(args)))
 
-            #p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            #stdoutdata, stderrdata = p.communicate(timeout=self.timeout*60)
-            #returncode = p.returncode
-            returncode = 0
+
+            p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdoutdata, stderrdata = p.communicate(timeout=self.timeout*60)
+            returncode = p.returncode
+            #returncode = 0   # FOR DEBUGGING ONLY
 
             if returncode != 0:
                 limit = self.processing_details_limit - len(stderrdata) - 100
@@ -1939,6 +1993,8 @@ class EntryProcessor(PipelineProcessor):
             output_files = []
             file_prefix, _ext = os.path.splitext(cif_fname)
             output_path = f'{processing_dir}/output/{file_prefix}'
+            if not os.path.isdir(output_path):
+                raise SubProcessError(f'ERROR report_validation: IHMV output dir {output_path} not found')
             hatrac_namespace = f'{self.hatrac_generated_prefix}/validation_report'
             ihmv_hfs = self.upload_file_groups(output_path, [".pdf", "_html.tar.gz"], namespace_prefix=hatrac_namespace, add_rid_prefix=False)
 
@@ -1958,6 +2014,7 @@ class EntryProcessor(PipelineProcessor):
             # == upsert records
             print("- generate_ihmv_report: inserting [%d]: %s" % (len(ihmv_payload), json.dumps(ihmv_payload, indent=4)))
             inserted = insert_if_not_exist(self.catalog, "PDB", "Entry_Generated_File", ihmv_payload)
+            print("- generate_ihmv_report: inserted [%d]: %s" % (len(inserted), json.dumps(inserted, indent=4)))            
             if len(inserted) != len(ihmv_payload):
                 existing = get_ermrest_query(self.catalog, "PDB", "Entry_Generated_File", constraints=f"Structure_Id={entry_id}")
                 filetype2row = { f["File_Type"] : f for f in existing }
@@ -1970,14 +2027,12 @@ class EntryProcessor(PipelineProcessor):
                             update_payload.append(row)
                             break
                 updated = update_table_rows(self.catalog, "PDB", "Entry_Generated_File", column_names=["File_Name", "File_URL", "File_Bytes", "File_MD5"], payload=update_payload)
-                print("- generate_ihmv_report: Number of files updated: %s" % (len(updated)))
+                print("- generate_ihmv_report: updated [%d]: %s" % (len(updated), json.dumps(updated, indent=4)))
         except TimeoutExpired:
             p.kill()
-            os.chdir(currentDirectory)            
             self.logger.error('got TimeoutExpired exception "%s"' % str(ev))
             raise SubProcessError("ERROR report_validation: IHMV TimeoutExpired")
         except Exception as e:
-            os.chdir(currentDirectory)
             raise ProcessingError("ERROR report_validation: unable to generate IHMV validation reports")
         finally:
             os.chdir(currentDirectory)
@@ -2056,7 +2111,7 @@ class EntryProcessor(PipelineProcessor):
         return json_fpath
         
         
-    def generate_PDB_JSON(self, entry_row, processing_dir=None):
+    def generate_PDB_JSON(self, cif_fpath, json_fpath):
         """Generate PDB JSON content (for pdb website).
         The processing involves:
           1. download .cif file from hatrac
@@ -2067,55 +2122,50 @@ class EntryProcessor(PipelineProcessor):
         
         TODO: py_rcsb_db still hardcode input/output. Therefore, can only perform one worker at a time
         """
-        entry_rid = entry_row["RID"]
-        entry_id = entry_row["id"]
-        user_id = self.RCB2user_id(entry_row["RCB"])
+        print("== generate_PDB_JSON: %s, %s" % (cif_fpath, json_fpath))
+        entry_rid = self.processing_row["RID"]
+        entry_id = self.processing_row["id"]
+        entry_rcb = self.processing_row["RCB"]
+
+        json_dir, json_fname = json_fpath.rsplit("/", 1)
+        cif_dir, cif_fname = cif_fpath.rsplit("/", 1)
         
-        try:
-            if not processing_dir:
-                processing_dir = "%s/%s" % (self.scratch, entry_rid)
-                os.makedirs(processing_dir, exist_ok=True)
-            
-            # == Get the System Generated mmCIF File
+        # == if cif_fpath is not provided, get the System Generated mmCIF File. WON"T HAPPEN IN CURRENT CODE
+        if not os.path.isfile(cif_fpath):
+            os.makedirs(cif_dir, exist_ok=True)
             constraints = f'RID={entry_rid}/PDB:Entry_Generated_File/File_Type=mmCIF'
             rows = get_ermrest_query(self.catalog, "PDB", "entry", constraints=constraints)
             cif_file_row = rows[0]
-            cif_file_rid = cif_file_row['RID']
-            cif_base_name = cif_file_row['File_Name'].split('.', 1)[0]
-            
-            cif_fpath = self.download_hatrac_file(cif_file_row['File_URL'], processing_dir, cif_file_row['File_Name'])
-            json_fname = f'{cif_base_name}.json'
-            json_fpath = f'{processing_dir}/{json_fname}'
-    
-            # == convert mmCIF to json file
-            self.mmcif2json(cif_fpath, json_fpath, exdb_fname="exdb-config-example-ihm-HOLD-REL.yml")
+            cif_fpath = self.download_hatrac_file(cif_file_row['File_URL'], cif_dir, cif_fname)
 
-            # == update json entry in hatrac and ermrest
-            file_type = 'JSON: mmCIF content'
-            hatrac_namespace = f'{self.hatrac_generated_prefix}/final_mmCIF'
-            hfs = self.upload_file_groups(processing_dir, [json_fname], namespace_prefix=hatrac_namespace)
-            hf = hfs[0]
-            file_row = { 'File_URL': hf.hatrac_url, 'File_Name': hf.file_name, 'File_MD5': hf.md5_hex, 'File_Bytes': hf.file_bytes,
-                         'File_Type': file_type, 'Structure_Id': entry_id, 'Entry_RCB': entry_row["RCB"]
-                        }
-            inserting = [file_row]
-            print("- generate_PDB_JSON: inserting Entry_Generated_File: %s" % (inserting))            
-            inserted = insert_if_not_exist(self.catalog, "PDB", "Entry_Generated_File", payload=inserting)
-            self.logger.debug("generate_PDB_JSON: created Entry_Generated_File: %s" % (inserted))
-            print("- generate_PDB_JSON: inserted Entry_Generated_File: %s" % (json.dumps(inserted, indent=4)))
+        # == convert mmCIF to json file
+        self.mmcif2json(cif_fpath, json_fpath, exdb_fname="exdb-config-example-ihm-HOLD-REL.yml")
+
+        # == update json entry in hatrac and ermrest
+        file_type = 'JSON: mmCIF content'
+        hatrac_namespace = f'{self.hatrac_generated_prefix}/final_mmCIF'
+        hfs = self.upload_file_groups(json_dir, [json_fname], namespace_prefix=hatrac_namespace)
+        hf = hfs[0]
+        file_row = { 'File_URL': hf.hatrac_url, 'File_Name': hf.file_name, 'File_MD5': hf.md5_hex, 'File_Bytes': hf.file_bytes,
+                     'File_Type': file_type, 'Structure_Id': entry_id, 'Entry_RCB': entry_rcb
+                    }
+        inserting = [file_row]
+        print("- generate_PDB_JSON: inserting Entry_Generated_File: %s" % (inserting))            
+        inserted = insert_if_not_exist(self.catalog, "PDB", "Entry_Generated_File", payload=inserting)
+        self.logger.debug("generate_PDB_JSON: created Entry_Generated_File: %s" % (inserted))
+        print("- generate_PDB_JSON: inserted Entry_Generated_File: %s" % (json.dumps(inserted, indent=4)))
             
-            if len(inserted) == 0:
-                existing = get_ermrest_query(self.catalog, "PDB", "Entry_Generated_File", constraints=f"File_Type={urlquote(file_type)}/Structure_Id={urlquote(entry_id)}")[0]
-                if file_row["File_MD5"] != existing["File_MD5"] or file_row["File_Name"] != existing["File_Name"]:
-                    file_row["RID"] = existing["RID"]
-                    updated = update_table_rows(self.catalog, "PDB", "Entry_Generated_File", payload=[file_row], column_names=["File_URL", "File_Name", "File_MD5", "File_Bytes"])
-                    print("- updated  Entry_Generated_File with %s" % (json.dumps(file_row, indent=4)))
-                else:
-                    print("-- generate_PDB_JSON: JSON file is unchanged: %s " % (file_row))
+        if len(inserted) == 0:
+            existing = get_ermrest_query(self.catalog, "PDB", "Entry_Generated_File", constraints=f"File_Type={urlquote(file_type)}/Structure_Id={urlquote(entry_id)}")[0]
+            if file_row["File_MD5"] != existing["File_MD5"] or file_row["File_Name"] != existing["File_Name"]:
+                file_row["RID"] = existing["RID"]
+                print("- generate_PDB_JSON: updating JSON file in Entry_Generated_File: %s" % (json.dumps(file_row, indent=4)))
+                updated = update_table_rows(self.catalog, "PDB", "Entry_Generated_File", payload=[file_row], column_names=["File_URL", "File_Name", "File_MD5", "File_Bytes"])
+                print("- generate_PDB_JSON: updated JSON file in Entry_Generated_File: %s" % (json.dumps(file_row, indent=4)))
+            else:
+                print("-- generate_PDB_JSON: JSON file is unchanged: %s " % (file_row))
             
-            return json_fpath
-        except Exception as e: 
-            raise ProcessingError("ERROR generate_PDB_JSON: unable to successfully generate JSON from mmCIF content")
+        return json_fpath
         
         
     def get_primary_accession_code(self, mode, accesion_code_row):
@@ -2172,7 +2222,6 @@ class EntryProcessor(PipelineProcessor):
         self.clean_directory(processing_dir)
         entry_row = self.processing_row        
         entry_id = self.processing_row["id"]
-        user_id = self.user_id
 
         print("addReleaseRecords: processing dir: %s" % (processing_dir))
         
@@ -2195,9 +2244,9 @@ class EntryProcessor(PipelineProcessor):
 
             # quick testing
             #export_fpath="/scratch/pdb/entry_processing/scratch/4-X83E/D_4-X83E.cif"
-            export_fpath="/scratch/pdb/entry_processing/scratch/4-X83E/9AAR.cif"            
-            self.generate_ihmv_reports(export_fpath)
-            return
+            #export_fpath="/scratch/pdb/entry_processing/scratch/4-X83E/9AAR.cif"            
+            #self.generate_ihmv_reports(export_fpath)
+            #return
         
             # == Get the Accession_Code record
             rows = get_ermrest_query(self.catalog, "PDB", "Accession_Code", constraints=f"Entry={entry_rid}")
@@ -2236,6 +2285,7 @@ class EntryProcessor(PipelineProcessor):
                 records_release = self.database_2_accession_code(records_release, database_2_primary_accession_code, database_2_alternative_accession_code)
 
             # == export the file with the current content (<entry_id>.cif)
+            # TODO: pass filename? 
             export_fpath = self.export_mmCIF()  
             print("--- addReleaseRecords: export mmCIF: %s" % (export_fpath))
             if not os.path.isfile(export_fpath):
@@ -2268,7 +2318,7 @@ class EntryProcessor(PipelineProcessor):
                     if line == '#\n':
                         audit_conform = False
                         fw.write(records_release)
-                        self.addCollectionRecords(entry_rid, entry_id, fw)
+                        self.addCollectionRecords(entry_id, fw)
                 else:
                     fw.write(line)
             fr.close()
@@ -2281,10 +2331,12 @@ class EntryProcessor(PipelineProcessor):
             self.generateConformDictionary(entry_id, entry_rid)
                 
             # == re-generate validation report. TODO: UNCOMMENT
-            self.generate_ihmv_reports(export_fpath)
+            self.generate_ihmv_reports(final_fpath)
                 
             # == generate json for pdb publication
-            self.generate_PDB_JSON(entry_row, processing_dir)
+            json_fname = f'{entry_row['Accession_Code']}.json'
+            json_fpath = f'{processing_dir}/{json_fname}'
+            self.generate_PDB_JSON(final_fpath, json_fpath)
             
         except Exception as e:
             if current_workflow_status != "RELEASE READY":
@@ -2387,10 +2439,11 @@ class EntryProcessor(PipelineProcessor):
             entry_id_cname = "structure_id" if structure_id in table.columns.elements else "entry_id"
             delete_table_rows(self.catalog, "PDB", tname, constraints=f"{entry_id_cname}={entry_id}")
 
-        self.clear_directory(processing_dir, remove_directory=True)
+        self.clear_directory(processing_dir, remove_dir=True)
         
     def clear_entry(self, rid, id, user):
         """
+        TODO: Refactor
         """
         try:
             # Get the references of the "entry" table 

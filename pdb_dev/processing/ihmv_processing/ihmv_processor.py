@@ -216,17 +216,17 @@ class IHMVProcessor(PipelineProcessor):
                         "File_Type": "Validation: Summary PDF" if hf.file_name.endswith("summary_validation.pdf") else "Validation: Full PDF"
                     })
                     
-                # check whether files already exist
-                existing_files = get_ermrest_query(self.catalog, "IHMV", "Generated_File", constraints=f"Structure_mmCIF={self.structure_rid}")
-                if len(existing_files) == 0:
-                    insert_if_not_exist(self.catalog, "IHMV", "Generated_File", ihmv_payload)
-                else:
+                # -- upsert records
+                inserted = insert_if_not_exist(self.catalog, "IHMV", "Generated_File", ihmv_payload)
+                if len(inserted) != len(ihmv_payload):
+                    """
                     # - option1: simply delete all old files and insert
-                    #values_ = [x['RID'] for x in existing_files]
-                    #delete_table_rows(self.catalog, "IHMV", "Generated_File", key='RID', values=values_)
-                    #insert_if_not_exist(self.catalog, "IHMV", "Generated_File", ihmv_payload)                    
-                    #
+                    values_ = [x['RID'] for x in existing_files]
+                    delete_table_rows(self.catalog, "IHMV", "Generated_File", key='RID', values=values_)
+                    insert_if_not_exist(self.catalog, "IHMV", "Generated_File", ihmv_payload)                    
+                    """
                     # - option2: check whether the rows have changed, if so, update
+                    existing_files = get_ermrest_query(self.catalog, "IHMV", "Generated_File", constraints=f"Structure_mmCIF={self.structure_rid}")                    
                     filetype2row = { f["File_Type"] : f for f in existing_files }
                     update_payload = []
                     for row in ihmv_payload:
@@ -239,7 +239,7 @@ class IHMVProcessor(PipelineProcessor):
                     updated = update_table_rows(self.catalog, "IHMV", "Generated_File", column_names=["File_Name", "File_URL", "File_Bytes", "File_MD5"], payload=list(update_payload))
                     print("Number of files updated: %s" % (len(updated)))
                     
-                # set processing status to be updated at the end
+                # -- set processing status to be updated at the end
                 processing_status = "Success"
                 processing_details = None
         except TimeoutExpired as e:
