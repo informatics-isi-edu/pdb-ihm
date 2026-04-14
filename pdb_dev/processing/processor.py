@@ -38,8 +38,8 @@ import time
 from datetime import datetime as dt, timedelta, timezone
 import pytz
 
-from deriva.core import PollingErmrestCatalog, HatracStore, urlquote, get_credential, DerivaServer
-from deriva.utils.extras.model import topo_sort_ranked
+from deriva.core import PollingErmrestCatalog, HatracStore, urlquote, get_credential, DerivaServer, topo_sorted, topo_ranked
+#from deriva.utils.extras.model import topo_sort_ranked
 from deriva.utils.extras.data import insert_if_not_exist, update_table_rows, delete_table_rows, get_ermrest_query
 from deriva.utils.extras.hatrac import HatracFile
 from deriva.utils.extras.hatrac_acl import set_hatrac_namespace_acl, adjust_hatrac_namespace
@@ -107,6 +107,8 @@ class PipelineProcessor(object):
     verbose = False
     notify = False
     logger = None
+    preserve = False
+    processing_details_limit = 2500  # limit of what goes in details
     
     def __init__(self, **kwargs):
         # -- ermrest and hatrac
@@ -216,7 +218,7 @@ class PipelineProcessor(object):
         """Clean up files and directories in a dir_path unless self.cleanup is False
         
         """
-        if not self.cleanup: return
+        if self.preserve: return
 
         if remove_dir:
             shutil.rmtree(dir_path)
@@ -314,7 +316,8 @@ class PipelineProcessor(object):
 
     # -------------------------------------------------------------------
     #get_topo_sorted_tables
-    def get_topo_ranked_tables(self, tname_only=False):
+    @classmethod
+    def get_topo_ranked_tables(cls, catalog, tname_only=False):
         """Assign order to tables for insert operation based on fkeys e.g. tables with no fkeys should be inserted first.
         This function should be used to replace the needs of tables_groups.json.
 
@@ -326,7 +329,7 @@ class PipelineProcessor(object):
         TODOs: Either change the keys to be string or address the type in the processing code.
         
         """
-        model = self.catalog.getCatalogModel()
+        model = catalog.getCatalogModel()
         tables = {
             table
             for sname in ["PDB"]
@@ -360,14 +363,15 @@ class PipelineProcessor(object):
             for table, pktables in table_depmap.items()
         }
         
-        rank_list = topo_sort_ranked(tname_depmap) if tname_only else topo_sort_ranked(table_depmap)
+        rank_list = topo_ranked(tname_depmap) if tname_only else topo_ranked(table_depmap)
         rank_dict = {i: rank_list[i] for i in range(len(rank_list))}
    
         return rank_dict
 
-    def get_topo_sorted_tables(self, tname_only=False, reverse=False):
+    @classmethod
+    def get_topo_sorted_tables(cls, catalog, tname_only=False, reverse=False):
         topo_sorted_tables = []
-        ranked_tables = self.get_topo_ranked_tables(tname_only=tname_only)
+        ranked_tables = cls.get_topo_ranked_tables(catalog, tname_only=tname_only)
         
         for group_no in range(0, len(ranked_tables.keys())):
             topo_sorted_tables.extend(sorted(ranked_tables[group_no]))
@@ -378,7 +382,7 @@ class PipelineProcessor(object):
             return reversed(topo_sorted_tables)
 
     # -------------------------------------------------------------------
-    def RCB2user_id(self, RCB):
+    def RCB2user_uuid(self, RCB):
         if not RCB:
             raise Exception("RCB ERROR: RCB is None")
         return RCB.rsplit("/", 1)[1]

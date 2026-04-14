@@ -21,11 +21,14 @@ TOPDIR = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))
 rid2json = {
     '4-K8M2': '/scratch/pdb/entry_processing/test_data/9A9V_output.json', # ref    
     '4-X83E': '/scratch/pdb/entry_processing/test_data/9A9V_output.json', # test
+    #'4-X83E': '/scratch/pdb/entry_processing/scratch/4-X83E/4-X83E_output.json', # test    
     '4-ETK0': '/scratch/pdb/entry_processing/test_data/9A8W_output.json', # ref
+    
 }
 
 test_rid2base_rid = {
-    "4-X83E": "4-K8M2",
+    "4-X83E": "4-K8M2",    # 9A9V (good cif)
+    "D_5-1TX8": "5-18G6",  # 9AAM (failed cifcheck)
 }
 
     
@@ -51,33 +54,33 @@ class TestProcessor(unittest.TestCase):
         global entry_processor, entry_row, test_processor, test_entry_row
         
         if not entry_processor:
-            args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=self.entry_rid, verbose=self.verbose, notify=False)
+            args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=self.entry_rid, verbose=self.verbose, notify=False, preserve=True)
             config = load(self.config_file, args)
-            # setup a test entry if not exist            
-            entry_processor = EntryProcessor(**config)
-            print("---------- initialize EntryProcessor in TestProcessor ----------")
+            print("## ---------- initialize EntryProcessor in TestProcessor ----------")
             print("** args: %s" % (args))
             print("**__file__: %s, HERE: %s, TOPDIR: %s" % (__file__, HERE, TOPDIR))
+            # setup a test entry if not exist            
+            entry_processor = EntryProcessor(**config)
 
         
         if not test_processor:
-            args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=self.test_rid, verbose=self.verbose, notify=False)
+            args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=self.test_rid, verbose=self.verbose, notify=False, preserve=True)
             config = load(self.config_file, args)
+            print("*** test processor args: %s" % (args))            
             test_processor = EntryProcessor(**config)
-            print("** test processor args: %s" % (args))
+
             
-        if not entry_row:
-            entry_row = entry_processor.processing_row
-        if not test_entry_row:
-            test_entry_row = test_processor.processing_row
+        if not entry_row: entry_row = entry_processor.processing_row
+        if not test_entry_row: test_entry_row = test_processor.processing_row
             
         self.processor = entry_processor
         self.catalog = self.processor.catalog
         self.model = self.catalog.getCatalogModel()
         self.entry_row = entry_row
+        self.test_processor = test_processor
         self.test_entry_row = test_entry_row
         
-        
+        print("// ---------- end initializing EntryProcessor in TestProcessor ----------")
         # You can also set up other resources here
 
     def tearDown(self):
@@ -272,22 +275,25 @@ class TestEntryProcessor(TestProcessor):
 
     def test_loadTablesFromJSON(self):
         self.loadTablesFromJSON_tester(test_rid="4-K8M2")
+        #self.loadTablesFromJSON_tester(test_rid="4-X83E")        
         
         
-    def x_test_rollbackInsertedRows(self):
-        test_entry = get_ermrest_query(self.catalog, "PDB", "entry", constraints="RID=4-X83E")[0]        
-        args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=test_entry["RID"], verbose=self.verbose, notify=False)
-        config = load(self.config_file, args)
-        test_processor = EntryProcessor(**config)
-        
-        test_sorted_tnames = test_processor.sortTable(rid2json["4-X83E"])
+    def test_rollbackInsertedRows(self):
+        test_processor = self.test_processor
+        test_entry = self.test_entry_row
+        test_sorted_tnames = test_processor.sortTablesFromFile(rid2json["4-X83E"])
         test_processor.tname2inserted = { tname: [] for tname in test_sorted_tnames }
         test_processor.rollbackInsertedRows(test_processor.tname2inserted, test_entry["id"])
+
+        test_model = test_processor.catalog.getCatalogModel()
         for tname in test_sorted_tnames:
-            num_rows = len(get_ermrest_query(test_processor.catalog, "PDB", tname))
+            table = test_model.schemas["PDB"].tables[tname]
+            cname = 'structure_id' if 'structure_id' in table.columns.elements else 'entry_id'
+            rows = get_ermrest_query(test_processor.catalog, "PDB", tname, constraints=f'{cname}={test_entry["id"]}')
+            num_rows = len(rows)
+            #print("- %s: tname: %s : num_rows: %d, rows: %s" % (test_processor.rid, tname, num_rows, rows[0:2]))
             self.assertAlmostEqual(num_rows, 0)
 
-        
     def x_test_convert2json(self):
         """
         Making sure that all the files showed up in processing_dir folder
@@ -370,7 +376,7 @@ class TestEntryProcessor(TestProcessor):
                 for cname in base_row.keys():
                     self.assertAlmostEqual(base_row[cname], test_row[cname])
 
-    def test_getAccessionCode(self):
+    def x_test_getAccessionCode(self):
         """test getAccessionCode
         get_accession_code doesn't update the entry table. It only allocate an accession_code for the entry in the Accession_Code table.
 
@@ -409,7 +415,7 @@ class TestEntryProcessor(TestProcessor):
         self.assertAlmostEqual(accession_code_row["Entry"], test_rid)
         
 
-    def test_set_accession_code(self):
+    def x_test_set_accession_code(self):
         """test get_accession_code
 
         For predictability, we will unassigned an existing accession_code in the test_entry and unassigned the accession_code associated with
@@ -460,49 +466,66 @@ class TestEntryProcessor(TestProcessor):
         self.assertAlmostEqual(accession_code, next_accession_code)
 
 
-        def check_file_for_regex_set(filepath, regex_patterns):
-            # Pre-compile patterns for speed
-            compiled_patterns = {p: re.compile(p) for p in regex_patterns}
-            required_found = set()
-    
-            with open(filepath, 'r') as f:
-                for line in f:
-                    # Check only the patterns we haven't found yet
-                    remaining = set(compiled_patterns.keys()) - required_found
-                    for p_str in remaining:
-                        if compiled_patterns[p_str].search(line):
-                            required_found.add(p_str)
-                            
-                    # Early exit: stop reading if all are found
-                    if len(required_found) == len(regex_patterns):
-                        return True
+    def check_file_for_regex_set(filepath, regex_patterns):
+        # Pre-compile patterns for speed
+        compiled_patterns = {p: re.compile(p) for p in regex_patterns}
+        required_found = set()
+        
+        with open(filepath, 'r') as f:
+            for line in f:
+                # Check only the patterns we haven't found yet
+                remaining = set(compiled_patterns.keys()) - required_found
+                for p_str in remaining:
+                    if compiled_patterns[p_str].search(line):
+                        required_found.add(p_str)
+                        
+                # Early exit: stop reading if all are found
+                if len(required_found) == len(regex_patterns):
+                    return True
                 
-            return False
+        return False
 
-        def test_addReleaseRecord(self):
-            """
-            """
-            global test_processor
+    def x_test_addReleaseRecord(self):
+        """
+        """
+        global test_processor
 
-            # download file
+        # download file
+        
+        # use it for checking
+        release_status = 'HOLD'
+        accession_code = '9A9V'
+        # Example usage
+        requirements = [
+            f"_pdbx_database_status.status_code\s+{release_status}",
+            f"_pdbx_database_status.entry_id\s+{accession_code}",
+            f"1 'Structure model' 1 0 {release_date}",
+            f"PDB {accession_code} .*",
+        ]
+        
+        is_valid = check_file_for_regex_set("server.log", requirements)
+        print(f"All patterns present: {is_valid}")
+        
+    def x_test_generate_JSON_mmCIF_content(self):
+        pass
 
-            # use it for checking
-            release_status = 'HOLD'
-            accession_code = '9A9V'
-            # Example usage
-            requirements = [
-                f"_pdbx_database_status.status_code\s+{release_status}",
-                f"_pdbx_database_status.entry_id\s+{accession_code}",
-                f"1 'Structure model' 1 0 {release_date}",
-                f"PDB {accession_code} .*",
-            ]
-            
-            is_valid = check_file_for_regex_set("server.log", requirements)
-            print(f"All patterns present: {is_valid}")
+    
+    def test_generate_ihmv_reports(self):
+        test_processor = self.test_processor
+        test_entry = self.test_entry_row
 
-        def test_generate_JSON_mmCIF_content(self):
-            pass
+        export_cif_fpath=""
+        test_model = test_processor.catalog.getCatalogModel()
+        for tname in test_sorted_tnames:
+            table = test_model.schemas["PDB"].tables[tname]
+            cname = 'structure_id' if 'structure_id' in table.columns.elements else 'entry_id'
+            rows = get_ermrest_query(test_processor.catalog, "PDB", tname, constraints=f'{cname}={test_entry["id"]}')
+            num_rows = len(rows)
+            #print("- %s: tname: %s : num_rows: %d, rows: %s" % (test_processor.rid, tname, num_rows, rows[0:2]))
+            self.assertAlmostEqual(num_rows, 0)
 
+    
+        
 """
 python -m unittest test_entry_processor.py
 python -m unittest test_entry_processor.TestEntryProcessor

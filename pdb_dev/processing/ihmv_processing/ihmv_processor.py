@@ -79,7 +79,7 @@ class IHMVProcessor(PipelineProcessor):
         self.timeout = timeout if timeout else (self.pdbihm_config["timeout"] if "timeout" in self.pdbihm_config.keys() else self.timeout)
         self.singularity_sif = singularity_sif if singularity_sif else (self.pdbihm_config["singularity_sif"] if "singularity_sif" in self.pdbihm_config.keys() else self.singularity_sif)
         self.ihmvalidation_dir = ihmvalidation_dir if ihmvalidation_dir else (self.pdbihm_config["validation_dir"] if "validation_dir" in self.pdbihm_config.keys() else self.ihmvalidation_dir)
-        self.ihmvalidation_dir = f'{self.ihmvalidation_dir}/IHMValidation'
+        if not self.ihmvalidation_dir.endswith("IHMValidation"): self.ihmvalidation_dir = f'{self.ihmvalidation_dir}/IHMValidation' # backward compatible
         email_config_file = email_config_file if email_config_file else (self.pdbihm_config["mail"] if "mail" in self.pdbihm_config.keys() else self.email_config_file)
 
         if email_config_file:

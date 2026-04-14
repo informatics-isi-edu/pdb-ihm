@@ -8,10 +8,63 @@ from pdb_dev.utils.shared import PDBDEV_CLI, DCCTX, cfg
 from deriva.utils.extras.data import get_ermrest_query, insert_if_not_exist, update_table_rows, delete_table_rows
 from deriva.utils.extras.pdb_ma.mmcif_model import mmCIFErmrestModel, dump_json_to_file
 
+
+"""
+There is an mmcif table that has column names start with capital letter e.g
+===== tname: ihm_pseudo_site  
+- c: intersection: tname:ihm_pseudo_site [3]: ['description', 'id', 'structure_id']
+- c: mmcif only: tname:ihm_pseudo_site [3]: ['Cartn_x', 'Cartn_y', 'Cartn_z']
+- c: ermrest only: tname:ihm_pseudo_site [1]: ['radius']
+
+There are ermrest tables with lower case cnames (all begings with "mmCIF_"
+"""
+def compare_json_schema(ermrest_model, cif_docs, ignore_upper_case=True):
+    mmcif = mmCIFErmrestModel
+    model_cif = mmcif.load_mmcif(cif_docs)
+    tdefs = mmcif.get_tdefs(model_cif)
+    mmcif_tnames = set(tdefs.keys())
+
+    pdb_schema = ermrest_model.schemas["PDB"]
+    pdb_tnames = set(pdb_schema.tables.keys())
+
+    intersection = mmcif_tnames & pdb_tnames
+    mmcif_only = mmcif_tnames - pdb_tnames
+    pdb_only = pdb_tnames - mmcif_tnames
+    print()
+    print("\nmmcif_tnames & ermrest_tnames [%d]: %s" % (len(intersection), sorted(intersection)))
+    print("\nmmcif_tnames only [%d]: %s" % (len(mmcif_only), sorted(mmcif_only)))
+    print("\nermrest_tnames only [%d]: %s" % (len(pdb_only), sorted(pdb_only)))
+
+    for tname in sorted(intersection):
+        pdb_table = pdb_schema.tables[tname]
+        tdef = tdefs[tname]
+        attention = False
+        
+        # ==== column diff
+        pdb_cnames = set(pdb_table.columns.elements) - {"Owner", "RID", "RCT", "RMT", "RCB", "RMB"}
+        #print("pdb_cnames: %s" % (pdb_cnames))
+        if ignore_upper_case:
+            pdb_cnames = { cname if cname[0].islower() else None for cname in pdb_cnames }
+            pdb_cnames.discard(None)
+        
+        cdefs = mmcif.get_cdefs(tdef)
+        mmcif_cnames = set(cdefs.keys())
+            
+        intersection = mmcif_cnames & pdb_cnames
+        mmcif_only = mmcif_cnames - pdb_cnames
+        pdb_only = pdb_cnames - mmcif_cnames
+
+        if mmcif_only or pdb_only: 
+            print("\n===== tname: %s  %s" % (tname, "C-ATTENTION" if attention else ""))
+            print("- c: intersection: tname:%s [%d]: %s" % (tname, len(intersection), sorted(intersection)))
+            print("- c: mmcif only: tname:%s [%d]: %s" % (tname, len(mmcif_only), sorted(mmcif_only)))
+            print("- c: ermrest only: tname:%s [%d]: %s" % (tname, len(pdb_only), sorted(pdb_only)))
+
+        
 # ----------------------------------------------------------------------
 # TODO: fix names in mmcif_model.py
 #
-def compare_models(model, mmcif_ermrest_model):
+def compare_models(model, mmcif_ermrest_model, ignore_keys=False, ignore_fkeys=False):
     pdb_sdocs = mmcif_ermrest_model.ermrest_domain_schema
 
     pdb_schema = model.schemas["PDB"]
@@ -26,7 +79,6 @@ def compare_models(model, mmcif_ermrest_model):
     print("\nmmcif_tnames only [%d]: %s" % (len(mmcif_only), sorted(mmcif_only)))
     print("\nermrest_tnames only [%d]: %s" % (len(pdb_only), sorted(pdb_only)))
 
-    
     for tname in sorted(intersection):
         pdb_table = pdb_schema.tables[tname]
         mmcif_table = pdb_sdocs["tables"][tname]
@@ -51,93 +103,95 @@ def compare_models(model, mmcif_ermrest_model):
         print("- c: ermrest only: tname:%s [%d]: %s" % (tname, len(pdb_only), sorted(pdb_only)))
 
         # ==== fkey diff
-        pdb_fkey_cnames2fkeys = {}
-        mmcif_fkey_cnames2fkeys = {}
+        if not ignore_fkeys:
+            pdb_fkey_cnames2fkeys = {}
+            mmcif_fkey_cnames2fkeys = {}
         
-        pdb_fkeys_cnames = set()
-        for fkey in pdb_table.foreign_keys:
-            from_cnames = [c.name for c in fkey.column_map.keys()]
-            to_cnames = [c.name for c in fkey.column_map.values()]
-            pk_table = fkey.pk_table
-            ct_name = fkey.constraint_name
-            #print("== fk-pdb: pdb: from_cnames: %s, to_cnames: %s " % (from_cnames, to_cnames))
-            pdb_fkeys_cnames.add(tuple(sorted(from_cnames)))
-            pdb_fkey_cnames2fkeys[tuple(sorted(from_cnames))] = (ct_name, from_cnames, pk_table.name, to_cnames)
+            pdb_fkeys_cnames = set()
+            for fkey in pdb_table.foreign_keys:
+                from_cnames = [c.name for c in fkey.column_map.keys()]
+                to_cnames = [c.name for c in fkey.column_map.values()]
+                pk_table = fkey.pk_table
+                ct_name = fkey.constraint_name
+                #print("== fk-pdb: pdb: from_cnames: %s, to_cnames: %s " % (from_cnames, to_cnames))
+                pdb_fkeys_cnames.add(tuple(sorted(from_cnames)))
+                pdb_fkey_cnames2fkeys[tuple(sorted(from_cnames))] = (ct_name, from_cnames, pk_table.name, to_cnames)
 
-        mmcif_fkeys_cnames = set()
-        for fkey in pdb_sdocs["tables"][tname]["foreign_keys"]:
-            from_cnames = [ c["column_name"] for c in fkey["foreign_key_columns"]]
-            to_cnames = [ c["column_name"] for c in fkey["referenced_columns"]]
-            pk_tname = fkey["referenced_columns"][0]["table_name"]
-            ct_name = fkey["names"][0]
+            mmcif_fkeys_cnames = set()
+            for fkey in pdb_sdocs["tables"][tname]["foreign_keys"]:
+                from_cnames = [ c["column_name"] for c in fkey["foreign_key_columns"]]
+                to_cnames = [ c["column_name"] for c in fkey["referenced_columns"]]
+                pk_tname = fkey["referenced_columns"][0]["table_name"]
+                ct_name = fkey["names"][0]
+                
+                #print("== fk-mmcif: pdb: from_cnames: %s, to_cnames: %s " % (from_cnames, to_cnames))            
+                mmcif_fkeys_cnames.add(tuple(sorted(from_cnames)))
+                mmcif_fkey_cnames2fkeys[tuple(sorted(from_cnames))] = (ct_name, from_cnames, pk_tname, to_cnames)
             
-            #print("== fk-mmcif: pdb: from_cnames: %s, to_cnames: %s " % (from_cnames, to_cnames))            
-            mmcif_fkeys_cnames.add(tuple(sorted(from_cnames)))
-            mmcif_fkey_cnames2fkeys[tuple(sorted(from_cnames))] = (ct_name, from_cnames, pk_tname, to_cnames)
-            
-        intersection = mmcif_fkeys_cnames & pdb_fkeys_cnames
-        mmcif_only = mmcif_fkeys_cnames - pdb_fkeys_cnames
-        pdb_only = pdb_fkeys_cnames - mmcif_fkeys_cnames
-        print()
-        print("- fk: intersection: tname:%s [%d]: %s" % (tname, len(intersection), sorted(intersection)))
-        print("- fk: mmcif only: tname:%s [%d]: %s" % (tname, len(mmcif_only), sorted(mmcif_only)))
-        print("- fk: ermrest only: tname:%s [%d]: %s" % (tname, len(pdb_only), sorted(pdb_only)))
+            intersection = mmcif_fkeys_cnames & pdb_fkeys_cnames
+            mmcif_only = mmcif_fkeys_cnames - pdb_fkeys_cnames
+            pdb_only = pdb_fkeys_cnames - mmcif_fkeys_cnames
+            print()
+            print("- fk: intersection: tname:%s [%d]: %s" % (tname, len(intersection), sorted(intersection)))
+            print("- fk: mmcif only: tname:%s [%d]: %s" % (tname, len(mmcif_only), sorted(mmcif_only)))
+            print("- fk: ermrest only: tname:%s [%d]: %s" % (tname, len(pdb_only), sorted(pdb_only)))
 
-        # to remove: natural and combo2
-        pdb_to_remove=set()
-        for fkey_cnames in pdb_only:
-            (ct_name, from_cnames, pk_tname, to_cnames) = pdb_fkey_cnames2fkeys[fkey_cnames]
-            if "structure_id" in fkey_cnames or ("RID" in to_cnames and "structure_id" not in from_cnames and len(fkey_cnames) > 1):
-                pdb_to_remove.add(fkey_cnames)
-        print("-> fk-rm: ermrest only: tname:%s [%d]: " % (tname, len(pdb_to_remove)))
-        for fkey_cnames in sorted(pdb_to_remove):
-            print("     - rm: %s" % (list(pdb_fkey_cnames2fkeys[fkey_cnames])))
+            # to remove: natural and combo2
+            pdb_to_remove=set()
+            for fkey_cnames in pdb_only:
+                (ct_name, from_cnames, pk_tname, to_cnames) = pdb_fkey_cnames2fkeys[fkey_cnames]
+                if "structure_id" in fkey_cnames or ("RID" in to_cnames and "structure_id" not in from_cnames and len(fkey_cnames) > 1):
+                    pdb_to_remove.add(fkey_cnames)
+            print("-> fk-rm: ermrest only: tname:%s [%d]: " % (tname, len(pdb_to_remove)))
+            for fkey_cnames in sorted(pdb_to_remove):
+                print("     - rm: %s" % (list(pdb_fkey_cnames2fkeys[fkey_cnames])))
 
-        # to add
-        pdb_to_add=set()
-        for fkey_cnames in mmcif_only:
-            (ct_name, from_cnames, pk_tname, to_cnames) = mmcif_fkey_cnames2fkeys[fkey_cnames]
-            pdb_to_add.add(fkey_cnames)
-        #print("-> fk-add: mmcif only: tname:%s [%d]: %s" % (tname, len(pdb_to_add), [ mmcif_fkey_cnames2fkeys[fkey_cnames] for fkey_cnames in sorted(pdb_to_add) ] ))
-        print("-> fk-add: mmcif only: tname:%s [%d]: " % (tname, len(pdb_to_add)))
-        for fkey_cnames in sorted(pdb_to_add):
-            print("     - add: %s" % (list(mmcif_fkey_cnames2fkeys[fkey_cnames])))
+            # to add
+            pdb_to_add=set()
+            for fkey_cnames in mmcif_only:
+                (ct_name, from_cnames, pk_tname, to_cnames) = mmcif_fkey_cnames2fkeys[fkey_cnames]
+                pdb_to_add.add(fkey_cnames)
+            #print("-> fk-add: mmcif only: tname:%s [%d]: %s" % (tname, len(pdb_to_add), [ mmcif_fkey_cnames2fkeys[fkey_cnames] for fkey_cnames in sorted(pdb_to_add) ] ))
+            print("-> fk-add: mmcif only: tname:%s [%d]: " % (tname, len(pdb_to_add)))
+            for fkey_cnames in sorted(pdb_to_add):
+                print("     - add: %s" % (list(mmcif_fkey_cnames2fkeys[fkey_cnames])))
 
         # ==== key diff
-        pdb_kcnames2ctname = {}
-        pdb_keys_cnames = set()
-        for key in pdb_table.keys:
-            from_cnames = [c.name for c in key.columns ] 
-            ct_name = [ key.name[0].name, key.name[1] ]
-            pdb_keys_cnames.add(tuple(sorted(from_cnames)))
-            pdb_kcnames2ctname[tuple(sorted(from_cnames))] = ct_name
+        if not ignore_keys:
+            pdb_kcnames2ctname = {}
+            pdb_keys_cnames = set()
+            for key in pdb_table.keys:
+                from_cnames = [c.name for c in key.columns ] 
+                ct_name = [ key.name[0].name, key.name[1] ]
+                pdb_keys_cnames.add(tuple(sorted(from_cnames)))
+                pdb_kcnames2ctname[tuple(sorted(from_cnames))] = ct_name
             
-        mmcif_kcnames2ctname = {}
-        mmcif_keys_cnames = set()
-        for key in pdb_sdocs["tables"][tname]["keys"]:
-            from_cnames = key["unique_columns"]
-            ct_name = key["names"][0]
-            mmcif_keys_cnames.add(tuple(sorted(from_cnames)))
-            mmcif_kcnames2ctname[tuple(sorted(from_cnames))] = ct_name
+            mmcif_kcnames2ctname = {}
+            mmcif_keys_cnames = set()
+            for key in pdb_sdocs["tables"][tname]["keys"]:
+                from_cnames = key["unique_columns"]
+                ct_name = key["names"][0]
+                mmcif_keys_cnames.add(tuple(sorted(from_cnames)))
+                mmcif_kcnames2ctname[tuple(sorted(from_cnames))] = ct_name
             
-        intersection = mmcif_keys_cnames & pdb_keys_cnames
-        mmcif_only = mmcif_keys_cnames - pdb_keys_cnames
-        pdb_only = pdb_keys_cnames - mmcif_keys_cnames
-        print()
-        print("- k: intersection: tname:%s [%d]: %s" % (tname, len(intersection), sorted(intersection)))
-        print("- k: mmcif only: tname:%s [%d]: %s" % (tname, len(mmcif_only), sorted(mmcif_only)))
-        print("- k: ermrest only: tname:%s [%d]: %s" % (tname, len(pdb_only), sorted(pdb_only)))
+            intersection = mmcif_keys_cnames & pdb_keys_cnames
+            mmcif_only = mmcif_keys_cnames - pdb_keys_cnames
+            pdb_only = pdb_keys_cnames - mmcif_keys_cnames
+            print()
+            print("- k: intersection: tname:%s [%d]: %s" % (tname, len(intersection), sorted(intersection)))
+            print("- k: mmcif only: tname:%s [%d]: %s" % (tname, len(mmcif_only), sorted(mmcif_only)))
+            print("- k: ermrest only: tname:%s [%d]: %s" % (tname, len(pdb_only), sorted(pdb_only)))
 
-        # to remove: natural and combo2
-        pdb_to_remove=set()
-        for key_cnames in pdb_only:
-            if "RID" in key_cnames and "structure_id" not in key_cnames and len(key_cnames) > 1:
-                pdb_to_remove.add(key_cnames)
-        print("-> k-rm: ermrest only: tname:%s [%d]: %s " % (tname, len(pdb_to_remove), [ ( kcnames, pdb_kcnames2ctname[kcnames] ) for kcnames in sorted(pdb_to_remove) ]))
+            # to remove: natural and combo2
+            pdb_to_remove=set()
+            for key_cnames in pdb_only:
+                if "RID" in key_cnames and "structure_id" not in key_cnames and len(key_cnames) > 1:
+                    pdb_to_remove.add(key_cnames)
+                    print("-> k-rm: ermrest only: tname:%s [%d]: %s " % (tname, len(pdb_to_remove), [ ( kcnames, pdb_kcnames2ctname[kcnames] ) for kcnames in sorted(pdb_to_remove) ]))
 
-        # to add
-        pdb_to_add=mmcif_only
-        print("-> k-add: mmcif only: tname:%s [%d]: %s " % (tname, len(pdb_to_add), [ ( kcnames, mmcif_kcnames2ctname[kcnames] ) for kcnames in sorted(pdb_to_add) ]))
+            # to add
+            pdb_to_add=mmcif_only
+            print("-> k-add: mmcif only: tname:%s [%d]: %s " % (tname, len(pdb_to_add), [ ( kcnames, mmcif_kcnames2ctname[kcnames] ) for kcnames in sorted(pdb_to_add) ]))
         
 # ----------------------------------------------------------------------
 def compare_tables(model, mmcif_ermrest_model):
@@ -168,15 +222,16 @@ def main(args):
     store = HatracStore("https", args.host, credentials)
     model = catalog.getCatalogModel()
 
-    mmcif_ermrest_model = mmCIFErmrestModel(args.model_docs, "PDB", "Vocab")
-    pdb_sdocs = mmcif_ermrest_model.ermrest_domain_schema
-    vocab_sdocs = mmcif_ermrest_model.ermrest_vocab_schema
-    dump_json_to_file("/tmp/pdb_schema.json", pdb_sdocs)
+    if args.succint:
+        compare_json_schema(model, args.model_docs)
+    else:
+        mmcif_ermrest_model = mmCIFErmrestModel(args.model_docs, "PDB", "Vocab")
+        pdb_sdocs = mmcif_ermrest_model.ermrest_domain_schema
+        #vocab_sdocs = mmcif_ermrest_model.ermrest_vocab_schema
+        #dump_json_to_file("/tmp/pdb_schema.json", pdb_sdocs)
 
-    compare_models(model, mmcif_ermrest_model)
-    #compare_tables(model, mmcif_ermrest_model)
-                                        
-
+        compare_models(model, mmcif_ermrest_model, ignore_keys=args.ignore_keys, ignore_fkeys=args.ignore_fkeys)
+        #compare_tables(model, mmcif_ermrest_model)
 '''
 # Comparing the table listed in mmcif json schema docs with w hat's in deriva catalog
 #
@@ -186,6 +241,9 @@ python -m pdb_dev.tools.compare_mmcif_schema  --host data-dev.pdb-ihm.org --cata
 if __name__ == "__main__":
     cli = PDBDEV_CLI("pdbdev", None, 1)    
     cli.parser.add_argument('--model-docs', help="json schema docs representing mmCIF dict", default="/tmp/json-full-db-ihm_dev_full-col-ihm_dev_full.json")
+    cli.parser.add_argument('--succint', action="store_true", help="Run direct comparison to json schema (tables and columns only)", default=False)
+    cli.parser.add_argument('--ignore-keys', action="store_true", help="flag whether to ignore keys", default=False)
+    cli.parser.add_argument('--ignore-fkeys', action="store_true", help="flag whether to ignore fkeys", default=False)
     args = cli.parse_cli()
     
     main(args)
