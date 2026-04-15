@@ -834,8 +834,8 @@ class EntryProcessor(PipelineProcessor):
         message = f'The workflow status of the entry with RID={self.rid} was changed to {next_workflow_status}.'
         updating_row = {
             'RID' : self.rid,
-            'Restraint_Workflow_Status' : next_workflow_status,
-            'Restraint_Process_Status' : process_status, 
+            'Workflow_Status' : next_workflow_status,
+            'Process_Status' : process_status, 
             'Record_Status_Detail' : None,
         }
 
@@ -888,8 +888,8 @@ class EntryProcessor(PipelineProcessor):
             message = self.log_exception(e, notify=False, subject=subject, body_prefix="Error occured in processing_mmCIF.")            
             updating_row = {
                 'RID': self.rid,
-                'Restraint_Workflow_Status': 'ERROR',
-                'Restraint_Process_Status': process_status,
+                'Workflow_Status': 'ERROR',
+                'Process_Status': process_status,
                 'Record_Status_Detail': message,
             }
         finally:
