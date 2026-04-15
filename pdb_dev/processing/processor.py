@@ -470,7 +470,7 @@ class PipelineProcessor(object):
         if notify:
             if not subject: subject = "Processing error"
             self.sendMail(subject, tb_message, receivers)
-        if self.verbose: print("- subject: %s\n- tb_message: %s" % (subject, tb_message))
+        #if self.verbose: print("- subject: %s\n- tb_message: %s" % (subject, tb_message))
         #print("log_exception: verbose:%s: tb_message: %s" % (self.verbose, tb_message))
         return tb_message
 

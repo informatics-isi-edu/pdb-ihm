@@ -1019,10 +1019,19 @@ class EntryProcessor(PipelineProcessor):
             self.log_exception(e, notify=False, subject=subject)
             raise
 
-    def update_processing_row(self, row, sname="PDB", tname=None):
+    def update_processing_row(self, row, sname="PDB", tname=None, cnames=None):
+        """Updating an entry in the Ermrest according to provided row
+        
+        Args:
+            row (dict): a data row containing the columns to be updated
+            sname (str): schema name
+            tname (str): table name to be updated. Default: current processing table name
+            cnames (list): column names to be updated
+        """
         if not tname: tname = self.processing_tname
-        changed = False        
-        cnames = [ k for k in row.keys() if k not in ["RID", "RCB", "RMB", "RCT", "RMT"] ]
+        changed = False
+        if not cnames:
+            cnames = [ k for k in row.keys() if k not in ["RID", "RCB", "RMB", "RCT", "RMT"] ]
         
         # check whether the value have changed
         for cname in cnames:
@@ -1101,8 +1110,9 @@ class EntryProcessor(PipelineProcessor):
         """
 
         # == get topo sorts
-        topo_ranked_tables = self.get_topo_ranked_tables(self.catalog, tname_only=True)
-        topo_sorted_tables = self.get_topo_sorted_tables(self.catalog, tname_only=True)                
+        topo_ranked_tnames = self.get_topo_ranked_tables(self.catalog, tname_only=True)
+        #print("topo_ranked_tnames: %s" % (topo_ranked_tnames))
+        topo_sorted_tnames = [  v for tier in topo_ranked_tnames.values() for v in tier ]
         
         # == read the file content
         with open(fpath, 'r') as f:
@@ -1110,28 +1120,28 @@ class EntryProcessor(PipelineProcessor):
 
         # == verify all input tables are in schema
         for tname in  pdb.keys():
-            if tname not in ( topo_sorted_tables + exclude_tnames):
+            if tname not in ( topo_sorted_tnames + exclude_tnames):
                 raise RuntimeError(f'Table {tname} from mmCIF is not present in the DERIVA database. Possible mismatch versions.')
 
-        # == sort from pdb tables
-        sorted_tables = []
+        # == sort from cif tables. The order of the same tier will be based on what's in the cif file
+        sorted_tnames = []
         group_no = 0
-        while group_no < len(topo_ranked_tables):
+        while group_no < len(topo_ranked_tnames):
             for tname in pdb.keys():
-                if tname in sorted_tables: continue
-                if tname in topo_ranked_tables[group_no] and tname not in exclude_tnames:
-                    sorted_tables.append(tname)
+                if tname in sorted_tnames: continue
+                if tname in topo_ranked_tnames[group_no] and tname not in exclude_tnames:
+                    sorted_tnames.append(tname)
             group_no +=1
 
         """
-        # == sort from topo_sorted_tables
-        sorted_tables = []
-        for tname in topo_sorted_tables:
+        # == sort from topo_sorted_tnames
+        sorted_tnames = []
+        for tname in topo_sorted_tnames:
             if tname in pdb.keys() and tname not in exclude_tnames:
-                sorted_tables.append(tname)
+                sorted_tnames.append(tname)
         """
         
-        return sorted_tables
+        return sorted_tnames
                 
     
     def rollbackInsertedRows(self, tname2rows, entry_id):
@@ -1187,7 +1197,7 @@ class EntryProcessor(PipelineProcessor):
         # -- Keep track of the inserted rows in case of rollback
         #print("- loadTablesFromJSON_2: begin")
         pk_tables_ref_data = ermrest_data if ermrest_data else self.tname2inserted  # refer to external ermrest sources if provided
-        pk_tables = PkTables(catalog=self.catalog, ermrest_data=pk_tables_ref_data)
+        pk_tables = PkTables(catalog=self.catalog, ermrest_data=pk_tables_ref_data, verbose=self.verbose)
         pk_tables.set_ermrest_data(pk_tables_ref_data)  
         if self.verbose: print("- loadTablesFromJSON_2: pk_tables.ermrest_data: %s" % (pk_tables.ermrest_data.keys()))
         
@@ -1205,7 +1215,7 @@ class EntryProcessor(PipelineProcessor):
                 
                 # - Replace the FK references to the entry table
                 pk_tables.prepare_data(table)  # prepare structure to lookup data based on natural key values
-                if self.verbose: print("- loadTablesFromJSON_2: tname: %s pk_tables.ermrest_data [%d]: %s" % (tname, len(pk_tables.ermrest_data), pk_tables.ermrest_data.keys()))
+                #if self.verbose: print("- loadTablesFromJSON_2: tname: %s pk_tables.ermrest_data [%d]: %s" % (tname, len(pk_tables.ermrest_data), pk_tables.ermrest_data.keys()))
                 pk_tables.update_payload_with_rids(table, records)
                 
                 # -- Insert data to ermrest
@@ -1218,15 +1228,13 @@ class EntryProcessor(PipelineProcessor):
                 pb_table = pb.schemas['PDB'].tables[tname]
                 res = pb_table.insert(records).fetch() 
                 self.tname2inserted[tname] = res
-                self.logger.debug(f'inserted table {tname} [{len(res)}]: {res[0:2]}')
+                self.logger.debug(f'inserted table {tname} [{len(res)}]: {res[0:1]}')
                 if self.verbose: print(f'- {tname}: inserted [{len(res)}]')
             except Exception as e:
                 # TODO: Check whether the subject should be ERROR instead of DEPO. Answer: DEPO
-                error_message = 'Error in inserting values into table %s' % (tname)            
-                subject = '%s %s: %s (%s)' % (self.rid, 'DEPO', Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'], self.user_email)
-                self.log_exception(e, notify=False, subject=subject, body_prefix=error_message)  # check exception
+                message = self.log_exception(e, notify=False, subject=None, body_prefix=f'Error in inserting rows in table {tname}.')
                 self.rollbackInsertedRows(self.tname2inserted, self.entry_id)
-                raise ProcessingError("ERROR loadTablesFromJSON: %s" % (error_message))
+                raise ProcessingError("ERROR loadTablesFromJSON: %s" % (message))
             finally:
                 pass
 
@@ -1520,8 +1528,8 @@ class EntryProcessor(PipelineProcessor):
         currentDirectory=os.getcwd()            
         os.chdir('{}'.format(processing_dir))
         args = [self.python_bin, '-m', 'ihm.util.make_mmcif', '--histidines', input_cif_fpath, output_cif_fpath]
-        if self.verbose: print("getMakeMmcifFile: running subprocess in %s: %s" % (processing_dir, args))
-        self.logger.debug("getMakeMmcifFile: running subprocess in %s: %s" % (processing_dir, args))
+        if self.verbose: print("getMakeMmcifFile: running subprocess in %s: %s" % (processing_dir, " ".join(args)))
+        self.logger.debug("getMakeMmcifFile: running subprocess in %s: %s" % (processing_dir, " ".join(args)))
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdoutdata, stderrdata = p.communicate()
         returncode = p.returncode
@@ -1899,7 +1907,8 @@ class EntryProcessor(PipelineProcessor):
         os.chdir('{}'.format(self.py_rcsb_db))
         shutil.copy2(f'{self.py_rcsb_db}/rcsb/db/config/{exdb_fname}', f'{self.py_rcsb_db}/rcsb/db/config/exdb-config-example-ihm.yml')
         args = ['env', 'PYTHONPATH={}'.format(self.py_rcsb_db), self.python_bin, 'rcsb/db/tests-validate/testSchemaDataPrepValidate-ihm.py']
-        self.logger.debug('Running "{}" from the {} directory'.format(' '.join(args), self.py_rcsb_db)) 
+        self.logger.debug('mmcif2json: Running py_rcsb_db in %s with command: %s ' % (self.py_rcsb_db, ' '.join(args)))        
+        if self.verbose: print('mmcif2json: Running py_rcsb_db (%s) in %s with command: %s ' % (exdb_fname, self.py_rcsb_db, ' '.join(args)))
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdoutdata, stderrdata = p.communicate()
         returncode = p.returncode
@@ -2224,7 +2233,7 @@ class EntryProcessor(PipelineProcessor):
             self.sendMail(subject, message)
             
 
-    def clear_tables_in_cif(self, entry_rid, json_fpath=None):
+    def clear_cif_tables(self, json_fpath=None):
         """Clear all tables exist in the input cif file corresponding to entry_rid
         
         If json file path is provided, the tables listed in the file is used.
@@ -2235,18 +2244,20 @@ class EntryProcessor(PipelineProcessor):
             json_fpath (str): Json file path corresponding to the cif file we want to have the tables cleared.
         
         """
-        processing_dir = f"/tmp/{entry_rid}"
+        entry_rid = self.entry_rid
+        processing_dir = f"{self.scratch}/{entry_rid}"
         os.makedirs(processing_dir, exist_ok=True)
 
         # == get file info 
-        entry = get_ermrest_query(self.catalog, "PDB", "entry", constraints=f"RID={entry_rid}")[0]
+        #entry = get_ermrest_query(self.catalog, "PDB", "entry", constraints=f"RID={entry_rid}")[0]
+        entry_row = self.processing_row
 
         if not json_fpath:
             # == Download the cif file from hatrac
-            input_cif_finame = f"{entry_rid}_input.cif"
+            input_cif_fname = f"{entry_rid}_input.cif"
             output_cif_fpath = f"{processing_dir}/{entry_rid}_output.cif"
             hf = HatracFile(self.store)
-            hf.download_file(entry["mmCIF_File_URL"], processing_dir, input_cif_fname, verbose=False, hashes=["md5"])
+            hf.download_file(entry_row["mmCIF_File_URL"], processing_dir, input_cif_fname, verbose=False, hashes=["md5"])
 
             # == convert to a new cif file using make_mmcif
             self.getMakeMmcifFile(hf.file_path, output_cif_fpath)
@@ -2257,24 +2268,63 @@ class EntryProcessor(PipelineProcessor):
         else:
             pass
 
+        
         # == sort tnames based on json content
         topo_sorted_tnames = self.sortTablesFromFile(json_fpath)
         reverse_sorted_tnames = reversed(topo_sorted_tnames)
         
         # == delete content
         model = self.catalog.getCatalogModel()
-        entry_id = entry["id"]
+        entry_id = entry_row["id"]
         for tname in reverse_sorted_tnames:
-            table = model.tables[tname]
-            entry_id_cname = "structure_id" if structure_id in table.columns.elements else "entry_id"
+            table = model.schemas["PDB"].tables[tname]
+            if "structure_id" in table.columns.elements:
+                entry_id_cname = "structure_id"
+            elif "entry_id" in table.columns.elements:
+                entry_id_cname = "entry_id"
+            else:
+                continue
             delete_table_rows(self.catalog, "PDB", tname, constraints=f"{entry_id_cname}={entry_id}")
 
-        self.clear_directory(processing_dir, remove_dir=True)
+        # == clear up last_mmcif_file_md5 so the process_mmcif can pick up properly
+        updating_row = {"RID": entry_row["RID"], "Last_mmCIF_File_MD5":None }
+        self.update_processing_row(updating_row, tname="entry")
+                
+        self.clean_directory(processing_dir, remove_dir=True)
+
+
+    def clear_entry(self, exclude_tnames=["Entry_Latest_Archive", "Accession_Code"]):
+        try:
+            model = self.catalog.getCatalogModel()
+            entry_table = model.schemas["PDB"].tables["entry"]
+            for fkey in entry_table.referenced_by:
+                pk_tname = fkey.table.name
+                if pk_tname in exclude_tnames: continue
+                from_cnames =  [ c.name for c in fkey.column_map.keys() ]
+                to_cnames =  [ c.name for c in fkey.column_map.values() ]
+                if "id" in to_cnames:
+                    index = to_cnames.index("id")
+                    constraints = f"{from_cnames[index]}={self.entry_id}"
+                elif "RID" in to_cnames:
+                    index = to_cnames.index("RID")
+                    constraints = f"{from_cnames[index]}={self.entry_rid}"
+                else:
+                    raise Exception("Unexpected event: id or rid is not part of reference to entry")
+                print("clear_entry: tname: %s, constraints: %s" % (pk_tname, constraints))
+                delete_table_rows(self.catalog, "PDB", pk_tname, constraints=constraints)
+        except Exception as e:
+            raise 
+        finally:
+            print("Send notification?")
+            pass
         
-    def clear_entry(self, rid, id, user):
+        
+    def x_clear_entry(self):
         """
         TODO: Refactor
         """
+        rid = self.entry_rid
+        id = self.entry_id
         try:
             # Get the references of the "entry" table 
             references = []

@@ -274,9 +274,9 @@ class PkTables(object):
     
     """
 
-    def __init__(self, catalog=None, mandatory_fkeys=True, optional_fkeys=True, ermrest_data=None):
+    def __init__(self, catalog=None, mandatory_fkeys=True, optional_fkeys=True, ermrest_data=None, verbose=True):
         if catalog: self.catalog = catalog
-        
+        self.verbose = verbose
         self.mandatory_fkeys=mandatory_fkeys
         self.optional_fkeys=optional_fkeys
         self.ermrest_data = ermrest_data # dict(ermrest_data) if ermrest_data else {}
@@ -288,10 +288,7 @@ class PkTables(object):
         self.kcnames_kcvals2rows: dict = {}              # key column values to row grouped by key cnames
         self.ermrest_data: dict = {}                     # raw data of individual table
         
-        self.catalog: object = None
-        self.verbose: boolean = True
-        
-        print("------- PkTables: ermrest_data: %s ---" % (self.ermrest_data.keys()))
+        if self.verbose: print("------- PkTables: ermrest_data: %s ---" % (self.ermrest_data.keys()))
 
     
     # TODO: split data from model book keeping? 
@@ -302,7 +299,7 @@ class PkTables(object):
         combo_fkeys=[]
         if self.mandatory_fkeys: combo_fkeys.extend(get_mmcif_rid_mandatory_fkeys(table))
         if self.optional_fkeys: combo_fkeys.extend(get_mmcif_rid_optional_fkeys(table))
-        print("- prepare_model: tname: %s, combo_fkeys [%d]: %s" % (table.name, len(combo_fkeys), combo_fkeys))
+        if self.verbose: print("- prepare_model: tname: %s, combo_fkeys [%d]: %s" % (table.name, len(combo_fkeys), [fk.constraint_name for fk in combo_fkeys]))
         
         for fkey in combo_fkeys:
             pk_tname = fkey.pk_table.name
@@ -357,7 +354,7 @@ class PkTables(object):
                     k = tuple([ str(row[cname]) for cname in key_cnames ])  # convert to text
                     cvals2rows[k] = row
                 self.kcnames_kcvals2rows[pk_tname][key_cnames] = cvals2rows
-                print("%s: kcvals2rows[ %s ] : %s" % (pk_tname, key_cnames, cvals2rows))
+                if self.verbose: print("- %s: kcvals2rows[ %s ] : %s" % (pk_tname, key_cnames, cvals2rows))
     
     # note: if the structure in print statement is a tuple, need to convert to string first
     @classmethod
@@ -425,26 +422,28 @@ class PkTables(object):
             for cname in key_from_cnames:
                 if cname in headers: continue
                 if table.columns[cname].nullok:
-                    if self.verbose: print("missing optional fkey column: %s. Won't fill in RID column" % (cname))
+                    if self.verbose: print("- missing optional fkey column: %s. Won't fill in RID column" % (cname))
                     skip_fkey=True
                     break
                 else:
                     raise Exception("INPUT ERROR: table %s misses mandatory column %s" % (table.name, cname))
             if skip_fkey: continue
-            if self.verbose: print("- update_payload_with_rids: filling fkey: %s : %s -> %s : %s" % (fkey.constraint_name, key_from_cnames, pk_tname, key_cnames))
+            if self.verbose: print("- update_payload_with_rids: filling fkey: %s : %s : %s -> %s : %s" % (fkey.constraint_name, table.name, key_from_cnames, pk_tname, key_cnames))
+            printed = False # whether to print rid related key info
             for row in payload:
                 if pk_tname not in self.kcnames_kcvals2rows.keys(): continue
                 kcvals2rows = self.kcnames_kcvals2rows[pk_tname][key_cnames]
                 #print("kcvals2rows: %s" % (kcvals2rows))
                 key = tuple([ str(row[cname]) for cname in key_from_cnames ])  # convert to str
-                print("  - update_payload_with_rids: key %s : %s (from %s)" % (key_from_cnames, key, { k: v["RID"] for k,v in kcvals2rows.items() } ))
+                if self.verbose and not printed: print("  - update_payload_with_rids: key %s : %s -> %s (from %s)" % (pk_tname, key_from_cnames, key, { k: v["RID"] for k,v in kcvals2rows.items() } ))
                 # In case of optional fkey, the key column could have null value. In this case, don't fill in RID value
                 if None in key: continue
                 if key not in kcvals2rows.keys():
                     raise Exception("DATA ERROR: reference table: %s, do not contain columns: %s with reference values: %s" % (pk_tname, key_cnames, str(key)))
                 else:
                     row[rid_cname] = kcvals2rows[key]["RID"]
-                    print("  - update_payload_with_rids: pk_tname: %s -> row[%s] = %s" % (pk_tname, rid_cname, row[rid_cname]))
+                    if self.verbose and not printed: print("  - update_payload_with_rids: value: %s -> %s => row[%s] = %s" % (table.name, pk_tname, rid_cname, row[rid_cname]))
+                printed = True  # Print key info only once
         
     def get_ermrest_data(self, catalog, from_tables, entry_id):
         """Get raw data from from_tables (tables containing mandatory/optional fkeys to be filled in).
@@ -454,12 +453,12 @@ class PkTables(object):
         pk_tables = []
         for table in from_tables:
             combo_fkeys = get_mmcif_rid_optional_fkeys(table) + get_mmcif_rid_mandatory_fkeys(table)
-            print("get_ermrest_data: %s combo_fkeys: %s" % (table.name, [fkey.pk_table.name for fkey in combo_fkeys]))            
+            if self.verbose: print("get_ermrest_data: %s combo_fkeys: %s" % (table.name, [fkey.pk_table.name for fkey in combo_fkeys]))            
             for fkey in combo_fkeys:
                 pk_table = fkey.pk_table
                 if pk_table not in pk_tables: pk_tables.append(pk_table)
 
-        print("get_ermrest_data: pk_tables: %s" % ([table.name for table in pk_tables]))
+        if self.verbose: print("get_ermrest_data: pk_tables: %s" % ([table.name for table in pk_tables]))
         # get raw data based on entry_id
         ermrest_data = {}
         try:
@@ -469,7 +468,7 @@ class PkTables(object):
                 elif "entry_id" in pk_table.columns.elements:
                     ermrest_data[pk_table.name] = get_ermrest_query(catalog, "PDB", pk_table.tname, "entry_id=%s" % (entry_id))
                 else:
-                    print("WARNING: can't form a query for table %s " % (pk_table.name))
+                    print("- WARNING: can't form a query for table %s " % (pk_table.name))
         except Exception as e:
             raise ErmrestError("Unable to read data from parent tables of %s (%s)" % (pk_table.name, e))
 

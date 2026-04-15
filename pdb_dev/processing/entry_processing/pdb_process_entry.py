@@ -321,7 +321,7 @@ def main():
                                 action='store', type=str, help='The JSON configuration file. Default is PDB_CONFIG env variable.',
                                 default=os.getenv("PDB_CONFIG", None), required=False)
         cli.parser.add_argument('--action', metavar='<action>',  action='store', type=str,
-                                help='Workflow actions (entry, export, accession_code, release_mmCIF, Entry_Related_File). Default is from ACTION env variable',
+                                help='Workflow actions (entry, export, accession_code, release_mmCIF, Entry_Related_File, clear_cif_tables, clear_entry). Default is from ACTION env variable',
                                 default=os.getenv("ACTION", None), required=False)
         cli.parser.add_argument('--processor-id', metavar='<processor_id>', action='store', type=str, help='assigned processor_id',
                                 default=os.getenv("PROCESSOR_ID", "p0"), required=False)
@@ -329,6 +329,8 @@ def main():
         cli.parser.add_argument('--notify', action='store_true', help='Whether to send notification', default=False, required=False)
         cli.parser.add_argument('--preserve', action='store_true', help='Whether to preserve files generated during processing', default=False, required=False)
         #cli.parser.add_argument('--rollback', action='store_true', help='Rollback ermrest update', default=False, required=False)
+        cli.parser.add_argument('--clear-cif-tables', action='store_true', help='Clear all ermrest tables mentioned in user submitted cif file', default=False, required=False)
+        cli.parser.add_argument('--clear-entries', action='store_true', help='Clear all entry related tables', default=False, required=False)
         
         args = cli.parse_cli()
 
@@ -338,7 +340,13 @@ def main():
         config = load(config_filename, args)
         entry_processor = EntryProcessor(**config)
         print ('The client will be started')
-        entry_processor.start()
+
+        if args.action == "clear_cif_tables":
+            entry_processor.clear_cif_tables()
+        elif args.action == "clear_entry":
+            entry_processor.clear_entry()
+        else:
+            entry_processor.start()
         return 0
     except Exception as e:
         et, ev, tb = sys.exc_info()
