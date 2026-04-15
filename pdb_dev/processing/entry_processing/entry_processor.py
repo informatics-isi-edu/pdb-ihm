@@ -2310,8 +2310,13 @@ class EntryProcessor(PipelineProcessor):
                     constraints = f"{from_cnames[index]}={self.entry_rid}"
                 else:
                     raise Exception("Unexpected event: id or rid is not part of reference to entry")
-                print("clear_entry: tname: %s, constraints: %s" % (pk_tname, constraints))
+                # == delete
+                #print("clear_entry: tname: %s, constraints: %s" % (pk_tname, constraints))
                 delete_table_rows(self.catalog, "PDB", pk_tname, constraints=constraints)
+                
+                # == update entry so the process_mmcif can go ahead later
+                updating_row = {"RID": entry_row["RID"], "Last_mmCIF_File_MD5":None }
+                self.update_processing_row(updating_row, tname="entry")
         except Exception as e:
             raise 
         finally:
