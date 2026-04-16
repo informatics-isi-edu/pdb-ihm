@@ -1204,16 +1204,21 @@ class EntryProcessor(PipelineProcessor):
         model = self.catalog.getCatalogModel()
         for tname in topo_sorted_tnames:
             try:
+                # -- ignore these tables
+                if tname in ["ihm_entry_collection", "ihm_entry_collection_mapping"]: continue
+
+                # -- prepare PkTable model
                 table = model.schemas['PDB'].tables[tname]            
                 pk_tables.prepare_model(table)   # prepare structure to lookup data based on natural key values
-            
+
+                # -- read json records
                 records = pdb[tname]
                 if type(records) is dict: records = [records]  # convert single row to array
             
-                # - fill in structure_id, defaults, and handle case-insensitive. This method updates the input row
+                # -- fill in structure_id, defaults, and handle case-insensitive. This method updates the input row
                 self.updateRecordsBasic(table, records, self.entry_id)
                 
-                # - Replace the FK references to the entry table
+                # -- Replace the FK references to the entry table
                 pk_tables.prepare_data(table)  # prepare structure to lookup data based on natural key values
                 #if self.verbose: print("- loadTablesFromJSON_2: tname: %s pk_tables.ermrest_data [%d]: %s" % (tname, len(pk_tables.ermrest_data), pk_tables.ermrest_data.keys()))
                 pk_tables.update_payload_with_rids(table, records)
@@ -1234,7 +1239,7 @@ class EntryProcessor(PipelineProcessor):
                 # TODO: Check whether the subject should be ERROR instead of DEPO. Answer: DEPO
                 message = self.log_exception(e, notify=False, subject=None, body_prefix=f'Error in inserting rows in table {tname}.')
                 self.rollbackInsertedRows(self.tname2inserted, self.entry_id)
-                raise ProcessingError("ERROR loadTablesFromJSON: %s" % (message))
+                raise ProcessingError("ERROR loadTablesFromJSON: Failed to insert rows in %s" % (tname))
             finally:
                 pass
 
@@ -2293,7 +2298,12 @@ class EntryProcessor(PipelineProcessor):
         self.clean_directory(processing_dir, remove_dir=True)
 
 
-    def clear_entry(self, exclude_tnames=["Entry_Latest_Archive", "Accession_Code"]):
+    def clear_entry(self, exclude_tnames=["Entry_Latest_Archive", "Accession_Code", "Curation_Log"]):
+        """Clear all tables that reference entry row except those in exclude_tnames.
+
+        Args:
+            exclude_tnames (str): exclude table names from being cleared
+        """
         try:
             model = self.catalog.getCatalogModel()
             entry_table = model.schemas["PDB"].tables["entry"]
@@ -2315,7 +2325,7 @@ class EntryProcessor(PipelineProcessor):
                 delete_table_rows(self.catalog, "PDB", pk_tname, constraints=constraints)
                 
                 # == update entry so the process_mmcif can go ahead later
-                updating_row = {"RID": entry_row["RID"], "Last_mmCIF_File_MD5":None }
+                updating_row = {"RID": self.entry_rid, "Last_mmCIF_File_MD5":None }
                 self.update_processing_row(updating_row, tname="entry")
         except Exception as e:
             raise 
@@ -2325,9 +2335,6 @@ class EntryProcessor(PipelineProcessor):
         
         
     def x_clear_entry(self):
-        """
-        TODO: Refactor
-        """
         rid = self.entry_rid
         id = self.entry_id
         try:

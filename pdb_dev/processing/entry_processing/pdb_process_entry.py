@@ -61,7 +61,7 @@ def load(config_filename, args):
     
     # Load configuration file, or create configuration based on arguments
     conf = {}
-    processor_id = args.processor_id if hasattr(args, "processor_id") else "p0"
+    process_id = args.process_id if hasattr(args, "process_id") else "p0"
     if os.path.exists(config_filename):
         f = open(config_filename, 'r')
         try:
@@ -69,7 +69,7 @@ def load(config_filename, args):
             loglevel = conf.get('loglevel', 'info')
             #logfile = conf.get('log', None)            
             log_dir = conf.get('log_dir', '/home/pdbihm/log/entry_processing')
-            logfile = "%s/process_entry_%s_%s.log" % (log_dir, cfg.catalog_name, processor_id)
+            logfile = "%s/process_entry_%s_%s.log" % (log_dir, cfg.catalog_name, process_id)
             if loglevel and os.path.isdir(log_dir):
                 handler=logging.handlers.TimedRotatingFileHandler(logfile,when='D',backupCount=7)
                 logger.addHandler(handler)
@@ -323,8 +323,8 @@ def main():
         cli.parser.add_argument('--action', metavar='<action>',  action='store', type=str,
                                 help='Workflow actions (entry, export, accession_code, release_mmCIF, Entry_Related_File, clear_cif_tables, clear_entry). Default is from ACTION env variable',
                                 default=os.getenv("ACTION", None), required=False)
-        cli.parser.add_argument('--processor-id', metavar='<processor_id>', action='store', type=str, help='assigned processor_id',
-                                default=os.getenv("PROCESSOR_ID", "p0"), required=False)
+        cli.parser.add_argument('--processor-id', metavar='<process_id>', action='store', type=str, help='assigned process_id',
+                                default=os.getenv("PROCESS_ID", "p0"), required=False)
         cli.parser.add_argument('--verbose', action='store_true', help='Whether to print status to stdout', default=False, required=False)
         cli.parser.add_argument('--notify', action='store_true', help='Whether to send notification', default=False, required=False)
         cli.parser.add_argument('--preserve', action='store_true', help='Whether to preserve files generated during processing', default=False, required=False)
