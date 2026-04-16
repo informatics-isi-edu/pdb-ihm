@@ -2221,7 +2221,7 @@ class EntryProcessor(PipelineProcessor):
                 "Accession_Code": accession_code                
             }
             # update self.processing_row, so Accession_Code is available in addReleaseRecords
-            if not entry_row["Accession_Code"]: entry_row["Accession_Code"] = accession_code 
+            if not self.processing_row["Accession_Code"]: self.processing_row["Accession_Code"] = accession_code 
             self.addReleaseRecords()
         except Exception as e:
             process_status = Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES']
