@@ -324,7 +324,7 @@ def main():
         cli.parser.add_argument('--action', metavar='<action>',  action='store', type=str,
                                 help='Workflow actions (entry, export, accession_code, release_mmCIF, Entry_Related_File, clear_cif_tables, clear_entry). Default is from ACTION env variable',
                                 default=os.getenv("ACTION", None), required=False)
-        cli.parser.add_argument('--procesr-id', metavar='<process_id>', action='store', type=str, help='assigned process_id',
+        cli.parser.add_argument('--process-id', metavar='<process_id>', action='store', type=str, help='assigned process_id',
                                 default=os.getenv("PROCESS_ID", "p0"), required=False)
         cli.parser.add_argument('--verbose', action='store_true', help='Whether to print status to stdout', default=False, required=False)
         cli.parser.add_argument('--notify', action='store_true', help='Whether to send notification', default=False, required=False)
