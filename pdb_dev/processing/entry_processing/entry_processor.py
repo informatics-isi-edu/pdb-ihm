@@ -180,6 +180,7 @@ class EntryProcessor(PipelineProcessor):
         self.logger = kwargs.get("logger")
         self.logger.debug('Client initialized.')
 
+        self.process_id = kwargs.get("process_id", 'p0')
         self.verbose = kwargs.get("verbose", False)        
         self.notify = kwargs.get("notify", False)
         self.preserve = kwargs.get("preserve", False)

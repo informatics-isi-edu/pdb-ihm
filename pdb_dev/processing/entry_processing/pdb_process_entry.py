@@ -108,7 +108,8 @@ def load(config_filename, args):
 
     logger.info(f'args: hostname: {config["hostname"]}, catalog_id: {config["catalog_id"]}, rid: {config["rid"]}, action: {config["action"]}')
     print(f'args: hostname: {config["hostname"]}, catalog_id: {config["catalog_id"]}, rid: {config["rid"]}, action: {config["action"]}')    
-    
+
+    config['process_id'] = args.process_id
     config['verbose'] = args.verbose
     config['notify'] = args.notify
     config['preserve'] = args.preserve
@@ -323,7 +324,7 @@ def main():
         cli.parser.add_argument('--action', metavar='<action>',  action='store', type=str,
                                 help='Workflow actions (entry, export, accession_code, release_mmCIF, Entry_Related_File, clear_cif_tables, clear_entry). Default is from ACTION env variable',
                                 default=os.getenv("ACTION", None), required=False)
-        cli.parser.add_argument('--processor-id', metavar='<process_id>', action='store', type=str, help='assigned process_id',
+        cli.parser.add_argument('--procesr-id', metavar='<process_id>', action='store', type=str, help='assigned process_id',
                                 default=os.getenv("PROCESS_ID", "p0"), required=False)
         cli.parser.add_argument('--verbose', action='store_true', help='Whether to print status to stdout', default=False, required=False)
         cli.parser.add_argument('--notify', action='store_true', help='Whether to send notification', default=False, required=False)
