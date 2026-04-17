@@ -2308,35 +2308,39 @@ class EntryProcessor(PipelineProcessor):
             exclude_tnames (str): exclude table names from being cleared
         """
         try:
-            model = self.catalog.getCatalogModel()
-            entry_table = model.schemas["PDB"].tables["entry"]
-            for fkey in entry_table.referenced_by:
-                pk_tname = fkey.table.name
-                if pk_tname in exclude_tnames: continue
-                from_cnames =  [ c.name for c in fkey.column_map.keys() ]
-                to_cnames =  [ c.name for c in fkey.column_map.values() ]
-                if "id" in to_cnames:
-                    index = to_cnames.index("id")
-                    constraints = f"{from_cnames[index]}={self.entry_id}"
-                elif "RID" in to_cnames:
-                    index = to_cnames.index("RID")
-                    constraints = f"{from_cnames[index]}={self.entry_rid}"
-                else:
-                    raise Exception("Unexpected event: id or rid is not part of reference to entry")
-                # == delete
-                #print("clear_entry: tname: %s, constraints: %s" % (pk_tname, constraints))
-                delete_table_rows(self.catalog, "PDB", pk_tname, constraints=constraints)
+
+            sorted_tables = self.get_topo_sorted_tables(self.catalog, reverse=True)
+            for table in sorted_tables:
+                tname = table.name
+                if tname in (exclude_tnames + ["entry"]): continue
+                for fkey in table.foreign_keys:
+                    if fkey.pk_table.name != "entry": continue
+                    from_cnames =  [ c.name for c in fkey.column_map.keys() ]
+                    to_cnames =  [ c.name for c in fkey.column_map.values() ]
+                    if "id" in to_cnames:
+                        index = to_cnames.index("id")
+                        constraints = f"{from_cnames[index]}={self.entry_id}"
+                    elif "RID" in to_cnames:
+                        index = to_cnames.index("RID")
+                        constraints = f"{from_cnames[index]}={self.entry_rid}"
+                    else:
+                        raise Exception("Unexpected event: id or rid is not part of reference to entry")
+                    # == delete
+                    #print("clear_entry: tname: %s, constraints: %s" % (tname, constraints))
+                    delete_table_rows(self.catalog, "PDB", tname, constraints=constraints)
+                    break
                 
                 # == update entry so the process_mmcif can go ahead later
                 updating_row = {"RID": self.entry_rid, "Last_mmCIF_File_MD5":None }
-                self.update_processing_row(updating_row, tname="entry")
+                #self.update_processing_row(updating_row, tname="entry")
         except Exception as e:
             raise 
         finally:
             print("Send notification?")
             pass
         
-        
+
+    # DEPRECATED
     def x_clear_entry(self):
         rid = self.entry_rid
         id = self.entry_id

@@ -336,7 +336,7 @@ class PipelineProcessor(object):
             for table in model.schemas[sname].tables.values()
         }
         
-        # dependency map { table: [ referenced_table... ], ... }
+        # dependency map { table: set(referenced_table... ), ... } (either a set of list is ok)
         table_depmap = {
             table: {
                 # use a set to collapse references to same pk_table
@@ -369,17 +369,25 @@ class PipelineProcessor(object):
         return rank_dict
 
     @classmethod
-    def get_topo_sorted_tables(cls, catalog, tname_only=False, reverse=False):
+    def get_topo_sorted_tables(cls, catalog, tname_only=False, reverse=False, sort_tname=True):
+        """Topologically sort table based on foreign key dependencies. Tables with minimial outbound dependencies are
+        at the beginning of the list. 
+        """
         topo_sorted_tables = []
         ranked_tables = cls.get_topo_ranked_tables(catalog, tname_only=tname_only)
         
-        for group_no in range(0, len(ranked_tables.keys())):
-            topo_sorted_tables.extend(sorted(ranked_tables[group_no]))
+        for group_no, tset in ranked_tables.items():
+            if sort_tname:
+                tlist = sorted(tset, key=lambda t: t if tname_only else t.name)                
+            else:
+                tlist = list(tset)
+            #print("- group: %d => %s" % (group_no, tlist if tname_only else [t.name for t in tlist] ))
+            topo_sorted_tables.extend(tlist)
 
-        if not reverse:
-            return topo_sorted_tables
+        if reverse:
+            return reversed(topo_sorted_tables)            
         else:
-            return reversed(topo_sorted_tables)
+            return topo_sorted_tables
 
     # -------------------------------------------------------------------
     def RCB2user_uuid(self, RCB):
