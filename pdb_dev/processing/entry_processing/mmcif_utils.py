@@ -299,7 +299,7 @@ class PkTables(object):
         combo_fkeys=[]
         if self.mandatory_fkeys: combo_fkeys.extend(get_mmcif_rid_mandatory_fkeys(table))
         if self.optional_fkeys: combo_fkeys.extend(get_mmcif_rid_optional_fkeys(table))
-        if self.verbose: print("- prepare_model: tname: %s, combo_fkeys [%d]: %s" % (table.name, len(combo_fkeys), [fk.constraint_name for fk in combo_fkeys]))
+        if self.verbose: print("\n\n=== prepare_model: tname: %s, combo_fkeys [%d]: %s" % (table.name, len(combo_fkeys), [fk.constraint_name for fk in combo_fkeys]))
         
         for fkey in combo_fkeys:
             pk_tname = fkey.pk_table.name
@@ -345,7 +345,7 @@ class PkTables(object):
 
             # -- key column values to individual rows group by key_column_name
             if pk_tname not in self.ermrest_data.keys():
-                print("\nWARNING: %s: There is no parent rows %s to extract RID from" % (table.name, pk_tname))
+                if self.verbose: print("\n- %s: WARNING: There is no parent rows for %s to extract RID from" % (pk_tname, table.name))
             else:
                 self.kcnames_kcvals2rows[pk_tname] = self.kcnames_kcvals2rows.get(pk_tname, {})
                 if key_cnames in self.kcnames_kcvals2rows[pk_tname].keys(): continue  # pk_table_dict already generated
@@ -398,6 +398,8 @@ class PkTables(object):
 
     def update_payload_with_rids(self, table, payload):
         """Update payload with RID columns
+        Note: the payload is not necessary uniform e.g. some rows will have different number of columns (e.g. optional fkey
+        can be missing in the payload)
 
         Args:
             table (obj): ERMrest table object containing combo1/2 fkeys that needs to be managed
@@ -409,6 +411,8 @@ class PkTables(object):
         
         # not all columns in the model are in payload. Extract this to address optional column
         headers = payload[0].keys()
+
+        if self.verbose: print("\n=== update_payload_with_rids: %s with combo fkeys: %d" % (table.name, len(combo_fkeys)))
         
         # -for each fkey, fill in corresponding RID column
         for fkey in combo_fkeys:
@@ -417,32 +421,38 @@ class PkTables(object):
             key_cnames = self.fk_ctname2kcnames[pk_tname][fkey.constraint_name]
             key_from_cnames = [ to_cname2from_cnames[cname] for cname in key_cnames ]
             rid_cname = to_cname2from_cnames["RID"]
-            # skip filling in rid of this fkey if the column values are missing
-            skip_fkey = False
-            for cname in key_from_cnames:
-                if cname in headers: continue
-                if table.columns[cname].nullok:
-                    if self.verbose: print("- missing optional fkey column: %s. Won't fill in RID column" % (cname))
-                    skip_fkey=True
-                    break
-                else:
-                    raise Exception("INPUT ERROR: table %s misses mandatory column %s" % (table.name, cname))
-            if skip_fkey: continue
+            
             if self.verbose: print("- update_payload_with_rids: filling fkey: %s : %s : %s -> %s : %s" % (fkey.constraint_name, table.name, key_from_cnames, pk_tname, key_cnames))
             printed = False # whether to print rid related key info
             for row in payload:
                 if pk_tname not in self.kcnames_kcvals2rows.keys(): continue
+                if self.verbose: print("  - row: %s" % (json.dumps(row, indent=4)))
+                
+                # -- skip filling in rid of this fkey if the column values are missing
+                skip_fkey = False
+                for cname in key_from_cnames:
+                    if cname in row.keys(): continue
+                    if table.columns[cname].nullok:
+                        if self.verbose: print("    - missing optional fkey column: %s. Won't fill in column %s" % (cname, rid_cname))
+                        skip_fkey=True
+                        break
+                    else:
+                        raise Exception("INPUT ERROR: table %s misses mandatory column %s" % (table.name, cname))
+                if skip_fkey:  continue
+                
                 kcvals2rows = self.kcnames_kcvals2rows[pk_tname][key_cnames]
-                #print("kcvals2rows: %s" % (kcvals2rows))
-                key = tuple([ str(row[cname]) for cname in key_from_cnames ])  # convert to str
-                if self.verbose and not printed: print("  - update_payload_with_rids: key %s : %s -> %s (from %s)" % (pk_tname, key_from_cnames, key, { k: v["RID"] for k,v in kcvals2rows.items() } ))
-                # In case of optional fkey, the key column could have null value. In this case, don't fill in RID value
-                if None in key: continue
+                #print("  - kcvals2rows: %s" % (kcvals2rows))
+                key = tuple([ str(row[cname]) if cname in row.keys() else None for cname in key_from_cnames ])  # convert to str
+                if self.verbose and not printed: print("    - update_payload_with_rids: key %s : %s == %s -> %s ::: from %s" % (pk_tname, key_from_cnames, key, kcvals2rows[key]["RID"], { k: v["RID"] for k,v in kcvals2rows.items() } ))
+                # -- In case of optional fkey, the key column could have null value. In this case, don't fill in RID value
+                if None in key:
+                    if self.verbose: print("    - None detected in key: %s" % (key))
+                    continue
                 if key not in kcvals2rows.keys():
                     raise Exception("DATA ERROR: reference table: %s, do not contain columns: %s with reference values: %s" % (pk_tname, key_cnames, str(key)))
                 else:
                     row[rid_cname] = kcvals2rows[key]["RID"]
-                    if self.verbose and not printed: print("  - update_payload_with_rids: value: %s -> %s => row[%s] = %s" % (table.name, pk_tname, rid_cname, row[rid_cname]))
+                    if self.verbose and not printed: print("    - update_payload_with_rids: value: %s -> %s => row[%s] = %s" % (table.name, pk_tname, rid_cname, row[rid_cname]))
                 printed = True  # Print key info only once
         
     def get_ermrest_data(self, catalog, from_tables, entry_id):
