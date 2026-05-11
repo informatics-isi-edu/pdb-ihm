@@ -1709,6 +1709,7 @@ class EntryProcessor(PipelineProcessor):
         
         """
         entry_id = self.entry_id
+        entry_row = self.processing_row
         # == create cname2ctypes for tables to be written to cif
         tname2ctypes = {
             "ihm_entry_collection": {
@@ -1733,9 +1734,14 @@ class EntryProcessor(PipelineProcessor):
         #url = '/attribute/A:=PDB:entry/id={}/B:=PDB:ihm_entry_collection_mapping/C:=PDB:ihm_entry_collection/B:collection_id,entry_id:=A:Accession_Code'.format(urlquote(entry_id))
         tname = 'ihm_entry_collection_mapping'
         constraints = f'id={entry_id}/B:=PDB:ihm_entry_collection_mapping'
-        results = get_ermrest_query(self.catalog, "PDB", "entry", constraints=constraints, attributes=["collection_id", "entry_id:=M:Accession_Code"])
+        results = get_ermrest_query(self.catalog, "PDB", "entry", constraints=constraints, attributes=["collection_id"])
+        # -- Use entry_row to get accession_code in case it hasn't been written to the database yet
+        accession_code = entry_row["Accession_Code"] if entry_row["Accession_Code"] else entry_row["id"]
+        for row in results:
+            row["entry_id"] = accession_code
+        if self.verbose: print("- addCollectionRecords: %s" % (json.dumps(results, indent=4)))
         self.writeTableToCif(tname, tname2ctypes[tname], results, fw)
-
+    
     @classmethod
     def fname2ftype(cls, fname):
         """Return system generated file type based on file name
@@ -2203,6 +2209,7 @@ class EntryProcessor(PipelineProcessor):
         """
         
         entry_rid = self.rid
+        entry_row = self.processing_row
         current_workflow_status = self.workflow_status # 'SUBMISSION COMPLETE'
         next_workflow_status = Next_Workflow_Status[current_workflow_status] # HOLD
         process_status = Process_Status_Terms['SUCCESS']
@@ -2210,19 +2217,25 @@ class EntryProcessor(PipelineProcessor):
         message = f'The workflow status of the entry with RID={self.rid} was changed to {next_workflow_status}.'
         
         try:
-            accession_code = self.getAccessionCode(entry_rid)
+            if entry_row["Accession_Code"]:
+                accession_code = entry_row["Accession_Code"]
+            else:
+                accession_code = self.getAccessionCode(entry_rid)
+                entry_row["Accession_Code"] = accession_code  # update, so Accession_Code is available in addReleaseRecords
+            # == check not null accession code
             if accession_code == None:
                 raise ProcessError("ERROR set_accession_code. No PDB accession code found.")
+            # == export with release info
+            if self.verbose: print("- set_accession_code: accession_code: %s " % (accession_code))
+            self.addReleaseRecords()
+            # == prepare update package
             updating_row = {
                 'RID' : entry_rid,
                 'Workflow_Status' : next_workflow_status,
                 'Process_Status' : process_status, 
                 'Record_Status_Detail' : None,
-                "Accession_Code": accession_code                
+                'Accession_Code' : accession_code,
             }
-            # update self.processing_row, so Accession_Code is available in addReleaseRecords
-            if not self.processing_row["Accession_Code"]: self.processing_row["Accession_Code"] = accession_code 
-            self.addReleaseRecords()
         except Exception as e:
             process_status = Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES']
             subject = '%s %s: %s (%s)' % (entry_rid, current_workflow_status, process_status, self.user_email) 

@@ -44,7 +44,7 @@ def compare_json_schema(ermrest_model, cif_docs, ignore_upper_case=True):
         pdb_cnames = set(pdb_table.columns.elements) - {"Owner", "RID", "RCT", "RMT", "RCB", "RMB"}
         #print("pdb_cnames: %s" % (pdb_cnames))
         if ignore_upper_case:
-            pdb_cnames = { cname if cname[0].islower() else None for cname in pdb_cnames }
+            pdb_cnames = { cname if cname[0].islower() or cname.startswith("Cartn") else None for cname in pdb_cnames }
             pdb_cnames.discard(None)
         
         cdefs = mmcif.get_cdefs(tdef)
@@ -59,6 +59,8 @@ def compare_json_schema(ermrest_model, cif_docs, ignore_upper_case=True):
             print("- c: intersection: tname:%s [%d]: %s" % (tname, len(intersection), sorted(intersection)))
             print("- c: mmcif only: tname:%s [%d]: %s" % (tname, len(mmcif_only), sorted(mmcif_only)))
             print("- c: ermrest only: tname:%s [%d]: %s" % (tname, len(pdb_only), sorted(pdb_only)))
+        if tname in ["ihm_pseudo_site"]:
+            print("  - ermrest cnames: %s" % ({ n if n not in ["RID", "RCB", "RMB", "RCT", "RMT"] else None for n in pdb_cnames} ))
 
         
 # ----------------------------------------------------------------------

@@ -281,7 +281,7 @@ class PipelineProcessor(object):
         return file_path
     
     # -------------------------------------------------
-    def upload_file_groups(self, data_dir, filter_groups, namespace_prefix, add_rid_prefix=False):
+    def upload_file_groups(self, data_dir, filter_groups, namespace_prefix, file_prefix=None):
         """Upload files in the directory to hatrac that match regex criteria specified in filter_groups.
         If filter_groups are not set, allow all files to match.
         Note: To upload an individual file, specify the data_dir and put its exact filename in the filter list.
@@ -307,7 +307,7 @@ class PipelineProcessor(object):
                 if not file.is_file(): continue
                 # TODO: rename files if needed. Suggest prepend with structure_mmcif RID
                 hf = HatracFile(self.store)
-                hf_file_name = f"{self.rid}_{file.name}" if add_rid_prefix else file.name
+                hf_file_name = f"{file_prefix}_{file.name}" if file_prefix else file.name
                 hf_file_name = hf.sanitize_filename(hf_file_name)
                 upload_url = f"{namespace_prefix}/{hf_file_name}"
                 hf.upload_file(file.path, upload_url, hf_file_name, verbose=True)
