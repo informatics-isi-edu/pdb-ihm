@@ -1834,7 +1834,7 @@ class EntryProcessor(PipelineProcessor):
             if not os.path.isdir(output_path):
                 raise SubProcessError(f'ERROR report_validation: IHMV output dir {output_path} not found')
             hatrac_namespace = f'{self.hatrac_generated_prefix}/validation_report'
-            ihmv_hfs = self.upload_file_groups(output_path, [".pdf", "_html.tar.gz"], namespace_prefix=hatrac_namespace, add_rid_prefix=False)
+            ihmv_hfs = self.upload_file_groups(output_path, [".pdf", "_html.tar.gz"], namespace_prefix=hatrac_namespace)
 
             # == create payload
             ihmv_payload = []

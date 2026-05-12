@@ -524,6 +524,9 @@ def main(server_name, catalog_id, credentials, args):
     catalog.dcctx['cid'] = 'pipeline/pdb'
     model = catalog.getCatalogModel()
 
+    check_entry_tables_fkeys(catalog, ignore_restraints=True)
+    return
+
     mmcif = mmCIFErmrestModel
     model_cif = mmcif.load_mmcif('/home/hongsuda/git/pdb-ihm-ops/scripts/home-config/default-workflow/config/entry_processing/deprecated/json-full-db-ihm_dev_full-col-ihm_dev_full.json')
     tdefs = mmcif.get_tdefs(model_cif)
@@ -537,7 +540,6 @@ def main(server_name, catalog_id, credentials, args):
         
     #check_shared_fkey_columns(catalog, sname="MA", skip_rid=False)
     
-    #check_entry_tables_fkeys(catalog, ignore_restraints=True)
 
     #get_legacy_combo1_columns(catalog)
     #get_legacy_optional_fks(catalog)
