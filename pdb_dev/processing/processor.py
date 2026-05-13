@@ -105,7 +105,7 @@ class PipelineProcessor(object):
     email_subject_prefix = "PDB-IHM"
     log_dir = "/home/pdbihm/log"
     verbose = False
-    notify = False
+    mute = False
     logger = None
     preserve = False
     processing_details_limit = 2500  # limit of what goes in details
@@ -134,10 +134,14 @@ class PipelineProcessor(object):
         # -- local host
         self.local_hostname = socket.gethostname() # processing host
 
-        if kwargs.get("email", None): self.email_config = kwargs.get("email")
-        if kwargs.get("logger", None): self.logger = kwargs.get("logger")
-        if kwargs.get("verbose", None): self.verbose = kwargs.get("verbose")
-        if kwargs.get("notify", None): self.notify = kwargs.get("notify")                
+        self.email_config = kwargs.get("email", self.email_config)
+        self.log_dir = kwargs.get("log_dir", self.log_dir)                
+        self.logger = kwargs.get("logger", self.logger)
+        self.process_id = kwargs.get("process_id", 'p0')
+        
+        self.verbose = kwargs.get("verbose", self.verbose)
+        self.mute = kwargs.get("mute", self.mute)
+        self.preserve = kwargs.get("preserve", self.preserve)
         
         # -- archive/release time
         if kwargs.get('cutoff_time_pacific', None): self.cutoff_time_pacific = kwargs.get('cutoff_time_pacific') 
@@ -213,7 +217,16 @@ class PipelineProcessor(object):
             raise Exception("Config ERROR: config file is not a json file: %s" % (config_file))
         return config
 
-
+    @classmethod
+    def truncate_message(cls, message, limit=None):
+        if not limit: limit = cls.processing_details_limit
+        if not message:
+            return message
+        elif len(message) < limit:
+            return message
+        else:
+            return message[-limit:] 
+    
     def clean_directory(self, dir_path, remove_dir=False):
         """Clean up files and directories in a dir_path unless self.cleanup is False
         
@@ -514,7 +527,7 @@ class PipelineProcessor(object):
         HT TODO: make this not deployment specific
         """
         
-        if not self.notify:
+        if self.mute:
             if self.verbose: print("Send mail: subject: %s, text:%s" % (subject, text))
             return
         if self.email_config and self.email_config['server'] and self.email_config['sender'] and (self.email_config['receivers'] or self.email_config['curators']):
@@ -550,8 +563,8 @@ class PipelineProcessor(object):
                         self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
                 except:
                     et, ev, tb = sys.exc_info()
-                    self.logger.error('-- got sendMail exception "%s"' % str(ev))
-                    self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+                    if self.logger: self.logger.error('-- got sendMail exception "%s"' % str(ev))
+                    if self.logger: self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
                     ready = True
 
 # -- =================================================================================
@@ -577,3 +590,6 @@ if __name__ == '__main__':
     credentials = get_credential(args.host, args.credential_file)
     
     main(args.host, args.catalog_id, credentials, args)
+
+
+    

@@ -111,7 +111,7 @@ def load(config_filename, args):
 
     config['process_id'] = args.process_id
     config['verbose'] = args.verbose
-    config['notify'] = args.notify
+    config['mute'] = args.mute
     config['preserve'] = args.preserve
     #config['rollback'] = args.rollback
     #config['dry_run'] = args.dry_run    
@@ -327,7 +327,7 @@ def main():
         cli.parser.add_argument('--process-id', metavar='<process_id>', action='store', type=str, help='assigned process_id',
                                 default=os.getenv("PROCESS_ID", "p0"), required=False)
         cli.parser.add_argument('--verbose', action='store_true', help='Whether to print status to stdout', default=False, required=False)
-        cli.parser.add_argument('--notify', action='store_true', help='Whether to send notification', default=False, required=False)
+        cli.parser.add_argument('--mute', action='store_true', help='Whether to mute notification', default=False, required=False)
         cli.parser.add_argument('--preserve', action='store_true', help='Whether to preserve files generated during processing', default=False, required=False)
         #cli.parser.add_argument('--rollback', action='store_true', help='Rollback ermrest update', default=False, required=False)
         cli.parser.add_argument('--clear-cif-tables', action='store_true', help='Clear all ermrest tables mentioned in user submitted cif file', default=False, required=False)
@@ -339,8 +339,9 @@ def main():
         if not config_filename:
             raise Exception("ERROR: A configuration file is needed to run pdb_process_entry")
         config = load(config_filename, args)
+        
+        print ('--- The client will be started ---')        
         entry_processor = EntryProcessor(**config)
-        print ('The client will be started')
 
         if args.action == "clear_cif_tables":
             entry_processor.clear_cif_tables()

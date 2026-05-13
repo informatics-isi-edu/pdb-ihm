@@ -134,6 +134,8 @@ class IHMVProcessor(PipelineProcessor):
         Run the IHMV processor logic.
         """
         ihmv_process = None
+        message = None
+        processing_details = None
         
         try:
             data_dir = f"{self.scratch_dir}/{self.structure_rid}"
@@ -242,6 +244,8 @@ class IHMVProcessor(PipelineProcessor):
                 # -- set processing status to be updated at the end
                 processing_status = "Success"
                 processing_details = None
+                subject = f"{self.structure_rid} Success"
+                message = f"Structure_mmCIF {self.structure_rid} validation report was successfully processed"                
         except TimeoutExpired as e:
             if ihmv_process: ihmv_process.kill()
             processing_status = "Error"            
@@ -251,6 +255,7 @@ class IHMVProcessor(PipelineProcessor):
             processing_status = "Error"
             processing_details = self.log_exception(e)
             subject = f"{self.structure_rid} Error: {e}"
+            delete_table_rows(self.catalog, "IHMV", "Generated_File", constraints=f"Structure_mmCIF={self.structure_rid}")
         finally:
             # - update ermrest
             #raise Exception("ERROR: test when update fails")
@@ -260,13 +265,9 @@ class IHMVProcessor(PipelineProcessor):
                 "Processing_Details": processing_details[(0 - self.processing_details_limit):] if processing_details else None # truncate message
             }]
             update_table_rows(self.catalog, "IHMV", "Structure_mmCIF", payload=structure_payload, column_names=["Processing_Status", "Processing_Details"])
-            # - notify
-            if processing_status == "Success":
-                if self.logger: self.logger.info(f"Structure_mmCIF {self.structure_rid}: validation report successfully processed")
-                self.sendMail(f"{self.structure_rid} Success", f"Structure_mmCIF {self.structure_rid} validation report was successfully processed", receivers=self.ihmv_receivers)
-            elif processing_status == "Error":
-                self.sendMail(subject, processing_details, receivers=self.ihmv_receivers)
-            print("Processing_Status: %s\nProcessing_details: %s" % (processing_status, processing_details))
+            self.sendMail(subject, message if message else processing_details, receivers=self.ihmv_receivers)
+            if self.verbose: print("Structure_mmCIF: %s, Processing_Status: %s\nProcessing_details: %s" % (self.structure_rid, processing_status, processing_details))
+            self.logger.info("Structure_mmCIF: %s, Processing_Status: %s\nProcessing_details: %s" % (self.structure_rid, processing_status, processing_details))
             # - cleaup directory
             shutil.rmtree(data_dir, ignore_errors=True)
 

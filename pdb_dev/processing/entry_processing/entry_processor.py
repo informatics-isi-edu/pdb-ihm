@@ -176,21 +176,17 @@ class EntryProcessor(PipelineProcessor):
         #self.combo1_columns = get_legacy_combo1_columns(self.catalog)  # deprecated
         #self.optional_fks = get_legacy_optional_fks(self.catalog)      # deprecated
 
-        if kwargs.get("log_dir", None): self.log_dir = kwargs.get("log_dir")        
         self.logger = kwargs.get("logger")
-        self.logger.debug('Client initialized.')
 
-        self.process_id = kwargs.get("process_id", 'p0')
-        self.verbose = kwargs.get("verbose", False)        
-        self.notify = kwargs.get("notify", False)
-        self.preserve = kwargs.get("preserve", False)
-    
+
         self.tname2inserting = {}  # inserting rows, used for debugging
         self.tname2inserted = {}   # inserted rows
 
         self.initialize_processing_row(self.rid)
 
-        if self.verbose: print("------- EntryProcessor: rid: %s, action: %s, notify: %s, verbose: %s, preserve: %s" % (self.rid, self.action, self.notify, self.verbose, self.preserve))
+        if self.verbose: print("------- EntryProcessor: rid: %s, action: %s, mute: %s, verbose: %s, preserve: %s" % (self.rid, self.action, self.mute, self.verbose, self.preserve))
+        if self.logger: self.logger.debug("------- EntryProcessor: rid: %s, action: %s, mute: %s, verbose: %s, preserve: %s" % (self.rid, self.action, self.mute, self.verbose, self.preserve))
+        
         #print("- processing_row: %s" % (self.processing_row))
         #print("- user_row: %s\n" % (self.user_row))
 
@@ -310,7 +306,7 @@ class EntryProcessor(PipelineProcessor):
             updating_row.update({
                 'Restraint_Workflow_Status' : 'ERROR',
                 'Restraint_Process_Status' : Process_Status_Terms['ERROR_PROCESSING_UPLOADED_RESTRAINT_FILES'],
-                'Record_Status_Detail' : message,
+                'Record_Status_Detail' : self.truncate_message(message),
             })
             if self.verbose: print("process_entry_related_fiie: fail with subject: %s" % (subject))
             try:
@@ -711,8 +707,9 @@ class EntryProcessor(PipelineProcessor):
                 'RID': entry_rid,
                 'Workflow_Status': 'ERROR',               
                 'Process_Status': process_status,
-                'Record_Status_Detail': message,
+                'Record_Status_Detail': self.truncate_message(message),
             }
+            delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=f"Structure_Id={self.entry_id}")            
         finally:
             if fw and not fw.closed: fw.close()
             if dest_fpath and os.path.isfile(export_fpath) and export_fpath!=dest_fpath: shutil.copy2(export_fpath, dest_fpath)
@@ -891,7 +888,7 @@ class EntryProcessor(PipelineProcessor):
                 'RID': self.rid,
                 'Workflow_Status': 'ERROR',
                 'Process_Status': process_status,
-                'Record_Status_Detail': message,
+                'Record_Status_Detail': self.truncate_message(message),
             }
         finally:
             # == update ermrest
@@ -2191,8 +2188,9 @@ class EntryProcessor(PipelineProcessor):
                 'RID': entry_rid,
                 'Workflow_Status': 'ERROR',               
                 'Process_Status': process_status,
-                'Record_Status_Detail': message,
+                'Record_Status_Detail': self.truncate_message(message),
             }
+            delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=f"Structure_Id={self.entry_id}")            
         finally:
             if fr and not fr.closed: fr.close()
             if fw and not fw.closed: fw.close()
@@ -2244,8 +2242,9 @@ class EntryProcessor(PipelineProcessor):
                 'RID': entry_rid,
                 'Workflow_Status': 'ERROR',
                 'Process_Status': process_status,
-                'Record_Status_Detail': message,
+                'Record_Status_Detail': self.truncate_message(message),
             }
+            delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=f"Structure_Id={self.entry_id}")            
         finally:
             # == update ermrest
             self.update_processing_row(updating_row)
@@ -2411,7 +2410,7 @@ class EntryProcessor(PipelineProcessor):
                 'RID': entry_rid,
                 'Workflow_Status': 'ERROR',               
                 'Process_Status': process_status,
-                'Record_Status_Detail': message,
+                'Record_Status_Detail': self.truncate_message(message),
             }
             self.update_processing_row(updating_row)
 
