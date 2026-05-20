@@ -2443,7 +2443,7 @@ def update_PDB_ihm_ensemble_sub_sample(model):
                 'markdown_name' : 'Structure Id',
             },
             'id', 
-            'sample_name', 
+            'name', 
             {
                 'source' : [{'outbound': ['PDB', 'ihm_ensemble_sub_sample_ihm_ensemble_info_combo1_fkey']}, 'RID'],
                 'comment' : 'A reference to table ihm_ensemble_info.ensemble_id.',
@@ -2469,7 +2469,7 @@ def update_PDB_ihm_ensemble_sub_sample(model):
                 'markdown_name' : 'Structure Id',
             },
             'id', 
-            'sample_name', 
+            'name', 
             {
                 'source' : [{'outbound': ['PDB', 'ihm_ensemble_sub_sample_ihm_ensemble_info_combo1_fkey']}, 'RID'],
                 'comment' : 'A reference to table ihm_ensemble_info.ensemble_id.',
@@ -2496,7 +2496,7 @@ def update_PDB_ihm_ensemble_sub_sample(model):
                 'markdown_name' : 'Structure Id',
             },
             'id', 
-            'sample_name', 
+            'name', 
             {
                 'source' : [{'outbound': ['PDB', 'ihm_ensemble_sub_sample_ihm_ensemble_info_combo1_fkey']}, 'RID'],
                 'comment' : 'A reference to table ihm_ensemble_info.ensemble_id.',

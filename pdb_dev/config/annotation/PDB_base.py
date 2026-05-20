@@ -942,6 +942,11 @@ def update_PDB_entity_src_gen(model):
             'gene_src_common_name', 
             'gene_src_genus', 
             'pdbx_gene_src_scientific_name', 
+            'host_org_common_name', 
+            'pdbx_gene_src_ncbi_taxonomy_id', 
+            'pdbx_host_org_ncbi_taxonomy_id', 
+            'pdbx_host_org_scientific_name', 
+            'pdbx_host_org_strain',
         ],
         'entry' :  [
             {
@@ -959,6 +964,11 @@ def update_PDB_entity_src_gen(model):
             'gene_src_common_name', 
             'gene_src_genus', 
             'pdbx_gene_src_scientific_name', 
+            'host_org_common_name', 
+            'pdbx_gene_src_ncbi_taxonomy_id', 
+            'pdbx_host_org_ncbi_taxonomy_id', 
+            'pdbx_host_org_scientific_name', 
+            'pdbx_host_org_strain',
         ],
     })
 
@@ -990,7 +1000,27 @@ def update_PDB_entity_src_gen(model):
     # ----------------------------
     schema.tables["entity_src_gen"].columns["pdbx_src_id"].display.update(
         {'name' : 'Source Id', }
+    ) 
+    # ----------------------------
+    schema.tables["entity_src_gen"].columns["host_org_common_name"].display.update(
+        {'name' : 'Host Organism Common Name', }
     )
+    # ----------------------------
+    schema.tables["entity_src_gen"].columns["pdbx_gene_src_ncbi_taxonomy_id"].display.update(
+        {'name' : 'Gene Source Organism NCBI Taxonomy ID', }
+    ) 
+    # ----------------------------
+    schema.tables["entity_src_gen"].columns["pdbx_host_org_ncbi_taxonomy_id"].display.update(
+        {'name' : 'Host Organism NCBI Taxonomy ID', }
+    ) 
+    # ----------------------------
+    schema.tables["entity_src_gen"].columns["pdbx_host_org_scientific_name"].display.update(
+        {'name' : 'Host Organism Scientific Name', }
+    ) 
+    # ----------------------------
+    schema.tables["entity_src_gen"].columns["pdbx_host_org_strain"].display.update(
+        {'name' : 'Host Organism Strain', }
+    ) 
 
     # ----------------------------
     schema.tables["entity_src_gen"].foreign_keys[(schema,"entity_src_gen_entity_id_fkey")].foreign_key.update({
