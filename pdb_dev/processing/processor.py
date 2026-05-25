@@ -108,7 +108,7 @@ class PipelineProcessor(object):
     mute = False
     logger = None
     preserve = False
-    processing_details_limit = 2500  # limit of what goes in details
+    processing_details_limit = 2800  # limit of what goes in details
     
     def __init__(self, **kwargs):
         # -- ermrest and hatrac
@@ -218,14 +218,17 @@ class PipelineProcessor(object):
         return config
 
     @classmethod
-    def truncate_message(cls, message, limit=None):
+    def truncate_message(cls, message, limit=None, truncate_tail=False):
+        """
+        truncate_tail (boolean): If True, truncate at the end of the message, else truncate at the beginning (last limit characters are returned).
+        """
         if not limit: limit = cls.processing_details_limit
         if not message:
             return message
         elif len(message) < limit:
             return message
         else:
-            return message[-limit:] 
+            return message[0:limit] if truncate_tail else message[-limit:]
     
     def clean_directory(self, dir_path, remove_dir=False):
         """Clean up files and directories in a dir_path unless self.cleanup is False
@@ -482,7 +485,7 @@ class PipelineProcessor(object):
         error_message = ""
         if e:
             details = f'{e.details}' if isinstance(e, ProcessingError) and e.details else ''
-            error_message = f'{str(e)}. {details}\n'
+            error_message = f'{str(e)}.\n{details}\n'
         et, ev, tb = sys.exc_info()
         tb_message = error_message + (body_prefix if body_prefix else "") + '\n' + ''.join(traceback.format_exception(et, ev, tb))
         if self.logger:

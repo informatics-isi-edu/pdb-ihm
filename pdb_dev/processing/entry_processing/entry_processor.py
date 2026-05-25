@@ -1818,7 +1818,7 @@ class EntryProcessor(PipelineProcessor):
             returncode = p.returncode
 
             if returncode != 0:
-                limit = self.processing_details_limit - len(stderrdata) - 100
+                limit = self.processing_details_limit - len(stderrdata) - 200
                 stdoutdata = stdoutdata[-limit:] if limit > 0 else ""
                 error_msg = f'stdoutdata: {stdoutdata}\nstderrdata: {stderrdata}\n'
                 raise SubProcessError(f'ERROR report_validation: IHMV failed with non-zero return code.', details=error_msg)
@@ -1867,8 +1867,7 @@ class EntryProcessor(PipelineProcessor):
             p.kill()
             self.logger.error('got TimeoutExpired exception "%s"' % str(ev))
             raise SubProcessError("ERROR report_validation: IHMV TimeoutExpired")
-        except Exception as e:
-            raise ProcessingError("ERROR report_validation: unable to generate IHMV validation reports")
+        # for other types of Exception, catch at the caller
         finally:
             os.chdir(currentDirectory)
 
@@ -2180,7 +2179,10 @@ class EntryProcessor(PipelineProcessor):
             
         except Exception as e:
             if current_workflow_status != "RELEASE READY":
-                raise ProcessingError("ERROR addReleaseRecords: FAILED")
+                if isinstance(e, SubProcessError):
+                    raise ProcessingError("ERROR addReleaseRecords: FAILED while executing a subprocess", details=e.details)
+                else:
+                    raise ProcessingError("ERROR addReleaseRecords: FAILED", details=e.details if isinstance(e, ProcessingError) else None)
             process_status = process_status_error
             subject = '%s %s: %s (%s)' % (entry_rid, current_workflow_status, process_status, self.user_email) 
             message = self.log_exception(e, notify=False, subject=subject, body_prefix="Error occured in addReleaseRecords")
@@ -2188,7 +2190,7 @@ class EntryProcessor(PipelineProcessor):
                 'RID': entry_rid,
                 'Workflow_Status': 'ERROR',               
                 'Process_Status': process_status,
-                'Record_Status_Detail': self.truncate_message(message),
+                'Record_Status_Detail': self.truncate_message(message, truncate_tail=False),
             }
             delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=f"Structure_Id={self.entry_id}")            
         finally:

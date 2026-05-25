@@ -40,7 +40,7 @@ class IHMVProcessor(PipelineProcessor):
     email_config = {}
     email_subject_prefix = "IHMV"
     ihmv_receivers = "ihmv@pdb-ihm.org" #"aozalevsky@gmail.com,pdb-ihm@wwpdb.org"   # comma separated list
-    processing_details_limit = 2500
+    processing_details_limit = 2600
     structure_row = None
     user_id = None    # user globus_id e.g. https://auth.globus.org/<uuid>
     user_uuid = None  # user uuid to be used as part of hatrac path
@@ -195,7 +195,7 @@ class IHMVProcessor(PipelineProcessor):
             stdoutdata, stderrdata = ihmv_process.communicate(timeout=self.timeout*60)
             returncode = ihmv_process.returncode
             if returncode != 0:
-                limit = self.processing_details_limit - len(stderrdata) - 100
+                limit = self.processing_details_limit - len(stderrdata) - 200
                 stdoutdata = stdoutdata[-limit:] if limit > 0 else ""
                 error_msg = f'stdoutdata: {stdoutdata}\nstderrdata: {stderrdata}\n'
                 raise SubProcessError("Non-zero return code", details=error_msg)
@@ -262,7 +262,8 @@ class IHMVProcessor(PipelineProcessor):
             structure_payload = [{
                 "RID": self.structure_rid,
                 "Processing_Status": processing_status,
-                "Processing_Details": processing_details[(0 - self.processing_details_limit):] if processing_details else None # truncate message
+                #"Processing_Details": processing_details[(0 - self.processing_details_limit):] if processing_details else None # truncate message
+                "Processing_Details": self.truncate_message(processing_details, truncate_tail=False)
             }]
             update_table_rows(self.catalog, "IHMV", "Structure_mmCIF", payload=structure_payload, column_names=["Processing_Status", "Processing_Details"])
             self.sendMail(subject, message if message else processing_details, receivers=self.ihmv_receivers)
@@ -296,7 +297,7 @@ def main(server_name, catalog_id, credentials, args):
 # usage:
 #
 # HT laptop
-#> python -m pdb_dev.processing.ihmv_processing.ihmv_processor --pdbihm-config-file ~/config/entry_processing/local_pdb_conf.json --catalog-id 199 --rid 286
+#> python -m pdb_dev.processing.ihmv_processing.ihmv_processor --pdbihm-config-file ~/config/entry_processing/local_pdb_conf.json --catalog-id 199 --rid 286 --scratch /tmp/ihmv
 #
 # workflow-dev: as pdbihm user
 #
