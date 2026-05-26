@@ -20,7 +20,9 @@ FORMAT = '%(asctime)s: %(levelname)s <%(module)s>: %(message)s'
 logger = logging.getLogger(__name__)
 loglevel = os.getenv('LOGLEVEL', 'info')
 loglevel =__LOGLEVEL.get(loglevel)
-logfile = os.getenv('PDB_LOG', '/home/pdbihm/pdb/log/entry_processing/pdb_entry_worker.log')
+process_id = os.getenv('PROCESS_ID', 'p0')
+#logfile = os.getenv('PDB_LOG', f'/tmp/log/pdb_entry_worker_{process_id}.log') # local testing
+logfile = os.getenv('PDB_LOG', f'/home/pdbihm/pdb/log/entry_processing/pdb_entry_worker_{process_id}.log')
 handler=logging.handlers.TimedRotatingFileHandler(logfile,when='D',backupCount=7)
 logger.addHandler(handler)
 init_logging(level=loglevel, log_format=FORMAT, file_path=logfile)
@@ -102,13 +104,15 @@ def pdb_row_job(handler, action):
     """
     Run the script for the PDB Workflow Processing.
     """
+    global process_id
+    
     try:
         row = handler.row
         unit = handler.unit
         
         logger.info('Running entry_processing job: host=%s catalog-id=%s RID="%s" action=%s' % (Worker.servername, Worker.catalog_number, row['RID'], action))
         #args = ['env', 'action={}'.format(action),  'RID={}'.format(row['RID']), 'URL=https://{}/ermrest/catalog/{}'.format(Worker.servername, Worker.catalog_number), '/usr/local/bin/pdb_process_entry', '--config', '{}'.format(Worker.config_file)]
-        args = ['env', 'ACTION={}'.format(action), 'PDB_SERVER={}'.format(Worker.servername), 'CATALOG={}'.format(Worker.catalog_number), 'RID={}'.format(row['RID']), 'pdb_process_entry', '--config', '{}'.format(Worker.config_file)]
+        args = ['env', f'ACTION={action}', f'PDB_SERVER={Worker.servername}', f'CATALOG={Worker.catalog_number}', f'RID={row["RID"]}', 'pdb_process_entry', '--config', Worker.config_file, '--process-id', process_id]
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdoutdata, stderrdata = p.communicate()
         returncode = p.returncode

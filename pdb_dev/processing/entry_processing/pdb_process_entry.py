@@ -61,14 +61,15 @@ def load(config_filename, args):
     
     # Load configuration file, or create configuration based on arguments
     conf = {}
+    process_id = args.process_id if hasattr(args, "process_id") else "p0"
     if os.path.exists(config_filename):
         f = open(config_filename, 'r')
         try:
             conf = json.load(f)
-            loglevel = conf.get('loglevel', None)
+            loglevel = conf.get('loglevel', 'info')
             #logfile = conf.get('log', None)            
             log_dir = conf.get('log_dir', '/home/pdbihm/log/entry_processing')
-            logfile = "%s/process_entry_%s.log" % (log_dir, cfg.catalog_name)
+            logfile = "%s/process_entry_%s_%s.log" % (log_dir, cfg.catalog_name, process_id)
             if loglevel and os.path.isdir(log_dir):
                 handler=logging.handlers.TimedRotatingFileHandler(logfile,when='D',backupCount=7)
                 logger.addHandler(handler)
@@ -107,8 +108,11 @@ def load(config_filename, args):
 
     logger.info(f'args: hostname: {config["hostname"]}, catalog_id: {config["catalog_id"]}, rid: {config["rid"]}, action: {config["action"]}')
     print(f'args: hostname: {config["hostname"]}, catalog_id: {config["catalog_id"]}, rid: {config["rid"]}, action: {config["action"]}')    
-    
+
+    config['process_id'] = args.process_id
     config['verbose'] = args.verbose
+    config['mute'] = args.mute
+    config['preserve'] = args.preserve
     #config['rollback'] = args.rollback
     #config['dry_run'] = args.dry_run    
     
@@ -120,6 +124,7 @@ def load(config_filename, args):
     config['credentials'] = credentials
     config['timeout'] = conf.get('timeout', 30)
 
+    # == accession_code related
     primary_accession_code_mode = conf.get('primary_accession_code_mode', 'PDB')    
     if primary_accession_code_mode not in ['PDBDEV', 'PDB']:
         raise ConfigError(f'Invalid value for the primary_accession_code_mode: {config["primary_accession_code_mode"]}.')
@@ -133,16 +138,7 @@ def load(config_filename, args):
     if config['primary_accession_code_mode'] == config['alternative_accession_code_mode']:
         raise ConfigError(f'primary_accession_code_mode {config["primary_accession_code_mode"]} must be different from alternative_accession_code_mode {config["alternative_accession_code_mode"]}.')
 
-    make_mmCIF = conf.get('make_mmCIF', None)
-    if not make_mmCIF or not os.path.isdir(make_mmCIF):
-        raise ConfigError(f'make_mmCIF directory {make_mmCIF} must be provided and exist.')
-    config['make_mmCIF'] = make_mmCIF
-    
-    py_rcsb_db = conf.get('py_rcsb_db', None)
-    if not py_rcsb_db or not os.path.isdir(py_rcsb_db):
-        raise ConfigError('py_rcsb_db directory must be provided and exist.')
-    config['py_rcsb_db'] = py_rcsb_db
-    
+    # == processing dir
     scratch = conf.get('scratch', None)
     if not scratch or not os.path.isdir(scratch):
         raise ConfigError('scratch directory must be provided and exist.')
@@ -152,24 +148,24 @@ def load(config_filename, args):
     if not validation_dir or not os.path.isdir(validation_dir):
         raise ConfigError('validation_dir directory must be provided and exist.')
     config['validation_dir'] = validation_dir
-    
-    python_bin = conf.get('python3', None)
+
+    """
+    make_mmCIF = conf.get('make_mmCIF', None)
+    if not make_mmCIF or not os.path.isdir(make_mmCIF):
+        raise ConfigError(f'make_mmCIF directory {make_mmCIF} must be provided and exist.')
+    config['make_mmCIF'] = make_mmCIF
+    """
+    # == script paths
+    python_bin = conf.get('python3', '/usr/bin/python3')
     if not python_bin or not os.path.isfile(python_bin):
         raise ConfigError('python3 executable must be provided and exist.')
     config['python_bin'] = python_bin
+
+    py_rcsb_db = conf.get('py_rcsb_db', None)
+    if not py_rcsb_db or not os.path.isdir(py_rcsb_db):
+        raise ConfigError('py_rcsb_db directory must be provided and exist.')
+    config['py_rcsb_db'] = py_rcsb_db
     
-    tables_groups = conf.get('tables_groups', None)
-    if not tables_groups or not os.path.isfile(tables_groups):
-        raise ConfigError('tables_groups file must be provided and exist.')
-    config['tables_groups'] = tables_groups
-
-    # Deprecated. Replace by python function that dynimically create this config
-    if False:
-        optional_fk_file = conf.get('optional_fk_file', None)
-        if not optional_fk_file or not os.path.isfile(optional_fk_file):
-            raise ConfigError('optional_fk_file file must be provided and exist.')
-        config['optional_fk_file'] = optional_fk_file
-
     CifCheck = conf.get('CifCheck', None)
     if not CifCheck or not os.path.isfile(CifCheck):
         raise ConfigError('CifCheck file must be provided and exist.')
@@ -185,18 +181,13 @@ def load(config_filename, args):
         if not os.path.isfile(singularity_sif):
             raise ConfigError('singularity_sif file must exist.')
     config['singularity_sif'] = singularity_sif
-    
-    entry = conf.get('entry', None)
-    if not entry or not os.path.isfile(entry):
-        raise ConfigError('entry file must be provided and exist.')
-    config['entry'] = entry
-    
-    export_tables_file = conf.get('export_tables', None)
-    if not export_tables_file or not os.path.isfile(export_tables_file):
-        raise ConfigError('export_tables file must be provided and exist.')
-    export_tables = json.load(open(export_tables_file))
-    config['export_tables'] = export_tables
-    
+
+    # == config docs
+    ihm_json_schema_doc = conf.get('ihm_json_schema_doc', None)
+    if not ihm_json_schema_doc or not os.path.isfile(ihm_json_schema_doc):
+        raise ConfigError('ihm_json_schema_doc file must be provided and exist.')
+    config['ihm_json_schema_doc'] = ihm_json_schema_doc
+
     cif_tables_file = conf.get('cif_tables', None)
     if not cif_tables_file or not os.path.isfile(cif_tables_file):
         raise ConfigError('cif_tables file must be provided and exist.')
@@ -209,14 +200,6 @@ def load(config_filename, args):
     export_order_by = json.load(open(export_order_by_file))
     config['export_order_by'] = export_order_by
 
-    # Deprecated. Replace by python function that dynimically create this config    
-    if False:
-        combo1_columns_file = conf.get('combo1_columns', None)
-        if not combo1_columns_file or not os.path.isfile(combo1_columns_file):
-            raise ConfigError('combo1_columns file must be provided and exist.')
-        combo1_columns = json.load(open(combo1_columns_file))
-        config['combo1_columns'] = combo1_columns
-    
     mmCIF_defaults = conf.get('mmCIF_defaults', None)
     if not mmCIF_defaults or not os.path.isfile(mmCIF_defaults):
         raise ConfigError('mmCIF_defaults file must be provided and exist.')
@@ -229,17 +212,69 @@ def load(config_filename, args):
     vocab_ucode = json.load(open(vocab_ucode))
     config['vocab_ucode'] = vocab_ucode
 
-    # Deprecated.
-    #config['mmCIF_Schema_Version'] = conf.get('mmCIF_Schema_Version', '1.0')  
+    # Ermrest tname list to be ignored during export
+    config['export_ermrest_ignore_tnames'] = conf.get('export_ermrest_ignore_tnames', None)
+
+    """
+    # -- DEPRECATED. TO BE REMOVED
+    tables_groups = conf.get('tables_groups', None)
+    if not tables_groups or not os.path.isfile(tables_groups):
+        raise ConfigError('tables_groups file must be provided and exist.')
+    config['tables_groups'] = tables_groups
+    """
+
+    """
+    # -- DEPRECATED. TO BE REMOVED    
+    # Deprecated. Replace by python function that dynimically create this config
+    if False:
+        optional_fk_file = conf.get('optional_fk_file', None)
+        if not optional_fk_file or not os.path.isfile(optional_fk_file):
+            raise ConfigError('optional_fk_file file must be provided and exist.')
+        config['optional_fk_file'] = optional_fk_file
+    """
     
+    """
+    # -- DEPRECATED. TO BE REMOVED    
+    entry = conf.get('entry', None)
+    if not entry or not os.path.isfile(entry):
+        raise ConfigError('entry file must be provided and exist.')
+    config['entry'] = entry
+    """
+    
+    """
+    # -- DEPRECATED. TO BE REMOVED
+    export_tables_file = conf.get('export_tables', None)
+    if not export_tables_file or not os.path.isfile(export_tables_file):
+        raise ConfigError('export_tables file must be provided and exist.')
+    export_tables = json.load(open(export_tables_file))
+    config['export_tables'] = export_tables
+    """
+
+    """
+    # -- DEPRECATED. TO BE REMOVED    
+    # Deprecated. Replace by python function that dynimically create this config
+    if False:
+        combo1_columns_file = conf.get('combo1_columns', None)
+        if not combo1_columns_file or not os.path.isfile(combo1_columns_file):
+            raise ConfigError('combo1_columns file must be provided and exist.')
+        combo1_columns = json.load(open(combo1_columns_file))
+        config['combo1_columns'] = combo1_columns
+    """
+    
+    # -- DEPRECATED. TO BE REMOVED        
+    #config['mmCIF_Schema_Version'] = conf.get('mmCIF_Schema_Version', '1.0')  
+
+    # == other configs
+    config['hatrac_namespace'] = f"{cfg.hatrac_root}/pdb" 
+    """# DEPRECATED. TO BE REMOVED
     hatrac_namespace = conf.get('hatrac_namespace', None)
     if hatrac_namespace == None:
         hatrac_namespace = 'hatrac/pdb'
     else:
         hatrac_namespace = 'hatrac/{}/pdb'.format(hatrac_namespace)
     config['hatrac_namespace'] = hatrac_namespace
+    """
     
-    config['reportValidation'] = conf.get('reportValidation', 'Yes')
     email_file = conf.get('mail', None)
     if not email_file or not os.path.isfile(email_file):
         raise ConfigError('email file must be provided and exist.')
@@ -247,7 +282,6 @@ def load(config_filename, args):
     with open(email_file, 'r') as f:
         email = json.load(f)
     config['email'] = email
-
 
     # print config object
     '''
@@ -288,10 +322,16 @@ def main():
                                 action='store', type=str, help='The JSON configuration file. Default is PDB_CONFIG env variable.',
                                 default=os.getenv("PDB_CONFIG", None), required=False)
         cli.parser.add_argument('--action', metavar='<action>',  action='store', type=str,
-                                help='Workflow actions (entry, export, accession_code, release_mmCIF, Entry_Related_File). Default is from ACTION env variable',
+                                help='Workflow actions (entry, export, accession_code, release_mmCIF, Entry_Related_File, clear_cif_tables, clear_entry). Default is from ACTION env variable',
                                 default=os.getenv("ACTION", None), required=False)
-        cli.parser.add_argument('--verbose', action='store_true', help='Print status to stdout', default=False, required=False)
+        cli.parser.add_argument('--process-id', metavar='<process_id>', action='store', type=str, help='assigned process_id',
+                                default=os.getenv("PROCESS_ID", "p0"), required=False)
+        cli.parser.add_argument('--verbose', action='store_true', help='Whether to print status to stdout', default=False, required=False)
+        cli.parser.add_argument('--mute', action='store_true', help='Whether to mute notification', default=False, required=False)
+        cli.parser.add_argument('--preserve', action='store_true', help='Whether to preserve files generated during processing', default=False, required=False)
         #cli.parser.add_argument('--rollback', action='store_true', help='Rollback ermrest update', default=False, required=False)
+        cli.parser.add_argument('--clear-cif-tables', action='store_true', help='Clear all ermrest tables mentioned in user submitted cif file', default=False, required=False)
+        cli.parser.add_argument('--clear-entries', action='store_true', help='Clear all entry related tables', default=False, required=False)
         
         args = cli.parse_cli()
 
@@ -299,16 +339,20 @@ def main():
         if not config_filename:
             raise Exception("ERROR: A configuration file is needed to run pdb_process_entry")
         config = load(config_filename, args)
+        
+        print ('--- The client will be started ---')        
         entry_processor = EntryProcessor(**config)
-        print ('The client will be started')
-        entry_processor.start()
+
+        if args.action == "clear_cif_tables":
+            entry_processor.clear_cif_tables()
+        elif args.action == "clear_entry":
+            entry_processor.clear_entry()
+        else:
+            entry_processor.start()
         return 0
-    except ConfigError as e:
-        sys.stderr.write(str(e))
-        logger.error(str(e))
-        return 1
-    except:
+    except Exception as e:
         et, ev, tb = sys.exc_info()
+        logger.error('pdb_process_entry: got exception "%s"' % str(ev))        
         sys.stderr.write('pdb_process_entry: got exception "%s"' % str(ev))
         sys.stderr.write('pdb_process_entry: %s' % ''.join(traceback.format_exception(et, ev, tb)))
         sys.stderr.write('\nusage: URL=https://foo.org/ermrest/catalog/N pdb_process_workflow --config config-file\n\n')

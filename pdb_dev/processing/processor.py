@@ -38,8 +38,8 @@ import time
 from datetime import datetime as dt, timedelta, timezone
 import pytz
 
-from deriva.core import PollingErmrestCatalog, HatracStore, urlquote, get_credential, DerivaServer
-from deriva.utils.extras.model import topo_sort_ranked
+from deriva.core import PollingErmrestCatalog, HatracStore, urlquote, get_credential, DerivaServer, topo_sorted, topo_ranked
+#from deriva.utils.extras.model import topo_sort_ranked
 from deriva.utils.extras.data import insert_if_not_exist, update_table_rows, delete_table_rows, get_ermrest_query
 from deriva.utils.extras.hatrac import HatracFile
 from deriva.utils.extras.hatrac_acl import set_hatrac_namespace_acl, adjust_hatrac_namespace
@@ -70,7 +70,7 @@ class ErmrestError(ProcessingError):
     """ Exception when fail to perform transaction with Ermrest
     """
     pass
-    
+
 class ErmrestUpdateError(ErmrestError):
     """ Exception when fail to update to Ermrest
     """
@@ -85,7 +85,12 @@ class SubProcessError(ProcessingError):
     """ Sub-process failure
     """
     pass
-        
+
+class HatracError(ProcessingError):
+    """ Exception when fail to upload or download files from hatrac
+    """
+    pass
+
 # ===================================================================================
 class PipelineProcessor(object):
     """
@@ -100,8 +105,10 @@ class PipelineProcessor(object):
     email_subject_prefix = "PDB-IHM"
     log_dir = "/home/pdbihm/log"
     verbose = False
-    notify = True
+    mute = False
     logger = None
+    preserve = False
+    processing_details_limit = 2800  # limit of what goes in details
     
     def __init__(self, **kwargs):
         # -- ermrest and hatrac
@@ -118,6 +125,7 @@ class PipelineProcessor(object):
             server = DerivaServer('https', self.host, credentials)
             self.catalog = server.connect_ermrest(self.catalog_id)            
         self.catalog.dcctx['cid'] = 'pipeline/pdb'
+        self.model = self.catalog.getCatalogModel()
         self.store = kwargs.get("store", None)
         if not self.store:
             self.store = HatracStore('https', self.host, credentials)
@@ -126,10 +134,14 @@ class PipelineProcessor(object):
         # -- local host
         self.local_hostname = socket.gethostname() # processing host
 
-        if kwargs.get("email", None): self.email_config = kwargs.get("email")
-        if kwargs.get("logger", None): self.logger = kwargs.get("logger")
-        if kwargs.get("verbose", None): self.verbose = kwargs.get("verbose")
-        if kwargs.get("notify", None): self.notify = kwargs.get("notify")                
+        self.email_config = kwargs.get("email", self.email_config)
+        self.log_dir = kwargs.get("log_dir", self.log_dir)                
+        self.logger = kwargs.get("logger", self.logger)
+        self.process_id = kwargs.get("process_id", 'p0')
+        
+        self.verbose = kwargs.get("verbose", self.verbose)
+        self.mute = kwargs.get("mute", self.mute)
+        self.preserve = kwargs.get("preserve", self.preserve)
         
         # -- archive/release time
         if kwargs.get('cutoff_time_pacific', None): self.cutoff_time_pacific = kwargs.get('cutoff_time_pacific') 
@@ -139,7 +151,7 @@ class PipelineProcessor(object):
         print("host: %s, catalog_id: %s, catalog: %s" % (self.host, self.catalog_id, self.catalog))
     
     @classmethod
-    def same_table_rows(table, base_rows, compare_rows, key="structure_id"):
+    def same_table_rows(cls, table, base_rows, compare_rows, key="structure_id"):
         """Check whether content are all the same before deleting.
         
         TODO: look up existing content based on keys
@@ -170,7 +182,7 @@ class PipelineProcessor(object):
 
     
     @classmethod    
-    def dump_json_to_file(file_path, json_object):
+    def dump_json_to_file(cls, file_path, json_object):
         """Dump a json object to a file
 
         Args:
@@ -185,7 +197,7 @@ class PipelineProcessor(object):
         fw.close()
 
     @classmethod
-    def read_json_config_file(config_file):
+    def read_json_config_file(cls, config_file):
         """Load json file
         Args:
             config_file (str): config file path
@@ -205,7 +217,38 @@ class PipelineProcessor(object):
             raise Exception("Config ERROR: config file is not a json file: %s" % (config_file))
         return config
 
+    @classmethod
+    def truncate_message(cls, message, limit=None, truncate_tail=False):
+        """
+        truncate_tail (boolean): If True, truncate at the end of the message, else truncate at the beginning (last limit characters are returned).
+        """
+        if not limit: limit = cls.processing_details_limit
+        if not message:
+            return message
+        elif len(message) < limit:
+            return message
+        else:
+            return message[0:limit] if truncate_tail else message[-limit:]
+    
+    def clean_directory(self, dir_path, remove_dir=False):
+        """Clean up files and directories in a dir_path unless self.cleanup is False
+        
+        """
+        if self.preserve: return
 
+        if remove_dir:
+            shutil.rmtree(dir_path)
+            return
+        
+        for file_name in os.listdir(dir_path):
+            file_path = f'{dir_path}/{file_name}'
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+                self.logger.debug(f'- Removed file {file_path}')                
+            elif os.path.isdir(file_path):
+                self.logger.debug(f'Removing directory {file_path}')
+                shutil.rmtree(file_path)
+        
     # -------------------------------------------------
     def create_hatrac_uid_namespace(self, namespace_prefix, user_id):
         """Create hatrac namespace for user_id so the user can be granted subtree-read access.
@@ -226,12 +269,13 @@ class PipelineProcessor(object):
             self.store.create_namespace(namespace, parents=True)
             acl = { "subtree-read": [ user_id ] }
             set_hatrac_namespace_acl(self.store, acl, namespace, hatrac_root=self.hatrac_root)
+            if self.verbose: print("- create_hatrac_uid_namespace: namespace %s: set subtree-read to %s" % (namespace, user_id))            
         else:
-            if self.verbose: print("- create_hatrac_uid_namespace: namespace %s already exists" % (namespace))
+            if self.verbose: print("- create_hatrac_uid_namespace: namespace %s already exists. Do nothing" % (namespace))
             pass
 
         
-    
+    # -------------------------------------------------    
     def download_hatrac_file(self, hatrac_url, data_dir, filename):
         """Download files
 
@@ -253,7 +297,7 @@ class PipelineProcessor(object):
         return file_path
     
     # -------------------------------------------------
-    def upload_file_groups(self, data_dir, filter_groups, namespace_prefix):
+    def upload_file_groups(self, data_dir, filter_groups, namespace_prefix, file_prefix=None):
         """Upload files in the directory to hatrac that match regex criteria specified in filter_groups.
         If filter_groups are not set, allow all files to match.
         Note: To upload an individual file, specify the data_dir and put its exact filename in the filter list.
@@ -279,7 +323,7 @@ class PipelineProcessor(object):
                 if not file.is_file(): continue
                 # TODO: rename files if needed. Suggest prepend with structure_mmcif RID
                 hf = HatracFile(self.store)
-                hf_file_name = f"{self.structure_rid}_{file.name}"
+                hf_file_name = f"{file_prefix}_{file.name}" if file_prefix else file.name
                 hf_file_name = hf.sanitize_filename(hf_file_name)
                 upload_url = f"{namespace_prefix}/{hf_file_name}"
                 hf.upload_file(file.path, upload_url, hf_file_name, verbose=True)
@@ -287,8 +331,9 @@ class PipelineProcessor(object):
         return hfs
 
     # -------------------------------------------------------------------
-
-    def get_order2tables(self):
+    #get_topo_sorted_tables
+    @classmethod
+    def get_topo_ranked_tables(cls, catalog, tname_only=False):
         """Assign order to tables for insert operation based on fkeys e.g. tables with no fkeys should be inserted first.
         This function should be used to replace the needs of tables_groups.json.
 
@@ -300,14 +345,14 @@ class PipelineProcessor(object):
         TODOs: Either change the keys to be string or address the type in the processing code.
         
         """
-        model = self.catalog.getCatalogModel()
+        model = catalog.getCatalogModel()
         tables = {
             table
             for sname in ["PDB"]
             for table in model.schemas[sname].tables.values()
         }
         
-        # dependency map { table: [ referenced_table... ], ... }
+        # dependency map { table: set(referenced_table... ), ... } (either a set of list is ok)
         table_depmap = {
             table: {
                 # use a set to collapse references to same pk_table
@@ -327,21 +372,45 @@ class PipelineProcessor(object):
             }
             for table in tables
         }
-
+        
         tname_depmap = {
             #table.sqlite3_table_name(): [ pktable.sqlite3_table_name() for pktable in pktables ] # produce PDB:entry
             table.name: [ pktable.name for pktable in pktables ]                # ignore schema prefix
             for table, pktables in table_depmap.items()
         }
-        order2tables = topo_sort_ranked(tname_depmap)
+        
+        rank_list = topo_ranked(tname_depmap) if tname_only else topo_ranked(table_depmap)
+        rank_dict = {i: rank_list[i] for i in range(len(rank_list))}
+   
+        return rank_dict
 
-        if self.verbose:
-            print("order2tables: ")
-            for order, tnames in order2tables.items():
-                print("  %d [%d]: %s" % ( order, len(tnames), json.dumps(sorted(tnames), indent=4)))
-         
-        return order2tables
-            
+    @classmethod
+    def get_topo_sorted_tables(cls, catalog, tname_only=False, reverse=False, sort_tname=True):
+        """Topologically sort table based on foreign key dependencies. Tables with minimial outbound dependencies are
+        at the beginning of the list. 
+        """
+        topo_sorted_tables = []
+        ranked_tables = cls.get_topo_ranked_tables(catalog, tname_only=tname_only)
+        
+        for group_no, tset in ranked_tables.items():
+            if sort_tname:
+                tlist = sorted(tset, key=lambda t: t if tname_only else t.name)                
+            else:
+                tlist = list(tset)
+            #print("- group: %d => %s" % (group_no, tlist if tname_only else [t.name for t in tlist] ))
+            topo_sorted_tables.extend(tlist)
+
+        if reverse:
+            return reversed(topo_sorted_tables)            
+        else:
+            return topo_sorted_tables
+
+    # -------------------------------------------------------------------
+    def RCB2user_uuid(self, RCB):
+        if not RCB:
+            raise Exception("RCB ERROR: RCB is None")
+        return RCB.rsplit("/", 1)[1]
+        
     # -------------------------------------------------------------------            
     def get_user_row(self, schema_name, table_name, rid):
         """get ERMrest user row
@@ -415,18 +484,18 @@ class PipelineProcessor(object):
         """
         error_message = ""
         if e:
-            details = f'{e.details}' if isinstance(e, ProcessingError) else ''
-            error_message = f'{str(e)}. {details}\n'
+            details = f'{e.details}' if isinstance(e, ProcessingError) and e.details else ''
+            error_message = f'{str(e)}.\n{details}\n'
         et, ev, tb = sys.exc_info()
-        tb_message = error_message + (body_prefix if body_prefix else "") +  ''.join(traceback.format_exception(et, ev, tb))
+        tb_message = error_message + (body_prefix if body_prefix else "") + '\n' + ''.join(traceback.format_exception(et, ev, tb))
         if self.logger:
             self.logger.error('-- Got exception "%s: %s"' % (et.__name__, str(ev)))
             self.logger.error('%s' % (tb_message))
         if notify:
             if not subject: subject = "Processing error"
             self.sendMail(subject, tb_message, receivers)
-        if self.verbose: print("tb_message: %s" % (tb_message))
-
+        #if self.verbose: print("- subject: %s\n- tb_message: %s" % (subject, tb_message))
+        #print("log_exception: verbose:%s: tb_message: %s" % (self.verbose, tb_message))
         return tb_message
 
     # -------------------------------------------------------------------
@@ -461,7 +530,7 @@ class PipelineProcessor(object):
         HT TODO: make this not deployment specific
         """
         
-        if not self.notify:
+        if self.mute:
             if self.verbose: print("Send mail: subject: %s, text:%s" % (subject, text))
             return
         if self.email_config and self.email_config['server'] and self.email_config['sender'] and (self.email_config['receivers'] or self.email_config['curators']):
@@ -497,8 +566,8 @@ class PipelineProcessor(object):
                         self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
                 except:
                     et, ev, tb = sys.exc_info()
-                    self.logger.error('-- got sendMail exception "%s"' % str(ev))
-                    self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
+                    if self.logger: self.logger.error('-- got sendMail exception "%s"' % str(ev))
+                    if self.logger: self.logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
                     ready = True
 
 # -- =================================================================================
@@ -524,3 +593,6 @@ if __name__ == '__main__':
     credentials = get_credential(args.host, args.credential_file)
     
     main(args.host, args.catalog_id, credentials, args)
+
+
+    

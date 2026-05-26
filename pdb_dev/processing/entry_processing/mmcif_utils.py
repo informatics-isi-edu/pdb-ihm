@@ -3,15 +3,24 @@ import json
 from deriva.core import ErmrestCatalog, HatracStore, AttrDict, get_credential, DEFAULT_CREDENTIAL_FILE, tag, urlquote, DerivaServer, BaseCLI
 from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key, ForeignKey, tag, AttrDict
 from deriva.utils.extras.data import insert_if_not_exist, update_table_rows, delete_table_rows, get_ermrest_query
+from deriva.utils.extras.pdb_ma.mmcif_model import mmCIFErmrestModel
 
 #from pdb_dev.utils.shared import PDBDEV_CLI, DCCTX, cfg
 from ...utils.shared import PDBDEV_CLI, DCCTX, cfg
+from ..processor import ProcessingError, ErmrestError, ErmrestUpdateError, FileError
 
 
 def is_mmcif_rid_mandatory_fkey(fkey):
-    """
+    """Check whether the given fkey is a mandatory fkey.
     Assuming that structure_id is always required.
     if the referenced (parent) row RID and structure_id are part of fkey, then it is mandatory (e.g. combo1).
+
+    Args:
+        fkey (obj): ERMrest fkey object
+
+    Return:
+        bool : A boolean indicates whether the fkey is optiona.
+    
     """
     to_cnames = [ col.name for col in fkey.column_map.values()]    
     if set(["RID", "structure_id"]).issubset(set(to_cnames)) or set(["RID", "entry_id"]).issubset(set(to_cnames)):
@@ -20,9 +29,15 @@ def is_mmcif_rid_mandatory_fkey(fkey):
         return False
 
 def is_mmcif_rid_optional_fkey(fkey):
-    """
+    """Check whether the given fkey is an optional fkey.
     Assuming that structure_id is always required.
     if the referenced (parent) row RID is in fkey but not structure_id, then it is optional fkey (e.g. combo2).
+
+    Args:
+        fkey (obj): ERMrest fkey object
+
+    Return:
+        bool : A boolean indicates whether the fkey is optiona.
     """
     to_cnames = [ col.name for col in fkey.column_map.values()]
     if len(to_cnames) > 1 and "RID" in to_cnames and "structure_id" not in to_cnames and "entry_id" not in to_cnames:
@@ -31,9 +46,15 @@ def is_mmcif_rid_optional_fkey(fkey):
         return False
 
 def get_mmcif_rid_mandatory_fkeys(table):
+    """Get mandatory (i.e. combo1) fkeys
+
+    Args:
+        table (obj): ERMrest table
+
+    Returns:
+        list: a list of optional fkeys
     """
-    combo1 equivalence
-    """
+    
     fkeys = []
     for fkey in table.foreign_keys:
         if is_mmcif_rid_mandatory_fkey(fkey):
@@ -43,6 +64,12 @@ def get_mmcif_rid_mandatory_fkeys(table):
 def get_mmcif_rid_optional_fkeys(table):
     """
     combo2 equivalence
+
+    Args:
+        table (obj): ERMrest table
+
+    Returns:
+        list: a list of optional fkeys
     """
     fkeys = []
     for fkey in table.foreign_keys:
@@ -51,7 +78,7 @@ def get_mmcif_rid_optional_fkeys(table):
     return fkeys
 
 
-def print_restraint_table_fkeys(table):
+def print_table_fkeys(table):
     print("\ntable_name: %s --> " % (table.name))    
     for fkey in table.foreign_keys:
         pk_table = fkey.pk_table
@@ -72,7 +99,7 @@ def check_restraint_tables_fkeys(catalog):
     for row in file_types:
         tname = row["Table_Name"]
         table = model.schemas["PDB"].tables[tname]
-        print_restraint_table_fkeys(table)
+        print_table_fkeys(table)
 
 def check_entry_tables_fkeys(catalog, ignore_restraints=True):
     model = catalog.getCatalogModel()
@@ -81,7 +108,7 @@ def check_entry_tables_fkeys(catalog, ignore_restraints=True):
     print("restraint_types: %s" % (len(restraint_tnames)))
     for tname, table in model.schemas["PDB"].tables.items():
         if ignore_restraints and tname in restraint_tnames: continue
-        print_restraint_table_fkeys(table)        
+        print_table_fkeys(table)        
 
 def check_shared_fkey_columns(catalog, sname="PDB", skip_rid=True):
     model = catalog.getCatalogModel()
@@ -237,41 +264,50 @@ class PkTables(object):
       - ctname: constraint name  
       - kcnames: key column names
       - fk_ctname: fkey constraint names (referring to the fkey constraint pointing to the pk_table
+
+    - Note: The code was originally written for processing csv files where all column values are all text.
+    Therefore, the key values are all converted to type string when creating a dict.
+    The payload originated from Ermrest or json files will have a proper type in place (e.g. int instead of text),
+    so when performing a lookup, a string conversion needs to be applied.
+    
+    - TODO: convert csv raw values to proper type, then remove str conversion from dict creation and payload update.
     
     """
-    
-    # - create lookup tables based on keys used in fkey definition. The keys are sorted to get canonical key.
-    fk_ctname_to_cname2from_cnames: dict = {}   # to_cname2from_cname group by inbould fkey constraint names to the pk_table
-    fk_ctname2kcnames: dict = {}                # fkey constraint name to key cnames (without RID column)
-    kcnames2fk_ctnames: dict = {}               # key cnames to fk constraint names
-    kcnames_kcvals2rows: dict = {}              # key column values to row grouped by key cnames
-    raw_data: dict = {}                       # raw data of individual table
-    
-    mandatory_fkeys=True
-    optional_fkeys=True
 
-    verbose=True
-    
-    def init(self, mandatory_fkeys=True, optional_fkeys=True):
+    def __init__(self, catalog=None, mandatory_fkeys=True, optional_fkeys=True, ermrest_data=None, verbose=True):
+        if catalog: self.catalog = catalog
+        self.verbose = verbose
         self.mandatory_fkeys=mandatory_fkeys
         self.optional_fkeys=optional_fkeys
+        self.ermrest_data = ermrest_data # dict(ermrest_data) if ermrest_data else {}
+
+        # - create lookup tables based on keys used in fkey definition. The keys are sorted to get canonical key.
+        self.fk_ctname_to_cname2from_cnames: dict = {}   # to_cname2from_cname group by inbould fkey constraint names to the pk_table
+        self.fk_ctname2kcnames: dict = {}                # fkey constraint name to key cnames (without RID column)
+        self.kcnames2fk_ctnames: dict = {}               # key cnames to fk constraint names
+        self.kcnames_kcvals2rows: dict = {}              # key column values to row grouped by key cnames
+        self.ermrest_data: dict = {}                     # raw data of individual table
+        
+        if self.verbose: print("------- PkTables: ermrest_data: %s ---" % (self.ermrest_data.keys()))
 
     
     # TODO: split data from model book keeping? 
-    def update_model(self, table):
+    def prepare_model(self, table):
         """
         Param table: table containing combo1/2 fkeys that needs to be managed
         """
         combo_fkeys=[]
-        if self.optional_fkeys: combo_fkeys = combo_fkeys + get_mmcif_rid_optional_fkeys(table) 
-        if self.mandatory_fkeys: combo_fkeys = combo_fkeys + get_mmcif_rid_mandatory_fkeys(table)
+        if self.mandatory_fkeys: combo_fkeys.extend(get_mmcif_rid_mandatory_fkeys(table))
+        if self.optional_fkeys: combo_fkeys.extend(get_mmcif_rid_optional_fkeys(table))
+        if self.verbose: print("\n\n=== prepare_model: tname: %s, combo_fkeys [%d]: %s" % (table.name, len(combo_fkeys), [fk.constraint_name for fk in combo_fkeys]))
         
-        for fkey in combo_fkeys:        
+        for fkey in combo_fkeys:
             pk_tname = fkey.pk_table.name
             from_cnames = [ col.name for col in fkey.column_map.keys() ]        
             to_cnames = [ col.name for col in fkey.column_map.values() ]
+            if self.verbose: print("  - fk: %s -> %s (%s): %s -> %s" % (table.name, pk_tname, fkey.constraint_name, from_cnames, to_cnames))
             to_cname2from_cnames = { to_col.name : from_col.name for from_col, to_col in fkey.column_map.items() }
-            if self.verbose: print("fkey: name:%s %s -> %s : %s" % (fkey.constraint_name, from_cnames, pk_tname, to_cnames))
+            #if self.verbose: print("    - fkey: name:%s %s -> %s : %s" % (fkey.constraint_name, from_cnames, pk_tname, to_cnames))
             rid_index = to_cnames.index("RID")
 
             # -- create key_cnames without RID; sorted for cannonical list
@@ -291,35 +327,38 @@ class PkTables(object):
             self.kcnames2fk_ctnames[pk_tname][key_cnames] = self.kcnames2fk_ctnames[pk_tname].get(key_cnames, [])
             self.kcnames2fk_ctnames[pk_tname][key_cnames].append(fkey.constraint_name)
             
-
-    def update_data(self, table):
+    def set_ermrest_data(self, ermrest_data):
+        self.ermrest_data = ermrest_data
+    
+    def prepare_data(self, table):
         """
         Update kcnames_kcvals2rows, assuming that raw data is already available.
         Param: table: table containing combo1/2 fkeys that needs to be managed
         """
         combo_fkeys=[]
-        if self.optional_fkeys: combo_fkeys = combo_fkeys + get_mmcif_rid_optional_fkeys(table) 
-        if self.mandatory_fkeys: combo_fkeys = combo_fkeys + get_mmcif_rid_mandatory_fkeys(table)
-        
+        if self.mandatory_fkeys: combo_fkeys.extend(get_mmcif_rid_mandatory_fkeys(table))
+        if self.optional_fkeys: combo_fkeys.extend(get_mmcif_rid_optional_fkeys(table))
+
         for fkey in combo_fkeys:
             pk_tname = fkey.pk_table.name
-            key_cnames = self.fk_ctname2knames[pk_tname][fkey.constraint_name]
+            key_cnames = self.fk_ctname2kcnames[pk_tname][fkey.constraint_name]
 
             # -- key column values to individual rows group by key_column_name
-            self.kcnames_kcvals2rows[pk_tname] = self.kcnames_kcvals2rows.get(pk_tname, {})
-            if key_cnames in self.kcnames_kcvals2rows[pk_tname].keys(): continue  # pk_table_dict already generated
-            if pk_tname not in self.raw_data.keys():
-                raise Exception("ERROR: There is no parent rows %s to extract RID from" % (pk_tname))
-            cvals2rows = {}    # - create a dict based on cannonical key
-            for row in self.raw_data[pk_tname]:
-                k = tuple([ str(row[cname]) for cname in key_cnames ])  # convert to text
-                cvals2rows[k] = row
-            self.kcnames_kcvals2rows[pk_tname][key_cnames] = cvals2rows
-
+            if pk_tname not in self.ermrest_data.keys():
+                if self.verbose: print("\n- %s: WARNING: There is no parent rows for %s to extract RID from" % (pk_tname, table.name))
+            else:
+                self.kcnames_kcvals2rows[pk_tname] = self.kcnames_kcvals2rows.get(pk_tname, {})
+                if key_cnames in self.kcnames_kcvals2rows[pk_tname].keys(): continue  # pk_table_dict already generated
+                cvals2rows = {}    # - create a dict based on cannonical key
+                for row in self.ermrest_data[pk_tname]:
+                    k = tuple([ str(row[cname]) for cname in key_cnames ])  # convert to text
+                    cvals2rows[k] = row
+                self.kcnames_kcvals2rows[pk_tname][key_cnames] = cvals2rows
+                if self.verbose: print("- %s: kcvals2rows[ %s ] : %s" % (pk_tname, key_cnames, cvals2rows))
     
     # note: if the structure in print statement is a tuple, need to convert to string first
     @classmethod
-    def print_pk_tables_dict(self, pk_table_dict, data_dict=False, limit=50):
+    def print_pk_tables_dict(cls, pk_table_dict, data_dict=False, limit=50):
         """
         limit puts a cap on the number of data rows to print
         """
@@ -358,9 +397,13 @@ class PkTables(object):
         
 
     def update_payload_with_rids(self, table, payload):
-        """
-        update payload with RID columns
-        Param table: table containing combo1/2 fkeys that needs to be managed        
+        """Update payload with RID columns
+        Note: the payload is not necessary uniform e.g. some rows will have different number of columns (e.g. optional fkey
+        can be missing in the payload)
+
+        Args:
+            table (obj): ERMrest table object containing combo1/2 fkeys that needs to be managed
+            payload (list): A list of rows to have their RID columns updated
         """
         if not payload: return
         
@@ -368,63 +411,111 @@ class PkTables(object):
         
         # not all columns in the model are in payload. Extract this to address optional column
         headers = payload[0].keys()
+
+        if self.verbose: print("\n=== update_payload_with_rids: %s with combo fkeys: %d" % (table.name, len(combo_fkeys)))
         
         # -for each fkey, fill in corresponding RID column
         for fkey in combo_fkeys:
             pk_tname = fkey.pk_table.name
             to_cname2from_cnames = self.fk_ctname_to_cname2from_cnames[pk_tname][fkey.constraint_name]
-            key_cnames = self.fk_ctname2knames[pk_tname][fkey.constraint_name]
+            key_cnames = self.fk_ctname2kcnames[pk_tname][fkey.constraint_name]
             key_from_cnames = [ to_cname2from_cnames[cname] for cname in key_cnames ]
             rid_cname = to_cname2from_cnames["RID"]
-            # skip filling in rid of this fkey if the columns are missing
-            skip_fkey = False
-            for cname in key_from_cnames:
-                if cname in headers: continue
-                if table.columns[cname].nullok:
-                    if self.verbose: print("missing optional fkey column: %s. Won't fill in RID column" % (cname))
-                    skip_fkey=True
-                    break
-                else:
-                    raise Exception("INPUT ERROR: table %s misses mandatory column %s" % (table.name, cname))
-            if skip_fkey: continue
-            if self.verbose: print("filling fkey: %s : %s -> %s : %s" % (fkey.constraint_name, key_from_cnames, pk_tname, key_cnames))
+            
+            if self.verbose: print("- update_payload_with_rids: filling fkey: %s : %s : %s -> %s : %s" % (fkey.constraint_name, table.name, key_from_cnames, pk_tname, key_cnames))
+            printed = False # whether to print rid related key info
             for row in payload:
+                if pk_tname not in self.kcnames_kcvals2rows.keys(): continue
+                if self.verbose: print("  - row: %s" % (json.dumps(row, indent=4)))
+                
+                # -- skip filling in rid of this fkey if the column values are missing
+                skip_fkey = False
+                for cname in key_from_cnames:
+                    if cname in row.keys(): continue
+                    if table.columns[cname].nullok:
+                        if self.verbose: print("    - missing optional fkey column: %s. Won't fill in column %s" % (cname, rid_cname))
+                        skip_fkey=True
+                        break
+                    else:
+                        raise Exception("INPUT ERROR: table %s misses mandatory column %s" % (table.name, cname))
+                if skip_fkey:  continue
+                
                 kcvals2rows = self.kcnames_kcvals2rows[pk_tname][key_cnames]
-                #print("kcvals2rows: %s" % (kcvals2rows))
-                key = tuple([ row[cname] for cname in key_from_cnames ])
-                #print("key : %s <- %s" % (key, key_from_cnames))
-                # In case of optional fkey, the key column could have null value. In this case, don't fill in RID value
-                if None in key: continue
+                #print("  - kcvals2rows: %s" % (kcvals2rows))
+                key = tuple([ str(row[cname]) if cname in row.keys() else None for cname in key_from_cnames ])  # convert to str
+                if self.verbose and not printed: print("    - update_payload_with_rids: key %s : %s == %s -> %s ::: from %s" % (pk_tname, key_from_cnames, key, kcvals2rows[key]["RID"], { k: v["RID"] for k,v in kcvals2rows.items() } ))
+                # -- In case of optional fkey, the key column could have null value. In this case, don't fill in RID value
+                if None in key:
+                    if self.verbose: print("    - None detected in key: %s" % (key))
+                    continue
                 if key not in kcvals2rows.keys():
                     raise Exception("DATA ERROR: reference table: %s, do not contain columns: %s with reference values: %s" % (pk_tname, key_cnames, str(key)))
                 else:
                     row[rid_cname] = kcvals2rows[key]["RID"]
+                    if self.verbose and not printed: print("    - update_payload_with_rids: value: %s -> %s => row[%s] = %s" % (table.name, pk_tname, rid_cname, row[rid_cname]))
+                printed = True  # Print key info only once
         
+    def get_ermrest_data(self, catalog, from_tables, entry_id):
+        """Get raw data from from_tables (tables containing mandatory/optional fkeys to be filled in).
+        The pk_tables are consolidated into a single list to avoid redundant calls
         
-    def get_raw_data(self, from_tables, entry_id):
         """
-        get raw data from from_tables (tables containing mandatory/optional fkeys to be filled in).
-        the pk_tables are consolidated into a single list to avoid redundant calls
-        """
-        pk_tnames = []
-
+        pk_tables = []
         for table in from_tables:
             combo_fkeys = get_mmcif_rid_optional_fkeys(table) + get_mmcif_rid_mandatory_fkeys(table)
+            if self.verbose: print("get_ermrest_data: %s combo_fkeys: %s" % (table.name, [fkey.pk_table.name for fkey in combo_fkeys]))            
             for fkey in combo_fkeys:
-                pk_tname = fkey.pk_table.name
-                if pk_tname in pk_tnames: continue
-                pk_tnames.append(pk_tname)
+                pk_table = fkey.pk_table
+                if pk_table not in pk_tables: pk_tables.append(pk_table)
 
+        if self.verbose: print("get_ermrest_data: pk_tables: %s" % ([table.name for table in pk_tables]))
         # get raw data based on entry_id
+        ermrest_data = {}
         try:
-            for tname in pk_tnames:
-                raw_data[tname] = get_ermrest_query(catalog, "PDB", tname, "structure_id=%s;entry_id=%s" % (entry_id, entry_id))
+            for pk_table in pk_tables:
+                if "structure_id" in pk_table.columns.elements:
+                    ermrest_data[pk_table.name] = get_ermrest_query(catalog, "PDB", pk_table.name, "structure_id=%s" % (entry_id))
+                elif "entry_id" in pk_table.columns.elements:
+                    ermrest_data[pk_table.name] = get_ermrest_query(catalog, "PDB", pk_table.tname, "entry_id=%s" % (entry_id))
+                else:
+                    print("- WARNING: can't form a query for table %s " % (pk_table.name))
         except Exception as e:
-            raise ErmrestError("Unable to read data from parent tables of %s (%s)" % (tname, e))
-    
+            raise ErmrestError("Unable to read data from parent tables of %s (%s)" % (pk_table.name, e))
+
+        return ermrest_data
 
     
+def get_shortest_key(table, none_ok=True, exclude_cnames=["RID"]):
+    """Get the table natural key (e.g. a key that doesn't have RID in its column list).
     
+    Strategy: If the key constraint with "primary_key" exist, returns that key, else return the shortest key that do not have RID in it.
+    """
+    candidates = []
+    for key in table.keys:
+        cnames = [c.name for c in key.columns]
+        if set(cnames).intersection(set(exclude_cnames)): continue
+        candidates.append([key] + cnames)
+    if not len(candidates):
+        if none_ok: return None
+        raise Exception("No natural key found")
+    sorted_candidates = sorted(candidates, key=len)
+    #print("*** %s: : %s" % (table.name, [ f"{i[0].constraint_name}[{len(i)-1}] => {i[1:]}" for i in sorted_candidates] ))
+
+    return sorted_candidates[0][0]
+
+def introspect_keys():
+    # check primary keys
+    for tname in model.schemas["PDB"].tables:
+        table = model.schemas["PDB"].tables[tname]
+        key = get_shortest_key(table, none_ok=True)
+        if key == None:
+            print("0 : tname: %s -> no key" % (tname))
+        elif key.constraint_name.endswith("primary_key"):
+            print("p %d tname: %s -> key: %s" % (len(key.columns), tname, (key.constraint_name, [c.name for c in key.columns]) if key else None))
+        else:
+            print("* %d tname: %s -> key: %s" % (len(key.columns), tname, (key.constraint_name, [c.name for c in key.columns]) if key else None))            
+
+
 # -- =================================================================================
 def main(server_name, catalog_id, credentials, args):
     server = DerivaServer('https', server_name, credentials)
@@ -433,9 +524,22 @@ def main(server_name, catalog_id, credentials, args):
     catalog.dcctx['cid'] = 'pipeline/pdb'
     model = catalog.getCatalogModel()
 
-    check_shared_fkey_columns(catalog, sname="MA", skip_rid=False)
+    check_entry_tables_fkeys(catalog, ignore_restraints=True)
+    return
+
+    mmcif = mmCIFErmrestModel
+    model_cif = mmcif.load_mmcif('/home/hongsuda/git/pdb-ihm-ops/scripts/home-config/default-workflow/config/entry_processing/deprecated/json-full-db-ihm_dev_full-col-ihm_dev_full.json')
+    tdefs = mmcif.get_tdefs(model_cif)
+
+    for tname, tdef in tdefs.items():
+        cdefs = mmcif.get_cdefs(tdef)
+        print(" - tname: %s" % (tname))
+        for cname, cdef in cdefs.items():
+            col = mmcif.get_ermrest_column_def(model_cif, tname, tdef, cname)
+            print("  x cname: %s, type: %s " % (cname, col["type"]["typename"]))
+        
+    #check_shared_fkey_columns(catalog, sname="MA", skip_rid=False)
     
-    #check_entry_tables_fkeys(catalog, ignore_restraints=True)
 
     #get_legacy_combo1_columns(catalog)
     #get_legacy_optional_fks(catalog)

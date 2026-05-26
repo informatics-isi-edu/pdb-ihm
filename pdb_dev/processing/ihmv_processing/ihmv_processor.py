@@ -40,7 +40,7 @@ class IHMVProcessor(PipelineProcessor):
     email_config = {}
     email_subject_prefix = "IHMV"
     ihmv_receivers = "ihmv@pdb-ihm.org" #"aozalevsky@gmail.com,pdb-ihm@wwpdb.org"   # comma separated list
-    processing_details_limit = 2500
+    processing_details_limit = 2600
     structure_row = None
     user_id = None    # user globus_id e.g. https://auth.globus.org/<uuid>
     user_uuid = None  # user uuid to be used as part of hatrac path
@@ -79,7 +79,7 @@ class IHMVProcessor(PipelineProcessor):
         self.timeout = timeout if timeout else (self.pdbihm_config["timeout"] if "timeout" in self.pdbihm_config.keys() else self.timeout)
         self.singularity_sif = singularity_sif if singularity_sif else (self.pdbihm_config["singularity_sif"] if "singularity_sif" in self.pdbihm_config.keys() else self.singularity_sif)
         self.ihmvalidation_dir = ihmvalidation_dir if ihmvalidation_dir else (self.pdbihm_config["validation_dir"] if "validation_dir" in self.pdbihm_config.keys() else self.ihmvalidation_dir)
-        self.ihmvalidation_dir = f'{self.ihmvalidation_dir}/IHMValidation'
+        if not self.ihmvalidation_dir.endswith("IHMValidation"): self.ihmvalidation_dir = f'{self.ihmvalidation_dir}/IHMValidation' # backward compatible
         email_config_file = email_config_file if email_config_file else (self.pdbihm_config["mail"] if "mail" in self.pdbihm_config.keys() else self.email_config_file)
 
         if email_config_file:
@@ -88,6 +88,11 @@ class IHMVProcessor(PipelineProcessor):
                 self.email_config = json.load(file)
             self.email_config["sender"] = self.email_config["sender"].replace("PDB-DEV", "PDB-IHMV")
         
+        if self.verbose:
+            print("pdbihm_confif_file: %s " % (self.pdbihm_config_file))
+            print("timeout: %s, singularity_sif: %s, ihmvalidation_dir: %s " % (self.timeout, self.singularity_sif, self.ihmvalidation_dir))
+            #print("cfg.host: %s, cfg.catalog_id: %s, is_dev:%s, hatrac_root: %s, log_file: %s " % (self.cfg.host, self.cfg.catalog_id, self.cfg.is_dev, self.hatrac_root, self.log_file))
+            print("email_config: %s" % (self.email_config))
             
         # assertion of input arguments
         if not self.singularity_sif or not self.ihmvalidation_dir:
@@ -129,6 +134,8 @@ class IHMVProcessor(PipelineProcessor):
         Run the IHMV processor logic.
         """
         ihmv_process = None
+        message = None
+        processing_details = None
         
         try:
             data_dir = f"{self.scratch_dir}/{self.structure_rid}"
@@ -188,7 +195,7 @@ class IHMVProcessor(PipelineProcessor):
             stdoutdata, stderrdata = ihmv_process.communicate(timeout=self.timeout*60)
             returncode = ihmv_process.returncode
             if returncode != 0:
-                limit = self.processing_details_limit - len(stderrdata) - 100
+                limit = self.processing_details_limit - len(stderrdata) - 200
                 stdoutdata = stdoutdata[-limit:] if limit > 0 else ""
                 error_msg = f'stdoutdata: {stdoutdata}\nstderrdata: {stderrdata}\n'
                 raise SubProcessError("Non-zero return code", details=error_msg)
@@ -197,7 +204,7 @@ class IHMVProcessor(PipelineProcessor):
                 # output location
                 pdf_loc = Path(data_dir, 'output', Path(filename).stem)
                 hatrac_prefix = f"/hatrac/ihmv/generated/uid/{self.user_uuid}/structure/rid/{self.structure_rid}/validation_report"
-                ihmv_hfs = self.upload_file_groups(pdf_loc, [".pdf"], namespace_prefix=hatrac_prefix)
+                ihmv_hfs = self.upload_file_groups(pdf_loc, [".pdf"], namespace_prefix=hatrac_prefix, file_prefix=self.structure_rid)
 
                 # -- update ermrest
                 ihmv_payload = []
@@ -211,17 +218,17 @@ class IHMVProcessor(PipelineProcessor):
                         "File_Type": "Validation: Summary PDF" if hf.file_name.endswith("summary_validation.pdf") else "Validation: Full PDF"
                     })
                     
-                # check whether files already exist
-                existing_files = get_ermrest_query(self.catalog, "IHMV", "Generated_File", constraints=f"Structure_mmCIF={self.structure_rid}")
-                if len(existing_files) == 0:
-                    insert_if_not_exist(self.catalog, "IHMV", "Generated_File", ihmv_payload)
-                else:
+                # -- upsert records
+                inserted = insert_if_not_exist(self.catalog, "IHMV", "Generated_File", ihmv_payload)
+                if len(inserted) != len(ihmv_payload):
+                    """
                     # - option1: simply delete all old files and insert
-                    #values_ = [x['RID'] for x in existing_files]
-                    #delete_table_rows(self.catalog, "IHMV", "Generated_File", key='RID', values=values_)
-                    #insert_if_not_exist(self.catalog, "IHMV", "Generated_File", ihmv_payload)                    
-                    #
+                    values_ = [x['RID'] for x in existing_files]
+                    delete_table_rows(self.catalog, "IHMV", "Generated_File", key='RID', values=values_)
+                    insert_if_not_exist(self.catalog, "IHMV", "Generated_File", ihmv_payload)                    
+                    """
                     # - option2: check whether the rows have changed, if so, update
+                    existing_files = get_ermrest_query(self.catalog, "IHMV", "Generated_File", constraints=f"Structure_mmCIF={self.structure_rid}")                    
                     filetype2row = { f["File_Type"] : f for f in existing_files }
                     update_payload = []
                     for row in ihmv_payload:
@@ -234,9 +241,11 @@ class IHMVProcessor(PipelineProcessor):
                     updated = update_table_rows(self.catalog, "IHMV", "Generated_File", column_names=["File_Name", "File_URL", "File_Bytes", "File_MD5"], payload=list(update_payload))
                     print("Number of files updated: %s" % (len(updated)))
                     
-                # set processing status to be updated at the end
+                # -- set processing status to be updated at the end
                 processing_status = "Success"
                 processing_details = None
+                subject = f"{self.structure_rid} Success"
+                message = f"Structure_mmCIF {self.structure_rid} validation report was successfully processed"                
         except TimeoutExpired as e:
             if ihmv_process: ihmv_process.kill()
             processing_status = "Error"            
@@ -246,22 +255,20 @@ class IHMVProcessor(PipelineProcessor):
             processing_status = "Error"
             processing_details = self.log_exception(e)
             subject = f"{self.structure_rid} Error: {e}"
+            delete_table_rows(self.catalog, "IHMV", "Generated_File", constraints=f"Structure_mmCIF={self.structure_rid}")
         finally:
             # - update ermrest
             #raise Exception("ERROR: test when update fails")
             structure_payload = [{
                 "RID": self.structure_rid,
                 "Processing_Status": processing_status,
-                "Processing_Details": processing_details[(0 - self.processing_details_limit):] if processing_details else None # truncate message
+                #"Processing_Details": processing_details[(0 - self.processing_details_limit):] if processing_details else None # truncate message
+                "Processing_Details": self.truncate_message(processing_details, truncate_tail=False)
             }]
             update_table_rows(self.catalog, "IHMV", "Structure_mmCIF", payload=structure_payload, column_names=["Processing_Status", "Processing_Details"])
-            # - notify
-            if processing_status == "Success":
-                if self.logger: self.logger.info(f"Structure_mmCIF {self.structure_rid}: validation report successfully processed")
-                self.sendMail(f"{self.structure_rid} Success", f"Structure_mmCIF {self.structure_rid} validation report was successfully processed", receivers=self.ihmv_receivers)
-            elif processing_status == "Error":
-                self.sendMail(subject, processing_details, receivers=self.ihmv_receivers)
-            print("Processing_Status: %s\nProcessing_details: %s" % (processing_status, processing_details))
+            self.sendMail(subject, message if message else processing_details, receivers=self.ihmv_receivers)
+            if self.verbose: print("Structure_mmCIF: %s, Processing_Status: %s\nProcessing_details: %s" % (self.structure_rid, processing_status, processing_details))
+            self.logger.info("Structure_mmCIF: %s, Processing_Status: %s\nProcessing_details: %s" % (self.structure_rid, processing_status, processing_details))
             # - cleaup directory
             shutil.rmtree(data_dir, ignore_errors=True)
 
@@ -290,7 +297,7 @@ def main(server_name, catalog_id, credentials, args):
 # usage:
 #
 # HT laptop
-#> python -m pdb_dev.processing.ihmv_processing.ihmv_processor --pdbihm-config-file ~/config/entry_processing/local_pdb_conf.json --catalog-id 199 --rid 286
+#> python -m pdb_dev.processing.ihmv_processing.ihmv_processor --pdbihm-config-file ~/config/entry_processing/local_pdb_conf.json --catalog-id 199 --rid 286 --scratch /tmp/ihmv
 #
 # workflow-dev: as pdbihm user
 #
