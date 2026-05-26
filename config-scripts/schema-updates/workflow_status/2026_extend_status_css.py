@@ -7,6 +7,8 @@ from pdb_dev.utils.shared import DCCTX, PDBDEV_CLI
 CSS_CLASSES = {
     "DEFAULT": ".chaise-record-status-default",
     "DEFAULT_COMPACT": ".chaise-record-status-compact-default",
+    "INFO": ".chaise-record-status-info",
+    "INFO_COMPACT": ".chaise-record-status-compact-info",
     "ERROR": ".chaise-record-status-danger",
     "ERROR_COMPACT": ".chaise-record-status-compact-danger",
     "SUCCESS": ".chaise-record-status-success",
@@ -50,7 +52,7 @@ def update_Vocab_Workflow_Status(catalog):
         { "Name": "DEPO",                "CSS_Class": CSS_CLASSES["DEFAULT"], "CSS_Class_Compact": CSS_CLASSES["DEFAULT_COMPACT"] },
         { "Name": "RECORD READY",        "CSS_Class": CSS_CLASSES["SUCCESS"], "CSS_Class_Compact": CSS_CLASSES["SUCCESS_COMPACT"] },
         { "Name": "SUBMIT",              "CSS_Class": CSS_CLASSES["DEFAULT"], "CSS_Class_Compact": CSS_CLASSES["DEFAULT_COMPACT"] },
-        { "Name": "mmCIF CREATED",       "CSS_Class": CSS_CLASSES["SUCCESS"], "CSS_Class_Compact": CSS_CLASSES["SUCCESS_COMPACT"] },
+        { "Name": "mmCIF CREATED",       "CSS_Class": CSS_CLASSES["INFO"],    "CSS_Class_Compact": CSS_CLASSES["INFO_COMPACT"]    },
         { "Name": "SUBMISSION COMPLETE", "CSS_Class": CSS_CLASSES["DEFAULT"], "CSS_Class_Compact": CSS_CLASSES["DEFAULT_COMPACT"] },
         { "Name": "HOLD",                "CSS_Class": CSS_CLASSES["DEFAULT"], "CSS_Class_Compact": CSS_CLASSES["DEFAULT_COMPACT"] },
         { "Name": "RELEASE READY",       "CSS_Class": CSS_CLASSES["DEFAULT"], "CSS_Class_Compact": CSS_CLASSES["DEFAULT_COMPACT"] },

@@ -111,16 +111,29 @@ def update_PDB_entry(model):
             'id', 
             { 'sourcekey' : 'entry_rcb_fkey' },
             { 'sourcekey' : 'entry_rmb_fkey' },            
-            'mmCIF_File_URL', 
-            { 'source' : 'mmCIF_File_Bytes', 'markdown_name' : 'mmCIF File Size',  },
-            'Image_File_URL', 
-            { 'source' : 'Image_File_Bytes', 'markdown_name' : 'Image File Size',  },
-            ['PDB', 'entry_Accession_Code_fkey'], 
-            { 'sourcekey' : 'entry_Workflow_Status_fkey',  'markdown_name' : 'Workflow Status', 'comment' : 'Do not proceed with manual data entry when this status displays ERROR',  },
+            {
+                "source": [{ "outbound": ["PDB", "entry_Workflow_Status_fkey"]}, "Name" ],
+                "comment" : "Do not proceed with manual data entry when this status shows ERROR - data loss will occur.",
+                "comment_display": "inline",
+                "markdown_name": "Workflow Status",
+                "display": {
+                    "markdown_pattern": "".join([
+                        "{{#if (eq $self.values.Name 'ERROR')}}",
+                        ":span::/span:{.fa-solid .fa-ban style=\"color:red;font-size:1.4rem;margin-right:2px\" data-chaise-tooltip-no-icon data-chaise-tooltip=\"Do not proceed with manual data entry!\" }",
+                        "{{/if}}",
+                        "[{{{$self.rowName}}}]({{{$self.uri.detailed}}})",
+                    ]),
+                }
+            },
             ['PDB', 'entry_Process_Status_fkey'],
             { 'sourcekey' : 'entry_error_file_fkey'  },                        
+            ['PDB', 'entry_Accession_Code_fkey'],
             'Deposit_Date', 
             'Release_Date', 
+            'mmCIF_File_URL',
+            { 'source' : 'mmCIF_File_Bytes', 'markdown_name' : 'mmCIF File Size',  },
+            'Image_File_URL',
+            { 'source' : 'Image_File_Bytes', 'markdown_name' : 'Image File Size',  },
             'Method_Details', 
             'Submitter_Flag', 
             'Submitter_Flag_Date', 
@@ -223,8 +236,8 @@ def update_PDB_entry(model):
             { 'source' : [{'inbound': ['PDB', 'entity_poly_structure_id_fkey']}, 'RID'], 'markdown_name' : '3.3.0 Polymeric Entities',  },
             { 'source' : [{'inbound': ['PDB', 'pdbx_entity_nonpoly_structure_id_fkey']}, 'RID'], 'markdown_name' : '3.3.1 Non-polymeric Entities',  },
             { 'source' : [{'inbound': ['PDB', 'entity_poly_seq_structure_id_fkey']}, 'RID'], 'markdown_name' : '3.3.2 Sequences of Polymeric Entities',  },
-            { 'source' : [{'inbound': ['PDB', 'atom_type_structure_id_fkey']}, 'RID'], 'markdown_name' : '3.4 Types of Atoms',  },
-            { 'source' : [{'inbound': ['PDB', 'struct_asym_structure_id_fkey']}, 'RID'], 'markdown_name' : '3.5 Instances of Molecular Entities',  },
+            { 'source' : [{'inbound': ['PDB', 'atom_type_structure_id_fkey']}, 'RID'], 'markdown_name' : '3.4.0 Types of Atoms',  },
+            { 'source' : [{'inbound': ['PDB', 'struct_asym_structure_id_fkey']}, 'RID'], 'markdown_name' : '3.5.0 Instances of Molecular Entities',  },
             { 'source' : [{'inbound': ['PDB', 'ihm_dataset_list_structure_id_fkey']}, 'RID'], 'markdown_name' : '4.0.0 Input Datasets',  },
             { 'source' : [{'inbound': ['PDB', 'ihm_dataset_group_structure_id_fkey']}, 'RID'], 'markdown_name' : '4.0.1 Input Dataset Groups',  },
             { 'source' : [{'inbound': ['PDB', 'ihm_dataset_group_link_structure_id_fkey']}, 'RID'], 'markdown_name' : '4.0.2 Datasets Belonging to Groups',  },
@@ -326,16 +339,7 @@ def update_PDB_entry(model):
             'markdown_pattern' : '{{#if Image_File_URL }}[![{{Image_File_Name}}]({{{Image_File_URL}}}){width=auto height=100}]({{{Image_File_URL}}}){target=_blank}{{/if}}',
         },
     })
-    #  TODO once the deriva software stack on prod has been updated to have the image file-preview,
-    #       we should remove the following and always let chaise handle the image preview.
-    if cfg.is_prod:
-        schema.tables["entry"].columns["Image_File_URL"].column_display.update({
-            'detailed' : {
-                'template_engine' : 'handlebars',
-                'markdown_pattern' : '{{#if Image_File_URL }}[![{{Image_File_Name}}]({{{Image_File_URL}}}){width=auto height=300}]({{{Image_File_URL}}}){target=_blank}{{/if}}',
-            },
-        })
-    
+
     # ----------------------------
     schema.tables["entry"].columns["mmCIF_File_URL"].display.update(
         {'name' : 'User Provided mmCIF File', }
