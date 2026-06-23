@@ -85,6 +85,11 @@ def update_PDB_entry(model):
                 'entity': False,
                 'aggregate': 'array_d',
             },
+            'entity_type_agg': {
+                'source': [{'inbound': ['PDB', 'entity_structure_id_fkey']}, 'type'],
+                'entity': False,
+                'aggregate': 'array_d',
+            },
             'ihm_feature_list_feature_type_agg': {
                 'source': [{'inbound': ['PDB', 'ihm_feature_list_structure_id_fkey']}, 'feature_type'],
                 'entity': False,
@@ -92,6 +97,11 @@ def update_PDB_entry(model):
             },
             'ihm_poly_residue_feature_interface_residue_flag_agg': {
                 'source': [{'inbound': ['PDB', 'ihm_poly_residue_feature_structure_id_fkey']}, 'interface_residue_flag'],
+                'entity': False,
+                'aggregate': 'array_d',
+            },
+            'ihm_geometric_object_list_object_type_agg': {
+                'source': [{'inbound': ['PDB', 'ihm_geometric_object_list_structure_id_fkey']}, 'object_type'],
                 'entity': False,
                 'aggregate': 'array_d',
             },
@@ -105,8 +115,18 @@ def update_PDB_entry(model):
                 'entity': False,
                 'aggregate': 'array_d',
             },
-            'entity_type_agg': {
-                'source': [{'inbound': ['PDB', 'entity_structure_id_fkey']}, 'type'],
+            'ihm_modeling_protocol_details_ordered_flag_agg': {
+                'source': [{'inbound': ['PDB', 'ihm_modeling_protocol_details_structure_id_fkey']}, 'ordered_flag'],
+                'entity': False,
+                'aggregate': 'array_d',
+            },
+            'ihm_modeling_protocol_details_ensemble_flag_agg': {
+                'source': [{'inbound': ['PDB', 'ihm_modeling_protocol_details_structure_id_fkey']}, 'ensemble_flag'],
+                'entity': False,
+                'aggregate': 'array_d',
+            },
+            'ihm_ensemble_info_sub_sample_flag_agg': {
+                'source': [{'inbound': ['PDB', 'ihm_ensemble_info_structure_id_fkey']}, 'sub_sample_flag'],
                 'entity': False,
                 'aggregate': 'array_d',
             },
@@ -704,8 +724,7 @@ def update_PDB_entry(model):
                         '{{#if (or '
                             '(gt $self.length 0) '
                             #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
-                            '(hasMember _ihm_external_reference_info_reference_type_agg "DOI") '
-                            '(hasMember _ihm_external_reference_info_reference_type_agg "Supplementary Files") '
+                            '(overlaps _ihm_external_reference_info_reference_type_agg "DOI" "Supplementary Files") '
                         ') }}show{{/if}}'
                     ),
                 },
@@ -721,8 +740,7 @@ def update_PDB_entry(model):
                         '{{#if (or '
                             '(gt $self.length 0) '
                             #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
-                            '(hasMember _ihm_external_reference_info_reference_type_agg "DOI") '
-                            '(hasMember _ihm_external_reference_info_reference_type_agg "Supplementary Files") '
+                            '(overlaps _ihm_external_reference_info_reference_type_agg "DOI" "Supplementary Files") '
                         ') }}show{{/if}}'
                     ),
                 },
@@ -758,11 +776,7 @@ def update_PDB_entry(model):
                         '{{#if (or '
                             '(gt $self.length 0) '
                             #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
-                            '(hasMember _ihm_dataset_list_data_type_agg "Experimental model") '
-                            '(hasMember _ihm_dataset_list_data_type_agg "Comparative model") '
-                            '(hasMember _ihm_dataset_list_data_type_agg "Integrative model") '
-                            '(hasMember _ihm_dataset_list_data_type_agg "De Novo model") '
-                            '(hasMember _ihm_dataset_list_data_type_agg "X-ray diffraction data") '
+                            '(overlaps _ihm_dataset_list_data_type_agg "Experimental model" "Comparative model" "Integrative model" "De Novo model" "X-ray diffraction data") '
                         ') }}show{{/if}}'
                     ),
                 },
@@ -794,8 +808,7 @@ def update_PDB_entry(model):
                         '{{#if (or '
                             '(gt $self.length 0) '
                             #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
-                            '(hasMember _ihm_dataset_list_data_type_agg "Comparative model") '
-                            '(hasMember _ihm_dataset_list_data_type_agg "De Novo model") '
+                            '(overlaps _ihm_dataset_list_data_type_agg "Comparative model" "De Novo model") '
                         ') }}show{{/if}}'
                     ),
                 },
@@ -811,11 +824,7 @@ def update_PDB_entry(model):
                         '{{#if (or '
                             '(gt $self.length 0) '
                             #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
-                            '(hasMember _ihm_dataset_list_data_type_agg "Experimental model") '
-                            '(hasMember _ihm_dataset_list_data_type_agg "Comparative model") '
-                            '(hasMember _ihm_dataset_list_data_type_agg "Integrative model") '
-                            '(hasMember _ihm_dataset_list_data_type_agg "De Novo model") '
-                            '(hasMember _ihm_dataset_list_data_type_agg "X-ray diffraction data") '
+                            '(overlaps _ihm_dataset_list_data_type_agg "Experimental model" "Comparative model" "Integrative model" "De Novo model" "X-ray diffraction data") '
                         ') }}show{{/if}}'
                     ),
                 },
@@ -894,7 +903,19 @@ def update_PDB_entry(model):
             },
             {
                 'markdown_name' : '6.2.0 Ordered Models',
-                'sourcekey' : 'ihm_ordered_model_fkey', 
+                'sourcekey' : 'ihm_ordered_model_fkey',
+                'condition': {
+                    'comment': 'use case 3b',
+                    'sourcekey': 'ihm_ordered_model_fkey',
+                    'wait_for': ['ihm_modeling_protocol_details_ordered_flag_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            '(hasMember _ihm_modeling_protocol_details_ordered_flag_agg "YES") '
+                        ') }}show{{/if}}'
+                    ),
+                },
             },
             {
                 'markdown_name' : '6.2.1 Ordered Ensembles (to be deprecated and superseded by Ordered Models)',
@@ -902,15 +923,51 @@ def update_PDB_entry(model):
             },
             {
                 'markdown_name' : '6.3.0 Ensembles',
-                'sourcekey' : 'ihm_ensemble_info_fkey', 
+                'sourcekey' : 'ihm_ensemble_info_fkey',
+                'condition': {
+                    'comment': 'use case 3c',
+                    'sourcekey': 'ihm_ensemble_info_fkey',
+                    'wait_for': ['ihm_modeling_protocol_details_ensemble_flag_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            '(hasMember _ihm_modeling_protocol_details_ensemble_flag_agg "YES") '
+                        ') }}show{{/if}}'
+                    ),
+                }
             },
             {
                 'markdown_name' : '6.3.1 Ensembles with Sub-samples',
-                'sourcekey' : 'ihm_ensemble_sub_sample_fkey', 
+                'sourcekey' : 'ihm_ensemble_sub_sample_fkey',
+                'condition': {
+                    'comment': 'use case 3d',
+                    'sourcekey': 'ihm_ensemble_sub_sample_fkey',
+                    'wait_for': ['ihm_ensemble_info_sample_flag_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            '(hasMember _ihm_ensemble_info_sample_flag_agg "YES") '
+                        ') }}show{{/if}}'
+                    ),
+                }
             },
             {
                 'markdown_name' : '6.3.2 Localization Density Files',
-                'sourcekey' : 'ihm_localization_density_files_fkey', 
+                'sourcekey' : 'ihm_localization_density_files_fkey',
+                'condition': {
+                    'comment': 'use case 3c',
+                    'sourcekey': 'ihm_localization_density_files_fkey',
+                    'wait_for': ['ihm_modeling_protocol_details_ensemble_flag_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            '(hasMember _ihm_modeling_protocol_details_ensemble_flag_agg "YES") '
+                        ') }}show{{/if}}'
+                    ),
+                }
             },
             {
                 'markdown_name' : '7.0.0 2DEM Class Average Restraints',
@@ -1003,10 +1060,7 @@ def update_PDB_entry(model):
                         '{{#if (or '
                             '(gt $self.length 0) '
                             #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
-                            '(hasMember _ihm_dataset_list_data_type_agg "Crosslinking-MS data") '
-                            '(hasMember _ihm_dataset_list_data_type_agg "Ensemble FRET data") '
-                            '(hasMember _ihm_dataset_list_data_type_agg "Single molecule FRET data") '
-                            '(hasMember _ihm_dataset_list_data_type_agg "EPR data") '
+                            '(overlaps _ihm_dataset_list_data_type_agg "Crosslinking-MS data" "Ensemble FRET data" "Single molecule FRET data" "EPR data") '
                         ') }}show{{/if}}'
                     ),
                 },
@@ -1022,9 +1076,7 @@ def update_PDB_entry(model):
                         '{{#if (or '
                             '(gt $self.length 0) '
                             #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
-                            '(hasMember _ihm_dataset_list_data_type_agg "Ensemble FRET data") '
-                            '(hasMember _ihm_dataset_list_data_type_agg "Single molecule FRET data") '
-                            '(hasMember _ihm_dataset_list_data_type_agg "EPR data") '
+                            '(overlaps _ihm_dataset_list_data_type_agg "Ensemble FRET data" "Single molecule FRET data" "EPR data") '
                         ') }}show{{/if}}'
                     ),
                 },
@@ -1040,9 +1092,7 @@ def update_PDB_entry(model):
                         '{{#if (or '
                             '(gt $self.length 0) '
                             #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
-                            '(hasMember _ihm_dataset_list_data_type_agg "Ensemble FRET data") '
-                            '(hasMember _ihm_dataset_list_data_type_agg "Single molecule FRET data") '
-                            '(hasMember _ihm_dataset_list_data_type_agg "EPR data") '
+                            '(overlaps _ihm_dataset_list_data_type_agg "Ensemble FRET data" "Single molecule FRET data" "EPR data") '
                         ') }}show{{/if}}'
                     ),
                 },
@@ -1058,9 +1108,7 @@ def update_PDB_entry(model):
                         '{{#if (or '
                             '(gt $self.length 0) '
                             #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
-                            '(hasMember _ihm_dataset_list_data_type_agg "Ensemble FRET data") '
-                            '(hasMember _ihm_dataset_list_data_type_agg "Single molecule FRET data") '
-                            '(hasMember _ihm_dataset_list_data_type_agg "EPR data") '
+                            '(overlaps _ihm_dataset_list_data_type_agg "Ensemble FRET data" "Single molecule FRET data" "EPR data") '
                         ') }}show{{/if}}'
                     ),
                 },
@@ -1076,9 +1124,7 @@ def update_PDB_entry(model):
                         '{{#if (or '
                             '(gt $self.length 0) '
                             #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
-                            '(hasMember _ihm_dataset_list_data_type_agg "Ensemble FRET data") '
-                            '(hasMember _ihm_dataset_list_data_type_agg "Single molecule FRET data") '
-                            '(hasMember _ihm_dataset_list_data_type_agg "EPR data") '
+                            '(overlaps _ihm_dataset_list_data_type_agg "Ensemble FRET data" "Single molecule FRET data" "EPR data") '
                         ') }}show{{/if}}'
                     ),
                 },
@@ -1090,30 +1136,114 @@ def update_PDB_entry(model):
             {
                 'markdown_name' : '7.6.1 Geomtric Object Centers',
                 'sourcekey' : 'ihm_geometric_object_center_fkey', 
+                'condition': {
+                    'comment': 'use case 1d',
+                    'sourcekey': 'ihm_geometric_object_center_fkey',
+                    'wait_for': ['ihm_geometic_object_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            '(overlaps _ihm_geometric_object_list_object_type_agg "sphere" "axis" "other" "torus" "half-torus" "plane") '
+                        ') }}show{{/if}}'
+                    ),
+                },
             },
             {
                 'markdown_name' : '7.6.2 Geometric Object Transformations',
-                'sourcekey' : 'ihm_geometric_object_transformation_fkey', 
+                'sourcekey' : 'ihm_geometric_object_transformation_fkey',
+                'condition': {
+                    'comment': 'use case 1d',
+                    'sourcekey': 'ihm_geometric_object_transformation_fkey',
+                    'wait_for': ['ihm_geometic_object_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            '(overlaps _ihm_geometric_object_list_object_type_agg "sphere" "axis" "other" "torus" "half-torus" "plane") '
+                        ') }}show{{/if}}'
+                    ),
+                },
             },
             {
                 'markdown_name' : '7.6.3 Spherical Geomtric Objects',
-                'sourcekey' : 'ihm_geometric_object_sphere_fkey', 
+                'sourcekey' : 'ihm_geometric_object_sphere_fkey',
+                'condition': {
+                    'comment': 'use case 1d',
+                    'sourcekey': 'ihm_geometric_object_sphere_fkey',
+                    'wait_for': ['ihm_geometic_object_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            '(hasMember _ihm_geometric_object_list_object_type_agg "sphere") '
+                        ') }}show{{/if}}'
+                    ),
+                },
             },
             {
                 'markdown_name' : '7.6.4 Torus Geometric Objects',
-                'sourcekey' : 'ihm_geometric_object_torus_fkey', 
+                'sourcekey' : 'ihm_geometric_object_torus_fkey',
+                'condition': {
+                    'comment': 'use case 1d',
+                    'sourcekey': 'ihm_geometric_object_torus_fkey',
+                    'wait_for': ['ihm_geometic_object_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            '(overlaps _ihm_geometric_object_list_object_type_agg "torus" "half-torus") '
+                        ') }}show{{/if}}'
+                    ),
+                },
             },
             {
                 'markdown_name' : '7.6.5 Half-torus Geometric Objects',
                 'sourcekey' : 'ihm_geometric_object_half_torus_fkey', 
+                'condition': {
+                    'comment': 'use case 1d',
+                    'sourcekey': 'ihm_geometric_object_half_torus_fkey',
+                    'wait_for': ['ihm_geometic_object_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            '(hasMember _ihm_geometric_object_list_object_type_agg "torus") '
+                        ') }}show{{/if}}'
+                    ),
+                },
             },
             {
                 'markdown_name' : '7.6.6 Axis Geometric Objects',
-                'sourcekey' : 'ihm_geometric_object_axis_fkey', 
+                'sourcekey' : 'ihm_geometric_object_axis_fkey',
+                'condition': {
+                    'comment': 'use case 1d',
+                    'sourcekey': 'ihm_geometric_object_axis_fkey',
+                    'wait_for': ['ihm_geometic_object_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            '(hasMember _ihm_geometric_object_list_object_type_agg "axis") '
+                        ') }}show{{/if}}'
+                    ),
+                },
             },
             {
                 'markdown_name' : '7.6.7 Plane Geometric Objects',
                 'sourcekey' : 'ihm_geometric_object_plane_fkey', 
+                'condition': {
+                    'comment': 'use case 1d',
+                    'sourcekey': 'ihm_geometric_object_plane_fkey',
+                    'wait_for': ['ihm_geometic_object_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            '(hasMember _ihm_geometric_object_list_object_type_agg "plane") '
+                        ') }}show{{/if}}'
+                    ),
+                },
             },
             {
                 'markdown_name' : '8.0.0 Uploaded Restraint Files',
@@ -1282,8 +1412,7 @@ def update_PDB_entry(model):
                         '{{#if (or '
                             '(gt $self.length 0) '
                             #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
-                            '(hasMember _ihm_feature_list_feature_type_agg "residue") '
-                            '(hasMember _ihm_feature_list_feature_type_agg "residue range") '
+                            '(overlaps _ihm_feature_list_feature_type_agg "residue" "residue range") '
                         ') }}show{{/if}}'
                     ),
                 }
@@ -1351,11 +1480,7 @@ def update_PDB_entry(model):
                         '{{#if (or '
                             '(gt $self.length 0) '
                             #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
-                            '(hasMember _ihm_feature_list_feature_type_agg "atom") '
-                            '(hasMember _ihm_feature_list_feature_type_agg "ligand") '
-                            '(hasMember _ihm_feature_list_feature_type_agg "residue") '
-                            '(hasMember _ihm_feature_list_feature_type_agg "residue range") '
-                            '(hasMember _ihm_feature_list_feature_type_agg "pseudo site") '
+                            '(overlaps _ihm_feature_list_feature_type_agg "atom" "ligand" "residue" "residue range" "pseudo site") '
                         ') }}show{{/if}}'
                     ),
                 }
@@ -1371,11 +1496,7 @@ def update_PDB_entry(model):
                         '{{#if (or '
                             '(gt $self.length 0) '
                             #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
-                            '(hasMember _ihm_feature_list_feature_type_agg "atom") '
-                            '(hasMember _ihm_feature_list_feature_type_agg "ligand") '
-                            '(hasMember _ihm_feature_list_feature_type_agg "residue") '
-                            '(hasMember _ihm_feature_list_feature_type_agg "residue range") '
-                            '(hasMember _ihm_feature_list_feature_type_agg "pseudo site") '
+                            '(overlaps _ihm_feature_list_feature_type_agg "atom" "ligand" "residue" "residue range" "pseudo site") '
                         ') }}show{{/if}}'
                     ),
                 }
