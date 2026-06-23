@@ -109,7 +109,7 @@ def load(config_filename, args):
     logger.info(f'args: hostname: {config["hostname"]}, catalog_id: {config["catalog_id"]}, rid: {config["rid"]}, action: {config["action"]}')
     print(f'args: hostname: {config["hostname"]}, catalog_id: {config["catalog_id"]}, rid: {config["rid"]}, action: {config["action"]}')    
 
-    config['process_id'] = args.process_id
+    config['process_id'] = args.process_id if hasattr(args, 'processor_id') else "p0"
     config['verbose'] = args.verbose
     config['mute'] = args.mute
     config['preserve'] = args.preserve
@@ -340,7 +340,7 @@ def main():
             raise Exception("ERROR: A configuration file is needed to run pdb_process_entry")
         config = load(config_filename, args)
         
-        print ('--- The client will be started ---')        
+        print ('--- The client will be started: verbose: %s ---' % (config.get("verbose")))
         entry_processor = EntryProcessor(**config)
 
         if args.action == "clear_cif_tables":
