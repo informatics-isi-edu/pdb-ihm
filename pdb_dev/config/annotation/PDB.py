@@ -10,6 +10,12 @@ from .PDB_ihm import update_PDB_ihm_annotations
 from ..acl.ermrest_acl import GROUPS
 
 
+def get_group_acl(group_name):
+    """Look up a GROUPS entry by name and render its ids as space-separated, double-quoted
+    values for isUserInAcl templates. Raises KeyError if the group name is unknown."""
+    return " ".join('"%s"' % g for g in GROUPS[group_name])
+
+
 # -- =================================================================================
 # -- schema level annotation
 # TODO: In progress. Still need to be tested
@@ -439,6 +445,11 @@ def update_PDB_entry(model):
                 'source' : [{'inbound': ['PDB', 'pdbx_entity_poly_na_type_structure_id_fkey']}, 'RID'],
             },
         },
+        'conditions': {
+            'is_not_submitter': {
+                'condition_pattern': '{{#unless (isUserInAcl ' + get_group_acl('pdb-submitters') + ')}}show{{/unless}}',
+            },
+        },
     })
 
     table.visible_columns.update({
@@ -583,131 +594,174 @@ def update_PDB_entry(model):
         'detailed' :  [
             {
                 'markdown_name' : 'Curation Log',
-                'sourcekey' : 'curation_log_fkey', 
+                'sourcekey' : 'curation_log_fkey',
             },
             {
                 'markdown_name' : '1.0.0 System Generated Files',
-                'sourcekey' : 'entry_generated_file_fkey', 
+                'sourcekey' : 'entry_generated_file_fkey',
             },
             {
                 'markdown_name' : '2.0.0 Description of the Structure',
-                'sourcekey' : 'struct_fkey', 
+                'sourcekey' : 'struct_fkey',
             },
             {
                 'markdown_name' : '2.1.0 Authors',
-                'sourcekey' : 'audit_author_fkey', 
+                'sourcekey' : 'audit_author_fkey',
             },
             {
                 'markdown_name' : '2.2.0 Citations',
-                'sourcekey' : 'citation_fkey', 
+                'sourcekey' : 'citation_fkey',
             },
             {
                 'markdown_name' : '2.2.1 Authors in Citations',
-                'sourcekey' : 'citation_author_fkey', 
+                'sourcekey' : 'citation_author_fkey',
             },
             {
                 'markdown_name' : '2.3.0 Software',
-                'sourcekey' : 'software_fkey', 
+                'sourcekey' : 'software_fkey',
             },
             {
                 'markdown_name' : '3.0.0 Chemical Components',
-                'sourcekey' : 'chem_comp_fkey', 
+                'sourcekey' : 'chem_comp_fkey',
+                'condition_key': 'is_not_submitter',
             },
             {
                 'markdown_name' : '3.1.0 Molecular Entities',
-                'sourcekey' : 'entity_fkey', 
+                'sourcekey' : 'entity_fkey',
             },
             {
                 'markdown_name' : '3.1.1 Common Names of Entities',
-                'sourcekey' : 'entity_name_com_fkey', 
+                'sourcekey' : 'entity_name_com_fkey',
+                'condition': {
+                    '_comment': 'Hide for submitter if not populated',
+                    'sourcekey': 'entity_name_com_fkey',
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                        ') }}show{{/if}}'
+                    ),
+                }
             },
             {
                 'markdown_name' : '3.1.2 Systematic Names of Entities',
-                'sourcekey' : 'entity_name_sys_fkey', 
+                'sourcekey' : 'entity_name_sys_fkey',
+                'condition': {
+                    '_comment': 'Hide for submitter if not populated',
+                    'sourcekey': 'entity_name_sys_fkey',
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                        ') }}show{{/if}}'
+                    ),
+                }
             },
             {
                 'markdown_name' : '3.1.3 Source of Genetically Manipulated Entities',
-                'sourcekey' : 'entity_src_gen_fkey', 
+                'sourcekey' : 'entity_src_gen_fkey',
+                'condition': {
+                    '_comment': 'Hide for submitter if not populated',
+                    'sourcekey': 'entity_src_gen_fkey',
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                        ') }}show{{/if}}'
+                    ),
+                }
             },
             {
                 'markdown_name' : '3.2.0 Reference Sequence Information',
-                'sourcekey' : 'struct_ref_fkey', 
+                'sourcekey' : 'struct_ref_fkey',
             },
             {
                 'markdown_name' : '3.2.1 Alignment Information with the Reference Sequence',
-                'sourcekey' : 'struct_ref_seq_fkey', 
+                'sourcekey' : 'struct_ref_seq_fkey',
             },
             {
                 'markdown_name' : '3.2.2 Point Differences in the Alignment with the Reference Sequence',
-                'sourcekey' : 'struct_ref_seq_dif_fkey', 
+                'sourcekey' : 'struct_ref_seq_dif_fkey',
+                'condition': {
+                    '_comment': 'Hide for submitter if not populated',
+                    'sourcekey': 'struct_ref_seq_dif_fkey',
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                        ') }}show{{/if}}'
+                    ),
+                }
             },
             {
                 'markdown_name' : '3.3.0 Polymeric Entities',
-                'sourcekey' : 'entity_poly_fkey', 
+                'sourcekey' : 'entity_poly_fkey',
             },
             {
                 'markdown_name' : '3.3.1 Non-polymeric Entities',
                 'sourcekey' : 'pdbx_entity_nonpoly_fkey',
                 'condition': {
-                    'comment': 'use case 4',
+                    '_comment': 'use case 4',
                     'sourcekey': 'pdbx_entity_nonpoly_fkey',
                     'wait_for': ['entity_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
-                            '(hasMember _entity_type_agg "non-polymer") '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _entity_type_agg "NON-POLYMER") '
                         ') }}show{{/if}}'
                     ),
                 }
             },
             {
                 'markdown_name' : '3.3.2 Sequences of Polymeric Entities',
-                'sourcekey' : 'entity_poly_seq_fkey', 
+                'sourcekey' : 'entity_poly_seq_fkey',
+                'condition_key': 'is_not_submitter',
             },
             {
                 'markdown_name' : '3.4.0 Types of Atoms',
-                'sourcekey' : 'atom_type_fkey', 
+                'sourcekey' : 'atom_type_fkey',
+                'condition_key': 'is_not_submitter',
             },
             {
                 'markdown_name' : '3.5.0 Instances of Molecular Entities',
-                'sourcekey' : 'struct_asym_fkey', 
+                'sourcekey' : 'struct_asym_fkey',
             },
             {
                 'markdown_name' : '4.0.0 Input Datasets',
-                'sourcekey' : 'ihm_dataset_list_fkey', 
+                'sourcekey' : 'ihm_dataset_list_fkey',
             },
             {
                 'markdown_name' : '4.0.1 Input Dataset Groups',
-                'sourcekey' : 'ihm_dataset_group_fkey', 
+                'sourcekey' : 'ihm_dataset_group_fkey',
             },
             {
                 'markdown_name' : '4.0.2 Datasets Belonging to Groups',
-                'sourcekey' : 'ihm_dataset_group_link_fkey', 
+                'sourcekey' : 'ihm_dataset_group_link_fkey',
             },
             {
                 'markdown_name' : '4.1.0 Data Transformation',
-                'sourcekey' : 'ihm_data_transformation_fkey', 
+                'sourcekey' : 'ihm_data_transformation_fkey',
             },
             {
                 'markdown_name' : '4.2.0 Datasets Dervied from Another',
-                'sourcekey' : 'ihm_related_datasets_fkey', 
+                'sourcekey' : 'ihm_related_datasets_fkey',
             },
             {
                 'markdown_name' : '4.3.0 Datasets Archived in Other Repositories',
-                'sourcekey' : 'ihm_dataset_related_db_reference_fkey', 
+                'sourcekey' : 'ihm_dataset_related_db_reference_fkey',
             },
             {
                 'markdown_name' : '4.3.1 Datasets Referenced via DOI',
-                'sourcekey' : 'ihm_external_reference_info_fkey', 
+                'sourcekey' : 'ihm_external_reference_info_fkey',
                 'condition': {
-                    'comment': 'use case 2a',
+                    '_comment': 'use case 2a',
                     'sourcekey': 'ihm_external_reference_info_fkey',
                     'wait_for': ['ihm_dataset_list_database_hosted_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_dataset_list_database_hosted_agg "NO") '
                         ') }}show{{/if}}'
                     ),
@@ -715,15 +769,15 @@ def update_PDB_entry(model):
             },
             {
                 'markdown_name' : '4.3.2 External Files Referenced via DOI',
-                'sourcekey' : 'ihm_external_files_fkey', 
+                'sourcekey' : 'ihm_external_files_fkey',
                 'condition': {
-                    'comment': 'use case 2b',
+                    '_comment': 'use case 2b',
                     'sourcekey': 'ihm_external_files_fkey',
                     'wait_for': ['ihm_external_reference_info_reference_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(overlaps _ihm_external_reference_info_reference_type_agg "DOI" "Supplementary Files") '
                         ') }}show{{/if}}'
                     ),
@@ -731,15 +785,15 @@ def update_PDB_entry(model):
             },
             {
                 'markdown_name' : '4.3.3 External Files Corresponding to Input Datasets',
-                'sourcekey' : 'ihm_dataset_external_reference_fkey', 
+                'sourcekey' : 'ihm_dataset_external_reference_fkey',
                 'condition': {
-                    'comment': 'use case 2b',
+                    '_comment': 'use case 2b',
                     'sourcekey': 'ihm_dataset_external_reference_fkey',
                     'wait_for': ['ihm_external_reference_info_reference_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(overlaps _ihm_external_reference_info_reference_type_agg "DOI" "Supplementary Files") '
                         ') }}show{{/if}}'
                     ),
@@ -747,35 +801,35 @@ def update_PDB_entry(model):
             },
             {
                 'markdown_name' : '5.0.0 Segments of Polymeric Entities',
-                'sourcekey' : 'ihm_entity_poly_segment_fkey', 
+                'sourcekey' : 'ihm_entity_poly_segment_fkey',
             },
             {
                 'markdown_name' : '5.1.0 Structural Assemblies',
-                'sourcekey' : 'ihm_struct_assembly_fkey', 
+                'sourcekey' : 'ihm_struct_assembly_fkey',
             },
             {
                 'markdown_name' : '5.1.1 Details of Structural Assemblies',
-                'sourcekey' : 'ihm_struct_assembly_details_fkey', 
+                'sourcekey' : 'ihm_struct_assembly_details_fkey',
             },
             {
                 'markdown_name' : '5.1.2 Structural Assembly Classes',
-                'sourcekey' : 'ihm_struct_assembly_class_fkey', 
+                'sourcekey' : 'ihm_struct_assembly_class_fkey',
             },
             {
                 'markdown_name' : '5.1.3 Structural Assemblies Belonging to Classes',
-                'sourcekey' : 'ihm_struct_assembly_class_link_fkey', 
+                'sourcekey' : 'ihm_struct_assembly_class_link_fkey',
             },
             {
                 'markdown_name' : '5.2.0 Starting Structural Models',
                 'sourcekey' : 'ihm_starting_model_details_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
+                    '_comment': 'use case 1a',
                     'sourcekey': 'ihm_starting_model_details_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(overlaps _ihm_dataset_list_data_type_agg "Experimental model" "Comparative model" "Integrative model" "De Novo model" "X-ray diffraction data") '
                         ') }}show{{/if}}'
                     ),
@@ -785,13 +839,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '5.2.1 Starting Comparative Models',
                 'sourcekey' : 'ihm_starting_comparative_models_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
-                    'sourcekey': 'ihm_starting_comparative_models',
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_starting_comparative_models_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_dataset_list_data_type_agg "Comparative model") '
                         ') }}show{{/if}}'
                     ),
@@ -801,13 +855,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '5.2.2 Starting Computational Models',
                 'sourcekey' : 'ihm_starting_computational_models_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
+                    '_comment': 'use case 1a',
                     'sourcekey': 'ihm_starting_computational_models_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(overlaps _ihm_dataset_list_data_type_agg "Comparative model" "De Novo model") '
                         ') }}show{{/if}}'
                     ),
@@ -815,15 +869,15 @@ def update_PDB_entry(model):
             },
             {
                 'markdown_name' : '5.2.3 Point Differences in the Sequences of Starting Models',
-                'sourcekey' : 'ihm_starting_model_seq_dif_fkey', 
+                'sourcekey' : 'ihm_starting_model_seq_dif_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
+                    '_comment': 'use case 1a',
                     'sourcekey': 'ihm_starting_model_seq_dif_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(overlaps _ihm_dataset_list_data_type_agg "Experimental model" "Comparative model" "Integrative model" "De Novo model" "X-ray diffraction data") '
                         ') }}show{{/if}}'
                     ),
@@ -831,55 +885,55 @@ def update_PDB_entry(model):
             },
             {
                 'markdown_name' : '5.3.0 Model Representations',
-                'sourcekey' : 'ihm_model_representation_fkey', 
+                'sourcekey' : 'ihm_model_representation_fkey',
             },
             {
                 'markdown_name' : '5.3.1 Details of Model Representations',
-                'sourcekey' : 'ihm_model_representation_details_fkey', 
+                'sourcekey' : 'ihm_model_representation_details_fkey',
             },
             {
                 'markdown_name' : '5.4.0 Modeling Protocols',
-                'sourcekey' : 'ihm_modeling_protocol_fkey', 
+                'sourcekey' : 'ihm_modeling_protocol_fkey',
             },
             {
                 'markdown_name' : '5.4.1 Details of Modeling Protocols',
-                'sourcekey' : 'ihm_modeling_protocol_details_fkey', 
+                'sourcekey' : 'ihm_modeling_protocol_details_fkey',
             },
             {
                 'markdown_name' : '5.4.2 Post Modeling Analyses',
-                'sourcekey' : 'ihm_modeling_post_process_fkey', 
+                'sourcekey' : 'ihm_modeling_post_process_fkey',
             },
             {
                 'markdown_name' : '6.0.0 Models Submitted',
-                'sourcekey' : 'ihm_model_list_fkey', 
+                'sourcekey' : 'ihm_model_list_fkey',
             },
             {
                 'markdown_name' : '6.0.1 Model Groups',
-                'sourcekey' : 'ihm_model_group_fkey', 
+                'sourcekey' : 'ihm_model_group_fkey',
             },
             {
                 'markdown_name' : '6.0.2 Models Belonging to Groups',
-                'sourcekey' : 'ihm_model_group_link_fkey', 
+                'sourcekey' : 'ihm_model_group_link_fkey',
             },
             {
                 'markdown_name' : '6.0.3 Representative Model in an Ensemble',
-                'sourcekey' : 'ihm_model_representative_fkey', 
+                'sourcekey' : 'ihm_model_representative_fkey',
             },
             {
                 'markdown_name' : '6.0.4 Residues Not Modeled',
-                'sourcekey' : 'ihm_residues_not_modeled_fkey', 
+                'sourcekey' : 'ihm_residues_not_modeled_fkey',
             },
             {
                 'markdown_name' : '6.1.0 Multi-State Modeling',
                 'sourcekey' : 'ihm_multi_state_modeling_fkey',
                 'condition': {
-                    'comment': 'use case 3a',
+                    '_comment': 'use case 3a',
                     'sourcekey': 'ihm_multi_state_modeling_fkey',
                     'wait_for': ['ihm_modeling_protocol_details_multi_state_flag_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_modeling_protocol_details_multi_state_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
@@ -889,13 +943,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '6.1.1 Model Groups Belonging to Multiple States',
                 'sourcekey' : 'ihm_multi_state_model_group_link_fkey',
                 'condition': {
-                    'comment': 'use case 3a',
+                    '_comment': 'use case 3a',
                     'sourcekey': 'ihm_multi_state_model_group_link_fkey',
                     'wait_for': ['ihm_modeling_protocol_details_multi_state_flag_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_modeling_protocol_details_multi_state_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
@@ -905,13 +959,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '6.2.0 Ordered Models',
                 'sourcekey' : 'ihm_ordered_model_fkey',
                 'condition': {
-                    'comment': 'use case 3b',
+                    '_comment': 'use case 3b',
                     'sourcekey': 'ihm_ordered_model_fkey',
                     'wait_for': ['ihm_modeling_protocol_details_ordered_flag_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_modeling_protocol_details_ordered_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
@@ -919,19 +973,19 @@ def update_PDB_entry(model):
             },
             {
                 'markdown_name' : '6.2.1 Ordered Ensembles (to be deprecated and superseded by Ordered Models)',
-                'sourcekey' : 'ihm_ordered_ensemble_fkey', 
+                'sourcekey' : 'ihm_ordered_ensemble_fkey',
             },
             {
                 'markdown_name' : '6.3.0 Ensembles',
                 'sourcekey' : 'ihm_ensemble_info_fkey',
                 'condition': {
-                    'comment': 'use case 3c',
+                    '_comment': 'use case 3c',
                     'sourcekey': 'ihm_ensemble_info_fkey',
                     'wait_for': ['ihm_modeling_protocol_details_ensemble_flag_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_modeling_protocol_details_ensemble_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
@@ -941,14 +995,14 @@ def update_PDB_entry(model):
                 'markdown_name' : '6.3.1 Ensembles with Sub-samples',
                 'sourcekey' : 'ihm_ensemble_sub_sample_fkey',
                 'condition': {
-                    'comment': 'use case 3d',
+                    '_comment': 'use case 3d',
                     'sourcekey': 'ihm_ensemble_sub_sample_fkey',
-                    'wait_for': ['ihm_ensemble_info_sample_flag_agg'],
+                    'wait_for': ['ihm_ensemble_info_sub_sample_flag_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
-                            '(hasMember _ihm_ensemble_info_sample_flag_agg "YES") '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_ensemble_info_sub_sample_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
                 }
@@ -957,13 +1011,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '6.3.2 Localization Density Files',
                 'sourcekey' : 'ihm_localization_density_files_fkey',
                 'condition': {
-                    'comment': 'use case 3c',
+                    '_comment': 'use case 3c',
                     'sourcekey': 'ihm_localization_density_files_fkey',
                     'wait_for': ['ihm_modeling_protocol_details_ensemble_flag_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_modeling_protocol_details_ensemble_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
@@ -971,15 +1025,15 @@ def update_PDB_entry(model):
             },
             {
                 'markdown_name' : '7.0.0 2DEM Class Average Restraints',
-                'sourcekey' : 'ihm_2dem_class_average_restraint_fkey', 
+                'sourcekey' : 'ihm_2dem_class_average_restraint_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
+                    '_comment': 'use case 1a',
                     'sourcekey': 'ihm_2dem_class_average_restraint_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_dataset_list_data_type_agg "2DEM class average") '
                         ') }}show{{/if}}'
                     ),
@@ -987,15 +1041,15 @@ def update_PDB_entry(model):
             },
             {
                 'markdown_name' : '7.0.1 2DEM Class Average Fitting',
-                'sourcekey' : 'ihm_2dem_class_average_fitting_fkey', 
+                'sourcekey' : 'ihm_2dem_class_average_fitting_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
+                    '_comment': 'use case 1a',
                     'sourcekey': 'ihm_2dem_class_average_fitting_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_dataset_list_data_type_agg "2DEM class average") '
                         ') }}show{{/if}}'
                     ),
@@ -1005,13 +1059,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '7.1.0 3DEM Restraints',
                 'sourcekey' : 'ihm_3dem_restraint_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
+                    '_comment': 'use case 1a',
                     'sourcekey': 'ihm_3dem_restraint_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_dataset_list_data_type_agg "3DEM volume") '
                         ') }}show{{/if}}'
                     ),
@@ -1019,15 +1073,15 @@ def update_PDB_entry(model):
             },
             {
                 'markdown_name' : '7.2.0 SAS Restraints',
-                'sourcekey' : 'ihm_sas_restraint_fkey', 
+                'sourcekey' : 'ihm_sas_restraint_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
+                    '_comment': 'use case 1a',
                     'sourcekey': 'ihm_sas_restraint_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_dataset_list_data_type_agg "SAS data") '
                         ') }}show{{/if}}'
                     ),
@@ -1035,15 +1089,15 @@ def update_PDB_entry(model):
             },
             {
                 'markdown_name' : '7.3.0 EPR Restraints',
-                'sourcekey' : 'ihm_epr_restraint_fkey', 
+                'sourcekey' : 'ihm_epr_restraint_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
+                    '_comment': 'use case 1a',
                     'sourcekey': 'ihm_epr_restraint_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_dataset_list_data_type_agg "EPR data") '
                         ') }}show{{/if}}'
                     ),
@@ -1051,15 +1105,15 @@ def update_PDB_entry(model):
             },
             {
                 'markdown_name' : '7.4.0 Chemical Descriptors',
-                'sourcekey' : 'ihm_chemical_component_descriptor_fkey', 
+                'sourcekey' : 'ihm_chemical_component_descriptor_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
+                    '_comment': 'use case 1a',
                     'sourcekey': 'ihm_chemical_component_descriptor_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(overlaps _ihm_dataset_list_data_type_agg "Crosslinking-MS data" "Ensemble FRET data" "Single molecule FRET data" "EPR data") '
                         ') }}show{{/if}}'
                     ),
@@ -1067,15 +1121,15 @@ def update_PDB_entry(model):
             },
             {
                 'markdown_name' : '7.5.0 Molecular Probes',
-                'sourcekey' : 'ihm_probe_list_fkey', 
+                'sourcekey' : 'ihm_probe_list_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
+                    '_comment': 'use case 1a',
                     'sourcekey': 'ihm_probe_list_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(overlaps _ihm_dataset_list_data_type_agg "Ensemble FRET data" "Single molecule FRET data" "EPR data") '
                         ') }}show{{/if}}'
                     ),
@@ -1083,15 +1137,15 @@ def update_PDB_entry(model):
             },
             {
                 'markdown_name' : '7.5.1 Polymeric Residue Positions',
-                'sourcekey' : 'ihm_poly_probe_position_fkey', 
+                'sourcekey' : 'ihm_poly_probe_position_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
+                    '_comment': 'use case 1a',
                     'sourcekey': 'ihm_poly_probe_position_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(overlaps _ihm_dataset_list_data_type_agg "Ensemble FRET data" "Single molecule FRET data" "EPR data") '
                         ') }}show{{/if}}'
                     ),
@@ -1099,15 +1153,15 @@ def update_PDB_entry(model):
             },
             {
                 'markdown_name' : '7.5.2 Probes Attached to Polymeric Residues',
-                'sourcekey' : 'ihm_poly_probe_conjugate_fkey', 
+                'sourcekey' : 'ihm_poly_probe_conjugate_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
+                    '_comment': 'use case 1a',
                     'sourcekey': 'ihm_poly_probe_conjugate_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(overlaps _ihm_dataset_list_data_type_agg "Ensemble FRET data" "Single molecule FRET data" "EPR data") '
                         ') }}show{{/if}}'
                     ),
@@ -1115,15 +1169,15 @@ def update_PDB_entry(model):
             },
             {
                 'markdown_name' : '7.5.3 Non-polymeric Entity Probes',
-                'sourcekey' : 'ihm_ligand_probe_fkey', 
+                'sourcekey' : 'ihm_ligand_probe_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
+                    '_comment': 'use case 1a',
                     'sourcekey': 'ihm_ligand_probe_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(overlaps _ihm_dataset_list_data_type_agg "Ensemble FRET data" "Single molecule FRET data" "EPR data") '
                         ') }}show{{/if}}'
                     ),
@@ -1131,19 +1185,19 @@ def update_PDB_entry(model):
             },
             {
                 'markdown_name' : '7.6.0 Geometric Objects used as Restraints',
-                'sourcekey' : 'ihm_geometric_object_list_fkey', 
+                'sourcekey' : 'ihm_geometric_object_list_fkey',
             },
             {
                 'markdown_name' : '7.6.1 Geomtric Object Centers',
-                'sourcekey' : 'ihm_geometric_object_center_fkey', 
+                'sourcekey' : 'ihm_geometric_object_center_fkey',
                 'condition': {
-                    'comment': 'use case 1d',
+                    '_comment': 'use case 1d',
                     'sourcekey': 'ihm_geometric_object_center_fkey',
-                    'wait_for': ['ihm_geometic_object_list_data_type_agg'],
+                    'wait_for': ['ihm_geometric_object_list_object_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(overlaps _ihm_geometric_object_list_object_type_agg "sphere" "axis" "other" "torus" "half-torus" "plane") '
                         ') }}show{{/if}}'
                     ),
@@ -1153,13 +1207,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '7.6.2 Geometric Object Transformations',
                 'sourcekey' : 'ihm_geometric_object_transformation_fkey',
                 'condition': {
-                    'comment': 'use case 1d',
+                    '_comment': 'use case 1d',
                     'sourcekey': 'ihm_geometric_object_transformation_fkey',
-                    'wait_for': ['ihm_geometic_object_list_data_type_agg'],
+                    'wait_for': ['ihm_geometric_object_list_object_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(overlaps _ihm_geometric_object_list_object_type_agg "sphere" "axis" "other" "torus" "half-torus" "plane") '
                         ') }}show{{/if}}'
                     ),
@@ -1169,13 +1223,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '7.6.3 Spherical Geomtric Objects',
                 'sourcekey' : 'ihm_geometric_object_sphere_fkey',
                 'condition': {
-                    'comment': 'use case 1d',
+                    '_comment': 'use case 1d',
                     'sourcekey': 'ihm_geometric_object_sphere_fkey',
-                    'wait_for': ['ihm_geometic_object_list_data_type_agg'],
+                    'wait_for': ['ihm_geometric_object_list_object_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_geometric_object_list_object_type_agg "sphere") '
                         ') }}show{{/if}}'
                     ),
@@ -1185,13 +1239,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '7.6.4 Torus Geometric Objects',
                 'sourcekey' : 'ihm_geometric_object_torus_fkey',
                 'condition': {
-                    'comment': 'use case 1d',
+                    '_comment': 'use case 1d',
                     'sourcekey': 'ihm_geometric_object_torus_fkey',
-                    'wait_for': ['ihm_geometic_object_list_data_type_agg'],
+                    'wait_for': ['ihm_geometric_object_list_object_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(overlaps _ihm_geometric_object_list_object_type_agg "torus" "half-torus") '
                         ') }}show{{/if}}'
                     ),
@@ -1199,15 +1253,15 @@ def update_PDB_entry(model):
             },
             {
                 'markdown_name' : '7.6.5 Half-torus Geometric Objects',
-                'sourcekey' : 'ihm_geometric_object_half_torus_fkey', 
+                'sourcekey' : 'ihm_geometric_object_half_torus_fkey',
                 'condition': {
-                    'comment': 'use case 1d',
+                    '_comment': 'use case 1d',
                     'sourcekey': 'ihm_geometric_object_half_torus_fkey',
-                    'wait_for': ['ihm_geometic_object_list_data_type_agg'],
+                    'wait_for': ['ihm_geometric_object_list_object_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_geometric_object_list_object_type_agg "torus") '
                         ') }}show{{/if}}'
                     ),
@@ -1217,13 +1271,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '7.6.6 Axis Geometric Objects',
                 'sourcekey' : 'ihm_geometric_object_axis_fkey',
                 'condition': {
-                    'comment': 'use case 1d',
+                    '_comment': 'use case 1d',
                     'sourcekey': 'ihm_geometric_object_axis_fkey',
-                    'wait_for': ['ihm_geometic_object_list_data_type_agg'],
+                    'wait_for': ['ihm_geometric_object_list_object_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_geometric_object_list_object_type_agg "axis") '
                         ') }}show{{/if}}'
                     ),
@@ -1231,15 +1285,15 @@ def update_PDB_entry(model):
             },
             {
                 'markdown_name' : '7.6.7 Plane Geometric Objects',
-                'sourcekey' : 'ihm_geometric_object_plane_fkey', 
+                'sourcekey' : 'ihm_geometric_object_plane_fkey',
                 'condition': {
-                    'comment': 'use case 1d',
+                    '_comment': 'use case 1d',
                     'sourcekey': 'ihm_geometric_object_plane_fkey',
-                    'wait_for': ['ihm_geometic_object_list_data_type_agg'],
+                    'wait_for': ['ihm_geometric_object_list_object_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_geometric_object_list_object_type_agg "plane") '
                         ') }}show{{/if}}'
                     ),
@@ -1247,7 +1301,7 @@ def update_PDB_entry(model):
             },
             {
                 'markdown_name' : '8.0.0 Uploaded Restraint Files',
-                'sourcekey' : 'Entry_Related_File_entry_id_fkey', 
+                'sourcekey' : 'Entry_Related_File_entry_id_fkey',
             },
             {
                 'markdown_name' : '8.1.0 Pseudo Site Coordinates',
@@ -1257,61 +1311,61 @@ def update_PDB_entry(model):
                 'markdown_name' : '8.2.0 Chemical Crosslinks from Experiments',
                 'sourcekey' : 'ihm_cross_link_list_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
+                    '_comment': 'use case 1a',
                     'sourcekey': 'ihm_cross_link_list_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_dataset_list_data_type_agg "Crosslinking-MS data") '
                         ') }}show{{/if}}'
                     ),
                 },
             },
             {
-                'markdown_name' : '8.2.1 Chemical Crosslinking Restraints', 
+                'markdown_name' : '8.2.1 Chemical Crosslinking Restraints',
                 'sourcekey' : 'ihm_cross_link_restraint_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
+                    '_comment': 'use case 1a',
                     'sourcekey': 'ihm_cross_link_restraint_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_dataset_list_data_type_agg "Crosslinking-MS data") '
                         ') }}show{{/if}}'
                     ),
                 },
             },
             {
-                'markdown_name' : '8.2.2 Chemical Crosslinks with Pseudo Sites', 
+                'markdown_name' : '8.2.2 Chemical Crosslinks with Pseudo Sites',
                 'sourcekey' : 'ihm_cross_link_pseudo_site_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
+                    '_comment': 'use case 1a',
                     'sourcekey': 'ihm_cross_link_pseudo_site_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_dataset_list_data_type_agg "Crosslinking-MS data") '
                         ') }}show{{/if}}'
                     ),
                 },
             },
             {
-                'markdown_name' : '8.2.3 Chemical Crosslink Restraint Results', 
+                'markdown_name' : '8.2.3 Chemical Crosslink Restraint Results',
                 'sourcekey' : 'ihm_cross_link_result_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
+                    '_comment': 'use case 1a',
                     'sourcekey': 'ihm_cross_link_result_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_dataset_list_data_type_agg "Crosslinking-MS data") '
                         ') }}show{{/if}}'
                     ),
@@ -1321,13 +1375,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '8.2.4 Chemical Crosslink Restraint Result Parameters',
                 'sourcekey' : 'ihm_cross_link_result_parameters_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
+                    '_comment': 'use case 1a',
                     'sourcekey': 'ihm_cross_link_result_parameters_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_dataset_list_data_type_agg "Crosslinking-MS data") '
                         ') }}show{{/if}}'
                     ),
@@ -1337,13 +1391,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '8.3.0 Predicted Contact Restraints',
                 'sourcekey' : 'ihm_predicted_contact_restraint_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
+                    '_comment': 'use case 1a',
                     'sourcekey': 'ihm_predicted_contact_restraint_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_dataset_list_data_type_agg "Predicted contacts") '
                         ') }}show{{/if}}'
                     ),
@@ -1353,13 +1407,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '8.4.0 Hydroxyl Radical Footprinting Restraints',
                 'sourcekey' : 'ihm_hydroxyl_radical_fp_restraint_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
+                    '_comment': 'use case 1a',
                     'sourcekey': 'ihm_hydroxyl_radical_fp_restraint_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_dataset_list_data_type_agg "Hydroxyl radical footprinting data") '
                         ') }}show{{/if}}'
                     ),
@@ -1369,13 +1423,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '8.5.0 HD Exchange Restraints',
                 'sourcekey' : 'ihm_hdx_restraint_fkey',
                 'condition': {
-                    'comment': 'use case 1a',
+                    '_comment': 'use case 1a',
                     'sourcekey': 'ihm_hdx_restraint_fkey',
                     'wait_for': ['ihm_dataset_list_data_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_dataset_list_data_type_agg "H/D exchange data") '
                         ') }}show{{/if}}'
                     ),
@@ -1389,13 +1443,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '8.6.1 Molecular Features - Polymeric Atoms',
                 'sourcekey' : 'ihm_poly_atom_feature_fkey',
                 'condition': {
-                    'comment': 'use case 1b',
+                    '_comment': 'use case 1b',
                     'sourcekey': 'ihm_poly_atom_feature_fkey',
                     'wait_for': ['ihm_feature_list_feature_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_feature_list_feature_type_agg "atom") '
                         ') }}show{{/if}}'
                     ),
@@ -1405,13 +1459,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '8.6.2 Molecular Features - Polymeric Residues',
                 'sourcekey' : 'ihm_poly_residue_feature_fkey',
                 'condition': {
-                    'comment': 'use case 1b',
+                    '_comment': 'use case 1b',
                     'sourcekey': 'ihm_poly_residue_feature_fkey',
                     'wait_for': ['ihm_feature_list_feature_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(overlaps _ihm_feature_list_feature_type_agg "residue" "residue range") '
                         ') }}show{{/if}}'
                     ),
@@ -1421,13 +1475,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '8.6.3 Molecular Features - Non-polymeric Entities',
                 'sourcekey' : 'ihm_non_poly_feature_fkey',
                 'condition': {
-                    'comment': 'use case 1b',
+                    '_comment': 'use case 1b',
                     'sourcekey': 'ihm_non_poly_feature_fkey',
                     'wait_for': ['ihm_feature_list_feature_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_feature_list_feature_type_agg "ligand") '
                         ') }}show{{/if}}'
                     ),
@@ -1437,13 +1491,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '8.6.4 Molecular Features - Interface Residues',
                 'sourcekey' : 'ihm_interface_residue_feature_fkey',
                 'condition': {
-                    'comment': 'use case 1c',
+                    '_comment': 'use case 1c',
                     'sourcekey': 'ihm_interface_residue_feature_fkey',
                     'wait_for': ['ihm_poly_residue_feature_interface_residue_flag_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_poly_residue_feature_interface_residue_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
@@ -1453,13 +1507,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '8.6.5 Molecular Features - Pseudo Sites',
                 'sourcekey' : 'ihm_pseudo_site_feature_fkey',
                 'condition': {
-                    'comment': 'use case 1b',
+                    '_comment': 'use case 1b',
                     'sourcekey': 'ihm_pseudo_site_feature_fkey',
                     'wait_for': ['ihm_feature_list_feature_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_feature_list_feature_type_agg "pseudo site") '
                         ') }}show{{/if}}'
                     ),
@@ -1473,13 +1527,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '8.7.1 Angle Restraints Between Molecular Features', 
                 'sourcekey' : 'ihm_derived_angle_restraint_fkey',
                 'condition': {
-                    'comment': 'use case 1b',
+                    '_comment': 'use case 1b',
                     'sourcekey': 'ihm_derived_angle_restraint_fkey',
                     'wait_for': ['ihm_feature_list_feature_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(overlaps _ihm_feature_list_feature_type_agg "atom" "ligand" "residue" "residue range" "pseudo site") '
                         ') }}show{{/if}}'
                     ),
@@ -1489,13 +1543,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '8.7.2 Dihedral Restraints Between Molecular Features',
                 'sourcekey' : 'ihm_derived_dihedral_restraint_fkey',
                 'condition': {
-                    'comment': 'use case 1b',
+                    '_comment': 'use case 1b',
                     'sourcekey': 'ihm_derived_dihedral_restraint_fkey',
                     'wait_for': ['ihm_feature_list_feature_type_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(overlaps _ihm_feature_list_feature_type_agg "atom" "ligand" "residue" "residue range" "pseudo site") '
                         ') }}show{{/if}}'
                     ),
@@ -1509,13 +1563,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '8.9.0 Multi-State Schemes',
                 'sourcekey' : 'ihm_multi_state_scheme_fkey',
                 'condition': {
-                    'comment': 'use case 3a',
+                    '_comment': 'use case 3a',
                     'sourcekey': 'ihm_multi_state_scheme_fkey',
                     'wait_for': ['ihm_modeling_protocol_details_multi_state_flag_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_modeling_protocol_details_multi_state_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
@@ -1525,13 +1579,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '8.9.1 Multi-State Scheme Connectivities',
                 'sourcekey' : 'ihm_multi_state_scheme_connectivity_fkey',
                 'condition': {
-                    'comment': 'use case 3a',
+                    '_comment': 'use case 3a',
                     'sourcekey': 'ihm_multi_state_scheme_connectivity_fkey',
                     'wait_for': ['ihm_modeling_protocol_details_multi_state_flag_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_modeling_protocol_details_multi_state_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
@@ -1541,13 +1595,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '8.9.2 Kinetic Rates from Biophysical Experiments', 
                 'sourcekey' : 'ihm_kinetic_rate_fkey',
                 'condition': {
-                    'comment': 'use case 3a',
+                    '_comment': 'use case 3a',
                     'sourcekey': 'ihm_kinetic_rate_fkey',
                     'wait_for': ['ihm_modeling_protocol_details_multi_state_flag_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_modeling_protocol_details_multi_state_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
@@ -1557,13 +1611,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '8.9.3 Relaxation Times from Biophysical Experiments',
                 'sourcekey' : 'ihm_relaxation_time_fkey',
                 'condition': {
-                    'comment': 'use case 3a',
+                    '_comment': 'use case 3a',
                     'sourcekey': 'ihm_relaxation_time_fkey',
                     'wait_for': ['ihm_modeling_protocol_details_multi_state_flag_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_modeling_protocol_details_multi_state_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
@@ -1573,13 +1627,13 @@ def update_PDB_entry(model):
                 'markdown_name' : '8.9.4 Mapping Experimentally Measured Relaxation Times with Multi-State Schemes',
                 'sourcekey' : 'ihm_relaxation_time_multi_state_scheme_fkey',
                 'condition': {
-                    'comment': 'use case 3a',
+                    '_comment': 'use case 3a',
                     'sourcekey': 'ihm_relaxation_time_multi_state_scheme_fkey',
                     'wait_for': ['ihm_modeling_protocol_details_multi_state_flag_agg'],
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            #f'(not (isUserInAcl "{GROUPS["pdb-submitters"]}")) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
                             '(hasMember _ihm_modeling_protocol_details_multi_state_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
