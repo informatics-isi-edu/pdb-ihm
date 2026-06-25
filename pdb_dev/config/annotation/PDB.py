@@ -7,6 +7,13 @@ from ...utils.shared import DCCTX, PDBDEV_CLI, cfg
 from deriva.utils.extras.model import print_schema_model_extras, print_table_model_extras, print_schema_annotations, per_schema_annotation_tags, clear_schema_annotations, tag2name
 from .PDB_base import update_PDB_base_annotations
 from .PDB_ihm import update_PDB_ihm_annotations
+from ..acl.ermrest_acl import GROUPS
+
+
+def get_group_acl(group_name):
+    """Look up a GROUPS entry by name and render its ids as space-separated, double-quoted
+    values for isUserInAcl templates. Raises KeyError if the group name is unknown."""
+    return " ".join('"%s"' % g for g in GROUPS[group_name])
 
 
 # -- =================================================================================
@@ -45,7 +52,7 @@ def update_PDB_entry(model):
     table = schema.tables["entry"]
 
     table.display.update({'markdown_name' :  'Entry^*^', })
-    
+
     table.table_display.update({
         'compact' : { 'row_order' : [{'column': 'RCT', 'descending': True}], },
         'row_name' : { 'row_markdown_pattern' : '{{{id}}}', },
@@ -57,7 +64,7 @@ def update_PDB_entry(model):
         'sources' : {
             'entry_rcb_fkey' : {
                 'source' : [{'outbound': ['PDB', 'entry_RCB_fkey']}, 'RID'],
-                'markdown_name' : 'Created By',                
+                'markdown_name' : 'Created By',
             },
             'entry_rmb_fkey' : {
                 'source' : [{'outbound': ['PDB', 'entry_RMB_fkey']}, 'RID'],
@@ -74,21 +81,388 @@ def update_PDB_entry(model):
                 'entity' : True,
                 'source' : [{'inbound': ['PDB', 'Entry_Generated_File_Structure_Id_fkey']}, {'filter': 'File_Type', 'operand_pattern': 'mmCIF'}, 'RID'],
             },
+            'ihm_dataset_list_data_type_agg': {
+                'source': [{'inbound': ['PDB', 'ihm_dataset_list_structure_id_fkey']}, 'data_type'],
+                'entity': False,
+                'aggregate': 'array_d',
+            },
+            'ihm_dataset_list_database_hosted_agg': {
+                'source': [{'inbound': ['PDB', 'ihm_dataset_list_structure_id_fkey']}, 'database_hosted'],
+                'entity': False,
+                'aggregate': 'array_d',
+            },
+            'entity_type_agg': {
+                'source': [{'inbound': ['PDB', 'entity_structure_id_fkey']}, 'type'],
+                'entity': False,
+                'aggregate': 'array_d',
+            },
+            'ihm_feature_list_feature_type_agg': {
+                'source': [{'inbound': ['PDB', 'ihm_feature_list_structure_id_fkey']}, 'feature_type'],
+                'entity': False,
+                'aggregate': 'array_d',
+            },
+            'ihm_poly_residue_feature_interface_residue_flag_agg': {
+                'source': [{'inbound': ['PDB', 'ihm_poly_residue_feature_structure_id_fkey']}, 'interface_residue_flag'],
+                'entity': False,
+                'aggregate': 'array_d',
+            },
+            'ihm_geometric_object_list_object_type_agg': {
+                'source': [{'inbound': ['PDB', 'ihm_geometric_object_list_structure_id_fkey']}, 'object_type'],
+                'entity': False,
+                'aggregate': 'array_d',
+            },
+            'ihm_external_reference_info_reference_type_agg': {
+                'source': [{'inbound': ['PDB', 'ihm_external_reference_info_structure_id_fkey']}, 'reference_type'],
+                'entity': False,
+                'aggregate': 'array_d',
+            },
+            'ihm_modeling_protocol_details_multi_state_flag_agg': {
+                'source': [{'inbound': ['PDB', 'ihm_modeling_protocol_details_structure_id_fkey']}, 'multi_state_flag'],
+                'entity': False,
+                'aggregate': 'array_d',
+            },
+            'ihm_modeling_protocol_details_ordered_flag_agg': {
+                'source': [{'inbound': ['PDB', 'ihm_modeling_protocol_details_structure_id_fkey']}, 'ordered_flag'],
+                'entity': False,
+                'aggregate': 'array_d',
+            },
+            'ihm_modeling_protocol_details_ensemble_flag_agg': {
+                'source': [{'inbound': ['PDB', 'ihm_modeling_protocol_details_structure_id_fkey']}, 'ensemble_flag'],
+                'entity': False,
+                'aggregate': 'array_d',
+            },
+            'ihm_ensemble_info_sub_sample_flag_agg': {
+                'source': [{'inbound': ['PDB', 'ihm_ensemble_info_structure_id_fkey']}, 'sub_sample_flag'],
+                'entity': False,
+                'aggregate': 'array_d',
+            },
+            'curation_log_fkey': {
+                'source' : [{'inbound': ['PDB', 'Curation_Log_Entry_fkey']}, 'RID'],
+            },
+            'entry_generated_file_fkey': {
+                'source' : [{'inbound': ['PDB', 'Entry_Generated_File_Structure_Id_fkey']}, 'RID'],
+            },
+            'struct_fkey': {
+                'source' : [{'inbound': ['PDB', 'struct_entry_id_fkey']}, 'RID'],
+            },
+            'audit_author_fkey': {
+                'source' : [{'inbound': ['PDB', 'audit_author_structure_id_fkey']}, 'RID'],
+            },
+            'citation_fkey': {
+                'source' : [{'inbound': ['PDB', 'citation_structure_id_fkey']}, 'RID'],
+            },
+            'citation_author_fkey': {
+                'source' : [{'inbound': ['PDB', 'citation_author_structure_id_fkey']}, 'RID'],
+            },
+            'software_fkey': {
+                'source' : [{'inbound': ['PDB', 'software_structure_id_fkey']}, 'RID'],
+            },
+            'chem_comp_fkey': {
+                'source' : [{'inbound': ['PDB', 'chem_comp_structure_id_fkey']}, 'RID'],
+            },
+            'entity_fkey': {
+                'source' : [{'inbound': ['PDB', 'entity_structure_id_fkey']}, 'RID'],
+            },
+            'entity_name_com_fkey': {
+                'source' : [{'inbound': ['PDB', 'entity_name_com_structure_id_fkey']}, 'RID'],
+            },
+            'entity_name_sys_fkey': {
+                'source' : [{'inbound': ['PDB', 'entity_name_sys_structure_id_fkey']}, 'RID'],
+            },
+            'entity_src_gen_fkey': {
+                'source' : [{'inbound': ['PDB', 'entity_src_gen_structure_id_fkey']}, 'RID'],
+            },
+            'struct_ref_fkey': {
+                'source' : [{'inbound': ['PDB', 'struct_ref_structure_id_fkey']}, 'RID'],
+            },
+            'struct_ref_seq_fkey': {
+                'source' : [{'inbound': ['PDB', 'struct_ref_seq_structure_id_fkey']}, 'RID'],
+            },
+            'struct_ref_seq_dif_fkey': {
+                'source' : [{'inbound': ['PDB', 'struct_ref_seq_dif_structure_id_fkey']}, 'RID'],
+            },
+            'entity_poly_fkey': {
+                'source' : [{'inbound': ['PDB', 'entity_poly_structure_id_fkey']}, 'RID'],
+            },
+            'pdbx_entity_nonpoly_fkey': {
+                'source' : [{'inbound': ['PDB', 'pdbx_entity_nonpoly_structure_id_fkey']}, 'RID'],
+            },
+            'entity_poly_seq_fkey': {
+                'source' : [{'inbound': ['PDB', 'entity_poly_seq_structure_id_fkey']}, 'RID'],
+            },
+            'atom_type_fkey': {
+                'source' : [{'inbound': ['PDB', 'atom_type_structure_id_fkey']}, 'RID'],
+            },
+            'struct_asym_fkey': {
+                'source' : [{'inbound': ['PDB', 'struct_asym_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_dataset_list_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_dataset_list_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_dataset_group_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_dataset_group_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_dataset_group_link_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_dataset_group_link_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_data_transformation_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_data_transformation_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_related_datasets_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_related_datasets_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_dataset_related_db_reference_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_dataset_related_db_reference_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_external_reference_info_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_external_reference_info_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_external_files_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_external_files_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_dataset_external_reference_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_dataset_external_reference_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_entity_poly_segment_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_entity_poly_segment_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_struct_assembly_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_struct_assembly_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_struct_assembly_details_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_struct_assembly_details_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_struct_assembly_class_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_struct_assembly_class_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_struct_assembly_class_link_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_struct_assembly_class_link_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_starting_model_details_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_starting_model_details_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_starting_comparative_models_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_starting_comparative_models_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_starting_computational_models_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_starting_computational_models_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_starting_model_seq_dif_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_starting_model_seq_dif_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_model_representation_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_model_representation_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_model_representation_details_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_model_representation_details_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_modeling_protocol_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_modeling_protocol_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_modeling_protocol_details_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_modeling_protocol_details_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_modeling_post_process_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_modeling_post_process_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_model_list_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_model_list_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_model_group_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_model_group_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_model_group_link_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_model_group_link_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_model_representative_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_model_representative_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_residues_not_modeled_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_residues_not_modeled_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_multi_state_modeling_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_multi_state_modeling_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_multi_state_model_group_link_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_multi_state_model_group_link_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_ordered_model_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_ordered_model_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_ordered_ensemble_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_ordered_ensemble_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_ensemble_info_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_ensemble_info_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_ensemble_sub_sample_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_ensemble_sub_sample_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_localization_density_files_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_localization_density_files_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_2dem_class_average_restraint_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_2dem_class_average_restraint_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_2dem_class_average_fitting_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_2dem_class_average_fitting_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_3dem_restraint_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_3dem_restraint_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_sas_restraint_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_sas_restraint_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_epr_restraint_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_epr_restraint_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_chemical_component_descriptor_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_chemical_component_descriptor_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_probe_list_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_probe_list_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_poly_probe_position_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_poly_probe_position_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_poly_probe_conjugate_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_poly_probe_conjugate_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_ligand_probe_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_ligand_probe_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_geometric_object_list_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_geometric_object_list_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_geometric_object_center_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_geometric_object_center_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_geometric_object_transformation_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_geometric_object_transformation_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_geometric_object_sphere_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_geometric_object_sphere_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_geometric_object_torus_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_geometric_object_torus_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_geometric_object_half_torus_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_geometric_object_half_torus_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_geometric_object_axis_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_geometric_object_axis_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_geometric_object_plane_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_geometric_object_plane_structure_id_fkey']}, 'RID'],
+            },
+            'Entry_Related_File_entry_id_fkey': {
+                'source' : [{'inbound': ['PDB', 'Entry_Related_File_entry_id_fkey']}, 'RID'],
+            },
+            'ihm_pseudo_site_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_pseudo_site_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_cross_link_list_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_cross_link_list_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_cross_link_restraint_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_cross_link_restraint_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_cross_link_pseudo_site_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_cross_link_pseudo_site_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_cross_link_result_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_cross_link_result_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_cross_link_result_parameters_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_cross_link_result_parameters_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_predicted_contact_restraint_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_predicted_contact_restraint_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_hydroxyl_radical_fp_restraint_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_hydroxyl_radical_fp_restraint_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_hdx_restraint_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_hdx_restraint_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_feature_list_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_feature_list_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_poly_atom_feature_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_poly_atom_feature_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_poly_residue_feature_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_poly_residue_feature_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_non_poly_feature_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_non_poly_feature_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_interface_residue_feature_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_interface_residue_feature_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_pseudo_site_feature_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_pseudo_site_feature_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_derived_distance_restraint_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_derived_distance_restraint_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_derived_angle_restraint_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_derived_angle_restraint_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_derived_dihedral_restraint_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_derived_dihedral_restraint_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_geometric_object_distance_restraint_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_geometric_object_distance_restraint_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_multi_state_scheme_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_multi_state_scheme_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_multi_state_scheme_connectivity_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_multi_state_scheme_connectivity_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_kinetic_rate_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_kinetic_rate_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_relaxation_time_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_relaxation_time_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_relaxation_time_multi_state_scheme_fkey': {
+                'source' : [{'inbound': ['PDB', 'ihm_relaxation_time_multi_state_scheme_structure_id_fkey']}, 'RID'],
+            },
+            'ihm_entry_collection_mapping_fkey': {
+                'source' : [
+                    {'inbound': ['PDB', 'ihm_entry_collection_mapping_entry_id_fkey']},
+                    {'outbound': ['PDB', 'ihm_entry_collection_mapping_collection_id_fkey']},
+                    'RID'
+                ],
+                'comment' : 'Collections to which the entry belongs',
+            },
+            'audit_conform_fkey': {
+                'source' : [{'inbound': ['PDB', 'audit_conform_structure_id_fkey']}, 'RID'],
+            },
+            'pdbx_entity_poly_na_type_fkey': {
+                'source' : [{'inbound': ['PDB', 'pdbx_entity_poly_na_type_structure_id_fkey']}, 'RID'],
+            },
+        },
+        'conditions': {
+            'is_not_submitter': {
+                'condition_pattern': '{{#unless (isUserInAcl ' + get_group_acl('pdb-submitters') + ')}}show{{/unless}}',
+            },
         },
     })
 
-    
     table.visible_columns.update({
         '*' :  [
-            'RID', 
-            'id', 
-            'mmCIF_File_URL', 
-            'Submitter_Flag_Date', 
-            'Image_File_URL', 
-            ['PDB', 'entry_Accession_Code_fkey'], 
-            ['PDB', 'entry_Workflow_Status_fkey'], 
+            'RID',
+            'id',
+            'mmCIF_File_URL',
+            'Submitter_Flag_Date',
+            'Image_File_URL',
+            ['PDB', 'entry_Accession_Code_fkey'],
+            ['PDB', 'entry_Workflow_Status_fkey'],
             ['PDB', 'entry_Process_Status_fkey'],
-            { 'sourcekey': 'entry_error_file_fkey', },            
+            { 'sourcekey': 'entry_error_file_fkey', },
             {
                 'entity' : True,
                 'source' : [{'inbound': ['PDB', 'Entry_Generated_File_Structure_Id_fkey']}, 'RID'],
@@ -96,21 +470,21 @@ def update_PDB_entry(model):
                 'aggregate' : 'array_d',
                 'markdown_name' : 'System Generated Files',
             },
-            'Deposit_Date', 
-            'Release_Date', 
-            'Method_Details', 
-            'New_Chem_Comp_Pending', 
+            'Deposit_Date',
+            'Release_Date',
+            'Method_Details',
+            'New_Chem_Comp_Pending',
             'Manual_Processing',
             { 'sourcekey': 'entry_rcb_fkey', },
             { 'sourcekey': 'entry_rmb_fkey', },
-            'RCT', 
-            'RMT', 
+            'RCT',
+            'RMT',
         ],
         'detailed' :  [
-            'RID', 
-            'id', 
+            'RID',
+            'id',
             { 'sourcekey' : 'entry_rcb_fkey' },
-            { 'sourcekey' : 'entry_rmb_fkey' },            
+            { 'sourcekey' : 'entry_rmb_fkey' },
             {
                 "source": [{ "outbound": ["PDB", "entry_Workflow_Status_fkey"]}, "Name" ],
                 "comment" : "Do not proceed with manual data entry when this status shows ERROR - data loss will occur.",
@@ -126,19 +500,19 @@ def update_PDB_entry(model):
                 }
             },
             ['PDB', 'entry_Process_Status_fkey'],
-            { 'sourcekey' : 'entry_error_file_fkey'  },                        
+            { 'sourcekey' : 'entry_error_file_fkey'  },
             ['PDB', 'entry_Accession_Code_fkey'],
-            'Deposit_Date', 
-            'Release_Date', 
+            'Deposit_Date',
+            'Release_Date',
             'mmCIF_File_URL',
             { 'source' : 'mmCIF_File_Bytes', 'markdown_name' : 'mmCIF File Size',  },
             'Image_File_URL',
             { 'source' : 'Image_File_Bytes', 'markdown_name' : 'Image File Size',  },
-            'Method_Details', 
-            'Submitter_Flag', 
-            'Submitter_Flag_Date', 
-            'New_Chem_Comp_Pending', 
-            'Manual_Processing', 
+            'Method_Details',
+            'Submitter_Flag',
+            'Submitter_Flag_Date',
+            'New_Chem_Comp_Pending',
+            'Manual_Processing',
             'Notes',
             {
                 'display' : {
@@ -147,26 +521,26 @@ def update_PDB_entry(model):
                 'markdown_name' : '3D Visualization',  },
         ],
         'entry' :  [
-            'mmCIF_File_URL', 
-            'Image_File_URL', 
-            ['PDB', 'entry_Workflow_Status_fkey'], 
-            'Method_Details', 
-            'New_Chem_Comp_Pending', 
-            'Manual_Processing', 
-            'Notes', 
+            'mmCIF_File_URL',
+            'Image_File_URL',
+            ['PDB', 'entry_Workflow_Status_fkey'],
+            'Method_Details',
+            'New_Chem_Comp_Pending',
+            'Manual_Processing',
+            'Notes',
         ],
         'entry/edit' :  [
-            'mmCIF_File_URL', 
-            'Image_File_URL', 
+            'mmCIF_File_URL',
+            'Image_File_URL',
             ['PDB', 'entry_Workflow_Status_fkey'],
             'Method_Details',
             ['PDB', 'entry_Process_Status_fkey'],
-            'Deposit_Date', 
-            'Release_Date', 
-            'Submitter_Flag', 
-            'Submitter_Flag_Date', 
-            'New_Chem_Comp_Pending', 
-            'Manual_Processing', 
+            'Deposit_Date',
+            'Release_Date',
+            'Submitter_Flag',
+            'Submitter_Flag_Date',
+            'New_Chem_Comp_Pending',
+            'Manual_Processing',
             'Notes',
         ],
         'filter' :  {
@@ -199,134 +573,1087 @@ def update_PDB_entry(model):
             ],
         },
         'export/compact' :  [
-            'RID', 
-            'id', 
-            'mmCIF_File_Name', 
-            'mmCIF_File_URL', 
-            'Image_File_Name', 
-            'Image_File_URL', 
-            'Workflow_Status', 
-            'Accession_Code', 
-            'Deposit_Date', 
-            'Release_Date', 
-            'Method_Details', 
-            'Submitter_Flag', 
-            'Submitter_Flag_Date', 
-            'Record_Status_Detail', 
+            'RID',
+            'id',
+            'mmCIF_File_Name',
+            'mmCIF_File_URL',
+            'Image_File_Name',
+            'Image_File_URL',
+            'Workflow_Status',
+            'Accession_Code',
+            'Deposit_Date',
+            'Release_Date',
+            'Method_Details',
+            'Submitter_Flag',
+            'Submitter_Flag_Date',
+            'Record_Status_Detail',
         ],
     })
 
     table.visible_foreign_keys.update({
         'detailed' :  [
-            { 'source' : [{'inbound': ['PDB', 'Curation_Log_Entry_fkey']}, 'RID'], 'markdown_name' : 'Curation Log',  },
-            { 'source' : [{'inbound': ['PDB', 'Entry_Generated_File_Structure_Id_fkey']}, 'RID'], 'markdown_name' : '1.0.0 System Generated Files',  },
-            { 'source' : [{'inbound': ['PDB', 'struct_entry_id_fkey']}, 'RID'], 'markdown_name' : '2.0.0 Description of the Structure',  },
-            { 'source' : [{'inbound': ['PDB', 'audit_author_structure_id_fkey']}, 'RID'], 'markdown_name' : '2.1.0 Authors',  },
-            { 'source' : [{'inbound': ['PDB', 'citation_structure_id_fkey']}, 'RID'], 'markdown_name' : '2.2.0 Citations',  },
-            { 'source' : [{'inbound': ['PDB', 'citation_author_structure_id_fkey']}, 'RID'], 'markdown_name' : '2.2.1 Authors in Citations',  },
-            { 'source' : [{'inbound': ['PDB', 'software_structure_id_fkey']}, 'RID'], 'markdown_name' : '2.3.0 Software',  },
-            { 'source' : [{'inbound': ['PDB', 'chem_comp_structure_id_fkey']}, 'RID'], 'markdown_name' : '3.0.0 Chemical Components',  },
-            { 'source' : [{'inbound': ['PDB', 'entity_structure_id_fkey']}, 'RID'], 'markdown_name' : '3.1.0 Molecular Entities',  },
-            { 'source' : [{'inbound': ['PDB', 'entity_name_com_structure_id_fkey']}, 'RID'], 'markdown_name' : '3.1.1 Common Names of Entities',  },
-            { 'source' : [{'inbound': ['PDB', 'entity_name_sys_structure_id_fkey']}, 'RID'], 'markdown_name' : '3.1.2 Systematic Names of Entities',  },
-            { 'source' : [{'inbound': ['PDB', 'entity_src_gen_structure_id_fkey']}, 'RID'], 'markdown_name' : '3.1.3 Source of Genetically Manipulated Entities',  },
-            { 'source' : [{'inbound': ['PDB', 'struct_ref_structure_id_fkey']}, 'RID'], 'markdown_name' : '3.2.0 Reference Sequence Information',  },
-            { 'source' : [{'inbound': ['PDB', 'struct_ref_seq_structure_id_fkey']}, 'RID'], 'markdown_name' : '3.2.1 Alignment Information with the Reference Sequence',  },
-            { 'source' : [{'inbound': ['PDB', 'struct_ref_seq_dif_structure_id_fkey']}, 'RID'], 'markdown_name' : '3.2.2 Point Differences in the Alignment with the Reference Sequence',  },
-            { 'source' : [{'inbound': ['PDB', 'entity_poly_structure_id_fkey']}, 'RID'], 'markdown_name' : '3.3.0 Polymeric Entities',  },
-            { 'source' : [{'inbound': ['PDB', 'pdbx_entity_nonpoly_structure_id_fkey']}, 'RID'], 'markdown_name' : '3.3.1 Non-polymeric Entities',  },
-            { 'source' : [{'inbound': ['PDB', 'entity_poly_seq_structure_id_fkey']}, 'RID'], 'markdown_name' : '3.3.2 Sequences of Polymeric Entities',  },
-            { 'source' : [{'inbound': ['PDB', 'atom_type_structure_id_fkey']}, 'RID'], 'markdown_name' : '3.4.0 Types of Atoms',  },
-            { 'source' : [{'inbound': ['PDB', 'struct_asym_structure_id_fkey']}, 'RID'], 'markdown_name' : '3.5.0 Instances of Molecular Entities',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_dataset_list_structure_id_fkey']}, 'RID'], 'markdown_name' : '4.0.0 Input Datasets',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_dataset_group_structure_id_fkey']}, 'RID'], 'markdown_name' : '4.0.1 Input Dataset Groups',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_dataset_group_link_structure_id_fkey']}, 'RID'], 'markdown_name' : '4.0.2 Datasets Belonging to Groups',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_data_transformation_structure_id_fkey']}, 'RID'], 'markdown_name' : '4.1.0 Data Transformation',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_related_datasets_structure_id_fkey']}, 'RID'], 'markdown_name' : '4.2.0 Datasets Dervied from Another',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_dataset_related_db_reference_structure_id_fkey']}, 'RID'], 'markdown_name' : '4.3.0 Datasets Archived in Other Repositories',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_external_reference_info_structure_id_fkey']}, 'RID'], 'markdown_name' : '4.3.1 Datasets Referenced via DOI',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_external_files_structure_id_fkey']}, 'RID'], 'markdown_name' : '4.3.2 External Files Referenced via DOI',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_dataset_external_reference_structure_id_fkey']}, 'RID'], 'markdown_name' : '4.3.3 External Files Corresponding to Input Datasets',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_entity_poly_segment_structure_id_fkey']}, 'RID'], 'markdown_name' : '5.0.0 Segments of Polymeric Entities',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_struct_assembly_structure_id_fkey']}, 'RID'], 'markdown_name' : '5.1.0 Structural Assemblies',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_struct_assembly_details_structure_id_fkey']}, 'RID'], 'markdown_name' : '5.1.1 Details of Structural Assemblies',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_struct_assembly_class_structure_id_fkey']}, 'RID'], 'markdown_name' : '5.1.2 Structural Assembly Classes',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_struct_assembly_class_link_structure_id_fkey']}, 'RID'], 'markdown_name' : '5.1.3 Structural Assemblies Belonging to Classes',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_starting_model_details_structure_id_fkey']}, 'RID'], 'markdown_name' : '5.2.0 Starting Structural Models',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_starting_comparative_models_structure_id_fkey']}, 'RID'], 'markdown_name' : '5.2.1 Starting Comparative Models',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_starting_computational_models_structure_id_fkey']}, 'RID'], 'markdown_name' : '5.2.2 Starting Computational Models',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_starting_model_seq_dif_structure_id_fkey']}, 'RID'], 'markdown_name' : '5.2.3 Point Differences in the Sequences of Starting Models',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_model_representation_structure_id_fkey']}, 'RID'], 'markdown_name' : '5.3.0 Model Representations',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_model_representation_details_structure_id_fkey']}, 'RID'], 'markdown_name' : '5.3.1 Details of Model Representations',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_modeling_protocol_structure_id_fkey']}, 'RID'], 'markdown_name' : '5.4.0 Modeling Protocols',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_modeling_protocol_details_structure_id_fkey']}, 'RID'], 'markdown_name' : '5.4.1 Details of Modeling Protocols',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_modeling_post_process_structure_id_fkey']}, 'RID'], 'markdown_name' : '5.4.2 Post Modeling Analyses',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_model_list_structure_id_fkey']}, 'RID'], 'markdown_name' : '6.0.0 Models Submitted',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_model_group_structure_id_fkey']}, 'RID'], 'markdown_name' : '6.0.1 Model Groups',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_model_group_link_structure_id_fkey']}, 'RID'], 'markdown_name' : '6.0.2 Models Belonging to Groups',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_model_representative_structure_id_fkey']}, 'RID'], 'markdown_name' : '6.0.3 Representative Model in an Ensemble',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_residues_not_modeled_structure_id_fkey']}, 'RID'], 'markdown_name' : '6.0.4 Residues Not Modeled',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_multi_state_modeling_structure_id_fkey']}, 'RID'], 'markdown_name' : '6.1.0 Multi-State Modeling',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_multi_state_model_group_link_structure_id_fkey']}, 'RID'], 'markdown_name' : '6.1.1 Model Groups Belonging to Multiple States',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_ordered_model_structure_id_fkey']}, 'RID'], 'markdown_name' : '6.2.0 Ordered Models',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_ordered_ensemble_structure_id_fkey']}, 'RID'], 'markdown_name' : '6.2.1 Ordered Ensembles (to be deprecated and superseded by Ordered Models)',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_ensemble_info_structure_id_fkey']}, 'RID'], 'markdown_name' : '6.3.0 Ensembles',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_ensemble_sub_sample_structure_id_fkey']}, 'RID'], 'markdown_name' : '6.3.1 Ensembles with Sub-samples',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_localization_density_files_structure_id_fkey']}, 'RID'], 'markdown_name' : '6.3.2 Localization Density Files',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_2dem_class_average_restraint_structure_id_fkey']}, 'RID'], 'markdown_name' : '7.0.0 2DEM Class Average Restraints',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_2dem_class_average_fitting_structure_id_fkey']}, 'RID'], 'markdown_name' : '7.0.1 2DEM Class Average Fitting',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_3dem_restraint_structure_id_fkey']}, 'RID'], 'markdown_name' : '7.1.0 3DEM Restraints',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_sas_restraint_structure_id_fkey']}, 'RID'], 'markdown_name' : '7.2.0 SAS Restraints',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_epr_restraint_structure_id_fkey']}, 'RID'], 'markdown_name' : '7.3.0 EPR Restraints',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_chemical_component_descriptor_structure_id_fkey']}, 'RID'], 'markdown_name' : '7.4.0 Chemical Descriptors',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_probe_list_structure_id_fkey']}, 'RID'], 'markdown_name' : '7.5.0 Molecular Probes',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_poly_probe_position_structure_id_fkey']}, 'RID'], 'markdown_name' : '7.5.1 Polymeric Residue Positions',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_poly_probe_conjugate_structure_id_fkey']}, 'RID'], 'markdown_name' : '7.5.2 Probes Attached to Polymeric Residues',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_ligand_probe_structure_id_fkey']}, 'RID'], 'markdown_name' : '7.5.3 Non-polymeric Entity Probes',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_geometric_object_list_structure_id_fkey']}, 'RID'], 'markdown_name' : '7.6.0 Geometric Objects used as Restraints',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_geometric_object_center_structure_id_fkey']}, 'RID'], 'markdown_name' : '7.6.1 Geomtric Object Centers',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_geometric_object_transformation_structure_id_fkey']}, 'RID'], 'markdown_name' : '7.6.2 Geometric Object Transformations',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_geometric_object_sphere_structure_id_fkey']}, 'RID'], 'markdown_name' : '7.6.3 Spherical Geomtric Objects',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_geometric_object_torus_structure_id_fkey']}, 'RID'], 'markdown_name' : '7.6.4 Torus Geometric Objects',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_geometric_object_half_torus_structure_id_fkey']}, 'RID'], 'markdown_name' : '7.6.5 Half-torus Geometric Objects',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_geometric_object_axis_structure_id_fkey']}, 'RID'], 'markdown_name' : '7.6.6 Axis Geometric Objects',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_geometric_object_plane_structure_id_fkey']}, 'RID'], 'markdown_name' : '7.6.7 Plane Geometric Objects',  },
-            { 'source' : [{'inbound': ['PDB', 'Entry_Related_File_entry_id_fkey']}, 'RID'], 'markdown_name' : '8.0.0 Uploaded Restraint Files',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_pseudo_site_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.1.0 Pseudo Site Coordinates',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_cross_link_list_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.2.0 Chemical Crosslinks from Experiments',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_cross_link_restraint_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.2.1 Chemical Crosslinking Restraints',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_cross_link_pseudo_site_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.2.2 Chemical Crosslinks with Pseudo Sites',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_cross_link_result_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.2.3 Chemical Crosslink Restraint Results',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_cross_link_result_parameters_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.2.4 Chemical Crosslink Restraint Result Parameters',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_predicted_contact_restraint_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.3.0 Predicted Contact Restraints',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_hydroxyl_radical_fp_restraint_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.4.0 Hydroxyl Radical Footprinting Restraints',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_hdx_restraint_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.5.0 HD Exchange Restraints',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_feature_list_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.6.0 Molecular Features used in Generic Restraints',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_poly_atom_feature_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.6.1 Molecular Features - Polymeric Atoms',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_poly_residue_feature_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.6.2 Molecular Features - Polymeric Residues',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_non_poly_feature_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.6.3 Molecular Features - Non-polymeric Entities',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_interface_residue_feature_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.6.4 Molecular Features - Interface Residues',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_pseudo_site_feature_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.6.5 Molecular Features - Pseudo Sites',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_derived_distance_restraint_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.7.0 Distance Restraints Between Molecular Features',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_derived_angle_restraint_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.7.1 Angle Restraints Between Molecular Features',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_derived_dihedral_restraint_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.7.2 Dihedral Restraints Between Molecular Features',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_geometric_object_distance_restraint_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.8.0 Distance Restraints Between Geometric Objects and Molecular Features',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_multi_state_scheme_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.9.0 Multi-State Schemes',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_multi_state_scheme_connectivity_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.9.1 Multi-State Scheme Connectivities',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_kinetic_rate_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.9.2 Kinetic Rates from Biophysical Experiments',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_relaxation_time_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.9.3 Relaxation Times from Biophysical Experiments',  },
-            { 'source' : [{'inbound': ['PDB', 'ihm_relaxation_time_multi_state_scheme_structure_id_fkey']}, 'RID'], 'markdown_name' : '8.9.4 Mapping Experimentally Measured Relaxation Times with Multi-State Schemes',  },
             {
-                'source' : [{'inbound': ['PDB', 'ihm_entry_collection_mapping_entry_id_fkey']}, {'outbound': ['PDB', 'ihm_entry_collection_mapping_collection_id_fkey']}, 'RID'],
-                'comment' : 'Collections to which the entry belongs',
-                'markdown_name' : '9.0.0 Entry Collections',
+                'markdown_name' : 'Curation Log',
+                'sourcekey' : 'curation_log_fkey',
             },
-            { 'source' : [{'inbound': ['PDB', 'audit_conform_structure_id_fkey']}, 'RID'], 'markdown_name' : '9.1.0 Dictionary Versions Compliant with the Data',  },
-            { 'source' : [{'inbound': ['PDB', 'pdbx_entity_poly_na_type_structure_id_fkey']}, 'RID'], 'markdown_name' : '9.2.0 Types of Polymeric Nucleic Acid Entities',  },
+            {
+                'markdown_name' : '1.0.0 System Generated Files',
+                'sourcekey' : 'entry_generated_file_fkey',
+            },
+            {
+                'markdown_name' : '2.0.0 Description of the Structure',
+                'sourcekey' : 'struct_fkey',
+            },
+            {
+                'markdown_name' : '2.1.0 Authors',
+                'sourcekey' : 'audit_author_fkey',
+            },
+            {
+                'markdown_name' : '2.2.0 Citations',
+                'sourcekey' : 'citation_fkey',
+            },
+            {
+                'markdown_name' : '2.2.1 Authors in Citations',
+                'sourcekey' : 'citation_author_fkey',
+            },
+            {
+                'markdown_name' : '2.3.0 Software',
+                'sourcekey' : 'software_fkey',
+            },
+            {
+                'markdown_name' : '3.0.0 Chemical Components',
+                'sourcekey' : 'chem_comp_fkey',
+                'condition_key': 'is_not_submitter',
+            },
+            {
+                'markdown_name' : '3.1.0 Molecular Entities',
+                'sourcekey' : 'entity_fkey',
+            },
+            {
+                'markdown_name' : '3.1.1 Common Names of Entities',
+                'sourcekey' : 'entity_name_com_fkey',
+                'condition': {
+                    '_comment': 'Hide for submitter if not populated',
+                    'sourcekey': 'entity_name_com_fkey',
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                        ') }}show{{/if}}'
+                    ),
+                }
+            },
+            {
+                'markdown_name' : '3.1.2 Systematic Names of Entities',
+                'sourcekey' : 'entity_name_sys_fkey',
+                'condition': {
+                    '_comment': 'Hide for submitter if not populated',
+                    'sourcekey': 'entity_name_sys_fkey',
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                        ') }}show{{/if}}'
+                    ),
+                }
+            },
+            {
+                'markdown_name' : '3.1.3 Source of Genetically Manipulated Entities',
+                'sourcekey' : 'entity_src_gen_fkey',
+                'condition': {
+                    '_comment': 'Hide for submitter if not populated',
+                    'sourcekey': 'entity_src_gen_fkey',
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                        ') }}show{{/if}}'
+                    ),
+                }
+            },
+            {
+                'markdown_name' : '3.2.0 Reference Sequence Information',
+                'sourcekey' : 'struct_ref_fkey',
+            },
+            {
+                'markdown_name' : '3.2.1 Alignment Information with the Reference Sequence',
+                'sourcekey' : 'struct_ref_seq_fkey',
+            },
+            {
+                'markdown_name' : '3.2.2 Point Differences in the Alignment with the Reference Sequence',
+                'sourcekey' : 'struct_ref_seq_dif_fkey',
+                'condition': {
+                    '_comment': 'Hide for submitter if not populated',
+                    'sourcekey': 'struct_ref_seq_dif_fkey',
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                        ') }}show{{/if}}'
+                    ),
+                }
+            },
+            {
+                'markdown_name' : '3.3.0 Polymeric Entities',
+                'sourcekey' : 'entity_poly_fkey',
+            },
+            {
+                'markdown_name' : '3.3.1 Non-polymeric Entities',
+                'sourcekey' : 'pdbx_entity_nonpoly_fkey',
+                'condition': {
+                    '_comment': 'use case 4',
+                    'sourcekey': 'pdbx_entity_nonpoly_fkey',
+                    'wait_for': ['entity_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _entity_type_agg "NON-POLYMER") '
+                        ') }}show{{/if}}'
+                    ),
+                }
+            },
+            {
+                'markdown_name' : '3.3.2 Sequences of Polymeric Entities',
+                'sourcekey' : 'entity_poly_seq_fkey',
+                'condition_key': 'is_not_submitter',
+            },
+            {
+                'markdown_name' : '3.4.0 Types of Atoms',
+                'sourcekey' : 'atom_type_fkey',
+                'condition_key': 'is_not_submitter',
+            },
+            {
+                'markdown_name' : '3.5.0 Instances of Molecular Entities',
+                'sourcekey' : 'struct_asym_fkey',
+            },
+            {
+                'markdown_name' : '4.0.0 Input Datasets',
+                'sourcekey' : 'ihm_dataset_list_fkey',
+            },
+            {
+                'markdown_name' : '4.0.1 Input Dataset Groups',
+                'sourcekey' : 'ihm_dataset_group_fkey',
+            },
+            {
+                'markdown_name' : '4.0.2 Datasets Belonging to Groups',
+                'sourcekey' : 'ihm_dataset_group_link_fkey',
+            },
+            {
+                'markdown_name' : '4.1.0 Data Transformation',
+                'sourcekey' : 'ihm_data_transformation_fkey',
+            },
+            {
+                'markdown_name' : '4.2.0 Datasets Dervied from Another',
+                'sourcekey' : 'ihm_related_datasets_fkey',
+            },
+            {
+                'markdown_name' : '4.3.0 Datasets Archived in Other Repositories',
+                'sourcekey' : 'ihm_dataset_related_db_reference_fkey',
+            },
+            {
+                'markdown_name' : '4.3.1 Datasets Referenced via DOI',
+                'sourcekey' : 'ihm_external_reference_info_fkey',
+                'condition': {
+                    '_comment': 'use case 2a',
+                    'sourcekey': 'ihm_external_reference_info_fkey',
+                    'wait_for': ['ihm_dataset_list_database_hosted_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_dataset_list_database_hosted_agg "NO") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '4.3.2 External Files Referenced via DOI',
+                'sourcekey' : 'ihm_external_files_fkey',
+                'condition': {
+                    '_comment': 'use case 2b',
+                    'sourcekey': 'ihm_external_files_fkey',
+                    'wait_for': ['ihm_external_reference_info_reference_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(overlaps _ihm_external_reference_info_reference_type_agg "DOI" "Supplementary Files") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '4.3.3 External Files Corresponding to Input Datasets',
+                'sourcekey' : 'ihm_dataset_external_reference_fkey',
+                'condition': {
+                    '_comment': 'use case 2b',
+                    'sourcekey': 'ihm_dataset_external_reference_fkey',
+                    'wait_for': ['ihm_external_reference_info_reference_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(overlaps _ihm_external_reference_info_reference_type_agg "DOI" "Supplementary Files") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '5.0.0 Segments of Polymeric Entities',
+                'sourcekey' : 'ihm_entity_poly_segment_fkey',
+            },
+            {
+                'markdown_name' : '5.1.0 Structural Assemblies',
+                'sourcekey' : 'ihm_struct_assembly_fkey',
+            },
+            {
+                'markdown_name' : '5.1.1 Details of Structural Assemblies',
+                'sourcekey' : 'ihm_struct_assembly_details_fkey',
+            },
+            {
+                'markdown_name' : '5.1.2 Structural Assembly Classes',
+                'sourcekey' : 'ihm_struct_assembly_class_fkey',
+            },
+            {
+                'markdown_name' : '5.1.3 Structural Assemblies Belonging to Classes',
+                'sourcekey' : 'ihm_struct_assembly_class_link_fkey',
+            },
+            {
+                'markdown_name' : '5.2.0 Starting Structural Models',
+                'sourcekey' : 'ihm_starting_model_details_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_starting_model_details_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(overlaps _ihm_dataset_list_data_type_agg "Experimental model" "Comparative model" "Integrative model" "De Novo model" "X-ray diffraction data") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '5.2.1 Starting Comparative Models',
+                'sourcekey' : 'ihm_starting_comparative_models_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_starting_comparative_models_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_dataset_list_data_type_agg "Comparative model") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '5.2.2 Starting Computational Models',
+                'sourcekey' : 'ihm_starting_computational_models_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_starting_computational_models_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(overlaps _ihm_dataset_list_data_type_agg "Comparative model" "De Novo model") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '5.2.3 Point Differences in the Sequences of Starting Models',
+                'sourcekey' : 'ihm_starting_model_seq_dif_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_starting_model_seq_dif_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(overlaps _ihm_dataset_list_data_type_agg "Experimental model" "Comparative model" "Integrative model" "De Novo model" "X-ray diffraction data") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '5.3.0 Model Representations',
+                'sourcekey' : 'ihm_model_representation_fkey',
+            },
+            {
+                'markdown_name' : '5.3.1 Details of Model Representations',
+                'sourcekey' : 'ihm_model_representation_details_fkey',
+            },
+            {
+                'markdown_name' : '5.4.0 Modeling Protocols',
+                'sourcekey' : 'ihm_modeling_protocol_fkey',
+            },
+            {
+                'markdown_name' : '5.4.1 Details of Modeling Protocols',
+                'sourcekey' : 'ihm_modeling_protocol_details_fkey',
+            },
+            {
+                'markdown_name' : '5.4.2 Post Modeling Analyses',
+                'sourcekey' : 'ihm_modeling_post_process_fkey',
+            },
+            {
+                'markdown_name' : '6.0.0 Models Submitted',
+                'sourcekey' : 'ihm_model_list_fkey',
+            },
+            {
+                'markdown_name' : '6.0.1 Model Groups',
+                'sourcekey' : 'ihm_model_group_fkey',
+            },
+            {
+                'markdown_name' : '6.0.2 Models Belonging to Groups',
+                'sourcekey' : 'ihm_model_group_link_fkey',
+            },
+            {
+                'markdown_name' : '6.0.3 Representative Model in an Ensemble',
+                'sourcekey' : 'ihm_model_representative_fkey',
+            },
+            {
+                'markdown_name' : '6.0.4 Residues Not Modeled',
+                'sourcekey' : 'ihm_residues_not_modeled_fkey',
+            },
+            {
+                'markdown_name' : '6.1.0 Multi-State Modeling',
+                'sourcekey' : 'ihm_multi_state_modeling_fkey',
+                'condition': {
+                    '_comment': 'use case 3a',
+                    'sourcekey': 'ihm_multi_state_modeling_fkey',
+                    'wait_for': ['ihm_modeling_protocol_details_multi_state_flag_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_modeling_protocol_details_multi_state_flag_agg "YES") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '6.1.1 Model Groups Belonging to Multiple States',
+                'sourcekey' : 'ihm_multi_state_model_group_link_fkey',
+                'condition': {
+                    '_comment': 'use case 3a',
+                    'sourcekey': 'ihm_multi_state_model_group_link_fkey',
+                    'wait_for': ['ihm_modeling_protocol_details_multi_state_flag_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_modeling_protocol_details_multi_state_flag_agg "YES") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '6.2.0 Ordered Models',
+                'sourcekey' : 'ihm_ordered_model_fkey',
+                'condition': {
+                    '_comment': 'use case 3b',
+                    'sourcekey': 'ihm_ordered_model_fkey',
+                    'wait_for': ['ihm_modeling_protocol_details_ordered_flag_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_modeling_protocol_details_ordered_flag_agg "YES") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '6.2.1 Ordered Ensembles (to be deprecated and superseded by Ordered Models)',
+                'sourcekey' : 'ihm_ordered_ensemble_fkey',
+            },
+            {
+                'markdown_name' : '6.3.0 Ensembles',
+                'sourcekey' : 'ihm_ensemble_info_fkey',
+                'condition': {
+                    '_comment': 'use case 3c',
+                    'sourcekey': 'ihm_ensemble_info_fkey',
+                    'wait_for': ['ihm_modeling_protocol_details_ensemble_flag_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_modeling_protocol_details_ensemble_flag_agg "YES") '
+                        ') }}show{{/if}}'
+                    ),
+                }
+            },
+            {
+                'markdown_name' : '6.3.1 Ensembles with Sub-samples',
+                'sourcekey' : 'ihm_ensemble_sub_sample_fkey',
+                'condition': {
+                    '_comment': 'use case 3d',
+                    'sourcekey': 'ihm_ensemble_sub_sample_fkey',
+                    'wait_for': ['ihm_ensemble_info_sub_sample_flag_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_ensemble_info_sub_sample_flag_agg "YES") '
+                        ') }}show{{/if}}'
+                    ),
+                }
+            },
+            {
+                'markdown_name' : '6.3.2 Localization Density Files',
+                'sourcekey' : 'ihm_localization_density_files_fkey',
+                'condition': {
+                    '_comment': 'use case 3c',
+                    'sourcekey': 'ihm_localization_density_files_fkey',
+                    'wait_for': ['ihm_modeling_protocol_details_ensemble_flag_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_modeling_protocol_details_ensemble_flag_agg "YES") '
+                        ') }}show{{/if}}'
+                    ),
+                }
+            },
+            {
+                'markdown_name' : '7.0.0 2DEM Class Average Restraints',
+                'sourcekey' : 'ihm_2dem_class_average_restraint_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_2dem_class_average_restraint_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_dataset_list_data_type_agg "2DEM class average") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '7.0.1 2DEM Class Average Fitting',
+                'sourcekey' : 'ihm_2dem_class_average_fitting_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_2dem_class_average_fitting_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_dataset_list_data_type_agg "2DEM class average") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '7.1.0 3DEM Restraints',
+                'sourcekey' : 'ihm_3dem_restraint_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_3dem_restraint_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_dataset_list_data_type_agg "3DEM volume") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '7.2.0 SAS Restraints',
+                'sourcekey' : 'ihm_sas_restraint_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_sas_restraint_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_dataset_list_data_type_agg "SAS data") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '7.3.0 EPR Restraints',
+                'sourcekey' : 'ihm_epr_restraint_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_epr_restraint_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_dataset_list_data_type_agg "EPR data") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '7.4.0 Chemical Descriptors',
+                'sourcekey' : 'ihm_chemical_component_descriptor_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_chemical_component_descriptor_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(overlaps _ihm_dataset_list_data_type_agg "Crosslinking-MS data" "Ensemble FRET data" "Single molecule FRET data" "EPR data") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '7.5.0 Molecular Probes',
+                'sourcekey' : 'ihm_probe_list_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_probe_list_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(overlaps _ihm_dataset_list_data_type_agg "Ensemble FRET data" "Single molecule FRET data" "EPR data") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '7.5.1 Polymeric Residue Positions',
+                'sourcekey' : 'ihm_poly_probe_position_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_poly_probe_position_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(overlaps _ihm_dataset_list_data_type_agg "Ensemble FRET data" "Single molecule FRET data" "EPR data") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '7.5.2 Probes Attached to Polymeric Residues',
+                'sourcekey' : 'ihm_poly_probe_conjugate_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_poly_probe_conjugate_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(overlaps _ihm_dataset_list_data_type_agg "Ensemble FRET data" "Single molecule FRET data" "EPR data") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '7.5.3 Non-polymeric Entity Probes',
+                'sourcekey' : 'ihm_ligand_probe_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_ligand_probe_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(overlaps _ihm_dataset_list_data_type_agg "Ensemble FRET data" "Single molecule FRET data" "EPR data") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '7.6.0 Geometric Objects used as Restraints',
+                'sourcekey' : 'ihm_geometric_object_list_fkey',
+            },
+            {
+                'markdown_name' : '7.6.1 Geomtric Object Centers',
+                'sourcekey' : 'ihm_geometric_object_center_fkey',
+                'condition': {
+                    '_comment': 'use case 1d',
+                    'sourcekey': 'ihm_geometric_object_center_fkey',
+                    'wait_for': ['ihm_geometric_object_list_object_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(overlaps _ihm_geometric_object_list_object_type_agg "sphere" "axis" "other" "torus" "half-torus" "plane") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '7.6.2 Geometric Object Transformations',
+                'sourcekey' : 'ihm_geometric_object_transformation_fkey',
+                'condition': {
+                    '_comment': 'use case 1d',
+                    'sourcekey': 'ihm_geometric_object_transformation_fkey',
+                    'wait_for': ['ihm_geometric_object_list_object_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(overlaps _ihm_geometric_object_list_object_type_agg "sphere" "axis" "other" "torus" "half-torus" "plane") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '7.6.3 Spherical Geomtric Objects',
+                'sourcekey' : 'ihm_geometric_object_sphere_fkey',
+                'condition': {
+                    '_comment': 'use case 1d',
+                    'sourcekey': 'ihm_geometric_object_sphere_fkey',
+                    'wait_for': ['ihm_geometric_object_list_object_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_geometric_object_list_object_type_agg "sphere") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '7.6.4 Torus Geometric Objects',
+                'sourcekey' : 'ihm_geometric_object_torus_fkey',
+                'condition': {
+                    '_comment': 'use case 1d',
+                    'sourcekey': 'ihm_geometric_object_torus_fkey',
+                    'wait_for': ['ihm_geometric_object_list_object_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(overlaps _ihm_geometric_object_list_object_type_agg "torus" "half-torus") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '7.6.5 Half-torus Geometric Objects',
+                'sourcekey' : 'ihm_geometric_object_half_torus_fkey',
+                'condition': {
+                    '_comment': 'use case 1d',
+                    'sourcekey': 'ihm_geometric_object_half_torus_fkey',
+                    'wait_for': ['ihm_geometric_object_list_object_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_geometric_object_list_object_type_agg "torus") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '7.6.6 Axis Geometric Objects',
+                'sourcekey' : 'ihm_geometric_object_axis_fkey',
+                'condition': {
+                    '_comment': 'use case 1d',
+                    'sourcekey': 'ihm_geometric_object_axis_fkey',
+                    'wait_for': ['ihm_geometric_object_list_object_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_geometric_object_list_object_type_agg "axis") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '7.6.7 Plane Geometric Objects',
+                'sourcekey' : 'ihm_geometric_object_plane_fkey',
+                'condition': {
+                    '_comment': 'use case 1d',
+                    'sourcekey': 'ihm_geometric_object_plane_fkey',
+                    'wait_for': ['ihm_geometric_object_list_object_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_geometric_object_list_object_type_agg "plane") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '8.0.0 Uploaded Restraint Files',
+                'sourcekey' : 'Entry_Related_File_entry_id_fkey',
+            },
+            {
+                'markdown_name' : '8.1.0 Pseudo Site Coordinates',
+                'sourcekey' : 'ihm_pseudo_site_fkey',  
+            },
+            {
+                'markdown_name' : '8.2.0 Chemical Crosslinks from Experiments',
+                'sourcekey' : 'ihm_cross_link_list_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_cross_link_list_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_dataset_list_data_type_agg "Crosslinking-MS data") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '8.2.1 Chemical Crosslinking Restraints',
+                'sourcekey' : 'ihm_cross_link_restraint_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_cross_link_restraint_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_dataset_list_data_type_agg "Crosslinking-MS data") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '8.2.2 Chemical Crosslinks with Pseudo Sites',
+                'sourcekey' : 'ihm_cross_link_pseudo_site_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_cross_link_pseudo_site_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_dataset_list_data_type_agg "Crosslinking-MS data") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '8.2.3 Chemical Crosslink Restraint Results',
+                'sourcekey' : 'ihm_cross_link_result_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_cross_link_result_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_dataset_list_data_type_agg "Crosslinking-MS data") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '8.2.4 Chemical Crosslink Restraint Result Parameters',
+                'sourcekey' : 'ihm_cross_link_result_parameters_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_cross_link_result_parameters_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_dataset_list_data_type_agg "Crosslinking-MS data") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '8.3.0 Predicted Contact Restraints',
+                'sourcekey' : 'ihm_predicted_contact_restraint_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_predicted_contact_restraint_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_dataset_list_data_type_agg "Predicted contacts") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '8.4.0 Hydroxyl Radical Footprinting Restraints',
+                'sourcekey' : 'ihm_hydroxyl_radical_fp_restraint_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_hydroxyl_radical_fp_restraint_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_dataset_list_data_type_agg "Hydroxyl radical footprinting data") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '8.5.0 HD Exchange Restraints',
+                'sourcekey' : 'ihm_hdx_restraint_fkey',
+                'condition': {
+                    '_comment': 'use case 1a',
+                    'sourcekey': 'ihm_hdx_restraint_fkey',
+                    'wait_for': ['ihm_dataset_list_data_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_dataset_list_data_type_agg "H/D exchange data") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '8.6.0 Molecular Features used in Generic Restraints', 
+                'sourcekey' : 'ihm_feature_list_fkey',
+            },
+            {
+                'markdown_name' : '8.6.1 Molecular Features - Polymeric Atoms',
+                'sourcekey' : 'ihm_poly_atom_feature_fkey',
+                'condition': {
+                    '_comment': 'use case 1b',
+                    'sourcekey': 'ihm_poly_atom_feature_fkey',
+                    'wait_for': ['ihm_feature_list_feature_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_feature_list_feature_type_agg "atom") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '8.6.2 Molecular Features - Polymeric Residues',
+                'sourcekey' : 'ihm_poly_residue_feature_fkey',
+                'condition': {
+                    '_comment': 'use case 1b',
+                    'sourcekey': 'ihm_poly_residue_feature_fkey',
+                    'wait_for': ['ihm_feature_list_feature_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(overlaps _ihm_feature_list_feature_type_agg "residue" "residue range") '
+                        ') }}show{{/if}}'
+                    ),
+                }
+            },
+            {
+                'markdown_name' : '8.6.3 Molecular Features - Non-polymeric Entities',
+                'sourcekey' : 'ihm_non_poly_feature_fkey',
+                'condition': {
+                    '_comment': 'use case 1b',
+                    'sourcekey': 'ihm_non_poly_feature_fkey',
+                    'wait_for': ['ihm_feature_list_feature_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_feature_list_feature_type_agg "ligand") '
+                        ') }}show{{/if}}'
+                    ),
+                }
+            },
+            {
+                'markdown_name' : '8.6.4 Molecular Features - Interface Residues',
+                'sourcekey' : 'ihm_interface_residue_feature_fkey',
+                'condition': {
+                    '_comment': 'use case 1c',
+                    'sourcekey': 'ihm_interface_residue_feature_fkey',
+                    'wait_for': ['ihm_poly_residue_feature_interface_residue_flag_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_poly_residue_feature_interface_residue_flag_agg "YES") '
+                        ') }}show{{/if}}'
+                    ),
+                }
+            },
+            {
+                'markdown_name' : '8.6.5 Molecular Features - Pseudo Sites',
+                'sourcekey' : 'ihm_pseudo_site_feature_fkey',
+                'condition': {
+                    '_comment': 'use case 1b',
+                    'sourcekey': 'ihm_pseudo_site_feature_fkey',
+                    'wait_for': ['ihm_feature_list_feature_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_feature_list_feature_type_agg "pseudo site") '
+                        ') }}show{{/if}}'
+                    ),
+                }
+            },
+            {
+                'markdown_name' : '8.7.0 Distance Restraints Between Molecular Features',
+                'sourcekey' : 'ihm_derived_distance_restraint_fkey',
+            },
+            {
+                'markdown_name' : '8.7.1 Angle Restraints Between Molecular Features', 
+                'sourcekey' : 'ihm_derived_angle_restraint_fkey',
+                'condition': {
+                    '_comment': 'use case 1b',
+                    'sourcekey': 'ihm_derived_angle_restraint_fkey',
+                    'wait_for': ['ihm_feature_list_feature_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(overlaps _ihm_feature_list_feature_type_agg "atom" "ligand" "residue" "residue range" "pseudo site") '
+                        ') }}show{{/if}}'
+                    ),
+                }
+            },
+            {
+                'markdown_name' : '8.7.2 Dihedral Restraints Between Molecular Features',
+                'sourcekey' : 'ihm_derived_dihedral_restraint_fkey',
+                'condition': {
+                    '_comment': 'use case 1b',
+                    'sourcekey': 'ihm_derived_dihedral_restraint_fkey',
+                    'wait_for': ['ihm_feature_list_feature_type_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(overlaps _ihm_feature_list_feature_type_agg "atom" "ligand" "residue" "residue range" "pseudo site") '
+                        ') }}show{{/if}}'
+                    ),
+                }
+            },
+            {
+                'markdown_name' : '8.8.0 Distance Restraints Between Geometric Objects and Molecular Features',
+                'sourcekey' : 'ihm_geometric_object_distance_restraint_fkey',
+            },
+            {
+                'markdown_name' : '8.9.0 Multi-State Schemes',
+                'sourcekey' : 'ihm_multi_state_scheme_fkey',
+                'condition': {
+                    '_comment': 'use case 3a',
+                    'sourcekey': 'ihm_multi_state_scheme_fkey',
+                    'wait_for': ['ihm_modeling_protocol_details_multi_state_flag_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_modeling_protocol_details_multi_state_flag_agg "YES") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '8.9.1 Multi-State Scheme Connectivities',
+                'sourcekey' : 'ihm_multi_state_scheme_connectivity_fkey',
+                'condition': {
+                    '_comment': 'use case 3a',
+                    'sourcekey': 'ihm_multi_state_scheme_connectivity_fkey',
+                    'wait_for': ['ihm_modeling_protocol_details_multi_state_flag_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_modeling_protocol_details_multi_state_flag_agg "YES") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '8.9.2 Kinetic Rates from Biophysical Experiments', 
+                'sourcekey' : 'ihm_kinetic_rate_fkey',
+                'condition': {
+                    '_comment': 'use case 3a',
+                    'sourcekey': 'ihm_kinetic_rate_fkey',
+                    'wait_for': ['ihm_modeling_protocol_details_multi_state_flag_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_modeling_protocol_details_multi_state_flag_agg "YES") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '8.9.3 Relaxation Times from Biophysical Experiments',
+                'sourcekey' : 'ihm_relaxation_time_fkey',
+                'condition': {
+                    '_comment': 'use case 3a',
+                    'sourcekey': 'ihm_relaxation_time_fkey',
+                    'wait_for': ['ihm_modeling_protocol_details_multi_state_flag_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_modeling_protocol_details_multi_state_flag_agg "YES") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '8.9.4 Mapping Experimentally Measured Relaxation Times with Multi-State Schemes',
+                'sourcekey' : 'ihm_relaxation_time_multi_state_scheme_fkey',
+                'condition': {
+                    '_comment': 'use case 3a',
+                    'sourcekey': 'ihm_relaxation_time_multi_state_scheme_fkey',
+                    'wait_for': ['ihm_modeling_protocol_details_multi_state_flag_agg'],
+                    'condition_pattern': (
+                        '{{#if (or '
+                            '(gt $self.length 0) '
+                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(hasMember _ihm_modeling_protocol_details_multi_state_flag_agg "YES") '
+                        ') }}show{{/if}}'
+                    ),
+                },
+            },
+            {
+                'markdown_name' : '9.0.0 Entry Collections',
+                'sourcekey' : 'ihm_entry_collection_mapping_fkey',
+            },
+            {
+                'markdown_name' : '9.1.0 Dictionary Versions Compliant with the Data',
+                'sourcekey' : 'audit_conform_fkey',
+            },
+            {
+                'markdown_name' : '9.2.0 Types of Polymeric Nucleic Acid Entities',
+                'sourcekey' : 'pdbx_entity_poly_na_type_fkey',
+            },
         ],
     })
-    
-    
+
    # ----------------------------
     schema.tables["entry"].columns["Image_File_URL"].display.update(
         {'name' : 'User Provided Image File', }
@@ -344,12 +1671,12 @@ def update_PDB_entry(model):
     schema.tables["entry"].columns["mmCIF_File_URL"].display.update(
         {'name' : 'User Provided mmCIF File', }
     )
-    
+
     # ----------------------------
     schema.tables["entry"].columns["Submitter_Flag_Date"].display.update(
         {'name' : 'Last Communicated', }
     )
-    
+
     # ----------------------------
     schema.tables["entry"].columns["Method_Details"].display.update(
         {'name' : 'User Provided Method Details', }
@@ -360,13 +1687,12 @@ def update_PDB_entry(model):
     schema.tables["entry"].foreign_keys[(schema,"entry_Workflow_Status_fkey")].foreign_key.update({
         'domain_filter_pattern' :  '{{#if (and (not (isUserInAcl $site_var.acl_groups.entry_updaters)) (isUserInAcl $site_var.acl_groups.entry_submitters) )}}Entry_Submitter_Select=True{{/if}}',
     })
-    
+
     # ----------------------------
     schema.tables["entry"].foreign_keys[(schema,"entry_Process_Status_fkey")].foreign_key.update({
-        'domain_filter_pattern' :  '{{#if (and (not (isUserInAcl $site_var.acl_groups.entry_updaters)) (isUserInAcl $site_var.acl_groups.entry_submitters) )}}Entry_Submitter_Select=True{{/if}}',        
+        'domain_filter_pattern' :  '{{#if (and (not (isUserInAcl $site_var.acl_groups.entry_updaters)) (isUserInAcl $site_var.acl_groups.entry_submitters) )}}Entry_Submitter_Select=True{{/if}}',
     })
 
-    
 # -- ==================================================================================================
 
 # -- ---------------------------------------------------------------------------------
