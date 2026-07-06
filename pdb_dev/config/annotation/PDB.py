@@ -595,6 +595,7 @@ def update_PDB_entry(model):
             {
                 'markdown_name' : 'Curation Log',
                 'sourcekey' : 'curation_log_fkey',
+                'condition_key': 'is_not_submitter',
             },
             {
                 'markdown_name' : '1.0.0 System Generated Files',
