@@ -343,9 +343,9 @@ def main():
         print ('--- The client will be started: verbose: %s ---' % (config.get("verbose")))
         entry_processor = EntryProcessor(**config)
 
-        if args.action == "clear_cif_tables":
+        if args.action in ["clear_cif_tables", "clear-cif-tables"]:
             entry_processor.clear_cif_tables()
-        elif args.action == "clear_entry":
+        elif args.action == ["clear_entry", "clear-entry"]:
             entry_processor.clear_entry()
         else:
             entry_processor.start()

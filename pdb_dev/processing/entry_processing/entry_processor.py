@@ -41,6 +41,7 @@ import mimetypes
 import tempfile
 import ihm # for validation report
 from pathlib import Path
+import time
 
 from deriva.core import PollingErmrestCatalog, HatracStore, urlquote
 from deriva.core.utils import hash_utils as hu
@@ -852,6 +853,7 @@ class EntryProcessor(PipelineProcessor):
             'Record_Status_Detail' : None,
         }
 
+        
         # == info from record to be processed
         filename = self.processing_row['mmCIF_File_Name']
         hatrac_url = self.processing_row['mmCIF_File_URL']
@@ -868,6 +870,7 @@ class EntryProcessor(PipelineProcessor):
             self.logger.debug(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')
             return    #TODO: uncomment
 
+        
         try:
             # == check file size
             if file_bytes == 0:
@@ -885,14 +888,19 @@ class EntryProcessor(PipelineProcessor):
             if self.verbose: print("process_mmcif: download file from %s --> %s/%s" % (hatrac_url, processing_dir, input_cif_fname))
 
             # == convert to a new cif file using make_mmcif
+            t0 = time.perf_counter()
             self.getMakeMmcifFile(input_cif_fpath, output_cif_fpath)
 
             # == convert to json
+            t1 = time.perf_counter()            
             self.mmcif2json(output_cif_fpath, json_fpath, data_mode="DEPO")
             
             # == load json to ermrest
+            t2 = time.perf_counter()            
             self.loadTablesFromJSON(json_fpath)  #TODO: uncomment
+            t3 = time.perf_counter()
             
+            print(f"- process_mmcif: total: {(t3-t0):.4f}, makecif: {(t1-t0):.4f}, 2json: {(t2-t1):.4f}, load: {(t3-t2):.4f}")
             updating_row['Last_mmCIF_File_MD5'] = hf.md5_hex
             if not self.processing_row["mmCIF_File_MD5"] and hf.md5_hex: updating_row['mmCIF_File_MD5'] = hf.md5_hex
             #print("md5: %s, Last_mmCIF_File_MD5: %s" % (hf.md5_hex, updating_row['Last_mmCIF_File_MD5']))
@@ -1053,10 +1061,14 @@ class EntryProcessor(PipelineProcessor):
         pk_tables = PkTables(catalog=self.catalog, ermrest_data=pk_tables_ref_data, verbose=self.verbose)
         pk_tables.set_ermrest_data(pk_tables_ref_data)  
         if self.verbose: print("- loadTablesFromJSON_2: pk_tables.ermrest_data: %s" % (pk_tables.ermrest_data.keys()))
-        
+
+        t0 = time.perf_counter()        
+        tt2=0
+        tt3=0
         model = self.catalog.getCatalogModel()
         for tname in topo_sorted_tnames:
             try:
+                t1 = time.perf_counter()
                 # -- ignore these tables
                 #if tname in ["ihm_entry_collection", "ihm_entry_collection_mapping"]: continue
                 if tname in self.import_ermrest_ignore_tnames: continue
@@ -1076,10 +1088,13 @@ class EntryProcessor(PipelineProcessor):
                 pk_tables.prepare_data(table)  # prepare structure to lookup data based on natural key values
                 #if self.verbose: print("- loadTablesFromJSON_2: tname: %s pk_tables.ermrest_data [%d]: %s" % (tname, len(pk_tables.ermrest_data), pk_tables.ermrest_data.keys()))
                 pk_tables.update_payload_with_rids(table, records)
+
+                t2 = time.perf_counter()
+                tt2 += t2-t1
                 
                 # -- Insert data to ermrest
                 if self.verbose: print(f'- {tname}: inserting [{len(records)}]: {json.dumps(records[0:2], indent=4)}')
-                self.logger.debug(f'{tname}: inserting [{len(records)}]')
+                #self.logger.debug(f'{tname}: inserting [{len(records)}]')
                 if not ermrest_insert:
                     self.tname2inserting[tname] = records
                     continue
@@ -1087,8 +1102,12 @@ class EntryProcessor(PipelineProcessor):
                 pb_table = pb.schemas['PDB'].tables[tname]
                 res = pb_table.insert(records).fetch() 
                 self.tname2inserted[tname] = res
-                self.logger.debug(f'inserted table {tname} [{len(res)}]: {res[0:1]}')
+                self.logger.debug(f'inserted table {tname} [{len(res)}]: {res[0:1]} ')
                 if self.verbose: print(f'- {tname}: inserted [{len(res)}]')
+                
+                t3 = time.perf_counter()
+                tt3 += t3-t2
+                print(f"  - loadJson: total: {(t3-t1):.4f}, prep: {(t2-t1):.4f}, insert: {(t3-t2):.4f} n: {len(records)}")
             except Exception as e:
                 # TODO: Check whether the subject should be ERROR instead of DEPO. Answer: DEPO
                 message = self.log_exception(e, notify=False, subject=None, body_prefix=f'Error in inserting rows in table {tname}.')
@@ -1096,7 +1115,10 @@ class EntryProcessor(PipelineProcessor):
                 raise ProcessingError("ERROR loadTablesFromJSON: Failed to insert rows in %s" % (tname))
             finally:
                 pass
-
+            
+        t4 = time.perf_counter()                
+        print(f"- loadJson: total: {(t4-t0):.4f}, prep: {tt2:.4f}, insert: {tt3:.4f}")
+        
         if False:
             print("tname2inserting: ")
             for k, v in self.tname2inserting.items():
@@ -2177,9 +2199,9 @@ class EntryProcessor(PipelineProcessor):
                     delete_table_rows(self.catalog, "PDB", tname, constraints=constraints)
                     break
                 
-                # == update entry so the process_mmcif can go ahead later
-                updating_row = {"RID": self.entry_rid, "Last_mmCIF_File_MD5":None }
-                #self.update_processing_row(updating_row, tname="entry")
+            # == update entry so the process_mmcif can go ahead later
+            updating_row = {"RID": self.entry_rid, "Last_mmCIF_File_MD5":None }
+            self.update_processing_row(updating_row, tname="entry")
         except Exception as e:
             raise 
         finally:
