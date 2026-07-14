@@ -1263,7 +1263,7 @@ def update_PDB_entry(model):
                         '{{#if (or '
                             '(gt $self.length 0) '
                             f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
-                            '(hasMember _ihm_geometric_object_list_object_type_agg "torus") '
+                            '(hasMember _ihm_geometric_object_list_object_type_agg "half-torus") '
                         ') }}show{{/if}}'
                     ),
                 },
