@@ -1182,7 +1182,7 @@ def update_PDB_entry(model):
                 'sourcekey' : 'ihm_geometric_object_list_fkey',
             },
             {
-                'markdown_name' : '7.6.1 Geomtric Object Centers',
+                'markdown_name' : '7.6.1 Geometric Object Centers',
                 'sourcekey' : 'ihm_geometric_object_center_fkey',
                 'condition': {
                     '_comment': 'use case 1d',
@@ -1214,7 +1214,7 @@ def update_PDB_entry(model):
                 },
             },
             {
-                'markdown_name' : '7.6.3 Spherical Geomtric Objects',
+                'markdown_name' : '7.6.3 Spherical Geometric Objects',
                 'sourcekey' : 'ihm_geometric_object_sphere_fkey',
                 'condition': {
                     '_comment': 'use case 1d',
