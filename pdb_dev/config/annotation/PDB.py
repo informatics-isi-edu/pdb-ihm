@@ -7,13 +7,6 @@ from ...utils.shared import DCCTX, PDBDEV_CLI, cfg
 from deriva.utils.extras.model import print_schema_model_extras, print_table_model_extras, print_schema_annotations, per_schema_annotation_tags, clear_schema_annotations, tag2name
 from .PDB_base import update_PDB_base_annotations
 from .PDB_ihm import update_PDB_ihm_annotations
-from ..acl.ermrest_acl import GROUPS
-
-
-def get_group_acl(group_name):
-    """Look up a GROUPS entry by name and render its ids as space-separated, double-quoted
-    values for isUserInAcl templates. Raises KeyError if the group name is unknown."""
-    return " ".join('"%s"' % g for g in GROUPS[group_name])
 
 
 # -- =================================================================================
@@ -447,7 +440,7 @@ def update_PDB_entry(model):
         },
         'conditions': {
             'is_not_submitter': {
-                'condition_pattern': '{{#unless (isUserInAcl ' + get_group_acl('pdb-submitters') + ')}}show{{/unless}}',
+                'condition_pattern': '{{#unless (isUserInAcl $site_var.acl_groups.entry_submitters)}}show{{/unless}}',
             },
         },
     })
@@ -639,7 +632,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                         ') }}show{{/if}}'
                     ),
                 }
@@ -653,7 +646,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                         ') }}show{{/if}}'
                     ),
                 }
@@ -667,7 +660,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                         ') }}show{{/if}}'
                     ),
                 }
@@ -689,7 +682,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                         ') }}show{{/if}}'
                     ),
                 }
@@ -708,7 +701,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _entity_type_agg "NON-POLYMER") '
                         ') }}show{{/if}}'
                     ),
@@ -762,7 +755,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_dataset_list_database_hosted_agg "NO") '
                         ') }}show{{/if}}'
                     ),
@@ -778,7 +771,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(overlaps _ihm_external_reference_info_reference_type_agg "DOI" "Supplementary Files") '
                         ') }}show{{/if}}'
                     ),
@@ -794,7 +787,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(overlaps _ihm_external_reference_info_reference_type_agg "DOI" "Supplementary Files") '
                         ') }}show{{/if}}'
                     ),
@@ -830,7 +823,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(overlaps _ihm_dataset_list_data_type_agg "Experimental model" "Comparative model" "Integrative model" "De Novo model" "X-ray diffraction data") '
                         ') }}show{{/if}}'
                     ),
@@ -846,7 +839,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_dataset_list_data_type_agg "Comparative model") '
                         ') }}show{{/if}}'
                     ),
@@ -862,7 +855,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(overlaps _ihm_dataset_list_data_type_agg "Comparative model" "De Novo model") '
                         ') }}show{{/if}}'
                     ),
@@ -878,7 +871,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(overlaps _ihm_dataset_list_data_type_agg "Experimental model" "Comparative model" "Integrative model" "De Novo model" "X-ray diffraction data") '
                         ') }}show{{/if}}'
                     ),
@@ -934,7 +927,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_modeling_protocol_details_multi_state_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
@@ -950,7 +943,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_modeling_protocol_details_multi_state_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
@@ -966,7 +959,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_modeling_protocol_details_ordered_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
@@ -986,7 +979,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_modeling_protocol_details_ensemble_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
@@ -1002,7 +995,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_ensemble_info_sub_sample_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
@@ -1018,7 +1011,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_modeling_protocol_details_ensemble_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
@@ -1034,7 +1027,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_dataset_list_data_type_agg "2DEM class average") '
                         ') }}show{{/if}}'
                     ),
@@ -1050,7 +1043,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_dataset_list_data_type_agg "2DEM class average") '
                         ') }}show{{/if}}'
                     ),
@@ -1066,7 +1059,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_dataset_list_data_type_agg "3DEM volume") '
                         ') }}show{{/if}}'
                     ),
@@ -1082,7 +1075,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_dataset_list_data_type_agg "SAS data") '
                         ') }}show{{/if}}'
                     ),
@@ -1098,7 +1091,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_dataset_list_data_type_agg "EPR data") '
                         ') }}show{{/if}}'
                     ),
@@ -1114,7 +1107,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(overlaps _ihm_dataset_list_data_type_agg "Crosslinking-MS data" "Ensemble FRET data" "Single molecule FRET data" "EPR data") '
                         ') }}show{{/if}}'
                     ),
@@ -1130,7 +1123,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(overlaps _ihm_dataset_list_data_type_agg "Ensemble FRET data" "Single molecule FRET data" "EPR data") '
                         ') }}show{{/if}}'
                     ),
@@ -1146,7 +1139,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(overlaps _ihm_dataset_list_data_type_agg "Ensemble FRET data" "Single molecule FRET data" "EPR data") '
                         ') }}show{{/if}}'
                     ),
@@ -1162,7 +1155,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(overlaps _ihm_dataset_list_data_type_agg "Ensemble FRET data" "Single molecule FRET data" "EPR data") '
                         ') }}show{{/if}}'
                     ),
@@ -1178,7 +1171,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(overlaps _ihm_dataset_list_data_type_agg "Ensemble FRET data" "Single molecule FRET data" "EPR data") '
                         ') }}show{{/if}}'
                     ),
@@ -1198,7 +1191,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(overlaps _ihm_geometric_object_list_object_type_agg "sphere" "axis" "other" "torus" "half-torus" "plane") '
                         ') }}show{{/if}}'
                     ),
@@ -1214,7 +1207,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(overlaps _ihm_geometric_object_list_object_type_agg "sphere" "axis" "other" "torus" "half-torus" "plane") '
                         ') }}show{{/if}}'
                     ),
@@ -1230,7 +1223,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_geometric_object_list_object_type_agg "sphere") '
                         ') }}show{{/if}}'
                     ),
@@ -1246,7 +1239,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(overlaps _ihm_geometric_object_list_object_type_agg "torus" "half-torus") '
                         ') }}show{{/if}}'
                     ),
@@ -1262,7 +1255,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_geometric_object_list_object_type_agg "half-torus") '
                         ') }}show{{/if}}'
                     ),
@@ -1278,7 +1271,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_geometric_object_list_object_type_agg "axis") '
                         ') }}show{{/if}}'
                     ),
@@ -1294,7 +1287,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_geometric_object_list_object_type_agg "plane") '
                         ') }}show{{/if}}'
                     ),
@@ -1318,7 +1311,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_dataset_list_data_type_agg "Crosslinking-MS data") '
                         ') }}show{{/if}}'
                     ),
@@ -1334,7 +1327,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_dataset_list_data_type_agg "Crosslinking-MS data") '
                         ') }}show{{/if}}'
                     ),
@@ -1350,7 +1343,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_dataset_list_data_type_agg "Crosslinking-MS data") '
                         ') }}show{{/if}}'
                     ),
@@ -1366,7 +1359,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_dataset_list_data_type_agg "Crosslinking-MS data") '
                         ') }}show{{/if}}'
                     ),
@@ -1382,7 +1375,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_dataset_list_data_type_agg "Crosslinking-MS data") '
                         ') }}show{{/if}}'
                     ),
@@ -1398,7 +1391,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_dataset_list_data_type_agg "Predicted contacts") '
                         ') }}show{{/if}}'
                     ),
@@ -1414,7 +1407,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_dataset_list_data_type_agg "Hydroxyl radical footprinting data") '
                         ') }}show{{/if}}'
                     ),
@@ -1430,7 +1423,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_dataset_list_data_type_agg "H/D exchange data") '
                         ') }}show{{/if}}'
                     ),
@@ -1450,7 +1443,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_feature_list_feature_type_agg "atom") '
                         ') }}show{{/if}}'
                     ),
@@ -1466,7 +1459,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(overlaps _ihm_feature_list_feature_type_agg "residue" "residue range") '
                         ') }}show{{/if}}'
                     ),
@@ -1482,7 +1475,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_feature_list_feature_type_agg "ligand") '
                         ') }}show{{/if}}'
                     ),
@@ -1498,7 +1491,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_poly_residue_feature_interface_residue_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
@@ -1514,7 +1507,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_feature_list_feature_type_agg "pseudo site") '
                         ') }}show{{/if}}'
                     ),
@@ -1534,7 +1527,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(overlaps _ihm_feature_list_feature_type_agg "atom" "ligand" "residue" "residue range" "pseudo site") '
                         ') }}show{{/if}}'
                     ),
@@ -1550,7 +1543,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(overlaps _ihm_feature_list_feature_type_agg "atom" "ligand" "residue" "residue range" "pseudo site") '
                         ') }}show{{/if}}'
                     ),
@@ -1570,7 +1563,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_modeling_protocol_details_multi_state_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
@@ -1586,7 +1579,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_modeling_protocol_details_multi_state_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
@@ -1602,7 +1595,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_modeling_protocol_details_multi_state_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
@@ -1618,7 +1611,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_modeling_protocol_details_multi_state_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
@@ -1634,7 +1627,7 @@ def update_PDB_entry(model):
                     'condition_pattern': (
                         '{{#if (or '
                             '(gt $self.length 0) '
-                            f'(not (isUserInAcl {get_group_acl("pdb-submitters")})) '
+                            '(not (isUserInAcl $site_var.acl_groups.entry_submitters)) '
                             '(hasMember _ihm_modeling_protocol_details_multi_state_flag_agg "YES") '
                         ') }}show{{/if}}'
                     ),
