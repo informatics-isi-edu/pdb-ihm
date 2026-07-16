@@ -1743,7 +1743,6 @@ class EntryProcessor(PipelineProcessor):
                 if self.verbose: print("- generate_ihmv_report: updated [%d]: %s" % (len(updated), json.dumps(updated, indent=4)))
         except TimeoutExpired:
             p.kill()
-            self.logger.error('got TimeoutExpired exception "%s"' % str(ev))
             raise SubProcessError("ERROR report_validation: IHMV TimeoutExpired")
         # for other types of Exception, catch at the caller
         finally:

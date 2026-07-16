@@ -340,7 +340,7 @@ def main():
             raise Exception("ERROR: A configuration file is needed to run pdb_process_entry")
         config = load(config_filename, args)
         
-        print ('--- The client will be started: verbose: %s ---' % (config.get("verbose")))
+        #print ('--- The client will be started: verbose: %s ---' % (config.get("verbose")))
         entry_processor = EntryProcessor(**config)
 
         if args.action in ["clear_cif_tables", "clear-cif-tables"]:
