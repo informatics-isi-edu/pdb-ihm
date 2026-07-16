@@ -2,12 +2,16 @@
 
 import os
 import json
-from deriva.core import PollingErmrestCatalog, init_logging, urlquote, get_credential
+from deriva.core import PollingErmrestCatalog, init_logging, urlquote, get_credential, DEFAULT_SESSION_CONFIG
 import subprocess
 import logging
 import sys
 import traceback
 import logging.handlers
+
+# enable retry for all requests
+session_config = DEFAULT_SESSION_CONFIG.copy()
+session_config['allow_retry_on_all_methods'] = True
 
 # Loglevel dictionary
 __LOGLEVEL = {'error': logging.ERROR,
@@ -206,7 +210,8 @@ class Worker (object):
         'https', 
         servername,
         catalog_number,
-        credentials
+        credentials,
+        session_config=session_config  # comment to not always retry
     )
     catalog.dcctx['cid'] = 'pipeline/pdb'
 
@@ -242,6 +247,12 @@ class Worker (object):
                     unit.claim_input_data,
                     unit.idle_etag
                 )
+            except requests.exceptions.HTTPError as e:
+                logger.info('Looking for job: got HTTP error "%s"' % str(ev))
+                if e.response.status_code == 412:
+                    # pretend we found work, so outer loop will retry look_for_work again before sleeping
+                    found_work = True
+                continue
             except Exception as e:
                 # keep going if we have a broken WorkUnit
                 et, ev, tb = sys.exc_info()
