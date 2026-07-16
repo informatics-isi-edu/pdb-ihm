@@ -8,6 +8,7 @@ import logging
 import sys
 import traceback
 import logging.handlers
+import requests
 
 # enable retry for all requests
 session_config = DEFAULT_SESSION_CONFIG.copy()

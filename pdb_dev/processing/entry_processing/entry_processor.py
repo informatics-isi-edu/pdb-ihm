@@ -1066,6 +1066,7 @@ class EntryProcessor(PipelineProcessor):
         tt2=0
         tt3=0
         model = self.catalog.getCatalogModel()
+        pb = self.catalog.getPathBuilder()                
         for tname in topo_sorted_tnames:
             try:
                 t1 = time.perf_counter()
@@ -1098,7 +1099,6 @@ class EntryProcessor(PipelineProcessor):
                 if not ermrest_insert:
                     self.tname2inserting[tname] = records
                     continue
-                pb = self.catalog.getPathBuilder()                
                 pb_table = pb.schemas['PDB'].tables[tname]
                 res = pb_table.insert(records).fetch() 
                 self.tname2inserted[tname] = res
