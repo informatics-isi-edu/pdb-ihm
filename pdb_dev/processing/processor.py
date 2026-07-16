@@ -38,7 +38,7 @@ import time
 from datetime import datetime as dt, timedelta, timezone
 import pytz
 
-from deriva.core import PollingErmrestCatalog, HatracStore, urlquote, get_credential, DerivaServer, topo_sorted, topo_ranked
+from deriva.core import PollingErmrestCatalog, HatracStore, urlquote, get_credential, DerivaServer, topo_sorted, topo_ranked, DEFAULT_SESSION_CONFIG
 #from deriva.utils.extras.model import topo_sort_ranked
 from deriva.utils.extras.data import insert_if_not_exist, update_table_rows, delete_table_rows, get_ermrest_query
 from deriva.utils.extras.hatrac import HatracFile
@@ -46,6 +46,10 @@ from deriva.utils.extras.hatrac_acl import set_hatrac_namespace_acl, adjust_hatr
 from ..utils.shared import PDBDEV_CLI, DCCTX
 
 pacific_timezone = "America/Los_Angeles"
+
+# enable retry for all requests
+session_config = DEFAULT_SESSION_CONFIG.copy()
+session_config['allow_retry_on_all_methods'] = True
 
 # ===================================================================================
 class ProcessingError(Exception):
@@ -122,7 +126,7 @@ class PipelineProcessor(object):
             if not credentials: credentials = get_credential(self.host, self.credential_file)
             if not credentials:
                 raise Exception("ERROR: a proper credential or credential file is required. Provided credential_file: %s" % (credential_file))
-            server = DerivaServer('https', self.host, credentials)
+            server = DerivaServer('https', self.host, credentials, session_config=session_config)
             self.catalog = server.connect_ermrest(self.catalog_id)            
         self.catalog.dcctx['cid'] = 'pipeline/pdb'
         self.model = self.catalog.getCatalogModel()
