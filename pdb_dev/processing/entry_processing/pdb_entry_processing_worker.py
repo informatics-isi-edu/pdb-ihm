@@ -2,7 +2,7 @@
 
 import os
 import json
-from deriva.core import PollingErmrestCatalog, init_logging, urlquote, get_credential, DEFAULT_SESSION_CONFIG
+from deriva.core import PollingErmrestCatalog, init_logging, urlquote, get_credential, DEFAULT_SESSION_CONFIG, ConcurrentUpdate
 import subprocess
 import logging
 import sys
@@ -239,6 +239,7 @@ class Worker (object):
         """
         found_work = False
 
+        logger.info("------- entering look_for_work ---------")
         for unit in cls.work_units:
             # this handled concurrent update for us to safely and efficiently claim a record
             try:
@@ -248,16 +249,15 @@ class Worker (object):
                     unit.claim_input_data,
                     unit.idle_etag
                 )
-            except requests.exceptions.HTTPError as e:
-                logger.info('Looking for job: got HTTP error "%s"' % str(ev))
-                if e.response.status_code == 412:
-                    # pretend we found work, so outer loop will retry look_for_work again before sleeping
-                    found_work = True
+            except ConcurrentUpdate as e:
+                logger.info('Looking for job: got ConcurrentUpdate "%r"' % (e,))
+                sys.stderr.write('-- look_for_work: Got ConcurrentUpdate error\n')
+                found_work = True
                 continue
             except Exception as e:
                 # keep going if we have a broken WorkUnit
                 et, ev, tb = sys.exc_info()
-                sys.stderr.write('Looking for job: got unexpected exception "%s"\n' % str(ev))
+                sys.stderr.write('Looking for job: got unexpected exception "%r"\n' % (e,))
                 logger.error('Looking for job: got unexpected exception "%s"' % str(ev))
                 logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
                 continue
@@ -278,7 +278,8 @@ class Worker (object):
                 except Exception as e:
                     cls.catalog.put(unit.put_claim_url, json=[unit.failure_input_data(row, e)])
                     raise
-
+                
+        #sys.stderr.write('-- Returning from look_for_work with found_work = %s\n' % (found_work))
         return found_work
 
     @classmethod
