@@ -9,6 +9,8 @@ import sys
 import traceback
 import logging.handlers
 import requests
+import random
+import time
 
 # enable retry for all requests
 session_config = DEFAULT_SESSION_CONFIG.copy()
@@ -202,7 +204,7 @@ class Worker (object):
     #credentials = json.load(open(credfile))
     print("credential: %s" % (credentials))
     
-    poll_seconds = int(os.getenv('PDB_POLL_SECONDS', '300'))
+    poll_seconds = int(os.getenv('POLL_SECONDS', '300'))
     config_file = os.getenv('PDB_CONFIG', '/home/pdbihm/config/entry_processing/pdb_conf.json')
 
     # these are peristent/logical connections so we create once and reuse
@@ -252,6 +254,7 @@ class Worker (object):
             except ConcurrentUpdate as e:
                 logger.info('Looking for job: got ConcurrentUpdate "%r"' % (e,))
                 sys.stderr.write('-- look_for_work: Got ConcurrentUpdate error\n')
+                time.sleep(random.uniform(1, 2)) # wait a bit
                 found_work = True
                 continue
             except Exception as e:

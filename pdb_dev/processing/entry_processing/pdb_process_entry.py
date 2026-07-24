@@ -32,7 +32,6 @@ from ...utils.shared import PDBDEV_CLI, cfg
 from .entry_processor import EntryProcessor
 
 FORMAT = '%(asctime)s: %(levelname)s <%(module)s>: %(message)s'
-logger = logging.getLogger(__name__)
 
 # Loglevel dictionary
 __LOGLEVEL = {'error': logging.ERROR,
@@ -45,7 +44,7 @@ class ConfigError(Exception):
     """
     pass
 
-def load(config_filename, args):
+def load(config_filename, args, logger=None):
     """
     Read the configuration file.
 
@@ -60,38 +59,25 @@ def load(config_filename, args):
     """
     
     # Load configuration file, or create configuration based on arguments
-    conf = {}
-    process_id = args.process_id if hasattr(args, "process_id") else "p0"
-    if os.path.exists(config_filename):
-        f = open(config_filename, 'r')
-        try:
-            conf = json.load(f)
-            loglevel = conf.get('loglevel', 'info')
-            #logfile = conf.get('log', None)            
-            log_dir = conf.get('log_dir', '/home/pdbihm/log/entry_processing')
-            logfile = "%s/process_entry_%s_%s.log" % (log_dir, cfg.catalog_name, process_id)
-            if loglevel and os.path.isdir(log_dir):
-                handler=logging.handlers.TimedRotatingFileHandler(logfile,when='D',backupCount=7)
-                logger.addHandler(handler)
-                init_logging(level=__LOGLEVEL.get(loglevel), log_format=FORMAT, file_path=logfile)
-            else:
-                logging.getLogger().addHandler(logging.NullHandler())
-            logger.debug("config: %s" % conf)
-            #logger.debug("log_file: %s" % (logfile))
-            #print("log_file: %s" % (logfile))
-        except ValueError as e:
-            raise ConfigError('Malformed configuration file: %s' % e)
-        else:
-            f.close()
-    else:
+    if not os.path.exists(config_filename):
         raise ConfigError('Configuration file: "%s" does not exist.\n' % config_filename)
+    try:
+        with open(config_filename) as f:
+            conf = json.load(f)
+    except Exception as e:
+        raise ConfigError('Malformed configuration file %s: %r' % (config_filename, e))
 
     config = {}
-    config['logger'] = logger
-    config['log_dir'] = log_dir
-    config['logfile'] = logfile    
-    config['cfg'] = cfg
+    config['cfg'] = cfg    
+    config['process_id'] = args.process_id if hasattr(args, "process_id") else "p0"
+    config['log_level'] = conf.get('loglevel', 'info')
+    config['log_dir'] = conf.get('log_dir', '/home/pdbihm/log/entry_processing')
+    config['logfile'] = "%s/process_entry_%s_%s.log" % (config['log_dir'], cfg.catalog_name, config['process_id'])
+    
+    if not logger:
+        logger = init_logger(log_level=config['log_level'], log_file=config['logfile'], name="pdb_process_entry")
 
+    config['logger'] = logger
     config['hostname'] = args.host
     config['catalog_id'] = args.catalog_id
     if not config['hostname'] or not config['catalog_id']:
@@ -106,15 +92,15 @@ def load(config_filename, args):
     if not config["action"]:
         raise ConfigError(f'Require action. Either provide "action" as CLI parameters or env variable.')
 
-    logger.info(f'args: hostname: {config["hostname"]}, catalog_id: {config["catalog_id"]}, rid: {config["rid"]}, action: {config["action"]}')
-    print(f'args: hostname: {config["hostname"]}, catalog_id: {config["catalog_id"]}, rid: {config["rid"]}, action: {config["action"]}')    
+    logger.info(f'[{logger.name}]******load: args: hostname: {config["hostname"]}, catalog_id: {config["catalog_id"]}, rid: {config["rid"]}, action: {config["action"]}')
+    print(f'[so]args: hostname: {config["hostname"]}, catalog_id: {config["catalog_id"]}, rid: {config["rid"]}, action: {config["action"]}')    
 
     config['process_id'] = args.process_id if hasattr(args, 'processor_id') else "p0"
-    config['verbose'] = args.verbose
-    config['mute'] = args.mute
-    config['preserve'] = args.preserve
-    #config['rollback'] = args.rollback
-    #config['dry_run'] = args.dry_run    
+    config['verbose'] = args.verbose if hasattr(args, 'verbose') else False
+    config['mute'] = args.mute if hasattr(args, 'mute') else False
+    config['preserve'] = args.preserve if hasattr(args, 'preserve') else False
+    #config['rollback'] = args.rollback if hasattr(args, 'rollback') else False
+    #config['dry_run'] = args.dry_run if hasattr(args, 'dry_run') else False
     
     credentials_file = conf.get('credentials', None)
     credentials = get_credential(config['hostname'], credentials_file)
@@ -294,6 +280,42 @@ def load(config_filename, args):
     
     return config
 
+def process_entry(args, existing_logger=None):
+    """ Process an entry based on supplied parameters in args
+    Note: Job stream can call this function directly.
+    """
+    global logger
+    
+    if existing_logger:
+        logger = existing_logger
+    else:
+        logger = logging.getLogger(__name__)
+    logger.info(f"process_entry *************** logger name: [{logger.name}] ***************")
+        
+    try:
+        config_filename = args.config 
+        if not config_filename:
+            raise Exception("ERROR: A configuration file is needed to run pdb_process_entry")
+        config = load(config_filename, args, logger)
+        
+        #print ('--- The client will be started: verbose: %s ---' % (config.get("verbose")))
+        entry_processor = EntryProcessor(**config)
+
+        if args.action in ["clear_cif_tables", "clear-cif-tables"]:
+            entry_processor.clear_cif_tables()
+        elif args.action == ["clear_entry", "clear-entry"]:
+            entry_processor.clear_entry()
+        else:
+            entry_processor.start()
+        return 0
+    except Exception as e:
+        et, ev, tb = sys.exc_info()
+        logger.error('pdb_process_entry: got exception "%s"' % str(ev))        
+        sys.stderr.write('pdb_process_entry: got exception "%s"' % str(ev))
+        sys.stderr.write('pdb_process_entry: %s' % ''.join(traceback.format_exception(et, ev, tb)))
+        sys.stderr.write('\nusage: URL=https://foo.org/ermrest/catalog/N pdb_process_workflow --config config-file\n\n')
+        return 1
+    
 """
 To run this on command line
 - switch user to pdb-ihm by
@@ -314,27 +336,30 @@ def main():
     '''
     Run the processing code for an individual entry.
     '''
-    try:
-        cli = PDBDEV_CLI("pdb_process_entry", None, 1)
-        cli.remove_options(['--pre-print', '--post-print', '--dry-run'])
-        # args.rid is a default parameter from PDBDEV_CLI
-        cli.parser.add_argument('--config', metavar='<config-file>',
-                                action='store', type=str, help='The JSON configuration file. Default is PDB_CONFIG env variable.',
-                                default=os.getenv("PDB_CONFIG", None), required=False)
-        cli.parser.add_argument('--action', metavar='<action>',  action='store', type=str,
-                                help='Workflow actions (entry, export, accession_code, release_mmCIF, Entry_Related_File, clear_cif_tables, clear_entry). Default is from ACTION env variable',
-                                default=os.getenv("ACTION", None), required=False)
-        cli.parser.add_argument('--process-id', metavar='<process_id>', action='store', type=str, help='assigned process_id',
-                                default=os.getenv("PROCESS_ID", "p0"), required=False)
-        cli.parser.add_argument('--verbose', action='store_true', help='Whether to print status to stdout', default=False, required=False)
-        cli.parser.add_argument('--mute', action='store_true', help='Whether to mute notification', default=False, required=False)
-        cli.parser.add_argument('--preserve', action='store_true', help='Whether to preserve files generated during processing', default=False, required=False)
-        #cli.parser.add_argument('--rollback', action='store_true', help='Rollback ermrest update', default=False, required=False)
-        cli.parser.add_argument('--clear-cif-tables', action='store_true', help='Clear all ermrest tables mentioned in user submitted cif file', default=False, required=False)
-        cli.parser.add_argument('--clear-entries', action='store_true', help='Clear all entry related tables', default=False, required=False)
-        
-        args = cli.parse_cli()
 
+    cli = PDBDEV_CLI("pdb_process_entry", None, 1)
+    cli.remove_options(['--pre-print', '--post-print', '--dry-run'])
+    # args.rid is a default parameter from PDBDEV_CLI
+    cli.parser.add_argument('--config', metavar='<config>',
+                            action='store', type=str, help='The JSON configuration file. Default is PDB_CONFIG env variable.',
+                            default=os.getenv("PDB_CONFIG", None), required=False)
+    cli.parser.add_argument('--action', metavar='<action>',  action='store', type=str,
+                            help='Workflow actions (entry, export, accession_code, release_mmCIF, Entry_Related_File, clear_cif_tables, clear_entry). Default is from ACTION env variable',
+                            default=os.getenv("ACTION", None), required=False)
+    cli.parser.add_argument('--log-file', metavar='<log_file>', help="Log file", default=None)    
+    cli.parser.add_argument('--process-id', metavar='<process_id>', action='store', type=str, help='assigned process_id',
+                            default=os.getenv("PROCESS_ID", "p0"), required=False)
+    cli.parser.add_argument('--verbose', action='store_true', help='Whether to print status to stdout', default=False, required=False)
+    cli.parser.add_argument('--mute', action='store_true', help='Whether to mute notification', default=False, required=False)
+    cli.parser.add_argument('--preserve', action='store_true', help='Whether to preserve files generated during processing', default=False, required=False)
+    cli.parser.add_argument('--clear-cif-tables', action='store_true', help='Clear all ermrest tables mentioned in user submitted cif file', default=False, required=False)
+    cli.parser.add_argument('--clear-entries', action='store_true', help='Clear all entry related tables', default=False, required=False)
+    
+    args = cli.parse_cli()
+    return process_entry(args)
+
+    """
+    try:    
         config_filename = args.config 
         if not config_filename:
             raise Exception("ERROR: A configuration file is needed to run pdb_process_entry")
@@ -343,6 +368,7 @@ def main():
         #print ('--- The client will be started: verbose: %s ---' % (config.get("verbose")))
         entry_processor = EntryProcessor(**config)
 
+        
         if args.action in ["clear_cif_tables", "clear-cif-tables"]:
             entry_processor.clear_cif_tables()
         elif args.action == ["clear_entry", "clear-entry"]:
@@ -357,7 +383,7 @@ def main():
         sys.stderr.write('pdb_process_entry: %s' % ''.join(traceback.format_exception(et, ev, tb)))
         sys.stderr.write('\nusage: URL=https://foo.org/ermrest/catalog/N pdb_process_workflow --config config-file\n\n')
         return 1
-
+    """
 
 if __name__ == '__main__':
     sys.exit(main())

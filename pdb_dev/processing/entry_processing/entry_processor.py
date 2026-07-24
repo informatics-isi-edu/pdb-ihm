@@ -195,8 +195,8 @@ class EntryProcessor(PipelineProcessor):
 
         self.initialize_processing_row(self.rid)
         
-        if self.verbose: print("------- EntryProcessor: rid: %s, action: %s, mute: %s, verbose: %s, preserve: %s" % (self.rid, self.action, self.mute, self.verbose, self.preserve))
-        if self.logger: self.logger.debug("------- EntryProcessor: rid: %s, action: %s, mute: %s, verbose: %s, preserve: %s" % (self.rid, self.action, self.mute, self.verbose, self.preserve))
+        if self.verbose: print("[std]------- EntryProcessor: rid: %s, action: %s, mute: %s, verbose: %s, preserve: %s" % (self.rid, self.action, self.mute, self.verbose, self.preserve))
+        if self.logger: self.logger.info("------- EntryProcessor: rid: %s, action: %s, mute: %s, verbose: %s, preserve: %s" % (self.rid, self.action, self.mute, self.verbose, self.preserve))
         
         #print("- processing_row: %s" % (self.processing_row))
         #print("- user_row: %s\n" % (self.user_row))
@@ -224,16 +224,6 @@ class EntryProcessor(PipelineProcessor):
 
         self.create_hatrac_uid_namespace(f"{self.hatrac_root}/pdb/generated/uid", self.processing_row["RCB"])
         
-        
-    """
-    Trace into the log_dir e.g. /home/pdbihm/log/trace.log file 
-    """
-    def trace(self, condition, message):
-        if condition==True:
-            fa = open(f'{self.log_dir}/trace.log', 'a')
-            fa.write(message)
-            fa.write('\n')
-            fa.close()
         
     """
     Start the process for generating pyramidal tiles

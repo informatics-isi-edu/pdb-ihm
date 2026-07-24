@@ -108,7 +108,7 @@ def main():
     catalog = server.connect_ermrest(args.catalog_id)
     model = catalog.getCatalogModel()
 
-    logger = init_logger(log_file=args.log_file)
+    logger = init_logger(log_file=args.log_file, name="ihmv")
     
     logger.info("=========== starts ihmv worker with args: %s" % (args))
 
