@@ -103,7 +103,7 @@ class EntryJobStream (JobStream):
         self.logger = logger if logger else init_logger("info", "/home/pdbihm/log/entry_processing/pdbs_worker.log")
         self.mute = cfg.args.mute
 
-        print("-cfg.args: %s" % (cfg.args))
+        #print("- cfg.args: %s" % (cfg.args))
         print("- -- EntryJobStream init: config_file: %s, poll_seconds: %s, mute: %s " % (self.config_file, self.poll_seconds, self.mute))
         self.logger.info(f"EntryJobStream: claimable url: {self.get_claimable_url}")
         
@@ -202,7 +202,8 @@ def main():
     cli.parser.add_argument('--poll-seconds', metavar='<poll_seconds>', help="Worker sleep time (seconds) before polling", default=poll_seconds)
     cli.parser.add_argument('--process-id', metavar='<process_id>', help="Worker process id", default=process_id)    
     cli.parser.add_argument('--verbose', action='store_true', help='Whether to print status to stdout', default=False, required=False)
-    cli.parser.add_argument('--mute', action='store_true', help='Whether to notify', default=mute, required=False)    
+    cli.parser.add_argument('--mute', action='store_true', help='Whether to notify', default=mute, required=False)
+    cli.parser.add_argument('--workshop', action='store_true', help='Whether it is for PDB workshop', default=False, required=False)        
     args = cli.parse_cli()
     print("- main: args = %s" % (args))    
 
@@ -222,7 +223,9 @@ def main():
     process_statuses = [ urlquote(process_status_terms[term]) for term in ["NEW", "RESUME", "REPROCESS"] ]
     process_status_string = ",".join(process_statuses)
     workflow_statuses = [ urlquote(term) for term in workflow_status2actions.keys() if term != restraint_depo_status ]
+    if args.workshop: workflow_statuses = [ urlquote(term) for term in ['DEPO'] ] # limited support during workshop
     workflow_status_string = ",".join(workflow_statuses)
+    print("- * workflow_statuses = %s" % (workflow_statuses))
     
     job_streams = [
         EntryJobStream(
