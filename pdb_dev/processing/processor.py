@@ -26,9 +26,6 @@ from email.mime.text import MIMEText
 import socket
 from socket import gaierror, EAI_AGAIN
 from dateutil.parser import parse
-#from requests import HTTPError
-#from subprocess import TimeoutExpired
-import csv
 import mimetypes
 import tempfile
 #from collections import deque
@@ -108,6 +105,7 @@ class PipelineProcessor(object):
     email_config = None
     email_subject_prefix = "PDB-IHM"
     log_dir = "/home/pdbihm/log"
+    log_file = None
     verbose = False
     mute = False
     logger = None
@@ -118,9 +116,9 @@ class PipelineProcessor(object):
         # -- ermrest and hatrac
         self.cfg = kwargs.get("cfg", None)
         self.catalog = kwargs.get("catalog", None)
-        self.host = kwargs.get("hostname")
+        self.host = kwargs.get("hostname", self.cfg.host if self.cfg else None)
+        self.catalog_id = kwargs.get("catalog_id", self.cfg.catalog_id if self.cfg else None)        
         self.credential_file = kwargs.get("credential_file", None)
-        self.catalog_id = kwargs.get("catalog_id", None)
         credentials = kwargs.get("credentials", None)
         if not self.catalog:
             if not credentials: credentials = get_credential(self.host, self.credential_file)
@@ -137,12 +135,10 @@ class PipelineProcessor(object):
         
         # -- local host
         self.local_hostname = socket.gethostname() # processing host
-
+        if kwargs.get("logger"): kwargs.get("logger")
+        if kwargs.get("log_dir"): self.log_dir = kwargs.get("log_dir")
+        self.process_id = kwargs.get("process_id", "p0")
         self.email_config = kwargs.get("email", self.email_config)
-        self.log_dir = kwargs.get("log_dir", self.log_dir)                
-        self.logger = kwargs.get("logger", self.logger)
-        self.process_id = kwargs.get("process_id", 'p0')
-        
         self.verbose = kwargs.get("verbose", self.verbose)
         self.mute = kwargs.get("mute", self.mute)
         self.preserve = kwargs.get("preserve", self.preserve)

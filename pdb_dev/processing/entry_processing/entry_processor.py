@@ -50,6 +50,7 @@ from deriva.core.datapath import DataPathException
 
 from deriva.utils.extras.data import insert_if_not_exist, update_table_rows, delete_table_rows, get_ermrest_query
 from deriva.utils.extras.hatrac import HatracFile
+from deriva.utils.extras.job_dispatcher import init_logger
 from deriva.utils.extras.pdb_ma.mmcif_model import mmCIFErmrestModel
 
 from .mmcif_utils import get_mmcif_rid_optional_fkeys, print_table_fkeys, get_mmcif_rid_mandatory_fkeys, get_legacy_combo1_columns, get_legacy_optional_fks, PkTables, get_shortest_key
@@ -161,7 +162,6 @@ class EntryProcessor(PipelineProcessor):
         #self.tables_groups = kwargs.get("tables_groups")       # deprecated
         #self.make_mmCIF = kwargs.get("make_mmCIF")             # DEPRECATED
 
-        
         self.dictSdb = kwargs.get("dictSdb")
         self.validation_dir = kwargs.get("validation_dir")
         if not self.validation_dir.endswith("IHMValidation"): self.validation_dir = f'{self.validation_dir}/IHMValidation' # backward compatible
@@ -174,29 +174,31 @@ class EntryProcessor(PipelineProcessor):
         if kwargs.get("primary_accession_code_mode", None): self.primary_accession_code_mode = kwargs.get("primary_accession_code_mode")
         if kwargs.get("alternative_accession_code_mode", None): self.alternative_accession_code_mode = kwargs.get("alternative_accession_code_mode")
         if kwargs.get("singularity_sif", None): self.singularity_sif=kwargs.get("singularity_sif")
-        if kwargs.get("email", None): self.email_config = kwargs.get("email")
-
-        print("------- EntryProcessor: rid: %s, action: %s, mute: %s, verbose: %s, preserve: %s" % (self.rid, self.action, kwargs.get("mute"), kwargs.get("verbose"), kwargs.get("preserve")))
 
         super().__init__(
-            hostname=kwargs.get("hostname"), catalog_id=kwargs.get("catalog_id"), credentials = kwargs.get("credentials"), cfg=kwargs.get("cfg"),
-            email_config=kwargs.get("email"), log_dir=kwargs.get("log_dir"), logger=kwargs.get("logger"), processing_id=kwargs.get("process_id"),
-            verbose=kwargs.get("verbose"), mute=kwargs.get("mute"), preserve=kwargs.get("preserve"),
+            catalog=kwargs.get("catalog"), hostname=kwargs.get("hostname"), catalog_id=kwargs.get("catalog_id"),
+            credentials = kwargs.get("credentials"), cfg=kwargs.get("cfg"),
+            email_config=kwargs.get("email"), verbose=kwargs.get("verbose"), mute=kwargs.get("mute"), preserve=kwargs.get("preserve"),
         )
 
+        self.log_dir = kwargs.get("log_dir", self.log_dir)
+        self.process_id = kwargs.get("process_id", 'p0')
+        self.logger = kwargs.get("logger", None)        
+        if not self.logger:
+            self.log_file = kwargs.get("log_file", f'{self.log_dir}/entry_processor_{self.cfg.catalog_name}_{self.process_id}.log')
+            self.logger = init_logger(log_level="info", log_file=self.log_file, name="entry_processor")
+        
         #self.combo1_columns = get_legacy_combo1_columns(self.catalog)  # deprecated
         #self.optional_fks = get_legacy_optional_fks(self.catalog)      # deprecated
-
-        self.logger = kwargs.get("logger")
-
 
         self.tname2inserting = {}  # inserting rows, used for debugging
         self.tname2inserted = {}   # inserted rows
 
+        self.model = self.catalog.getCatalogModel()        
         self.initialize_processing_row(self.rid)
         
-        if self.verbose: print("[std]------- EntryProcessor: rid: %s, action: %s, mute: %s, verbose: %s, preserve: %s" % (self.rid, self.action, self.mute, self.verbose, self.preserve))
-        if self.logger: self.logger.info("------- EntryProcessor: rid: %s, action: %s, mute: %s, verbose: %s, preserve: %s" % (self.rid, self.action, self.mute, self.verbose, self.preserve))
+        if self.verbose: print("- --- EntryProcessor init: rid: %s, action: %s, mute: %s, verbose: %s, preserve: %s, log_file: %s" % (self.rid, self.action, self.mute, self.verbose, self.preserve, self.log_file))
+        self.logger.info("--- EntryProcessor init: rid: %s, action: %s, mute: %s, verbose: %s, preserve: %s, log_file: %s" % (self.rid, self.action, self.mute, self.verbose, self.preserve, self.log_file))
         
         #print("- processing_row: %s" % (self.processing_row))
         #print("- user_row: %s\n" % (self.user_row))
@@ -406,7 +408,7 @@ class EntryProcessor(PipelineProcessor):
         exclude_tnames = export_custom_tnames + export_ignore_tnames
 
         # == ermrest model
-        ermrest_model = self.catalog.getCatalogModel()
+        ermrest_model = self.model
         pdb_schema = ermrest_model.schemas["PDB"]
         pb = self.catalog.getPathBuilder()
         pb_schema = pb.PDB
@@ -937,7 +939,7 @@ class EntryProcessor(PipelineProcessor):
                 changed = True
                 break
         if changed:
-            updated = update_table_rows(self.catalog, sname, tname, payload=[row], column_names=cnames)
+            updated = update_table_rows(self.catalog, sname, tname, payload=[row], column_names=cnames, model=self.model)
             if self.verbose: print("- update_processing_row: updated [%d]" % (len(updated)))
         else:
             if self.verbose: print("- update_processing_row: no change. updated [0]")
@@ -1006,7 +1008,7 @@ class EntryProcessor(PipelineProcessor):
         Notes: This is to replace x_rollbackInsertdRows
         """
 
-        model = self.catalog.getCatalogModel()
+        model = self.model
         # -- Reverse sort the tables based on the FK dependencies        
         topo_sorted_tnames = self.get_topo_sorted_tables(self.catalog, tname_only=True)
         reverse_sorted_tnames = reversed(topo_sorted_tnames)
@@ -1055,7 +1057,7 @@ class EntryProcessor(PipelineProcessor):
         t0 = time.perf_counter()        
         tt2=0
         tt3=0
-        model = self.catalog.getCatalogModel()
+        model = self.model
         pb = self.catalog.getPathBuilder()                
         for tname in topo_sorted_tnames:
             try:
@@ -1097,7 +1099,7 @@ class EntryProcessor(PipelineProcessor):
                 
                 t3 = time.perf_counter()
                 tt3 += t3-t2
-                print(f"  - loadJson: total: {(t3-t1):.4f}, prep: {(t2-t1):.4f}, insert: {(t3-t2):.4f} n: {len(records)}")
+                #print(f"  - loadJson: total: {(t3-t1):.4f}, prep: {(t2-t1):.4f}, insert: {(t3-t2):.4f} n: {len(records)}")
             except Exception as e:
                 # TODO: Check whether the subject should be ERROR instead of DEPO. Answer: DEPO
                 message = self.log_exception(e, notify=False, subject=None, body_prefix=f'Error in inserting rows in table {tname}.')
@@ -1166,8 +1168,7 @@ class EntryProcessor(PipelineProcessor):
         load restraint tables from specified csv file
         """
         catalog = self.catalog
-        model = self.catalog.getCatalogModel()
-        table = model.schemas["PDB"].tables[tname]
+        table = self.model.schemas["PDB"].tables[tname]
         structure_id = entry_id
         entry_rid = entry_id.replace('D_', '')  # This might not aways be true
 
@@ -1400,14 +1401,14 @@ class EntryProcessor(PipelineProcessor):
         os.chdir('{}'.format(processing_dir))
         args = [self.python_bin, '-m', 'ihm.util.make_mmcif', '--histidines', input_cif_fpath, output_cif_fpath]
         if self.verbose: print("- getMakeMmcifFile: running subprocess in %s: %s" % (processing_dir, " ".join(args)))
-        self.logger.debug("getMakeMmcifFile: running subprocess in %s: %s" % (processing_dir, " ".join(args)))
+        self.logger.info("* getMakeMmcifFile: running subprocess in %s: %s" % (processing_dir, " ".join(args)))
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdoutdata, stderrdata = p.communicate()
         returncode = p.returncode
         if returncode != 0:
             raise SubProcessError('ERROR getMakeMmcifFile: make_mmcif failed for entry rid = "%s" and input_cif_fpath "%s".\nstdout: %s\nstderr: %s\n' % (self.rid, input_cif_fpath, stdoutdata, stderrdata))
         else:
-            print("getMakeMmcifFile: succeeded: %s" % (args))
+            if self.verbose: print("- getMakeMmcifFile: succeeded: %s" % (args))
             pass
                 
         os.chdir(currentDirectory)        
@@ -1490,7 +1491,7 @@ class EntryProcessor(PipelineProcessor):
         os.chdir('{}'.format(input_dir))
         args = [self.CifCheck, '-f', cif_fpath, '-dictSdb', self.dictSdb]
         if self.verbose: print("- validateExportmmCIF: running subprocess: %s" % (' '.join(args)))
-        self.logger.debug('- Running "{}" from the {} directory'.format(' '.join(args), input_dir)) 
+        self.logger.info('* Running "{}" from the {} directory'.format(' '.join(args), input_dir)) 
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdoutdata, stderrdata = p.communicate()
         returncode = p.returncode
@@ -1677,7 +1678,7 @@ class EntryProcessor(PipelineProcessor):
                     '--cache-root', '/ihmv/cache',
                     '--watermark', 'confidential' if self.workflow_status=="SUBMISSION COMPLETE" else 'none'
                     ]
-            self.logger.debug(f'Running "{" ".join(args)}" from the {processing_dir} directory')
+            self.logger.info(f'* Running "{" ".join(args)}" from the {processing_dir} directory')
             if self.verbose: print("- generate_ihmv_report: running subprocess: %s" % (' '.join(args)))
 
 
@@ -1778,7 +1779,7 @@ class EntryProcessor(PipelineProcessor):
             '-o', json_fpath,               # output file
             '-cc', py_rcsb_db_cache_fpath,  # cache-dir (read-only)
         ]
-        self.logger.debug('mmcif2json: Running py_rcsb_db in %s with command: %s ' % (self.py_rcsb_db, ' '.join(args)))        
+        self.logger.info('* mmcif2json: Running py_rcsb_db in %s with command: %s ' % (self.py_rcsb_db, ' '.join(args)))        
         if self.verbose: print('- mmcif2json: Running py_rcsb_db (%s) with mode %s with command: %s ' % (self.py_rcsb_db, data_mode, ' '.join(args)))
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdoutdata, stderrdata = p.communicate()
@@ -2140,10 +2141,9 @@ class EntryProcessor(PipelineProcessor):
         reverse_sorted_tnames = reversed(topo_sorted_tnames)
         
         # == delete content
-        model = self.catalog.getCatalogModel()
         entry_id = entry_row["id"]
         for tname in reverse_sorted_tnames:
-            table = model.schemas["PDB"].tables[tname]
+            table = self.model.schemas["PDB"].tables[tname]
             if "structure_id" in table.columns.elements:
                 entry_id_cname = "structure_id"
             elif "entry_id" in table.columns.elements:

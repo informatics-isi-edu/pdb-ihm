@@ -88,8 +88,8 @@ class PDBDEV_CLI(BaseCLI):
 
     def parse_cli(self):
         global env
-        #args = super().parse_cli()        # parsing the arguments + initialize logging (stdout)
-        args = self.parser.parse_args()    # parsing the arguments only
+        args = super().parse_cli()        # parsing the arguments + initialize logging (stdout)
+        #args = self.parser.parse_args()    # parsing the arguments only
 
         cfg.apply_hostname(args.host, args.catalog_id)
         cfg.args = args

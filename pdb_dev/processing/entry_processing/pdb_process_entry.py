@@ -28,10 +28,10 @@ import traceback
 import logging.handlers
 
 from deriva.core import init_logging, get_credential
+from deriva.utils.extras.job_dispatcher import init_logger, logger_exists
 from ...utils.shared import PDBDEV_CLI, cfg
 from .entry_processor import EntryProcessor
 
-FORMAT = '%(asctime)s: %(levelname)s <%(module)s>: %(message)s'
 
 # Loglevel dictionary
 __LOGLEVEL = {'error': logging.ERROR,
@@ -92,8 +92,8 @@ def load(config_filename, args, logger=None):
     if not config["action"]:
         raise ConfigError(f'Require action. Either provide "action" as CLI parameters or env variable.')
 
-    logger.info(f'[{logger.name}]******load: args: hostname: {config["hostname"]}, catalog_id: {config["catalog_id"]}, rid: {config["rid"]}, action: {config["action"]}')
-    print(f'[so]args: hostname: {config["hostname"]}, catalog_id: {config["catalog_id"]}, rid: {config["rid"]}, action: {config["action"]}')    
+    logger.info(f'* load: args: hostname: {config["hostname"]}, catalog_id: {config["catalog_id"]}, rid: {config["rid"]}, action: {config["action"]}')
+    print(f'- args: hostname: {config["hostname"]}, catalog_id: {config["catalog_id"]}, rid: {config["rid"]}, action: {config["action"]}')    
 
     config['process_id'] = args.process_id if hasattr(args, 'processor_id') else "p0"
     config['verbose'] = args.verbose if hasattr(args, 'verbose') else False
@@ -252,14 +252,6 @@ def load(config_filename, args, logger=None):
 
     # == other configs
     config['hatrac_namespace'] = f"{cfg.hatrac_root}/pdb" 
-    """# DEPRECATED. TO BE REMOVED
-    hatrac_namespace = conf.get('hatrac_namespace', None)
-    if hatrac_namespace == None:
-        hatrac_namespace = 'hatrac/pdb'
-    else:
-        hatrac_namespace = 'hatrac/{}/pdb'.format(hatrac_namespace)
-    config['hatrac_namespace'] = hatrac_namespace
-    """
     
     email_file = conf.get('mail', None)
     if not email_file or not os.path.isfile(email_file):
@@ -289,16 +281,14 @@ def process_entry(args, existing_logger=None):
     if existing_logger:
         logger = existing_logger
     else:
-        logger = logging.getLogger(__name__)
-    logger.info(f"process_entry *************** logger name: [{logger.name}] ***************")
-        
+        logger = init_logger(log_file=args.log_file, name="pdb_process_entryr")
+
     try:
         config_filename = args.config 
         if not config_filename:
             raise Exception("ERROR: A configuration file is needed to run pdb_process_entry")
         config = load(config_filename, args, logger)
         
-        #print ('--- The client will be started: verbose: %s ---' % (config.get("verbose")))
         entry_processor = EntryProcessor(**config)
 
         if args.action in ["clear_cif_tables", "clear-cif-tables"]:
@@ -310,10 +300,8 @@ def process_entry(args, existing_logger=None):
         return 0
     except Exception as e:
         et, ev, tb = sys.exc_info()
-        logger.error('pdb_process_entry: got exception "%s"' % str(ev))        
-        sys.stderr.write('pdb_process_entry: got exception "%s"' % str(ev))
-        sys.stderr.write('pdb_process_entry: %s' % ''.join(traceback.format_exception(et, ev, tb)))
-        sys.stderr.write('\nusage: URL=https://foo.org/ermrest/catalog/N pdb_process_workflow --config config-file\n\n')
+        logger.error('pdb_process_entry: got exception "%s\n%s"' % (str(ev), ''.join(traceback.format_exception(et, ev, tb))) )
+        sys.stderr.write('pdb_process_entry: got exception "%s\n%s"' % (str(ev), ''.join(traceback.format_exception(et, ev, tb))) )        
         return 1
     
 """
@@ -358,32 +346,6 @@ def main():
     args = cli.parse_cli()
     return process_entry(args)
 
-    """
-    try:    
-        config_filename = args.config 
-        if not config_filename:
-            raise Exception("ERROR: A configuration file is needed to run pdb_process_entry")
-        config = load(config_filename, args)
-        
-        #print ('--- The client will be started: verbose: %s ---' % (config.get("verbose")))
-        entry_processor = EntryProcessor(**config)
-
-        
-        if args.action in ["clear_cif_tables", "clear-cif-tables"]:
-            entry_processor.clear_cif_tables()
-        elif args.action == ["clear_entry", "clear-entry"]:
-            entry_processor.clear_entry()
-        else:
-            entry_processor.start()
-        return 0
-    except Exception as e:
-        et, ev, tb = sys.exc_info()
-        logger.error('pdb_process_entry: got exception "%s"' % str(ev))        
-        sys.stderr.write('pdb_process_entry: got exception "%s"' % str(ev))
-        sys.stderr.write('pdb_process_entry: %s' % ''.join(traceback.format_exception(et, ev, tb)))
-        sys.stderr.write('\nusage: URL=https://foo.org/ermrest/catalog/N pdb_process_workflow --config config-file\n\n')
-        return 1
-    """
 
 if __name__ == '__main__':
     sys.exit(main())
