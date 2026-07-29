@@ -320,7 +320,7 @@ class EntryProcessor(PipelineProcessor):
                 #self.delete_rows("PDB", csv_tname, constraints=constraints)
             except Exception as e:
                 message = self.log_exception(e, notify=True, subject=subject)
-                raise ErmrestError("ERROR: tname: %s: cleanup restraint table %s failed while handling error (%s)." % (related_file_tname, csv_tname, error_message))
+                raise ErmrestError("ERROR: tname: %s: cleanup restraint table %s failed while handling error (%s)." % (related_file_tname, csv_tname, message))
         finally:
             self.update_processing_row(updating_row)
             self.logger.debug(f'== Ended process_Entry_Related_File RID="{self.rid}" with process_status = {process_status} ')
@@ -1325,7 +1325,7 @@ class EntryProcessor(PipelineProcessor):
             #self.delete_rows("PDB", tname, constraints)
         except Exception as e:
             self.log_exception(e, notify=False, subject="Unable to delete rows in table %s" % (tname))
-            raise ErmrestError("Unable to cleanup table %s with constraint" % (tname))
+            raise ErmrestError("Unable to cleanup table %s with constraint: %s" % (tname, constraints))
         
         # == Insert updated payload to table
         try:
