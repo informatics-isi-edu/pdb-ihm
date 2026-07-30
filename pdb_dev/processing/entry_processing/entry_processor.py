@@ -211,12 +211,15 @@ class EntryProcessor(PipelineProcessor):
             self.processing_tname = "Entry_Related_File" 
             constraints='RID=%s/E:=PDB:entry/$M/T:=(M:File_Type)=(Vocab:File_Type:Name)' % (self.rid)
             attributes=['M:File_Name','M:File_URL','M:File_MD5','M:structure_id','M:RCT','M:File_Format','M:Restraint_Process_Status','M:Restraint_Workflow_Status', 'M:Record_Status_Detail', 'T:Table_Name', 'entry_rid:=E:RID', 'RCB:=E:RCB']
-            self.processing_row = get_ermrest_query(self.catalog, "PDB", self.processing_tname, constraints=constraints, attributes=attributes)[0]
-            
+            rows = get_ermrest_query(self.catalog, "PDB", self.processing_tname, constraints=constraints, attributes=attributes)
         else:
             self.processing_tname = "entry"
-            self.processing_row = get_ermrest_query(self.catalog, "PDB", self.processing_tname, constraints=f'RID={self.rid}')[0]
-            
+            rows = get_ermrest_query(self.catalog, "PDB", self.processing_tname, constraints=f'RID={self.rid}')
+        
+        if len(rows) == 0:
+            raise Exception(f"RID {self.rid} does not exist in table {self.processing_tname}")
+        self.processing_row = rows[0]
+        
         self.entry_id = self.processing_row["id"] if self.processing_tname == "entry" else self.processing_row["structure_id"]
         self.entry_rid = self.processing_row["RID"] if self.processing_tname == "entry" else self.processing_row["entry_rid"]
         self.user_row = self.get_user_row("PDB", self.processing_tname, self.rid) 
@@ -1392,7 +1395,7 @@ class EntryProcessor(PipelineProcessor):
         output_cif_fname = dest_fpath.rsplit("/", 1)[1]
         output_cif_fpath=dest_fpath
         
-        # == Cleanup the processing_dir directory
+        # == clear the existing output file if exist
         for fp in [output_cif_fpath]:
             if os.path.isfile(fp): os.remove(fp)
 

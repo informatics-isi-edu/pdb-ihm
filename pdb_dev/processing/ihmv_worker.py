@@ -114,7 +114,7 @@ def main():
 
     dispatcher = JobDispatcher(args.host, args.catalog_id, args.credential_file, logger=logger)
     job_streams = [ IHMVJobStream(
-        '/entity/M:=IHMV:Structure_mmCIF/Processing_Status=any(New,Reprocess)?limit=1',
+        '/entity/M:=IHMV:Structure_mmCIF/Processing_Status=any(New,Reprocess)@sort(RMT,RID)?limit=1',
         '/attributegroup/IHMV:Structure_mmCIF/RID;Processing_Status,Processing_Details',
         '/attributegroup/IHMV:Structure_mmCIF',        
         logger=logger,

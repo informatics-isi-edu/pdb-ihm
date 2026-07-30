@@ -229,7 +229,7 @@ def main():
     
     job_streams = [
         EntryJobStream(
-            '/attribute/M:=PDB:entry/Manual_Processing=False/Process_Status=any(%s)/Workflow_Status=any(%s)/$M/RID,LMT,id,Workflow_Status,Process_Status,mmCIF_File_Name@sort(LMT)?limit=1' % (process_status_string, workflow_status_string),
+            '/attribute/M:=PDB:entry/Manual_Processing=False/Process_Status=any(%s)/Workflow_Status=any(%s)/$M/RID,RMT,id,Workflow_Status,Process_Status,mmCIF_File_Name@sort(RMT,RID)?limit=1' % (process_status_string, workflow_status_string),
             '/attributegroup/PDB:entry/RID;Process_Status,Record_Status_Detail',
             '/attributegroup/PDB:entry/RID',
             config_file=args.config_file,            
@@ -240,9 +240,9 @@ def main():
         
         RestraintJobStream(
             # -- default sort
-            #'/entity/M:=PDB:Entry_Related_File/Restraint_Process_Status=any(%s)/Restraint_Workflow_Status=DEPO/PDB:entry/Manual_Processing=False/Process_Status=%s/$M/F:=Vocab:File_Type/$M?limit=1' % (process_status_string, urlquote(process_status_terms['SUCCESS'])),        
+            #'/entity/M:=PDB:Entry_Related_File/Restraint_Process_Status=any(%s)/Restraint_Workflow_Status=DEPO/PDB:entry/Manual_Processing=False/Process_Status=%s/$M/F:=Vocab:File_Type/$M?limit=1' % (process_status_string, urlquote(process_status_terms['SUCCESS'])),
             # -- sort by Rank
-            '/attribute/M:=PDB:Entry_Related_File/Restraint_Process_Status=any(%s)/Restraint_Workflow_Status=DEPO/PDB:entry/Manual_Processing=False/Process_Status=%s/$M/F:=Vocab:File_Type/$M/RID,LMT,structure_id,File_Type,File_Name,F:Rank@sort(Rank,LMT)?limit=1' % (process_status_string, urlquote(process_status_terms['SUCCESS'])),            
+            '/attribute/M:=PDB:Entry_Related_File/Restraint_Process_Status=any(%s)/Restraint_Workflow_Status=DEPO/PDB:entry/Manual_Processing=False/Process_Status=%s/$M/F:=Vocab:File_Type/$M/RID,RMT,structure_id,File_Type,File_Name,F:Rank@sort(Rank,RMT)?limit=1' % (process_status_string, urlquote(process_status_terms['SUCCESS'])),            
             '/attributegroup/PDB:Entry_Related_File/RID;Restraint_Process_Status,Record_Status_Detail',
             '/attributegroup/PDB:Entry_Related_File/RID',
             config_file=args.config_file,            
