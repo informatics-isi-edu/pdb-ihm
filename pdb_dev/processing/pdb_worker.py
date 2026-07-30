@@ -104,7 +104,7 @@ class EntryJobStream (JobStream):
         self.mute = cfg.args.mute
 
         #print("- cfg.args: %s" % (cfg.args))
-        print("- -- EntryJobStream init: config_file: %s, poll_seconds: %s, mute: %s " % (self.config_file, self.poll_seconds, self.mute))
+        self.logger.info("- -- EntryJobStream init: run_dir: %s, config_file: %s, poll_seconds: %s, mute: %s " % (self.run_dir, self.config_file, self.poll_seconds, self.mute))
         self.logger.info(f"EntryJobStream: claimable url: {self.get_claimable_url}")
         
     def run_row_job(self, dispatcher, row):
@@ -112,6 +112,12 @@ class EntryJobStream (JobStream):
         deriva_host = dispatcher.deriva_host
         catalog_id = dispatcher.catalog_id
         action = workflow_status2actions[row["Workflow_Status"]]
+
+        # == ensure that each job is run in the same starting dir
+        current_dir = os.getcwd()
+        if current_dir != self.run_dir:
+            self.logger.warning(f"* Starting dir changed to {current_dir} (expected {self.run_dir}). Will reset")
+            os.chdir(self.run_dir)
         
         self.logger.info('EntryJobStream: Running job: host=%s catalog-id=%s RID="%s" action=%s' % (deriva_host, catalog_id, row['RID'], action))
         args = Namespace(host=deriva_host, catalog_id=catalog_id, action=action, rid=row["RID"], config=self.config_file, process_id=self.process_id, mute=self.mute)
@@ -153,7 +159,7 @@ class RestraintJobStream (JobStream):
         self.logger = logger if logger else init_logger("info", "/home/pdbihm/log/entry_processing/pdbs_worker.log")
         self.mute = cfg.args.mute        
         
-        print("- -- RestraintJobStream init: config_file: %s, poll_seconds: %s, mute: %s " % (self.config_file, self.poll_seconds, self.mute))
+        self.logger.info("- -- RestraintJobStream init: run_dir: %s, config_file: %s, poll_seconds: %s, mute: %s " % (self.run_dir, self.config_file, self.poll_seconds, self.mute))
         self.logger.info(f"{self.logger.name} RestraintJobStream: claimable url: {self.get_claimable_url}")
         
     def run_row_job(self, dispatcher, row):

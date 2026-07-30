@@ -1400,8 +1400,8 @@ class EntryProcessor(PipelineProcessor):
             if os.path.isfile(fp): os.remove(fp)
 
         # == Apply make_mmcif to get proper mmcif
-        currentDirectory=os.getcwd()            
-        os.chdir('{}'.format(processing_dir))
+        ##currentDirectory=os.getcwd()            
+        ##os.chdir('{}'.format(processing_dir))
         args = [self.python_bin, '-m', 'ihm.util.make_mmcif', '--histidines', input_cif_fpath, output_cif_fpath]
         if self.verbose: print("- getMakeMmcifFile: running subprocess in %s: %s" % (processing_dir, " ".join(args)))
         self.logger.info("* getMakeMmcifFile: running subprocess in %s: %s" % (processing_dir, " ".join(args)))
@@ -1414,7 +1414,7 @@ class EntryProcessor(PipelineProcessor):
             if self.verbose: print("- getMakeMmcifFile: succeeded: %s" % (args))
             pass
                 
-        os.chdir(currentDirectory)        
+        ##os.chdir(currentDirectory)        
         return dest_fpath
 
     
@@ -1485,26 +1485,28 @@ class EntryProcessor(PipelineProcessor):
         for fname, ftype in cifcheck_error_files:
             fpath = f"{input_dir}/{fname}"
             if os.path.isfile(fpath): os.remove(fpath)
-        
-        # == clean up ermrest error files
-        # delete_table_rows(self.catalog, "PDB", "Entry_Error_File", constraints=f"Entry_RID={entry_rid}")        
-        
-        # == validate with CifCheck
+                
+        # == validate with CifCheck. Need to be in certain directory
         currentDirectory=os.getcwd()
-        os.chdir('{}'.format(input_dir))
-        args = [self.CifCheck, '-f', cif_fpath, '-dictSdb', self.dictSdb]
-        if self.verbose: print("- validateExportmmCIF: running subprocess: %s" % (' '.join(args)))
-        self.logger.info('* Running "{}" from the {} directory'.format(' '.join(args), input_dir)) 
-        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdoutdata, stderrdata = p.communicate()
-        returncode = p.returncode
-        os.chdir(currentDirectory)
+        try:
+            os.chdir('{}'.format(input_dir))
+            args = [self.CifCheck, '-f', cif_fpath, '-dictSdb', self.dictSdb]
+            if self.verbose: print("- validateExportmmCIF: running subprocess: %s" % (' '.join(args)))
+            self.logger.info('* Running "{}" from the {} directory'.format(' '.join(args), input_dir)) 
+            p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdoutdata, stderrdata = p.communicate()
+            returncode = p.returncode
+            #print("- validateExportmmCIF: subprocess return code: %s" % (returncode))
+            
+            # Note: Returncode 0 doesn't mean no error files. Still need to check directory
+            if returncode != 0:
+                raise SubProcessError('ERROR validateExportmmCIF: pyrcsb testSchemaDataPrepValidate-ihm failed for file "%s".\nstdout: %s\nstderr: %s\n' % (output_cif, stdoutdata, stderrdata))
+        finally:
+            # ensure to chdir back
+            os.chdir(currentDirectory)
+            
 
-        #print("- validateExportmmCIF: subprocess return code: %s" % (returncode))        
-        # TODO: check whether the error files get generated if the return code is not 0
-        if returncode != 0:
-            raise SubProcessError('ERROR validateExportmmCIF: pyrcsb testSchemaDataPrepValidate-ihm failed for file "%s".\nstdout: %s\nstderr: %s\n' % (output_cif, stdoutdata, stderrdata))
-        
+        # == handle mmcif outputs in dir
         payload = []
         hatrac_namespace = f'{self.hatrac_generated_prefix}/validation_error'
         for fname, ftype in cifcheck_error_files:
@@ -1767,16 +1769,16 @@ class EntryProcessor(PipelineProcessor):
             raise ProcessingError(f"ERROR mmcif2json: unknown pyrcsb_db data_mode: {data_mode}")
             
 
-        # == get full-path 
+        # == get full-path
         py_rcsb_db_config_fpath=f'{self.py_rcsb_db}/rcsb/db/config/{exdb_fname}'
         py_rcsb_db_cache_fpath=f'{self.py_rcsb_db}/{cache_dir}'
 
         # == execute
-        currentDirectory=os.getcwd()
-        os.chdir(self.py_rcsb_db)
+        ##currentDirectory=os.getcwd()
+        ##os.chdir(self.py_rcsb_db)
         args = [
             'env', f'PYTHONPATH={self.py_rcsb_db}',
-            self.python_bin, 'rcsb/db/tests-validate/SchemaDataPrepValidateIhm.py',
+            self.python_bin, f'{self.py_rcsb_db}/rcsb/db/tests-validate/SchemaDataPrepValidateIhm.py',
             '-c', py_rcsb_db_config_fpath,  # config file (read-only)
             '-i', cif_fpath,                # input file
             '-o', json_fpath,               # output file
@@ -1787,7 +1789,7 @@ class EntryProcessor(PipelineProcessor):
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdoutdata, stderrdata = p.communicate()
         returncode = p.returncode
-        os.chdir(currentDirectory)
+        ##os.chdir(currentDirectory)
         
         if returncode != 0:
             raise SubProcessError('ERROR mmcif2json: pyrcsb testSchemaDataPrepValidate-ihm failed to generate json file for file "%s".\nstdout: %s\nstderr: %s\n' % (output_cif, stdoutdata, stderrdata)) 
