@@ -103,6 +103,9 @@ def main():
     print("args = %s" % (args))
 
     credentials = get_credential(args.host, args.credential_file)
+    if not credentials:
+        logger.error(f"CREDENTIAL ERROR: No credentials established for host={args.host}.")
+        return 1
     server = DerivaServer('https', args.host, credentials)
     store = HatracStore('https', args.host, credentials)
     catalog = server.connect_ermrest(args.catalog_id)

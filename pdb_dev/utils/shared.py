@@ -74,12 +74,14 @@ class PDBDEV_CLI(BaseCLI):
         else:
             super().__init__(description, epilog, False, config_file_required)
             
-        self.remove_options(['--host', '--config-file'])
+        self.remove_options(['--host', '--config-file', '--credential-file'])
         #self.parser.set_defaults(host='dev.pdb-dev.org')        
         self.parser.add_argument('--host', metavar='<host>', help="Fully qualified deriva hostname (default is PDB_SERVER env variable or dev-aws.pdb-dev.org, respectively)",
                                  default=os.getenv("PDB_SERVER", "data-dev.pdb-ihm.org"), required=hostname_required)
         self.parser.add_argument('--catalog-id', metavar='<id>', help="Deriva catalog ID (default is CATALOG env variable or 99, respectively)",
                                  default=os.getenv("CATALOG", "99"), required=catalog_id_required)
+        self.parser.add_argument('--credential-file', metavar='<credential_file>', help="credential file",
+                                 default=os.getenv("PDB_CREDENTIALS"), required=hostname_required)
         self.parser.add_argument('--rid', type=str, metavar='<RID>', action='store', help='The RID of the record.', default=os.getenv("RID", os.getenv("rid", None)), required=rid_required)
         self.parser.add_argument('--pre-print', action="store_true", help="print annotations before clear", default=False)
         self.parser.add_argument('--post-print', action="store_true", help="print anntoations after update", default=False)
