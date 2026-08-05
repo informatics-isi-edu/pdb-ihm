@@ -18,7 +18,6 @@ catalog_specific_annotation_tags = [tag["chaise_config"], tag["bulk_upload"], ta
 def get_chaise_config(catalog_id):
     config = {
         "defaultCatalog": catalog_id,
-        "resolverImplicitCatalog": catalog_id,        
         "customCSS": '/assets/css/chaise.css',
         "allowErrorDismissal": True,
         "confirmDelete": True,
@@ -49,7 +48,9 @@ def get_chaise_config(catalog_id):
     
     config.update(get_navbar_menu(catalog_id))        
 
-    if cfg.is_dev == True:
+    if cfg.is_prod == True:
+      config["resolverImplicitCatalog"] = catalog_id
+    elif cfg.is_dev == True:
         config["navbarBrandText"] = "%s (Dev)" % (config["navbarBrandText"])
     elif cfg.is_staging == True:
         config["navbarBrandText"] = "%s (Test)" % (config["navbarBrandText"])
