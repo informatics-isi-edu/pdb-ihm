@@ -1,5 +1,6 @@
 from deriva.core import DerivaServer, get_credential, BaseCLI
 from deriva.core.ermrest_model import Table, Column, Key, ForeignKey, builtin_types
+from ...utils.shared import DCCTX, PDBDEV_CLI
 
 def table_comments(model):
     #table = model.table("PDB", "software")
@@ -39,7 +40,7 @@ def table_comments(model):
     model.table("PDB", "ihm_starting_model_details").comment = "Information regarding starting structural models used in the integrative modeling study; mmCIF category: ihm_starting_model_details"
     model.table("PDB", "ihm_starting_comparative_models").comment = "Additional information regarding comparative models used as starting structural models; mmCIF category: ihm_starting_comparative_models"
     model.table("PDB", "ihm_starting_computational_models").comment = "Generic information regarding all computational models used as starting structural models; mmCIF category: ihm_starting_computational_models"
-    model.table("PDB", "ihm_starting_model_seq_dif").comment = "Information regarding point mutations in the sequences of the starting models compared to the starting model in the reference database; mmCIF category: ihm_startin_model_seq_dif"
+    model.table("PDB", "ihm_starting_model_seq_dif").comment = "Information regarding point mutations in the sequences of the starting models compared to the starting model in the reference database; mmCIF category: ihm_starting_model_seq_dif"
     model.table("PDB", "ihm_model_representation").comment = "List of model representations used; mmCIF category: ihm_model_representation"
     model.table("PDB", "ihm_model_representation_details").comment = "Details of model representations used; addresses representations of multi-scale models with atomic and coarse-grained representations; mmCIF category: ihm_model_representation_details"
     model.table("PDB", "ihm_modeling_protocol").comment = "List of modeling protocols used in the integrative modeling study; mmCIF category: ihm_modeling_protocol"
@@ -134,7 +135,7 @@ def set_comments(model):
 def main(server_name, catalog_id, credentials):
     server = DerivaServer('https', server_name, credentials)
     catalog = server.connect_ermrest(catalog_id)
-    catalog.dcctx['cid'] = "oneoff/model"
+    catalog.dcctx['cid'] = DCCTX["comment"]
     model = catalog.getCatalogModel()
 
     set_comments(model)
@@ -142,14 +143,14 @@ def main(server_name, catalog_id, credentials):
     # let's the library deals with applying the difference
     model.apply()
 
-# ===================================================    
+# ===================================================
+'''
+To run the comment updates:
+> python -m pdb_dev.config.comment.comment --host data-dev.pdb-ihm.org --catalog-id 99
+'''
 
 if __name__ == '__main__':
-    args = BaseCLI("ad-hoc table creation tool", None, 1).parse_cli()
+    args = PDBDEV_CLI("PDB_Dev", None, "1.0").parse_cli()
     credentials = get_credential(args.host, args.credential_file)
-#    if args.catalog is None:
-#        catalog_id = 99
 
-    main(args.host, 99, credentials)
-    
-    
+    main(args.host, args.catalog_id, credentials)
