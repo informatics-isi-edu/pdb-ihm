@@ -969,6 +969,7 @@ def update_PDB_entry(model):
             {
                 'markdown_name' : '6.2.1 Ordered Ensembles (to be deprecated and superseded by Ordered Models)',
                 'sourcekey' : 'ihm_ordered_ensemble_fkey',
+                'condition_key': 'is_not_submitter',
             },
             {
                 'markdown_name' : '6.3.0 Ensembles',
@@ -1645,6 +1646,7 @@ def update_PDB_entry(model):
             {
                 'markdown_name' : '9.2.0 Types of Polymeric Nucleic Acid Entities',
                 'sourcekey' : 'pdbx_entity_poly_na_type_fkey',
+                'condition_key': 'is_not_submitter',
             },
         ],
     })
