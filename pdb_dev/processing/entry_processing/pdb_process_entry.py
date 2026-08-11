@@ -106,7 +106,6 @@ def load(config_filename, args, logger=None):
     credentials = get_credential(config['hostname'], credentials_file)
     if not credentials:
         raise ConfigError('Credential is NULL. Provide a proper credential file or set up credential under the user account properly. Provided credential file:%s' % (credentials_file))
-    print("get_crecential: %s" % (credentials))
     config['credentials'] = credentials
     config['timeout'] = conf.get('timeout', 30)
 
