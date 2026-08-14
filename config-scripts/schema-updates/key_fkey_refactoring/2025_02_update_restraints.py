@@ -5,7 +5,7 @@ import json
 from deriva.core import ErmrestCatalog, AttrDict, get_credential, DEFAULT_CREDENTIAL_FILE, tag, urlquote, DerivaServer, get_credential, BaseCLI
 from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key, ForeignKey
 
-from pdb_dev.utils.shared import PDBDEV_CLI, DCCTX
+from pdb_dev.utils.shared import PDBDEV_CLI, DCCTX, cfg
 
 """ From Brinda (02/05/2025)
 Two column names are wrong in ermrest:
