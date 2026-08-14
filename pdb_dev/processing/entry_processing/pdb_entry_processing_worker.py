@@ -201,8 +201,6 @@ class Worker (object):
     # secret session cookie
     credfile = os.getenv('PDB_CREDENTIALS', None)
     credentials = get_credential(servername, credfile)  # old way of using token
-    #credentials = json.load(open(credfile))
-    print("credential: %s" % (credentials))
     
     poll_seconds = int(os.getenv('POLL_SECONDS', '300'))
     config_file = os.getenv('PDB_CONFIG', '/home/pdbihm/config/entry_processing/pdb_conf.json')
