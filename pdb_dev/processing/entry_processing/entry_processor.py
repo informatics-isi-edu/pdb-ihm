@@ -41,6 +41,7 @@ import mimetypes
 import tempfile
 import ihm # for validation report
 from pathlib import Path
+import time
 
 from deriva.core import PollingErmrestCatalog, HatracStore, urlquote
 from deriva.core.utils import hash_utils as hu
@@ -49,6 +50,7 @@ from deriva.core.datapath import DataPathException
 
 from deriva.utils.extras.data import insert_if_not_exist, update_table_rows, delete_table_rows, get_ermrest_query
 from deriva.utils.extras.hatrac import HatracFile
+from deriva.utils.extras.job_dispatcher import init_logger
 from deriva.utils.extras.pdb_ma.mmcif_model import mmCIFErmrestModel
 
 from .mmcif_utils import get_mmcif_rid_optional_fkeys, print_table_fkeys, get_mmcif_rid_mandatory_fkeys, get_legacy_combo1_columns, get_legacy_optional_fks, PkTables, get_shortest_key
@@ -135,6 +137,10 @@ class EntryProcessor(PipelineProcessor):
     scratch = "/mnt/vdb1/entry_processing/scratch"
     log_dir = "/home/pdbihm/log/entry_processing"
     ihm_path = str(Path(ihm.__file__).parent)
+    import_ermrest_ignore_tnames = [
+        "pdbx_database_status", "pdbx_audit_revision_details", "pdbx_audit_revision_history",
+        "ihm_entry_collection", "ihm_entry_collection_mapping"
+    ]
     
     def __init__(self, **kwargs):
         self.action = kwargs.get("action")
@@ -145,7 +151,8 @@ class EntryProcessor(PipelineProcessor):
         self.cif_tables = kwargs.get("cif_tables")              # tables from submited files to be exported
         self.export_order_by = kwargs.get("export_order_by")
         self.ihm_json_schema_doc = kwargs.get("ihm_json_schema_doc") # NEW - Replacing export_tables
-        self.export_ermrest_ignore_tnames = kwargs.get("export_ermrest_ignore_tnames", None) # NEW 
+        self.export_ermrest_ignore_tnames = kwargs.get("export_ermrest_ignore_tnames", None) # NEW
+        self.import_ermrest_ignore_tnames = kwargs.get("import_ermrest_ignore_tnames", self.import_ermrest_ignore_tnames ) # NEW
         
         #self.mmCIF_Schema_Version = kwargs.get("mmCIF_Schema_Version")  # deprecated -- replace by Supported_Dictionary        
         #self.combo1_columns = kwargs.get("combo1_columns")     # deprecated
@@ -155,7 +162,6 @@ class EntryProcessor(PipelineProcessor):
         #self.tables_groups = kwargs.get("tables_groups")       # deprecated
         #self.make_mmCIF = kwargs.get("make_mmCIF")             # DEPRECATED
 
-        
         self.dictSdb = kwargs.get("dictSdb")
         self.validation_dir = kwargs.get("validation_dir")
         if not self.validation_dir.endswith("IHMValidation"): self.validation_dir = f'{self.validation_dir}/IHMValidation' # backward compatible
@@ -168,24 +174,31 @@ class EntryProcessor(PipelineProcessor):
         if kwargs.get("primary_accession_code_mode", None): self.primary_accession_code_mode = kwargs.get("primary_accession_code_mode")
         if kwargs.get("alternative_accession_code_mode", None): self.alternative_accession_code_mode = kwargs.get("alternative_accession_code_mode")
         if kwargs.get("singularity_sif", None): self.singularity_sif=kwargs.get("singularity_sif")
-        if kwargs.get("email", None): self.email_config = kwargs.get("email")
-        
-        super().__init__(hostname=kwargs.get("hostname"), catalog_id=kwargs.get("catalog_id"), credentials = kwargs.get("credentials"),
-                         cfg=kwargs.get("cfg"))
 
+        super().__init__(
+            catalog=kwargs.get("catalog"), hostname=kwargs.get("hostname"), catalog_id=kwargs.get("catalog_id"),
+            credentials = kwargs.get("credentials"), cfg=kwargs.get("cfg"),
+            email_config=kwargs.get("email"), verbose=kwargs.get("verbose"), mute=kwargs.get("mute"), preserve=kwargs.get("preserve"),
+        )
+
+        self.log_dir = kwargs.get("log_dir", self.log_dir)
+        self.process_id = kwargs.get("process_id", 'p0')
+        self.logger = kwargs.get("logger", None)        
+        if not self.logger:
+            self.log_file = kwargs.get("log_file", f'{self.log_dir}/entry_processor_{self.cfg.catalog_name}_{self.process_id}.log')
+            self.logger = init_logger(log_level="info", log_file=self.log_file, name="entry_processor")
+        
         #self.combo1_columns = get_legacy_combo1_columns(self.catalog)  # deprecated
         #self.optional_fks = get_legacy_optional_fks(self.catalog)      # deprecated
-
-        self.logger = kwargs.get("logger")
-
 
         self.tname2inserting = {}  # inserting rows, used for debugging
         self.tname2inserted = {}   # inserted rows
 
+        self.model = self.catalog.getCatalogModel()        
         self.initialize_processing_row(self.rid)
-
-        if self.verbose: print("------- EntryProcessor: rid: %s, action: %s, mute: %s, verbose: %s, preserve: %s" % (self.rid, self.action, self.mute, self.verbose, self.preserve))
-        if self.logger: self.logger.debug("------- EntryProcessor: rid: %s, action: %s, mute: %s, verbose: %s, preserve: %s" % (self.rid, self.action, self.mute, self.verbose, self.preserve))
+        
+        if self.verbose: print("- --- EntryProcessor init: rid: %s, action: %s, mute: %s, verbose: %s, preserve: %s, log_file: %s" % (self.rid, self.action, self.mute, self.verbose, self.preserve, self.log_file))
+        self.logger.info("--- EntryProcessor init: rid: %s, action: %s, mute: %s, verbose: %s, preserve: %s, log_file: %s" % (self.rid, self.action, self.mute, self.verbose, self.preserve, self.log_file))
         
         #print("- processing_row: %s" % (self.processing_row))
         #print("- user_row: %s\n" % (self.user_row))
@@ -198,12 +211,15 @@ class EntryProcessor(PipelineProcessor):
             self.processing_tname = "Entry_Related_File" 
             constraints='RID=%s/E:=PDB:entry/$M/T:=(M:File_Type)=(Vocab:File_Type:Name)' % (self.rid)
             attributes=['M:File_Name','M:File_URL','M:File_MD5','M:structure_id','M:RCT','M:File_Format','M:Restraint_Process_Status','M:Restraint_Workflow_Status', 'M:Record_Status_Detail', 'T:Table_Name', 'entry_rid:=E:RID', 'RCB:=E:RCB']
-            self.processing_row = get_ermrest_query(self.catalog, "PDB", self.processing_tname, constraints=constraints, attributes=attributes)[0]
-            
+            rows = get_ermrest_query(self.catalog, "PDB", self.processing_tname, constraints=constraints, attributes=attributes)
         else:
             self.processing_tname = "entry"
-            self.processing_row = get_ermrest_query(self.catalog, "PDB", self.processing_tname, constraints=f'RID={self.rid}')[0]
-            
+            rows = get_ermrest_query(self.catalog, "PDB", self.processing_tname, constraints=f'RID={self.rid}')
+        
+        if len(rows) == 0:
+            raise Exception(f"RID {self.rid} does not exist in table {self.processing_tname}")
+        self.processing_row = rows[0]
+        
         self.entry_id = self.processing_row["id"] if self.processing_tname == "entry" else self.processing_row["structure_id"]
         self.entry_rid = self.processing_row["RID"] if self.processing_tname == "entry" else self.processing_row["entry_rid"]
         self.user_row = self.get_user_row("PDB", self.processing_tname, self.rid) 
@@ -213,16 +229,6 @@ class EntryProcessor(PipelineProcessor):
 
         self.create_hatrac_uid_namespace(f"{self.hatrac_root}/pdb/generated/uid", self.processing_row["RCB"])
         
-        
-    """
-    Trace into the log_dir e.g. /home/pdbihm/log/trace.log file 
-    """
-    def trace(self, condition, message):
-        if condition==True:
-            fa = open(f'{self.log_dir}/trace.log', 'a')
-            fa.write(message)
-            fa.write('\n')
-            fa.close()
         
     """
     Start the process for generating pyramidal tiles
@@ -317,7 +323,7 @@ class EntryProcessor(PipelineProcessor):
                 #self.delete_rows("PDB", csv_tname, constraints=constraints)
             except Exception as e:
                 message = self.log_exception(e, notify=True, subject=subject)
-                raise ErmrestError("ERROR: tname: %s: cleanup restraint table %s failed while handling error (%s)." % (related_file_tname, csv_tname, error_message))
+                raise ErmrestError("ERROR: tname: %s: cleanup restraint table %s failed while handling error (%s)." % (related_file_tname, csv_tname, message))
         finally:
             self.update_processing_row(updating_row)
             self.logger.debug(f'== Ended process_Entry_Related_File RID="{self.rid}" with process_status = {process_status} ')
@@ -405,7 +411,7 @@ class EntryProcessor(PipelineProcessor):
         exclude_tnames = export_custom_tnames + export_ignore_tnames
 
         # == ermrest model
-        ermrest_model = self.catalog.getCatalogModel()
+        ermrest_model = self.model
         pdb_schema = ermrest_model.schemas["PDB"]
         pb = self.catalog.getPathBuilder()
         pb_schema = pb.PDB
@@ -620,7 +626,7 @@ class EntryProcessor(PipelineProcessor):
             
     def export_mmCIF(self, dest_fpath=None ):
         """Export the mmCIF file of the entry table
-
+         
         Args:
           dest_fpath (str): export mmCIF destiation fpath (if provided).
         
@@ -819,6 +825,11 @@ class EntryProcessor(PipelineProcessor):
         
     def process_mmCIF(self):
         """Process the mmCIF file of the entry table
+        The conversion process:
+          1. generate mmcif file using make_mmcif
+          2. run py_rcsb_db with appropriate parameters (with data_mode=DEPO) to generate json
+          3. load json content into ermrest with appropriate RIDs generated as needed
+
         """
         # == set per-rid processing dir
         processing_dir = f'{self.scratch}/{self.rid}'
@@ -837,9 +848,11 @@ class EntryProcessor(PipelineProcessor):
             'Record_Status_Detail' : None,
         }
 
+        
         # == info from record to be processed
         filename = self.processing_row['mmCIF_File_Name']
         hatrac_url = self.processing_row['mmCIF_File_URL']
+        file_bytes = self.processing_row['mmCIF_File_Bytes']
         md5 = self.processing_row['mmCIF_File_MD5']
         last_md5 = self.processing_row['Last_mmCIF_File_MD5']
         
@@ -852,7 +865,11 @@ class EntryProcessor(PipelineProcessor):
             self.logger.debug(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')
             return    #TODO: uncomment
 
+        
         try:
+            # == check file size
+            if file_bytes == 0:
+                raise ProcessingError(f"ERROR process_mmCIF: Empty submitted cif file ({filename}). No content to process.")
 
             input_cif_fname = f'{self.rid}_input.cif'
             input_cif_fpath = f'{processing_dir}/{input_cif_fname}'            
@@ -869,7 +886,7 @@ class EntryProcessor(PipelineProcessor):
             self.getMakeMmcifFile(input_cif_fpath, output_cif_fpath)
 
             # == convert to json
-            self.mmcif2json(output_cif_fpath, json_fpath,  exdb_fname="exdb-config-example-ihm-DEPO.yml")
+            self.mmcif2json(output_cif_fpath, json_fpath, data_mode="DEPO")
             
             # == load json to ermrest
             self.loadTablesFromJSON(json_fpath)  #TODO: uncomment
@@ -899,123 +916,6 @@ class EntryProcessor(PipelineProcessor):
             self.clean_directory(processing_dir, remove_dir=True)
             
     
-    def x_convert2json(self, filepath, processing_dir='/home/pdbihm/temp'):
-        """Convert the input file to JSON. DEPRECATED
-        The conversion process:
-          1. generate mmcif file using make_mmcif
-          2. Move output.cif file to the rcsb/db/tests-validate/test-output/ihm-files
-          3. from py_rcsb_db dir, cp rcsb/db/config/exdb-config-example-ihm-DEPO.yml to rcsb/db/config/exdb-config-example-ihm.yml
-          4. run 'rcsb/db/tests-validate/testSchemaDataPrepValidate-ihm.py'
-            > env PYTHONPATH=~/pdb/py-rcsb_db python3 testSchemaDataPrepValidate-ihm.py
-            Note: the output file use the entry name e.g. entry_<name> to generate the output file instead of the input filename.
-            It is important that we ensure only one json file is generated.
-          5. copy output.cif to  /home/pdbihm/temp
-        
-        HT TODO (DONE):
-            - refactor code.
-            - Address /home/pdbihm/temp which currently doesn't support multiple workers
-        """
-        
-        # == Prepend the RID to the input file
-        filename = filepath.rsplit('/', 1)[1]
-        output_cif = '%s_output.cif' % (self.rid)
-        output_cif_fpath = '%s/%s' % (processing_dir, output_cif)
-        
-        # == Apply make_mmcif.py
-        args = [self.python_bin, '-m', 'ihm.util.make_mmcif', '--histidines', filepath, output_cif_fpath]
-        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdoutdata, stderrdata = p.communicate()
-        returncode = p.returncode
-
-        if returncode != 0:
-            raise SubProcessError('ERROR convert2json: make_mmcif failed for entry id = "%s" and file "%s".\nstdout: %s\nstderr: %s\n' % (self.entry_id, filepath, stdoutdata, stderrdata))
-
-        py_rcsb_db_input_cif_dir = '%s/rcsb/db/tests-validate/test-output/ihm-files' % (self.py_rcsb_db)
-        py_rcsb_db_input_cif_fpath = '%s/%s' % (py_rcsb_db_input_cif_dir, output_cif)
-        py_rcsb_db_output_json_dir = '%s/rcsb/db/tests-validate/test-output' % (self.py_rcsb_db)            
-        
-
-        # == Cleanup the rcsb/db/tests-validate/test-output/ihm-files (*.cif) and rcsb/db/tests-validate/test-output directories (*.json)
-        # Since we will use the .cif and .json in those dirs for processing (instead of specifying as arguments).
-        
-        fpath = py_rcsb_db_input_cif_dir
-        entries = [ entry  for entry in os.scandir(fpath) if entry.is_file() and entry.path.endswith('.cif') ]
-        for entry in entries:
-            os.remove(entry.path)
-        self.logger.debug('Cleaned up CIF files in %s. Removed files %s' % (fpath, [entry.name for entry in entries]))
-
-        fpath = py_rcsb_db_output_json_dir        
-        entries = [ entry  for entry in os.scandir(fpath) if entry.is_file() and entry.path.endswith('.json') ]
-        for entry in entries:
-            os.remove(entry.path)
-        self.logger.debug('Cleaned up JSON files in %s. Removed files %s' % (fpath, [entry.name for entry in entries]))
-        
-
-        # == Move the output.cif file to the rcsb/db/tests-validate/test-output/ihm-files directory and apply testSchemaDataPrepValidate-ihm.py
-        shutil.copy2(output_cif_fpath, py_rcsb_db_input_cif_dir)
-        self.logger.debug('convert2json: File %s was moved to the %s directory' % (output_cif, py_rcsb_db_input_cif_dir))
-            
-        currentDirectory=os.getcwd()
-        os.chdir('{}'.format(self.py_rcsb_db))
-        shutil.copy2(f'{self.py_rcsb_db}/rcsb/db/config/exdb-config-example-ihm-DEPO.yml', f'{self.py_rcsb_db}/rcsb/db/config/exdb-config-example-ihm.yml')
-        args = ['env', 'PYTHONPATH={}'.format(self.py_rcsb_db), self.python_bin, 'rcsb/db/tests-validate/testSchemaDataPrepValidate-ihm.py']
-        self.logger.debug('Running "{}" from the {} directory'.format(' '.join(args), self.py_rcsb_db)) 
-        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdoutdata, stderrdata = p.communicate()
-        returncode = p.returncode
-        os.chdir(currentDirectory)
-        
-        if returncode != 0:
-            raise SubProcessError('ERROR convert2json: pyrcsb testSchemaDataPrepValidate-ihm failed for file "%s".\nstdout: %s\nstderr: %s\n' % (output_cif, stdoutdata, stderrdata)) 
-
-        os.remove(py_rcsb_db_input_cif_fpath)
-        self.logger.debug('convert2json: remove pyrcsb_db cif file %s ' % (py_rcsb_db_input_cif_fpath))
-
-        # == Load now the data from JSON files which are in the rcsb/db/tests-validate/test-output directory into the tables 
-        json_files = []
-        for entry in os.scandir(py_rcsb_db_output_json_dir):
-            if entry.is_file() and entry.path.endswith('.json'): json_files.append(entry.name)
-
-        # -- Throw an exception when 0 or more than 1 .json file found. Ensure that there is only one generated
-        if len(json_files) > 1:
-            # - remove files and raise exception
-            for fname in json_files:
-                os.remove("%s/%s" % (py_rcsb_db_output_json_dir, fname))
-            self.logger.debug('Removed json files found: dir: %s, fiiles: %s' % (py_rcsb_db_output_json_dir, json_files))
-            raise ProcessingError("ERROR convert2json: Multiple json files exist in rcsb_db output dir (%s): %s" % (py_rcsb_db_output_json_dir, json_files))
-        elif len(json_files) == 0:
-            raise ProcessingError("ERROR convert2json: No json files found in rcsb_db output dir (%s)" % (py_rcsb_db_output_json_dir))
-        else:
-            json_fpath = f'{processing_dir}/{self.rid}_output.json'
-            shutil.move(f'{py_rcsb_db_output_json_dir}/{json_files[0]}', json_fpath)
-
-        return json_fpath
-            
-    """
-    Update the ermrest attributes
-    HT TODO: consider re-raise in the exception block
-    """
-    def x_updateAttributes(self, schema, table, rid, columns, row, user):
-        """
-        Update the ermrest attributes with the row values.
-        """
-        
-        try:
-            columns = ','.join([urlquote(col) for col in columns])
-            url = '/attributegroup/%s:%s/RID;%s' % (urlquote(schema), urlquote(table), columns)
-            resp = self.catalog.put(url, json=[row])
-            resp.raise_for_status()
-            self.logger.debug('SUCCEEDED updated the table "%s" for the RID "%s"  with "%s".' % (url, rid, json.dumps(row, indent=4))) 
-        except Exception as e:
-            if 'Process_Status' in row.keys():
-                status = row['Process_Status']
-            elif 'Restraint_Process_Status' in row.keys():
-                status = row['Restraint_Process_Status']
-            else:
-                status = None
-            subject = '{} {}: {} ({}) - updateAttributes'.format(rid, 'ERROR', status, user)
-            self.log_exception(e, notify=False, subject=subject)
-            raise
 
     def update_processing_row(self, row, sname="PDB", tname=None, cnames=None):
         """Updating an entry in the Ermrest according to provided row
@@ -1037,7 +937,7 @@ class EntryProcessor(PipelineProcessor):
                 changed = True
                 break
         if changed:
-            updated = update_table_rows(self.catalog, sname, tname, payload=[row], column_names=cnames)
+            updated = update_table_rows(self.catalog, sname, tname, payload=[row], column_names=cnames, model=self.model)
             if self.verbose: print("- update_processing_row: updated [%d]" % (len(updated)))
         else:
             if self.verbose: print("- update_processing_row: no change. updated [0]")
@@ -1047,53 +947,6 @@ class EntryProcessor(PipelineProcessor):
         return updated
         
     
-    def x_sortTable(self, fpath):
-        """
-        Sort the tables to be loaded based on the FK dependencies.
-
-        Args:
-            fpath (str): json file
-
-        Todo:
-            Replace this with topo_sorted
-        """
-        
-        excluded_mmCIF_tables = [
-            'entry', 'database_2', 'pdbx_audit_revision_details', 'pdbx_audit_revision_history', 'pdbx_database_status'
-        ]
-
-        """
-        Get the tables groups
-        """
-        with open(self.tables_groups, 'r') as f:
-            table_groups = json.load(f)
-        
-        """
-        Sort the tables from the JSON file based on the groups
-        """
-        tables = []
-        with open(fpath, 'r') as f:
-            pdb = json.load(f)
-            pdb = pdb[0]
-            group_no = 0
-            while group_no < len(table_groups):
-                group_str = str(group_no)
-                for k,v in pdb.items():
-                    if k in table_groups[group_str] and k not in excluded_mmCIF_tables:
-                        tables.append(k)
-                group_no +=1
-        
-        """
-        Check that all the tables are in the database
-        """
-        with open(fpath, 'r') as f:
-            pdb = json.load(f)
-            pdb = pdb[0]
-            for k,v in pdb.items():
-                if k not in (tables + excluded_mmCIF_tables):
-                    raise RuntimeError('Table "{}" from mmCIF is not present in the DERIVA database. Possible mismatch versions.'.format(k))
-        
-        return tables
 
 
     def sortTablesFromFile(self, fpath, exclude_tnames=['entry', 'database_2', 'pdbx_audit_revision_details', 'pdbx_audit_revision_history', 'pdbx_database_status']):
@@ -1153,7 +1006,7 @@ class EntryProcessor(PipelineProcessor):
         Notes: This is to replace x_rollbackInsertdRows
         """
 
-        model = self.catalog.getCatalogModel()
+        model = self.model
         # -- Reverse sort the tables based on the FK dependencies        
         topo_sorted_tnames = self.get_topo_sorted_tables(self.catalog, tname_only=True)
         reverse_sorted_tnames = reversed(topo_sorted_tnames)
@@ -1198,15 +1051,17 @@ class EntryProcessor(PipelineProcessor):
         pk_tables = PkTables(catalog=self.catalog, ermrest_data=pk_tables_ref_data, verbose=self.verbose)
         pk_tables.set_ermrest_data(pk_tables_ref_data)  
         if self.verbose: print("- loadTablesFromJSON_2: pk_tables.ermrest_data: %s" % (pk_tables.ermrest_data.keys()))
-        
-        model = self.catalog.getCatalogModel()
+
+        model = self.model
+        pb = self.catalog.getPathBuilder()                
         for tname in topo_sorted_tnames:
             try:
                 # -- ignore these tables
-                if tname in ["ihm_entry_collection", "ihm_entry_collection_mapping"]: continue
+                #if tname in ["ihm_entry_collection", "ihm_entry_collection_mapping"]: continue
+                if tname in self.import_ermrest_ignore_tnames: continue
 
                 # -- prepare PkTable model
-                table = model.schemas['PDB'].tables[tname]            
+                table = model.schemas['PDB'].tables[tname]
                 pk_tables.prepare_model(table)   # prepare structure to lookup data based on natural key values
 
                 # -- read json records
@@ -1220,19 +1075,19 @@ class EntryProcessor(PipelineProcessor):
                 pk_tables.prepare_data(table)  # prepare structure to lookup data based on natural key values
                 #if self.verbose: print("- loadTablesFromJSON_2: tname: %s pk_tables.ermrest_data [%d]: %s" % (tname, len(pk_tables.ermrest_data), pk_tables.ermrest_data.keys()))
                 pk_tables.update_payload_with_rids(table, records)
-                
+
                 # -- Insert data to ermrest
                 if self.verbose: print(f'- {tname}: inserting [{len(records)}]: {json.dumps(records[0:2], indent=4)}')
-                self.logger.debug(f'{tname}: inserting [{len(records)}]')
+                #self.logger.debug(f'{tname}: inserting [{len(records)}]')
                 if not ermrest_insert:
                     self.tname2inserting[tname] = records
                     continue
-                pb = self.catalog.getPathBuilder()                
                 pb_table = pb.schemas['PDB'].tables[tname]
                 res = pb_table.insert(records).fetch() 
                 self.tname2inserted[tname] = res
-                self.logger.debug(f'inserted table {tname} [{len(res)}]: {res[0:1]}')
+                self.logger.debug(f'inserted table {tname} [{len(res)}]: {res[0:1]} ')
                 if self.verbose: print(f'- {tname}: inserted [{len(res)}]')
+                
             except Exception as e:
                 # TODO: Check whether the subject should be ERROR instead of DEPO. Answer: DEPO
                 message = self.log_exception(e, notify=False, subject=None, body_prefix=f'Error in inserting rows in table {tname}.')
@@ -1240,7 +1095,7 @@ class EntryProcessor(PipelineProcessor):
                 raise ProcessingError("ERROR loadTablesFromJSON: Failed to insert rows in %s" % (tname))
             finally:
                 pass
-
+            
         if False:
             print("tname2inserting: ")
             for k, v in self.tname2inserting.items():
@@ -1298,8 +1153,7 @@ class EntryProcessor(PipelineProcessor):
         load restraint tables from specified csv file
         """
         catalog = self.catalog
-        model = self.catalog.getCatalogModel()
-        table = model.schemas["PDB"].tables[tname]
+        table = self.model.schemas["PDB"].tables[tname]
         structure_id = entry_id
         entry_rid = entry_id.replace('D_', '')  # This might not aways be true
 
@@ -1456,7 +1310,7 @@ class EntryProcessor(PipelineProcessor):
             #self.delete_rows("PDB", tname, constraints)
         except Exception as e:
             self.log_exception(e, notify=False, subject="Unable to delete rows in table %s" % (tname))
-            raise ErmrestError("Unable to cleanup table %s with constraint" % (tname))
+            raise ErmrestError("Unable to cleanup table %s with constraint: %s" % (tname, constraints))
         
         # == Insert updated payload to table
         try:
@@ -1523,26 +1377,26 @@ class EntryProcessor(PipelineProcessor):
         output_cif_fname = dest_fpath.rsplit("/", 1)[1]
         output_cif_fpath=dest_fpath
         
-        # == Cleanup the processing_dir directory
+        # == clear the existing output file if exist
         for fp in [output_cif_fpath]:
             if os.path.isfile(fp): os.remove(fp)
 
         # == Apply make_mmcif to get proper mmcif
-        currentDirectory=os.getcwd()            
-        os.chdir('{}'.format(processing_dir))
+        ##currentDirectory=os.getcwd()            
+        ##os.chdir('{}'.format(processing_dir))
         args = [self.python_bin, '-m', 'ihm.util.make_mmcif', '--histidines', input_cif_fpath, output_cif_fpath]
-        if self.verbose: print("getMakeMmcifFile: running subprocess in %s: %s" % (processing_dir, " ".join(args)))
-        self.logger.debug("getMakeMmcifFile: running subprocess in %s: %s" % (processing_dir, " ".join(args)))
+        if self.verbose: print("- getMakeMmcifFile: running subprocess in %s: %s" % (processing_dir, " ".join(args)))
+        self.logger.info("* getMakeMmcifFile: running subprocess in %s: %s" % (processing_dir, " ".join(args)))
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdoutdata, stderrdata = p.communicate()
         returncode = p.returncode
         if returncode != 0:
             raise SubProcessError('ERROR getMakeMmcifFile: make_mmcif failed for entry rid = "%s" and input_cif_fpath "%s".\nstdout: %s\nstderr: %s\n' % (self.rid, input_cif_fpath, stdoutdata, stderrdata))
         else:
-            print("getMakeMmcifFile: succeeded: %s" % (args))
+            if self.verbose: print("- getMakeMmcifFile: succeeded: %s" % (args))
             pass
                 
-        os.chdir(currentDirectory)        
+        ##os.chdir(currentDirectory)        
         return dest_fpath
 
     
@@ -1613,26 +1467,28 @@ class EntryProcessor(PipelineProcessor):
         for fname, ftype in cifcheck_error_files:
             fpath = f"{input_dir}/{fname}"
             if os.path.isfile(fpath): os.remove(fpath)
-        
-        # == clean up ermrest error files
-        # delete_table_rows(self.catalog, "PDB", "Entry_Error_File", constraints=f"Entry_RID={entry_rid}")        
-        
-        # == validate with CifCheck
+                
+        # == validate with CifCheck. Need to be in certain directory
         currentDirectory=os.getcwd()
-        os.chdir('{}'.format(input_dir))
-        args = [self.CifCheck, '-f', cif_fpath, '-dictSdb', self.dictSdb]
-        if self.verbose: print("- validateExportmmCIF: running subprocess: %s" % (' '.join(args)))
-        self.logger.debug('- Running "{}" from the {} directory'.format(' '.join(args), input_dir)) 
-        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdoutdata, stderrdata = p.communicate()
-        returncode = p.returncode
-        os.chdir(currentDirectory)
+        try:
+            os.chdir('{}'.format(input_dir))
+            args = [self.CifCheck, '-f', cif_fpath, '-dictSdb', self.dictSdb]
+            if self.verbose: print("- validateExportmmCIF: running subprocess: %s" % (' '.join(args)))
+            self.logger.info('* Running "{}" from the {} directory'.format(' '.join(args), input_dir)) 
+            p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdoutdata, stderrdata = p.communicate()
+            returncode = p.returncode
+            #print("- validateExportmmCIF: subprocess return code: %s" % (returncode))
+            
+            # Note: Returncode 0 doesn't mean no error files. Still need to check directory
+            if returncode != 0:
+                raise SubProcessError('ERROR validateExportmmCIF: pyrcsb testSchemaDataPrepValidate-ihm failed for file "%s".\nstdout: %s\nstderr: %s\n' % (output_cif, stdoutdata, stderrdata))
+        finally:
+            # ensure to chdir back
+            os.chdir(currentDirectory)
+            
 
-        #print("- validateExportmmCIF: subprocess return code: %s" % (returncode))        
-        # TODO: check whether the error files get generated if the return code is not 0
-        if returncode != 0:
-            raise SubProcessError('ERROR validateExportmmCIF: pyrcsb testSchemaDataPrepValidate-ihm failed for file "%s".\nstdout: %s\nstderr: %s\n' % (output_cif, stdoutdata, stderrdata))
-        
+        # == handle mmcif outputs in dir
         payload = []
         hatrac_namespace = f'{self.hatrac_generated_prefix}/validation_error'
         for fname, ftype in cifcheck_error_files:
@@ -1809,7 +1665,7 @@ class EntryProcessor(PipelineProcessor):
                     '--cache-root', '/ihmv/cache',
                     '--watermark', 'confidential' if self.workflow_status=="SUBMISSION COMPLETE" else 'none'
                     ]
-            self.logger.debug(f'Running "{" ".join(args)}" from the {processing_dir} directory')
+            self.logger.info(f'* Running "{" ".join(args)}" from the {processing_dir} directory')
             if self.verbose: print("- generate_ihmv_report: running subprocess: %s" % (' '.join(args)))
 
 
@@ -1865,85 +1721,60 @@ class EntryProcessor(PipelineProcessor):
                 if self.verbose: print("- generate_ihmv_report: updated [%d]: %s" % (len(updated), json.dumps(updated, indent=4)))
         except TimeoutExpired:
             p.kill()
-            self.logger.error('got TimeoutExpired exception "%s"' % str(ev))
             raise SubProcessError("ERROR report_validation: IHMV TimeoutExpired")
         # for other types of Exception, catch at the caller
         finally:
             os.chdir(currentDirectory)
 
         
-    def mmcif2json(self, cif_fpath, json_fpath, exdb_fname=None):
+    def mmcif2json(self, cif_fpath, json_fpath, data_mode="DEPO"):
         """Convert a mmcif file to json file using py_rcsb_db software
+        See the py_rcsb_db processing here: https://github.com/informatics-isi-edu/pdb-ihm/wiki/data-processing-workflow
         
         Args:
             cif_fpath (str): input cif file path
             json_fpath (str): json file path to be generated or replaced
-            exdb_fname (str): exdb yaml config file. If not provided: "exdb-config-example-ihm-DEPO.yml" if used if action=DEPO else exdb-config-example-ihm-HOLD-REL.yml
+            data_mode (str): the py_rcsb_db generated json data mode e.g. DEPO v.s. HOLD-REL
+
+        Old approach (config/input/output/cache foldres are fixed location):
+        args = ['env', f'PYTHONPATH={self.py_rcsb_db}', self.python_bin, 'rcsb/db/tests-validate/testSchemaDataPrepValidate-ihm.py']
         
         """
-        cif_fname = cif_fpath.rsplit("/", 1)[1]
-        if not exdb_fname:
-            if self.workflow_status == 'DEPO':
-                exdb_fname="exdb-config-example-ihm-DEPO.yml"
-            else:
-                exdb_fname="exdb-config-example-ihm-HOLD-REL.yml"
-        
-        py_rcsb_db_input_cif_dir = '%s/rcsb/db/tests-validate/test-output/ihm-files' % (self.py_rcsb_db)
-        py_rcsb_db_input_cif_fpath = '%s/%s' % (py_rcsb_db_input_cif_dir, cif_fname)
-        py_rcsb_db_output_json_dir = '%s/rcsb/db/tests-validate/test-output' % (self.py_rcsb_db)
-
-        # == Cleanup the rcsb/db/tests-validate/test-output/ihm-files (*.cif) and rcsb/db/tests-validate/test-output directories (*.json)
-        # Since we will use the .cif and .json in those dirs for processing (instead of specifying as arguments).
-        
-        fpath = py_rcsb_db_input_cif_dir
-        entries = [ entry  for entry in os.scandir(fpath) if entry.is_file() and entry.path.endswith('.cif') ]
-        for entry in entries:
-            os.remove(entry.path)
-        self.logger.debug('Cleaned up CIF files in %s. Removed files %s' % (fpath, [entry.name for entry in entries]))
-
-        fpath = py_rcsb_db_output_json_dir        
-        entries = [ entry  for entry in os.scandir(fpath) if entry.is_file() and entry.path.endswith('.json') ]
-        for entry in entries:
-            os.remove(entry.path)
-        self.logger.debug('Cleaned up JSON files in %s. Removed files %s' % (fpath, [entry.name for entry in entries]))
-        
-        # == Move the output.cif file to the rcsb/db/tests-validate/test-output/ihm-files directory and apply testSchemaDataPrepValidate-ihm.py
-        shutil.copy2(cif_fpath, py_rcsb_db_input_cif_dir)
-        self.logger.debug('mmcif2json: File %s was copied to the %s directory' % (cif_fpath, py_rcsb_db_input_cif_dir))
+        # == get default exdb_fname
+        if data_mode in ["DEPO"]:
+            exdb_fname="exdb-config-example-ihm-DEPO.yml"
+            cache_dir="CACHE-DEPO"
+        elif data_mode in ["HOLD-REL"]:
+            exdb_fname="exdb-config-example-ihm-HOLD-REL.yml"
+            cache_dir="CACHE-HOLD-REL"
+        else:
+            raise ProcessingError(f"ERROR mmcif2json: unknown pyrcsb_db data_mode: {data_mode}")
             
-        currentDirectory=os.getcwd()
-        os.chdir('{}'.format(self.py_rcsb_db))
-        shutil.copy2(f'{self.py_rcsb_db}/rcsb/db/config/{exdb_fname}', f'{self.py_rcsb_db}/rcsb/db/config/exdb-config-example-ihm.yml')
-        args = ['env', 'PYTHONPATH={}'.format(self.py_rcsb_db), self.python_bin, 'rcsb/db/tests-validate/testSchemaDataPrepValidate-ihm.py']
-        self.logger.debug('mmcif2json: Running py_rcsb_db in %s with command: %s ' % (self.py_rcsb_db, ' '.join(args)))        
-        if self.verbose: print('mmcif2json: Running py_rcsb_db (%s) in %s with command: %s ' % (exdb_fname, self.py_rcsb_db, ' '.join(args)))
+
+        # == get full-path
+        py_rcsb_db_config_fpath=f'{self.py_rcsb_db}/rcsb/db/config/{exdb_fname}'
+        py_rcsb_db_cache_fpath=f'{self.py_rcsb_db}/{cache_dir}'
+
+        # == execute
+        ##currentDirectory=os.getcwd()
+        ##os.chdir(self.py_rcsb_db)
+        args = [
+            'env', f'PYTHONPATH={self.py_rcsb_db}',
+            self.python_bin, f'{self.py_rcsb_db}/rcsb/db/tests-validate/SchemaDataPrepValidateIhm.py',
+            '-c', py_rcsb_db_config_fpath,  # config file (read-only)
+            '-i', cif_fpath,                # input file
+            '-o', json_fpath,               # output file
+            '-cc', py_rcsb_db_cache_fpath,  # cache-dir (read-only)
+        ]
+        self.logger.info('* mmcif2json: Running py_rcsb_db in %s with command: %s ' % (self.py_rcsb_db, ' '.join(args)))        
+        if self.verbose: print('- mmcif2json: Running py_rcsb_db (%s) with mode %s with command: %s ' % (self.py_rcsb_db, data_mode, ' '.join(args)))
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdoutdata, stderrdata = p.communicate()
         returncode = p.returncode
-        os.chdir(currentDirectory)
+        ##os.chdir(currentDirectory)
         
         if returncode != 0:
             raise SubProcessError('ERROR mmcif2json: pyrcsb testSchemaDataPrepValidate-ihm failed to generate json file for file "%s".\nstdout: %s\nstderr: %s\n' % (output_cif, stdoutdata, stderrdata)) 
-
-        os.remove(py_rcsb_db_input_cif_fpath)
-        self.logger.debug('mmcif2json: remove pyrcsb_db cif file %s ' % (py_rcsb_db_input_cif_fpath))
-
-        # == Load now the data from JSON files which are in the rcsb/db/tests-validate/test-output directory into the tables 
-        json_files = []
-        for entry in os.scandir(py_rcsb_db_output_json_dir):
-            if entry.is_file() and entry.path.endswith('.json'): json_files.append(entry.name)
-
-        # == Throw an exception when 0 or more than 1 .json file found. Ensure that there is only one generated
-        if len(json_files) > 1:
-            # - remove files and raise exception
-            for fname in json_files:
-                os.remove("%s/%s" % (py_rcsb_db_output_json_dir, fname))
-            self.logger.debug('Removed json files found: dir: %s, fiiles: %s' % (py_rcsb_db_output_json_dir, json_files))
-            raise ProcessingError("ERROR mmcif2json: Multiple json files exist in rcsb_db output dir (%s): %s" % (py_rcsb_db_output_json_dir, json_files))
-        elif len(json_files) == 0:
-            raise ProcessingError("ERROR mmcif2json: No json files found in rcsb_db output dir (%s)" % (py_rcsb_db_output_json_dir))
-        else:
-            shutil.move(f'{py_rcsb_db_output_json_dir}/{json_files[0]}', json_fpath)
 
         return json_fpath
         
@@ -1976,7 +1807,7 @@ class EntryProcessor(PipelineProcessor):
             cif_fpath = self.download_hatrac_file(cif_file_row['File_URL'], cif_dir, cif_fname)
 
         # == convert mmCIF to json file
-        self.mmcif2json(cif_fpath, json_fpath, exdb_fname="exdb-config-example-ihm-HOLD-REL.yml")
+        self.mmcif2json(cif_fpath, json_fpath, data_mode="HOLD-REL")
 
         # == update json entry in hatrac and ermrest
         file_type = 'JSON: mmCIF content'
@@ -2196,13 +2027,14 @@ class EntryProcessor(PipelineProcessor):
         finally:
             if fr and not fr.closed: fr.close()
             if fw and not fw.closed: fw.close()
-            # == update ermrest
+            # == update ermrest 
             if current_workflow_status == "RELEASE READY":
                 self.update_processing_row(updating_row)
                 self.logger.debug(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
                 self.verbose: print(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
                 self.sendMail(subject, message)
-                self.clean_directory(processing_dir, remove_dir=True)                
+            # == clean up regardless of status
+            self.clean_directory(processing_dir, remove_dir=True)
             
     def set_accession_code(self):
         """Set accession code for this entry
@@ -2286,7 +2118,7 @@ class EntryProcessor(PipelineProcessor):
 
             # == convert mmCIF to json file
             json_fpath = f"{processing_dir}/{entry_rid}_output.json"
-            self.mmcif2json(output_cif_fpath, json_fpath,  exdb_fname="exdb-config-example-ihm-DEPO.yml")
+            self.mmcif2json(output_cif_fpath, json_fpath, data_mode="DEPO")
         else:
             pass
 
@@ -2296,10 +2128,9 @@ class EntryProcessor(PipelineProcessor):
         reverse_sorted_tnames = reversed(topo_sorted_tnames)
         
         # == delete content
-        model = self.catalog.getCatalogModel()
         entry_id = entry_row["id"]
         for tname in reverse_sorted_tnames:
-            table = model.schemas["PDB"].tables[tname]
+            table = self.model.schemas["PDB"].tables[tname]
             if "structure_id" in table.columns.elements:
                 entry_id_cname = "structure_id"
             elif "entry_id" in table.columns.elements:
@@ -2344,9 +2175,9 @@ class EntryProcessor(PipelineProcessor):
                     delete_table_rows(self.catalog, "PDB", tname, constraints=constraints)
                     break
                 
-                # == update entry so the process_mmcif can go ahead later
-                updating_row = {"RID": self.entry_rid, "Last_mmCIF_File_MD5":None }
-                #self.update_processing_row(updating_row, tname="entry")
+            # == update entry so the process_mmcif can go ahead later
+            updating_row = {"RID": self.entry_rid, "Last_mmCIF_File_MD5":None }
+            self.update_processing_row(updating_row, tname="entry")
         except Exception as e:
             raise 
         finally:
@@ -2354,66 +2185,5 @@ class EntryProcessor(PipelineProcessor):
             pass
         
 
-    # DEPRECATED
-    def x_clear_entry(self):
-        rid = self.entry_rid
-        id = self.entry_id
-        try:
-            # Get the references of the "entry" table 
-            references = []
-            delete_tables = []
-            cols = []
-            model_root = self.catalog.getCatalogModel()
-            schema = model_root.schemas['PDB']
-            table = schema.tables['entry']
-            for referenced_by in table.referenced_by:
-                pk_table_name = referenced_by.table.name
-                for foreign_column in referenced_by.foreign_key_columns:
-                    col = foreign_column.name
-                    references.append({pk_table_name: col})
-                    if col not in cols:
-                        cols.append(col)
-            
-            self.logger.debug('References columns of the PDB:entry table:\n{}"'.format(json.dumps(cols, indent=4))) 
-            
-            """
-            Get the referenced that need to be deleted
-            """
-            for reference in references:
-                for k,v in reference.items():
-                    if v == 'Entry_RID':
-                        val = rid
-                    else:
-                        val = id
-                    url = '/entity/PDB:{}/{}={}'.format(k, v, val)
-                    resp = catalog_ermrest.get(url)
-                    resp.raise_for_status()
-                    if len(resp.json()) > 0:
-                        delete_tables.append(url)
-            
-            """
-            Delete the records referenced by the entry table
-            """
-            for url in delete_tables:
-                resp = catalog.get(url)
-                resp.raise_for_status()
-                if len(resp.json()) > 0:
-                    resp = self.catalog.delete(
-                        url
-                    )
-                    resp.raise_for_status()
-                    self.logger.debug('SUCCEEDED deleted the rows for the URL "%s".' % (url)) 
-        except Exception as e:
-            current_workflow_status = 'DEPO'
-            process_status = Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE']
-            subject = '%s %s: %s (%s)' % (entry_rid, current_workflow_status, process_status, self.user_email)
-            message = self.log_exception(e, notify=True, subject=subject, body_prefix="Error clear_entry: enable to clear ERMrest entries")
-            updating_row = {
-                'RID': entry_rid,
-                'Workflow_Status': 'ERROR',               
-                'Process_Status': process_status,
-                'Record_Status_Detail': self.truncate_message(message),
-            }
-            self.update_processing_row(updating_row)
 
         

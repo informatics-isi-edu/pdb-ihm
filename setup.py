@@ -44,6 +44,7 @@ setup(
             'pdb_process_entry = pdb_dev.processing.entry_processing.pdb_process_entry:main',
             'pdb_entry_processing_worker = pdb_dev.processing.entry_processing.pdb_entry_processing_worker:main',
             'ihmv_worker = pdb_dev.processing.ihmv_worker:main',
+            'pdb_worker = pdb_dev.processing.pdb_worker:main',
         ]
     },
     # scripts

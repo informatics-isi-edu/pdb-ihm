@@ -9,7 +9,7 @@ from deriva.utils.extras.model import get_schemas, get_tables, get_columns, prin
 from . import bulk_upload
 from ..acl.ermrest_acl import GROUPS, initialize_policies
 
-catalog_wide_annotation_tags = [tag["generated"], tag["immutable"], tag["non_deletable"], tag["required"]]
+catalog_wide_annotation_tags = [tag["generated"], tag["immutable"], tag["non_deletable"], tag["required"], "tag:isrd.isi.edu,2026:auditing-configuration"]
 catalog_specific_annotation_tags = [tag["chaise_config"], tag["bulk_upload"], tag["column_defaults"], tag["display"]]
 
 # -- =================================================================================
@@ -18,7 +18,6 @@ catalog_specific_annotation_tags = [tag["chaise_config"], tag["bulk_upload"], ta
 def get_chaise_config(catalog_id):
     config = {
         "defaultCatalog": catalog_id,
-        "resolverImplicitCatalog": catalog_id,        
         "customCSS": '/assets/css/chaise.css',
         "allowErrorDismissal": True,
         "confirmDelete": True,
@@ -49,7 +48,9 @@ def get_chaise_config(catalog_id):
     
     config.update(get_navbar_menu(catalog_id))        
 
-    if cfg.is_dev == True:
+    if cfg.is_prod == True:
+      config["resolverImplicitCatalog"] = catalog_id
+    elif cfg.is_dev == True:
         config["navbarBrandText"] = "%s (Dev)" % (config["navbarBrandText"])
     elif cfg.is_staging == True:
         config["navbarBrandText"] = "%s (Test)" % (config["navbarBrandText"])
@@ -1133,8 +1134,23 @@ def update_catalog_column_defaults(model):
             },
         },
     })
-            
+
+# ----------------------------------------------------------------
+def update_auditing_configuration(model):
+    """Turn off auditing logs.
     
+    See doc here: https://github.com/informatics-isi-edu/ermrest/blob/master/docs/api-doc/model/rest.md#default-table-audit-configuration
+    Note: check /var/log/messages to see the effects. Grep for "ermrest.*audit_op"
+    """
+    
+    auditing_tag = "tag:isrd.isi.edu,2026:auditing-configuration"
+    model.annotations[auditing_tag] = { "log_row_writes": False }
+
+    for schema in model.schemas.values():
+        for table in schema.tables.values():
+            table.annotations[auditing_tag] = {"log_row_writes": False}
+    
+
 # -- ===============================================================================================
 # presence tag annotations: generated, immutable, non-deletable, required
 # 
@@ -1252,6 +1268,7 @@ def update_catalog_wide_annotations(model):
     # -- catalog-wide annotations
     update_generated_elements(model)
     update_required_annotations(model)
+    update_auditing_configuration(model)
 
 # -- ---------------------------------------------------------------------------------
 # catalog annotation
@@ -1268,7 +1285,7 @@ def update_catalog_annotations(model):
 # catalog annotation
 def clear_catalog_catalog_wide_annotations(model):
     model.annotations.clear()
-    clear_catalog_annotations(model, catalog_specific_annotation_tags, recursive=False)                                    
+    clear_catalog_annotations(model, catalog_specific_annotation_tags, recursive=False)
     clear_catalog_annotations(model, catalog_wide_annotation_tags)
 
     

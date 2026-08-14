@@ -26,9 +26,6 @@ from email.mime.text import MIMEText
 import socket
 from socket import gaierror, EAI_AGAIN
 from dateutil.parser import parse
-#from requests import HTTPError
-#from subprocess import TimeoutExpired
-import csv
 import mimetypes
 import tempfile
 #from collections import deque
@@ -38,7 +35,7 @@ import time
 from datetime import datetime as dt, timedelta, timezone
 import pytz
 
-from deriva.core import PollingErmrestCatalog, HatracStore, urlquote, get_credential, DerivaServer, topo_sorted, topo_ranked
+from deriva.core import PollingErmrestCatalog, HatracStore, urlquote, get_credential, DerivaServer, topo_sorted, topo_ranked, DEFAULT_SESSION_CONFIG
 #from deriva.utils.extras.model import topo_sort_ranked
 from deriva.utils.extras.data import insert_if_not_exist, update_table_rows, delete_table_rows, get_ermrest_query
 from deriva.utils.extras.hatrac import HatracFile
@@ -46,6 +43,10 @@ from deriva.utils.extras.hatrac_acl import set_hatrac_namespace_acl, adjust_hatr
 from ..utils.shared import PDBDEV_CLI, DCCTX
 
 pacific_timezone = "America/Los_Angeles"
+
+# enable retry for all requests
+session_config = DEFAULT_SESSION_CONFIG.copy()
+session_config['allow_retry_on_all_methods'] = True
 
 # ===================================================================================
 class ProcessingError(Exception):
@@ -104,6 +105,7 @@ class PipelineProcessor(object):
     email_config = None
     email_subject_prefix = "PDB-IHM"
     log_dir = "/home/pdbihm/log"
+    log_file = None
     verbose = False
     mute = False
     logger = None
@@ -114,15 +116,15 @@ class PipelineProcessor(object):
         # -- ermrest and hatrac
         self.cfg = kwargs.get("cfg", None)
         self.catalog = kwargs.get("catalog", None)
-        self.host = kwargs.get("hostname")
+        self.host = kwargs.get("hostname", self.cfg.host if self.cfg else None)
+        self.catalog_id = kwargs.get("catalog_id", self.cfg.catalog_id if self.cfg else None)        
         self.credential_file = kwargs.get("credential_file", None)
-        self.catalog_id = kwargs.get("catalog_id", None)
         credentials = kwargs.get("credentials", None)
         if not self.catalog:
             if not credentials: credentials = get_credential(self.host, self.credential_file)
             if not credentials:
                 raise Exception("ERROR: a proper credential or credential file is required. Provided credential_file: %s" % (credential_file))
-            server = DerivaServer('https', self.host, credentials)
+            server = DerivaServer('https', self.host, credentials, session_config=session_config)
             self.catalog = server.connect_ermrest(self.catalog_id)            
         self.catalog.dcctx['cid'] = 'pipeline/pdb'
         self.model = self.catalog.getCatalogModel()
@@ -133,12 +135,10 @@ class PipelineProcessor(object):
         
         # -- local host
         self.local_hostname = socket.gethostname() # processing host
-
+        if kwargs.get("logger"): kwargs.get("logger")
+        if kwargs.get("log_dir"): self.log_dir = kwargs.get("log_dir")
+        self.process_id = kwargs.get("process_id", "p0")
         self.email_config = kwargs.get("email", self.email_config)
-        self.log_dir = kwargs.get("log_dir", self.log_dir)                
-        self.logger = kwargs.get("logger", self.logger)
-        self.process_id = kwargs.get("process_id", 'p0')
-        
         self.verbose = kwargs.get("verbose", self.verbose)
         self.mute = kwargs.get("mute", self.mute)
         self.preserve = kwargs.get("preserve", self.preserve)
@@ -148,7 +148,7 @@ class PipelineProcessor(object):
         if kwargs.get('release_time_utc', None): self.release_time_pacific = kwargs.get('release_time_utc')
 
         self.hatrac_root = self.cfg.hatrac_root if self.cfg else "/hatrac"
-        print("host: %s, catalog_id: %s, catalog: %s" % (self.host, self.catalog_id, self.catalog))
+        #print("host: %s, catalog_id: %s, catalog: %s" % (self.host, self.catalog_id, self.catalog))
     
     @classmethod
     def same_table_rows(cls, table, base_rows, compare_rows, key="structure_id"):

@@ -2,12 +2,19 @@
 
 import os
 import json
-from deriva.core import PollingErmrestCatalog, init_logging, urlquote, get_credential
+from deriva.core import PollingErmrestCatalog, init_logging, urlquote, get_credential, DEFAULT_SESSION_CONFIG, ConcurrentUpdate
 import subprocess
 import logging
 import sys
 import traceback
 import logging.handlers
+import requests
+import random
+import time
+
+# enable retry for all requests
+session_config = DEFAULT_SESSION_CONFIG.copy()
+session_config['allow_retry_on_all_methods'] = True
 
 # Loglevel dictionary
 __LOGLEVEL = {'error': logging.ERROR,
@@ -194,10 +201,8 @@ class Worker (object):
     # secret session cookie
     credfile = os.getenv('PDB_CREDENTIALS', None)
     credentials = get_credential(servername, credfile)  # old way of using token
-    #credentials = json.load(open(credfile))
-    print("credential: %s" % (credentials))
     
-    poll_seconds = int(os.getenv('PDB_POLL_SECONDS', '300'))
+    poll_seconds = int(os.getenv('POLL_SECONDS', '300'))
     config_file = os.getenv('PDB_CONFIG', '/home/pdbihm/config/entry_processing/pdb_conf.json')
 
     # these are peristent/logical connections so we create once and reuse
@@ -206,7 +211,8 @@ class Worker (object):
         'https', 
         servername,
         catalog_number,
-        credentials
+        credentials,
+        session_config=session_config  # comment to not always retry
     )
     catalog.dcctx['cid'] = 'pipeline/pdb'
 
@@ -233,6 +239,7 @@ class Worker (object):
         """
         found_work = False
 
+        logger.info("------- entering look_for_work ---------")
         for unit in cls.work_units:
             # this handled concurrent update for us to safely and efficiently claim a record
             try:
@@ -242,10 +249,16 @@ class Worker (object):
                     unit.claim_input_data,
                     unit.idle_etag
                 )
+            except ConcurrentUpdate as e:
+                logger.info('Looking for job: got ConcurrentUpdate "%r"' % (e,))
+                sys.stderr.write('-- look_for_work: Got ConcurrentUpdate error\n')
+                time.sleep(random.uniform(1, 2)) # wait a bit
+                found_work = True
+                continue
             except Exception as e:
                 # keep going if we have a broken WorkUnit
                 et, ev, tb = sys.exc_info()
-                sys.stderr.write('Looking for job: got unexpected exception "%s"\n' % str(ev))
+                sys.stderr.write('Looking for job: got unexpected exception "%r"\n' % (e,))
                 logger.error('Looking for job: got unexpected exception "%s"' % str(ev))
                 logger.error('%s' % ''.join(traceback.format_exception(et, ev, tb)))
                 continue
@@ -266,7 +279,8 @@ class Worker (object):
                 except Exception as e:
                     cls.catalog.put(unit.put_claim_url, json=[unit.failure_input_data(row, e)])
                     raise
-
+                
+        #sys.stderr.write('-- Returning from look_for_work with found_work = %s\n' % (found_work))
         return found_work
 
     @classmethod

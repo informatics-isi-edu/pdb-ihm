@@ -103,7 +103,6 @@ def get_configuration(fcfg, logger, args):
         print('Credential is NULL. Provide a proper credential file or set up credential under the user account properly. Provided credential file:%s' % (credentials_file))        
         logger.error('Credential is NULL. Provide a proper credential file or set up credential under the user account properly. Provided credential file:%s' % (credentials_file))
         return None
-    #print("credentials = %s" % (credentials))        
     config['credentials'] = credentials
 
     archive_parent = fcfg.get('archive_parent', None)
@@ -175,7 +174,6 @@ def main():
     args = cli.parse_cli()
 
     credentials = get_credential(args.host, args.credential_file)
-    print("credentials = %s" % (credentials))
 
     # execute beta archive only
     if args.beta_archive_only:

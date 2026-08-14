@@ -41,7 +41,8 @@ class TestProcessor(unittest.TestCase):
     entry_ciff_filepath = os.getenv("CIF_FILE", "pdb_test_entry.cif")
     entry_rid = os.getenv("RID", "4-K8M2")    # 9A9V (500K)
     #entry_rid = os.getenv("RID", "4-ETK0")    # 9A8W (1MB)
-    verbose = bool(os.getenv("VERBOSE", False))    
+    verbose = bool(os.getenv("VERBOSE", False))
+    process_id=os.getenv("PROCESS_ID", "p0")
     entry_row = None
     test_rid = os.getenv("RID", "4-X83E")
     test_entry_row = None
@@ -54,7 +55,7 @@ class TestProcessor(unittest.TestCase):
         global entry_processor, entry_row, test_processor, test_entry_row
         
         if not entry_processor:
-            args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=self.entry_rid, verbose=self.verbose, notify=False, preserve=True)
+            args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=self.entry_rid, verbose=self.verbose, mute=False, preserve=True)
             config = load(self.config_file, args)
             print("## ---------- initialize EntryProcessor in TestProcessor ----------")
             print("** args: %s" % (args))
@@ -64,7 +65,7 @@ class TestProcessor(unittest.TestCase):
 
         
         if not test_processor:
-            args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=self.test_rid, verbose=self.verbose, notify=False, preserve=True)
+            args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=self.test_rid, verbose=self.verbose, mute=False, preserve=True)
             config = load(self.config_file, args)
             print("*** test processor args: %s" % (args))            
             test_processor = EntryProcessor(**config)
@@ -204,7 +205,7 @@ class TestEntryProcessor(TestProcessor):
             base_entry = self.entry_row
             base_processor = self.processor
         else:
-            args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=test_rid, verbose=self.verbose, notify=False)
+            args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=test_rid, verbose=self.verbose, mute=False)
             config = load(self.config_file, args)
             base_processor = EntryProcessor(**config)
             
@@ -305,7 +306,7 @@ class TestEntryProcessor(TestProcessor):
         
         print("- test_convert2json")
         test_entry = {"RID": "4-X83E"}
-        args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=test_entry["RID"], verbose=self.verbose, notify=False)
+        args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=test_entry["RID"], verbose=self.verbose, mute=False)
         config = load(self.config_file, args)
         test_processor = EntryProcessor(**config)
 
@@ -331,7 +332,7 @@ class TestEntryProcessor(TestProcessor):
         """Test to ensure all related entries are generated properly
         """
         test_entry = get_ermrest_query(self.catalog, "PDB", "entry", constraints=f"RID={test_rid}")[0]                
-        args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=test_entry["RID"], verbose=self.verbose, notify=False)
+        args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=test_entry["RID"], verbose=self.verbose, mute=False)
         config = load(self.config_file, args)
         test_processor = EntryProcessor(**config)
 
@@ -357,7 +358,7 @@ class TestEntryProcessor(TestProcessor):
             base_entry = self.entry_row
             base_processor = self.processor
         else:
-            args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=base_rid, verbose=self.verbose, notify=False)
+            args = Namespace(host=self.host, catalog_id=self.catalog_id, action="entry", rid=base_rid, verbose=self.verbose, mute=False)
             config = load(self.config_file, args)
             base_processor = EntryProcessor(**config)
 
