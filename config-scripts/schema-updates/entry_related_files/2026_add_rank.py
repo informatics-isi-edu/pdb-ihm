@@ -87,7 +87,7 @@ def main(server_name, catalog_id, credentials):
 
     fix_fkey_constraints(model)
     
-    #update_file_type(model)
+    update_file_type(model)
 
         
 # ===================================================    

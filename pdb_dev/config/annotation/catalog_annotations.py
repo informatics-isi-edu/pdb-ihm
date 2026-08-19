@@ -1121,11 +1121,11 @@ def update_catalog_column_defaults(model):
 	        },
             },
             "Record_Status_Detail": {
-                "tag:isrd.isi.edu,2016:generated": True,
-                "tag:isrd.isi.edu,2016:immutable": True,
-                #"tag:misd.isi.edu,2015:display" : {
-                #    "comment": "Record status detail is listed"
-                #},
+                #"tag:isrd.isi.edu,2016:generated": True,
+                #"tag:isrd.isi.edu,2016:immutable": True,
+                "tag:misd.isi.edu,2015:display" : {
+                    "comment": "Processing status details"
+                },
             },
             "File_Bytes": {
                 "tag:misd.isi.edu,2015:display" : {
