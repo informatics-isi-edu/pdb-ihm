@@ -538,6 +538,7 @@ def update_PDB_entry(model):
             'New_Chem_Comp_Pending',
             'Manual_Processing',
             'Notes',
+            'RID',
         ],
         'filter' :  {
             'and' :  [
@@ -1692,6 +1693,11 @@ def update_PDB_entry(model):
         'domain_filter_pattern' :  '{{#if (and (not (isUserInAcl $site_var.acl_groups.entry_updaters)) (isUserInAcl $site_var.acl_groups.entry_submitters) )}}Entry_Submitter_Select=True{{/if}}',
     })
 
+    # ----------------------------
+    schema.tables["entry"].foreign_keys[(schema, "entry_Accession_Code_fkey")].foreign_key.update({
+        'domain_filter_pattern' :  'Entry={{{RID}}}',
+    })
+    
 # -- ==================================================================================================
 
 # -- ---------------------------------------------------------------------------------
