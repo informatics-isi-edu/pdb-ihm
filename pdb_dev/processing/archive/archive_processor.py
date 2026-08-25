@@ -71,9 +71,9 @@ def dump_json_to_file(file_path, json_object):
     fw.write(f'\n')
     fw.close()
     
-class ArchiveClient (PipelineProcessor):
+class ArchiveProcessor(PipelineProcessor):
     """
-    Client for archiving mmCIF files.
+    A processor for generating entry archive files and Ermrest book-keeping records
     """
     submission_date = None
     previous_submission_date = None
@@ -100,10 +100,14 @@ class ArchiveClient (PipelineProcessor):
     }
     archive_category_dir_names = {}
     archive_dir_names_category = {}
+
+    log_file = "/home/pdbihm/log/archive_processing/archive_processor.log"
+    logger_name = "archive_processor"
     
     def __init__(self, kwargs):
         self.data_scratch = kwargs.get("data_scratch")
         self.log_dir = kwargs.get("log_dir")
+        self.log_file = kwargs.get("log_file", self.log_file)
         
         self.archive_parent = kwargs.get("archive_parent")
         self.released_entry_dir = kwargs.get("released_entry_dir")
@@ -114,9 +118,11 @@ class ArchiveClient (PipelineProcessor):
         self.dry_run = kwargs.get("dry_run")
         self.cutoff_time_pacific = kwargs.get('cutoff_time_pacific')
 
-        super().__init__( hostname=kwargs.get("hostname"), catalog_id=kwargs.get("catalog_id"), credentials = kwargs.get("credentials"),
-                          cfg=kwargs.get("cfg"), email=kwargs.get("email"), logger=kwargs.get("logger"), verbose=kwargs.get("verbose")
-                         )
+        super().__init__(
+            hostname=kwargs.get("hostname"), catalog_id=kwargs.get("catalog_id"), credentials = kwargs.get("credentials"),
+            cfg=kwargs.get("cfg"), email_config=kwargs.get("email"), verbose=kwargs.get("verbose"),
+            logger=kwargs.get("logger"), log_file=self.log_file, logger_name=self.logger_name,
+        )
         self.notify=True
         self.catalog.dcctx['cid'] = 'pipeline/archive'
         self.email = self.email_config
@@ -192,7 +198,7 @@ class ArchiveClient (PipelineProcessor):
             f'A:=left(E:RID)=(PDB:Entry_Latest_Archive:Entry)/A:RID::null::;(A:RCT::gt::{urlquote(self.previous_submission_time)}&A:Submission_Time={urlquote(self.submission_time)})/' + \
             f'$E/E:RID,E:id,E:Deposit_Date,E:Accession_Code,F:File_Name,F:File_URL,Latest_Archive_RID:=A:RID,A:Entry,A:Submission_Time,A:mmCIF_URL'
             
-        self.logger.debug(f"Query for entries that haven't been archived: {url1}") 
+        self.logger.info(f"Query for entries that haven't been archived: {url1}") 
         resp = self.catalog.get(url1)
         resp.raise_for_status()
         rows = resp.json()
@@ -217,7 +223,7 @@ class ArchiveClient (PipelineProcessor):
             f'F:=left(A:mmCIF_URL)=(PDB:Entry_Generated_File:File_URL)/F:RID::null::;(F:File_Type=mmCIF&A:Submission_Time={urlquote(self.submission_time)})/' + \
             f'$A/E:RID,E:id,E:Deposit_Date,E:Accession_Code,F:File_Name,F:File_URL,Latest_Archive_RID:=A:RID,A:Entry,A:Submission_Time,A:mmCIF_URL'
 
-        self.logger.debug(f"Query for entries that entries that mmCIF contents have changed: {url2}") 
+        self.logger.info(f"Query for entries that entries that mmCIF contents have changed: {url2}") 
         resp = self.catalog.get(url2)
         resp.raise_for_status()
         rows = resp.json()
@@ -533,7 +539,7 @@ class ArchiveClient (PipelineProcessor):
                 rids = [ row["RID"] for row in self.entry_archive_inserted ]
                 delete_table_rows(self.catalog, "PDB", "Entry_Latest_Archive", key="RID", values=rids)
                 if self.verbose: print('SUCCEEDED deleted the newly inserted rows in the Entry_Latest_Archive: %s' % (rids))                
-                self.logger.debug('SUCCEEDED deleted the newly inserted rows in the Entry_Latest_Archive')
+                self.logger.info('SUCCEEDED deleted the newly inserted rows in the Entry_Latest_Archive')
 
             # Update Entry_Latest_Archive to its original state
             if self.entry_archive_updated:
@@ -541,7 +547,7 @@ class ArchiveClient (PipelineProcessor):
                 update_archive_payload = [ self.entry_latest_archive[row["Entry"]] for row in self.entry_archive_updated ]
                 updated = update_table_rows(self.catalog, "PDB", "Entry_Latest_Archive", keys=["RID"], payload=update_archive_payload)
                 if self.verbose: print('SUCCEEDED updating the Entry_Latest_Archive rows to the original sate')                
-                self.logger.debug('SUCCEEDED updating the Entry_Latest_Archive rows to the original sate')
+                self.logger.info('SUCCEEDED updating the Entry_Latest_Archive rows to the original sate')
 
             # -- PDB_Archive
             # delete the self.pdb_archive_RID if inserted, otherwise update to original state
@@ -549,13 +555,13 @@ class ArchiveClient (PipelineProcessor):
                 if self.verbose: print("rollback: deleting pdb_archive with rid:%s " % (self.pdb_archive_rid))
                 delete_table_rows(self.catalog, "PDB", "PDB_Archive", key="RID", values=[self.pdb_archive_rid])
                 if self.verbose: print('SUCCEEDED deleted the PDB_Archive row with RID = %s' % (self.pdb_archive_rid))
-                self.logger.debug('SUCCEEDED deleted the PDB_Archive row with RID = %s' % (self.pdb_archive_rid))
+                self.logger.info('SUCCEEDED deleted the PDB_Archive row with RID = %s' % (self.pdb_archive_rid))
             
             if self.pdb_archive_updated:
                 if self.verbose: print("rollback: recovering pdb_archive with rid:%s " % (self.pdb_archive_rid))                
                 pdb_archive_rollback_payload = update_table_rows(self.catalog, "PDB", "PDB_Archive", keys=["RID"], payload=[self.pdb_archive])
                 if self.verbose: print('SUCCEEDED updated the PDB_Archive row with RID = %s' % (self.pdb_archive_rid))                                    
-                self.logger.debug('SUCCEEDED updated the PDB_Archive row with RID = %s' % (self.pdb_archive_rid))                    
+                self.logger.info('SUCCEEDED updated the PDB_Archive row with RID = %s' % (self.pdb_archive_rid))                    
 
         except:
             # HT: TODO: If failed to roll back, we should output the following into a file: archive_error_<date>
@@ -604,17 +610,20 @@ class ArchiveClient (PipelineProcessor):
             #Archive files
             self.archiveFiles()
             self.generate_pdb_beta_archive()
-            return 0
+            subject = f'Archive Generation completed {"[DRY RUN]" if self.dry_run else ""}'
+            message = f'Submission cutoff time (pacific): {self.submission_time}'
         except PDBBetaArchiveError as e:
-            subject = 'Error generating beta archive files'
+            subject = 'ERROR generating BETA archive files'
             e.details = "Error occurs while attempting to generate beta archive after normal archive is done."
-            error_message = self.log_exception(e, notify=self.notify, subject=subject)
-            return 1
+            message = self.log_exception(e, notify=False, subject=subject)
         except Exception as e:
             self.rollbackArchive()
-            subject = 'Error archiving files.'
-            error_message = self.log_exception(e, notify=self.notify, subject=subject )
-            return 1
+            subject = 'ERROR generating IHM archive files.'
+            message = self.log_exception(e, notify=False, subject=subject )
+        finally:
+            self.logger.info(f'== Ended processArchive with cutoff-time {"[DRY RUN]" if self.dry_run else ""}: {self.submission_time} PT')
+            self.sendMail(subject, message)
+            
 
     """
     Archive files
@@ -796,7 +805,7 @@ class ArchiveClient (PipelineProcessor):
         for rid in self.entry_archive_insert_rids:
             payload.append(self.current_entry_latest_archive[rid])
         if self.dry_run:
-            print("inserting entry_latest_archive_payload: %s" % (json.dumps(payload, indent=4)))
+            if self.verbose: print("inserting entry_latest_archive_payload [%d][0..2]: %s" % (len(payload), json.dumps(payload[0:2], indent=4)))
         else:
             self.entry_archive_inserted = insert_if_not_exist(self.catalog, "PDB", "Entry_Latest_Archive", payload=payload)
             if self.verbose: print("entry_archive_inserted: %s" % (json.dumps(self.entry_archive_inserted, indent=4)))
@@ -917,15 +926,16 @@ class ArchiveClient (PipelineProcessor):
         Get the latest Submission_Date that is less than the current submission Date. Otherwise, use Current_Submission_Date - 7 days
         """
         previous_submission_time = f'{dt.fromisoformat(current_submission_time) - timedelta(days=7)}'
-        self.logger.debug(f'Submission Dates: {current_submission_time}, {previous_submission_time}') 
         url = f'/aggregate/A:=PDB:PDB_Archive/Submission_Time::lt::{urlquote(current_submission_time)}/previous_submission_time:=max(Submission_Time)'
-        self.logger.debug(f"Query to find the maximum submission time:\n\nhttps://{self.host}/ermrest/catalog/{self.catalog_id}{url}\n") 
+        self.logger.debug(f"Query to find the maximum submission time:\nhttps://{self.host}/ermrest/catalog/{self.catalog_id}{url}\n") 
         resp = self.catalog.get(url)
         resp.raise_for_status()
         rows = resp.json()
         self.logger.debug(f'Previous submission time\n\n{json.dumps(rows, indent=4)}\n')
         if len(rows) > 0 and rows[0]['previous_submission_time'] != None:
             previous_submission_time = rows[0]['previous_submission_time'].replace("T", " ")
+            
+        self.logger.info(f'Submission Dates: {current_submission_time}, {previous_submission_time}') 
         return previous_submission_time
 
     

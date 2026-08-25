@@ -30,6 +30,7 @@ import mimetypes
 import tempfile
 #from collections import deque
 import re
+from pathlib import Path
 
 import time
 from datetime import datetime as dt, timedelta, timezone
@@ -92,13 +93,18 @@ class HatracError(ProcessingError):
     """
     pass
 
+class ConfigError(ProcessingError):
+    """ Exception when fail to load config file or parameters
+    """
+    pass
+
 # ===================================================================================
 class PipelineProcessor(object):
     """
     PipelineProcessor base class that set common variables and shared functions
     """
     python_bin = "/usr/bin/python3"    
-    cutoff_time_pacific = "Thursday 20:00"    
+    cutoff_time_pacific = "Thursday 21:00"    
     release_time_utc = "Wednesday 00:00"      # In UTC, so we don't have to address day light saving time.
     timeout = 30                              # minutes
     email_config_file = "/home/pdbihm/.secrets/mail.json"  # NOT USE CURRENTLY
@@ -111,6 +117,8 @@ class PipelineProcessor(object):
     logger = None
     preserve = False
     processing_details_limit = 2800  # limit of what goes in details
+    hatrac_root = "/hatrac"
+    logger_name = "pipeline_processor"
     
     def __init__(self, **kwargs):
         # -- ermrest and hatrac
@@ -132,22 +140,36 @@ class PipelineProcessor(object):
         if not self.store:
             self.store = HatracStore('https', self.host, credentials)
         self.hatrac_file = HatracFile(self.store)
+        if self.cfg: self.hatrac_root = self.cfg.hatrac_root
         
         # -- local host
         self.local_hostname = socket.gethostname() # processing host
-        if kwargs.get("logger"): kwargs.get("logger")
-        if kwargs.get("log_dir"): self.log_dir = kwargs.get("log_dir")
         self.process_id = kwargs.get("process_id", "p0")
-        self.email_config = kwargs.get("email", self.email_config)
         self.verbose = kwargs.get("verbose", self.verbose)
         self.mute = kwargs.get("mute", self.mute)
         self.preserve = kwargs.get("preserve", self.preserve)
+        self.log_dir = kwargs.get("log_dir", self.log_dir)
+        self.logger_name = kwargs.get("logger_name", self.logger_name)
+        if kwargs.get("logger"):
+            self.logger = kwargs.get("logger", None)
+        elif kwargs.get("log_file"):
+            self.log_file = kwargs.get("log_file")
+            if cfg and cfg.is_dev and not log_file.endswith("_dev.log"): self.log_file = log_file.replace(".log", "_dev.log")
+            if cfg and cfg.is_staging and not log_file.endswith("_staging.log"): self.log_file = log_file.replace(".log", "_staging.log")
+            self.logger = init_logger(log_level="info", log_file=self.log_file, name=self.logger_name)
+            self.log_dir = self.log_file.rsplit("/")[0]
+            Path(self.log_dir).mkdir(parents=True, exist_ok=True)
+
+        
+        self.email_config_file = kwargs.get("email_config_file", self.email_config_file)
+        self.email_config = kwargs.get("email_config", kwargs.get("email"))
+        if not self.email_config and self.email_config_file:
+            self.email_config = self.read_json_config_file(self.email_config_file)
         
         # -- archive/release time
         if kwargs.get('cutoff_time_pacific', None): self.cutoff_time_pacific = kwargs.get('cutoff_time_pacific') 
         if kwargs.get('release_time_utc', None): self.release_time_pacific = kwargs.get('release_time_utc')
 
-        self.hatrac_root = self.cfg.hatrac_root if self.cfg else "/hatrac"
         #print("host: %s, catalog_id: %s, catalog: %s" % (self.host, self.catalog_id, self.catalog))
     
     @classmethod
@@ -210,7 +232,7 @@ class PipelineProcessor(object):
             with open(config_file, 'r') as file:
                 config = json.load(file)
         except FileNotFoundError:
-            print(f"Error: The file '{email_config_file}' was not found.")
+            print(f"Error: The file '{config_file}' was not found.")
             raise Exception("Config ERROR: config file doesn't exist: %s" % (config_file))
         except json.JSONDecodeError:
             print(f"Error: Could not decode JSON from '{config_file}'. Check if the file contains valid JSON.")
@@ -444,12 +466,39 @@ class PipelineProcessor(object):
         #print("archive pacific time: %s" % (str(archive_datetime)))
         if utz: 
             archive_datetime = archive_datetime.astimezone(timezone.utc)
-        print("archive returned time (utc=%s): %s " % (str(utz), str(archive_datetime)))
+        if self.verbose: print("archive returned time (utc=%s): %s " % (str(utz), str(archive_datetime)))
         if isoformat:
             return str(archive_datetime)
         else: 
             return archive_datetime
         
+
+    def get_previous_archive_datetime(self, current_submission_time, check_db_previous_archive=True, isoformat=True):
+        """Get the previous archive datetime.
+        Return Current_Submission_Date - 7 days unless check_db_previous_archive is set, then attempt
+        to get the previoius archive datetime from the database.
+
+        Args:
+            current_submission_time (text): the cutoff time of the current cycle in ISO format
+            check_db_previous_archive (bool): if true, consult the previous archive time recorded in the table.
+              Note: this time can be longer than 7 days if the archive cycle was skipped
+
+        Returns datetime
+        """
+        previous_submission_time = f'{dt.fromisoformat(current_submission_time) - timedelta(days=7)}'
+
+        if check_db_previous_archive:
+            # url = f'/aggregate/A:=PDB:PDB_Archive/Submission_Time::lt::{urlquote(current_submission_time)}/previous_submission_time:=max(Submission_Time)'
+            constraints=f'Submission_Time::lt::{urlquote(current_submission_time)}'
+            rows = get_ermrest_query(self.catalog, "PDB", "PDB_Archive", constraints=constraints, aggregates=["previous_submission_time:=max(Submission_Time)"])
+            if len(rows) > 0 and rows[0]['previous_submission_time'] != None:
+                previous_submission_time = rows[0]['previous_submission_time'].replace("T", " ")
+
+        if isoformat:
+            return str(previous_submission_time)
+        else:
+            return previous_submission_time
+    
     # -------------------------------------------------------------------
     def get_release_datetime_utc(self, isoformat=True):
         """
@@ -551,7 +600,7 @@ class PipelineProcessor(object):
                     s.login(self.email_config['user'], self.email_config['password'])
                     s.sendmail(self.email_config['sender'], receivers.split(','), msg.as_string())
                     s.quit()
-                    self.logger.debug(f'Sent email notification to {receivers}.')
+                    self.logger.debug(f'Sent email notification to {receivers} with subject: {subject}.')
                     ready = True
                 except socket.gaierror as e:
                     if e.errno == socket.EAI_AGAIN:

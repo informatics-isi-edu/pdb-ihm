@@ -42,6 +42,7 @@ setup(
         'console_scripts': [
             'pdb_dev_clear_entry_record = pdb_dev.tools.clear_entry_record:main',
             'pdb_process_entry = pdb_dev.processing.entry_processing.pdb_process_entry:main',
+            'pdb_gen_archive = pdb_dev.processing.archive.client:main',
             'pdb_entry_processing_worker = pdb_dev.processing.entry_processing.pdb_entry_processing_worker:main',
             'ihmv_worker = pdb_dev.processing.ihmv_worker:main',
             'pdb_worker = pdb_dev.processing.pdb_worker:main',

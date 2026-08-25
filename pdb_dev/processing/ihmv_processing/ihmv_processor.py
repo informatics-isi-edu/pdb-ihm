@@ -45,6 +45,7 @@ class IHMVProcessor(PipelineProcessor):
     user_id = None    # user globus_id e.g. https://auth.globus.org/<uuid>
     user_uuid = None  # user uuid to be used as part of hatrac path
     ihm_path = str(Path(ihm.__file__).parent)
+    logger_name = "ihmv_processor"
     
     def __init__(self, catalog=None, store=None, hostname=None, catalog_id=None, credential_file=None,
                  scratch_dir=None, cfg=None, logger=None, log_level="info", log_file=None, verbose=None,
@@ -56,11 +57,15 @@ class IHMVProcessor(PipelineProcessor):
                  structure_rid: typing.Optional[str]=None,
                  ):
 
-        super().__init__(catalog=catalog, store=store, hostname=hostname, catalog_id=catalog_id, credentials = credential_file, cfg=cfg)
+        super().__init__(
+            catalog=catalog, store=store, hostname=hostname, catalog_id=catalog_id, credentials = credential_file, cfg=cfg
+            #, logger=logger, log_file=log_file, logger_name="ihmv_processor"
+        )
 
         if scratch_dir: self.scratch_dir = scratch_dir
         if cfg: self.hatrac_root = cfg.hatrac_root
         if verbose: self.verbose = verbose
+        # == to remove after letting parent class init logger
         if logger:
             self.logger = logger
         elif log_file:
@@ -68,6 +73,7 @@ class IHMVProcessor(PipelineProcessor):
             if cfg and cfg.is_dev and not log_file.endswith("_dev.log"): self.log_file = log_file.replace(".log", "_dev.log")
             self.log_dir = self.log_file.rsplit("/")[0]            
             Path(self.log_dir).mkdir(parents=True, exist_ok=True)        
+
         
         # -- get config properties from pdb_ihm config
         if pdbihm_config_file:        

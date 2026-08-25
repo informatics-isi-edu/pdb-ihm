@@ -141,6 +141,7 @@ class EntryProcessor(PipelineProcessor):
         "pdbx_database_status", "pdbx_audit_revision_details", "pdbx_audit_revision_history",
         "ihm_entry_collection", "ihm_entry_collection_mapping"
     ]
+    logger_name = "entry_processor"
     
     def __init__(self, **kwargs):
         self.action = kwargs.get("action")
@@ -175,10 +176,12 @@ class EntryProcessor(PipelineProcessor):
         if kwargs.get("alternative_accession_code_mode", None): self.alternative_accession_code_mode = kwargs.get("alternative_accession_code_mode")
         if kwargs.get("singularity_sif", None): self.singularity_sif=kwargs.get("singularity_sif")
 
+        # TODO: pass logger info to have it initialized in parent class
         super().__init__(
             catalog=kwargs.get("catalog"), hostname=kwargs.get("hostname"), catalog_id=kwargs.get("catalog_id"),
             credentials = kwargs.get("credentials"), cfg=kwargs.get("cfg"),
             email_config=kwargs.get("email"), verbose=kwargs.get("verbose"), mute=kwargs.get("mute"), preserve=kwargs.get("preserve"),
+            #logger=logger, log_file=log_file, logger_name="ihmv_processor"            
         )
 
         self.log_dir = kwargs.get("log_dir", self.log_dir)

@@ -27,9 +27,11 @@ import traceback
 import argparse
 
 from deriva.core import init_logging, get_credential
+from deriva.utils.extras.job_dispatcher import init_logger, logger_exists
+
 from ...utils.shared import PDBDEV_CLI, cfg
-#from pdb_dev.utils.shared import PDBDEV_CLI, cfg
-from .worker2 import ArchiveClient
+from .archive_processor import ArchiveProcessor
+from ..processor import ConfigError
 
 FORMAT = '%(asctime)s: %(levelname)s <%(module)s>: %(message)s'
 logger = logging.getLogger(__name__)
@@ -50,7 +52,7 @@ catalog_id2name = {
     "99": "dev",
 }
 
-def load(config_filename):
+def x_load(config_filename, logger=None):
     """
     Read the configuration file.
     """
@@ -81,15 +83,31 @@ def load(config_filename):
         return None
     
 '''
-  fcfg: file configuration
+  conf: file configuration
 '''
-def get_configuration(fcfg, logger, args):
+def get_configuration(config_filename, args, logger=None):
     """
     Return the client configuration.
     """
+    # Load configuration file, or create configuration based on arguments
+    if not os.path.exists(config_filename):
+        raise ConfigError('Configuration file: "%s" does not exist.\n' % config_filename)
+    try:
+        with open(config_filename) as f:
+            conf = json.load(f)
+    except Exception as e:
+        raise ConfigError('Malformed configuration file %s: %r' % (config_filename, e))
     
     config = {}
-
+    
+    config['cfg'] = cfg    
+    config['log_level'] = conf.get('loglevel', 'info')
+    config['log_dir'] = conf.get('log_dir', '/home/pdbihm/log/archive_processing')
+    config['logfile'] = "%s/gen_archive_%s.log" % (config['log_dir'], cfg.catalog_name)
+    if not logger:
+        logger = init_logger(log_level=config['log_level'], log_file=config['logfile'], name="pdb_archive")
+    config['logger'] = logger
+    
     config['hostname'] = cfg.host
     config['catalog_id'] = cfg.catalog_id
     config['hatrac_namespace'] = "/hatrac/pdb" if not cfg.is_dev else '/hatrac/dev/pdb'
@@ -97,55 +115,55 @@ def get_configuration(fcfg, logger, args):
     config['rollback'] = args.rollback
     config['dry_run'] = args.dry_run    
 
-    credentials_file = fcfg.get('credentials', None)
+    credentials_file = conf.get('credentials', None)
     credentials = get_credential(cfg.host, credentials_file)
     if not credentials:
         print('Credential is NULL. Provide a proper credential file or set up credential under the user account properly. Provided credential file:%s' % (credentials_file))        
         logger.error('Credential is NULL. Provide a proper credential file or set up credential under the user account properly. Provided credential file:%s' % (credentials_file))
-        return None
+        raise ConfigError('Credential is NULL. Provide a proper credential file or set up credential under the user account properly. Provided credential file:%s' % (credentials_file))
     config['credentials'] = credentials
 
-    archive_parent = fcfg.get('archive_parent', None)
+    archive_parent = conf.get('archive_parent', None)
     #archive_parent = "%s/%s" % (archive_parent, catalog_id2name[config['catalog_id']])    # use same location
     if not archive_parent or not os.path.isdir(archive_parent):
         logger.error('archive parent directory must be provided and exists.')
-        return None
+        raise ConfigError('archive parent directory must be provided and exists.')
 
     config['archive_parent'] = archive_parent
     
-    data_scratch = fcfg.get('data_scratch', None)
+    data_scratch = conf.get('data_scratch', None)
     #data_scratch = "%s/%s" % (data_scratch, catalog_id2name[config['catalog_id']])  # use same location
     if not data_scratch or not os.path.isdir(data_scratch):
         logger.error('The scratch directory must be provided and exist.')
-        return None
+        raise ConfigError('The scratch directory must be provided and exist.')
     config['data_scratch'] = data_scratch
 
-    holding_dir = fcfg.get('holding_dir', None)
+    holding_dir = conf.get('holding_dir', None)
     if not holding_dir:
         logger.error('The holding entry dir directory must be provided.')
-        return None
+        raise ConfigError('The holding entry dir directory must be provided.')
     config['holding_dir'] = holding_dir
     
-    cutoff_time_pacific = fcfg.get('cutoff_time_pacific', 'Thursday 20:00')
+    cutoff_time_pacific = conf.get('cutoff_time_pacific', 'Thursday 20:00')
     config['cutoff_time_pacific'] = cutoff_time_pacific
     
-    released_entry_dir = fcfg.get('released_entry_dir', None)
+    released_entry_dir = conf.get('released_entry_dir', None)
     if not released_entry_dir:
         logger.error('The released entry dir directory must be provided.')
-        return None
+        raise ConfigError('The released entry dir directory must be provided.')
     config['released_entry_dir'] = released_entry_dir
 
-    holding_hatrac_namespace = fcfg.get('holding_hatrac_namespace', None)
+    holding_hatrac_namespace = conf.get('holding_hatrac_namespace', None)
     if holding_hatrac_namespace == None:
         logger.error(f'The holding hatrac namespace must be provided.')
-        return None
+        raise ConfigError(f'The holding hatrac namespace must be provided.')
     config['holding_hatrac_namespace'] = holding_hatrac_namespace.replace('/hatrac/pdb', '/hatrac/dev/pdb') if cfg.is_dev else holding_hatrac_namespace
     print("holding_hatrac_namespace: %s" % (config['holding_hatrac_namespace']))
     
-    email_file = fcfg.get('mail', None)
+    email_file = conf.get('mail', None)
     if not email_file or not os.path.isfile(email_file):
         logger.error('email file must be provided and exist.')
-        return None
+        raise ConfigError('email file must be provided and exist.')
     
     with open(email_file, 'r') as f:
         email = json.load(f)
@@ -157,14 +175,14 @@ def get_configuration(fcfg, logger, args):
 
 
 def test_beta_archive(args):
-    config = load(args.config)
+    #config = load(args.config)
     
-    worker_config = get_configuration(config, logger, args)
-    worker = ArchiveClient(worker_config)
+    worker_config = get_configuration(args.config, args, logger=logger)
+    worker = ArchiveProcessor(worker_config)
     worker.generate_pdb_beta_archive(args.archive_dir if args.archive_dir else None)
     
     
-def main():
+def main():    
     cli = PDBDEV_CLI("pdbdev", None, 1)
     cli.parser.add_argument( '--config', action='store', type=str, help='The JSON configuration file.', required=True)
     cli.parser.add_argument( '--verbose', action='store_true', help='Print status to stdout', default=False, required=False)
@@ -182,24 +200,26 @@ def main():
         return 0
     
     try:
-        config = load(args.config)
-        if config != None:
-            archive_worker_configuration = get_configuration(config, logger, args)
-            #del archive_worker_configuration['logger']
-            #print(json.dumps(archive_worker_configuration, indent=4))
-            #return 1
-            if archive_worker_configuration != None:
-                archive_worker = ArchiveClient(archive_worker_configuration)
-                returnStatus = archive_worker.processArchive()
-                logger.debug('Return Status: {}'.format(returnStatus))
-                return returnStatus
+        return_status = 1
+        
+        # config = x_load(args.config) # no longer needed
+        archive_worker_configuration = get_configuration(args.config, args, logger=None)
+        
+        # - debug logger
+        #del archive_worker_configuration['logger']
+        #print(json.dumps(archive_worker_configuration, indent=4))
+        #return 1
+
+        archive_worker = ArchiveProcessor(archive_worker_configuration)
+        archive_worker.processArchive()
+        return_status = 0
     except:
         et, ev, tb = sys.exc_info()
         sys.stderr.write('got exception "%s"' % str(ev))
         sys.stderr.write('%s' % ''.join(traceback.format_exception(et, ev, tb)))
-        sys.stderr.write('\nusage: python3 -m pdb_dev.processing.archive.client --config /home/pdbihm/pdb/config/dev/pdb_archive.json --catalog-id 1\n\n')
-        return 1
-
+    finally:
+        sys.stdout.write(f'== Ended PDB Archive with return status = {return_status} {"-- DRY RUN" if args.dry_run else "" }\n')
+        return return_status
     
 """
 # Install the Python package:
@@ -207,7 +227,7 @@ def main():
 #        pip3 install --upgrade .
 #
 # Running the script locally:
-#    python3 -m pdb_dev.processing.archive.client --config ~/git/pdb-ihm-ops/scripts/home-config/default-workflow/config/archive_processing/local_config.json --catalog-id 99 --dry-run
+#    python3 -m pdb_dev.processing.archive.client --config /home/hongsuda/config/archive_processing/local_config.json --catalog-id 99 --dry-run
 #
 # Running the script (workflow-dev): archive folder is in /mnt/vdb1/archive
 #    python3 -m pdb_dev.processing.archive.client --config /home/pdbihm/config/archive_processing/pdb_archive_config.json --catalog-id 99 --dry-run
