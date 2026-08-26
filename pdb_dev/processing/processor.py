@@ -37,10 +37,10 @@ from datetime import datetime as dt, timedelta, timezone
 import pytz
 
 from deriva.core import PollingErmrestCatalog, HatracStore, urlquote, get_credential, DerivaServer, topo_sorted, topo_ranked, DEFAULT_SESSION_CONFIG
-#from deriva.utils.extras.model import topo_sort_ranked
 from deriva.utils.extras.data import insert_if_not_exist, update_table_rows, delete_table_rows, get_ermrest_query
 from deriva.utils.extras.hatrac import HatracFile
 from deriva.utils.extras.hatrac_acl import set_hatrac_namespace_acl, adjust_hatrac_namespace
+from deriva.utils.extras.job_dispatcher import init_logger
 from ..utils.shared import PDBDEV_CLI, DCCTX
 
 pacific_timezone = "America/Los_Angeles"
@@ -150,12 +150,14 @@ class PipelineProcessor(object):
         self.preserve = kwargs.get("preserve", self.preserve)
         self.log_dir = kwargs.get("log_dir", self.log_dir)
         self.logger_name = kwargs.get("logger_name", self.logger_name)
+        # to initialize logger, either logger or log_file has to be passed to base class
         if kwargs.get("logger"):
             self.logger = kwargs.get("logger", None)
         elif kwargs.get("log_file"):
             self.log_file = kwargs.get("log_file")
-            if cfg and cfg.is_dev and not log_file.endswith("_dev.log"): self.log_file = log_file.replace(".log", "_dev.log")
-            if cfg and cfg.is_staging and not log_file.endswith("_staging.log"): self.log_file = log_file.replace(".log", "_staging.log")
+            if self.cfg and (not self.cfg.is_prod):
+                env = self.cfg.catalog_name
+                if not self.log_file.endswith(f"_{env}.log"): self.log_file = self.log_file.replace(".log", f"_{env}.log")
             self.logger = init_logger(log_level="info", log_file=self.log_file, name=self.logger_name)
             self.log_dir = self.log_file.rsplit("/")[0]
             Path(self.log_dir).mkdir(parents=True, exist_ok=True)
@@ -169,6 +171,7 @@ class PipelineProcessor(object):
         if kwargs.get('cutoff_time_pacific', None): self.cutoff_time_pacific = kwargs.get('cutoff_time_pacific') 
         if kwargs.get('release_time_utc', None): self.release_time_pacific = kwargs.get('release_time_utc')
 
+        #print("- Processor init: mute: %s, verbose: %s, preserve: %s, log_file: %s, email_config_file: %s" % (self.mute, self.verbose, self.preserve, self.log_file, self.email_config_file))        
         #print("host: %s, catalog_id: %s, catalog: %s" % (self.host, self.catalog_id, self.catalog))
     
     @classmethod

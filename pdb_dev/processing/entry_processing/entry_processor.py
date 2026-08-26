@@ -176,20 +176,19 @@ class EntryProcessor(PipelineProcessor):
         if kwargs.get("alternative_accession_code_mode", None): self.alternative_accession_code_mode = kwargs.get("alternative_accession_code_mode")
         if kwargs.get("singularity_sif", None): self.singularity_sif=kwargs.get("singularity_sif")
 
-        # TODO: pass logger info to have it initialized in parent class
-        super().__init__(
-            catalog=kwargs.get("catalog"), hostname=kwargs.get("hostname"), catalog_id=kwargs.get("catalog_id"),
-            credentials = kwargs.get("credentials"), cfg=kwargs.get("cfg"),
-            email_config=kwargs.get("email"), verbose=kwargs.get("verbose"), mute=kwargs.get("mute"), preserve=kwargs.get("preserve"),
-            #logger=logger, log_file=log_file, logger_name="ihmv_processor"            
-        )
-
         self.log_dir = kwargs.get("log_dir", self.log_dir)
         self.process_id = kwargs.get("process_id", 'p0')
         self.logger = kwargs.get("logger", None)        
         if not self.logger:
             self.log_file = kwargs.get("log_file", f'{self.log_dir}/entry_processor_{self.cfg.catalog_name}_{self.process_id}.log')
             self.logger = init_logger(log_level="info", log_file=self.log_file, name="entry_processor")
+        
+        super().__init__(
+            catalog=kwargs.get("catalog"), hostname=kwargs.get("hostname"), catalog_id=kwargs.get("catalog_id"),
+            credentials = kwargs.get("credentials"), cfg=kwargs.get("cfg"),
+            email_config_file=kwargs.get("email_config_file"), verbose=kwargs.get("verbose"), mute=kwargs.get("mute"), preserve=kwargs.get("preserve"),
+        )
+
         
         #self.combo1_columns = get_legacy_combo1_columns(self.catalog)  # deprecated
         #self.optional_fks = get_legacy_optional_fks(self.catalog)      # deprecated
@@ -200,7 +199,7 @@ class EntryProcessor(PipelineProcessor):
         self.model = self.catalog.getCatalogModel()        
         self.initialize_processing_row(self.rid)
         
-        if self.verbose: print("- --- EntryProcessor init: rid: %s, action: %s, mute: %s, verbose: %s, preserve: %s, log_file: %s" % (self.rid, self.action, self.mute, self.verbose, self.preserve, self.log_file))
+        if self.verbose: print("- --- EntryProcessor init: rid: %s, action: %s, mute: %s, verbose: %s, preserve: %s, log_file: %s, email_config_file: %s" % (self.rid, self.action, self.mute, self.verbose, self.preserve, self.log_file, self.email_config_file))
         self.logger.info("--- EntryProcessor init: rid: %s, action: %s, mute: %s, verbose: %s, preserve: %s, log_file: %s" % (self.rid, self.action, self.mute, self.verbose, self.preserve, self.log_file))
         
         #print("- processing_row: %s" % (self.processing_row))

@@ -252,14 +252,11 @@ def load(config_filename, args, logger=None):
     # == other configs
     config['hatrac_namespace'] = f"{cfg.hatrac_root}/pdb" 
     
-    email_file = conf.get('mail', None)
-    if not email_file or not os.path.isfile(email_file):
-        raise ConfigError('email file must be provided and exist.')
+    email_config_file = conf.get('mail', None)
+    if not email_config_file or not os.path.isfile(email_config_file):
+        raise ConfigError('email config file must be provided and exist.')
+    config['email_config_file'] = email_config_file
     
-    with open(email_file, 'r') as f:
-        email = json.load(f)
-    config['email'] = email
-
     # print config object
     '''
     for k, v in config.items():
@@ -276,12 +273,12 @@ def process_entry(args, existing_logger=None):
     Note: Job stream can call this function directly.
     """
     global logger
-    
+
     if existing_logger:
         logger = existing_logger
     else:
         logger = init_logger(log_file=args.log_file, name="pdb_process_entryr")
-
+        
     try:
         config_filename = args.config 
         if not config_filename:
@@ -343,6 +340,7 @@ def main():
     cli.parser.add_argument('--clear-entries', action='store_true', help='Clear all entry related tables', default=False, required=False)
     
     args = cli.parse_cli()
+    print(f"args: {args}")
     return process_entry(args)
 
 
