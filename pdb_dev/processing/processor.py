@@ -159,7 +159,6 @@ class PipelineProcessor(object):
             self.logger = init_logger(log_level="info", log_file=self.log_file, name=self.logger_name)
             self.log_dir = self.log_file.rsplit("/")[0]
             Path(self.log_dir).mkdir(parents=True, exist_ok=True)
-
         
         self.email_config_file = kwargs.get("email_config_file", self.email_config_file)
         self.email_config = kwargs.get("email_config", kwargs.get("email"))

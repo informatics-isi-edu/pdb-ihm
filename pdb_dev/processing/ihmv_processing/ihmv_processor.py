@@ -19,7 +19,7 @@ from deriva.utils.extras.hatrac import HatracFile
 from deriva.utils.extras.job_dispatcher import init_logger
 
 from ...utils.shared import PDBDEV_CLI, DCCTX, cfg
-from ..processor import PipelineProcessor, ProcessingError, ErmrestError, ErmrestUpdateError, FileError, SubProcessError
+from ..processor import PipelineProcessor, ProcessingError, ErmrestError, ErmrestUpdateError, FileError, SubProcessError, ConfigError
 #from pdb_dev.utils.shared import PDBDEV_CLI, DCCTX, cfg
 #from pdb_dev.processing.processor import PipelineProcessor, ProcessingError, ErmrestError, ErmrestUpdateError, FileError
 
@@ -48,7 +48,8 @@ class IHMVProcessor(PipelineProcessor):
     logger_name = "ihmv_processor"
     
     def __init__(self, catalog=None, store=None, hostname=None, catalog_id=None, credential_file=None,
-                 scratch_dir=None, cfg=None, logger=None, log_level="info", log_file=None, verbose=None,
+                 scratch_dir=None, cfg=None, logger=None, log_level="info", log_file=None,
+                 verbose=None, mute=None,
                  email_config_file: typing.Optional[str]=None,
                  pdbihm_config_file: typing.Optional[str]=None,
                  singularity_sif: typing.Optional[str]=None,
@@ -57,14 +58,25 @@ class IHMVProcessor(PipelineProcessor):
                  structure_rid: typing.Optional[str]=None,
                  ):
 
-        super().__init__(
-            catalog=catalog, store=store, hostname=hostname, catalog_id=catalog_id, credentials = credential_file, cfg=cfg
-            #, logger=logger, log_file=log_file, logger_name="ihmv_processor"
-        )
-
         if scratch_dir: self.scratch_dir = scratch_dir
         if cfg: self.hatrac_root = cfg.hatrac_root
         if verbose: self.verbose = verbose
+        
+        # -- get config properties from pdb_ihm config
+        if not pdbihm_config_file:
+            raise ConfigError("pdbihm_config_file is missing")
+        self.pdbihm_config_file = pdbihm_config_file
+        self.pdbihm_config = self.read_json_config_file(self.pdbihm_config_file)
+        self.email_config_file = email_config_file if email_config_file else self.pdbihm_config.get("mail", self.email_config_file)
+        print("*** email_config_file: %s" % (self.email_config_file))
+        
+        super().__init__(
+            catalog=catalog, store=store, hostname=hostname, catalog_id=catalog_id, credentials = credential_file, cfg=cfg,
+            logger=logger, log_file=log_file, logger_name="ihmv_processor", verbose=verbose, mute=mute,
+            email_config_file=self.email_config_file,
+        )
+
+        """
         # == to remove after letting parent class init logger
         if logger:
             self.logger = logger
@@ -72,37 +84,33 @@ class IHMVProcessor(PipelineProcessor):
             self.log_file = log_file
             if cfg and cfg.is_dev and not log_file.endswith("_dev.log"): self.log_file = log_file.replace(".log", "_dev.log")
             self.log_dir = self.log_file.rsplit("/")[0]            
-            Path(self.log_dir).mkdir(parents=True, exist_ok=True)        
+            Path(self.log_dir).mkdir(parents=True, exist_ok=True)
 
-        
-        # -- get config properties from pdb_ihm config
-        if pdbihm_config_file:        
-            self.pdbihm_config_file = pdbihm_config_file        
-            with open(pdbihm_config_file, 'r') as file:
-                self.pdbihm_config = json.load(file)
-            
-        # -- unless overwrite, use values from pdbihm_config_file
-        self.timeout = timeout if timeout else (self.pdbihm_config["timeout"] if "timeout" in self.pdbihm_config.keys() else self.timeout)
-        self.singularity_sif = singularity_sif if singularity_sif else (self.pdbihm_config["singularity_sif"] if "singularity_sif" in self.pdbihm_config.keys() else self.singularity_sif)
-        self.ihmvalidation_dir = ihmvalidation_dir if ihmvalidation_dir else (self.pdbihm_config["validation_dir"] if "validation_dir" in self.pdbihm_config.keys() else self.ihmvalidation_dir)
-        if not self.ihmvalidation_dir.endswith("IHMValidation"): self.ihmvalidation_dir = f'{self.ihmvalidation_dir}/IHMValidation' # backward compatible
-        email_config_file = email_config_file if email_config_file else (self.pdbihm_config["mail"] if "mail" in self.pdbihm_config.keys() else self.email_config_file)
-
+        # initialize in processor.py
         if email_config_file:
             self.email_config_file = email_config_file
             with open(email_config_file, 'r') as file:
                 self.email_config = json.load(file)
-            self.email_config["sender"] = self.email_config["sender"].replace("PDB-DEV", "PDB-IHMV")
+        
+        """
+        # -- change sender email after initialization
+        self.email_config["sender"] = self.email_config["sender"].replace("PDB-DEV", "PDB-IHMV")
+        
+        # -- unless overwrite, use values from pdbihm_config_file
+        self.timeout = timeout if timeout else self.pdbihm_config.get("timeout", self.timeout)
+        self.singularity_sif = singularity_sif if singularity_sif else self.pdbihm_config.get("singularity_sif", self.singularity_sif)
+        self.ihmvalidation_dir = ihmvalidation_dir if ihmvalidation_dir else self.pdbihm_config.get("validation_dir", self.ihmvalidation_dir)
+        if not self.ihmvalidation_dir.endswith("IHMValidation"): self.ihmvalidation_dir = f'{self.ihmvalidation_dir}/IHMValidation' # backward compatible
+
         
         if self.verbose:
-            print("pdbihm_confif_file: %s " % (self.pdbihm_config_file))
+            print("pdbihm_confif_file: %s, email_config_file: %s " % (self.pdbihm_config_file, self.email_config_file))
             print("timeout: %s, singularity_sif: %s, ihmvalidation_dir: %s " % (self.timeout, self.singularity_sif, self.ihmvalidation_dir))
             #print("cfg.host: %s, cfg.catalog_id: %s, is_dev:%s, hatrac_root: %s, log_file: %s " % (self.cfg.host, self.cfg.catalog_id, self.cfg.is_dev, self.hatrac_root, self.log_file))
-            print("email_config: %s" % (self.email_config))
             
         # assertion of input arguments
         if not self.singularity_sif or not self.ihmvalidation_dir:
-            raise ProcessingError("CONFIG ERROR: singularity and ihmv validation directory configs are required")
+            raise ConfigError("Singularity and ihmv validation directory configs are required")
 
         # get structure row: TODO: consider moving this to the run function so the class is initialized once
         if structure_rid: self.structure_rid = structure_rid
@@ -290,9 +298,9 @@ def main(server_name, catalog_id, credentials, args):
     logger.info("=========== starts ihmv processor with args: %s" % (args))
     
     processor = IHMVProcessor(
-        catalog=catalog, store=store, hostname=server_name, catalog_id=catalog_id, cfg=cfg, logger=logger, verbose=True,
-        scratch_dir=args.scratch_dir, 
-        structure_rid=args.rid,
+        catalog=catalog, store=store, hostname=server_name, catalog_id=catalog_id, cfg=cfg, logger=logger,
+        verbose=args.verbose, mute=args.mute, scratch_dir=args.scratch_dir, structure_rid=args.rid,
+        email_config_file=args.email_config_file,
         pdbihm_config_file=args.pdbihm_config_file,
         singularity_sif=args.singularity_sif,
         ihmvalidation_dir=args.ihmvalidation_dir,
@@ -319,9 +327,13 @@ if __name__ == '__main__':
     cli.parser.add_argument('--scratch-dir', metavar='<scratch_dir>', help="scratch directory path", default=scratch_dir)
     cli.parser.add_argument('--log-file', metavar='<log_file>', help="Log file", default=log_file)    
     cli.parser.add_argument('--pdbihm-config-file', metavar='<pdbihm_config_file>', help="Path to PDB-IHM entry processing config file", default=pdbihm_config_file)
+    cli.parser.add_argument('--email-config-file', metavar='<email_config_file>', help="Path to email config file", default=None)
     cli.parser.add_argument('--singularity-sif', metavar='<singularity_sif>', help="Path to a singularity image")
     cli.parser.add_argument('--ihmvalidation-dir', metavar='<ihmvalidation_dir>', help="Path to IHMValidation code")
     cli.parser.add_argument('--timeout', metavar='<timeout>', help="Timeout for the IHMValidation pipeline", type=int)
+    cli.parser.add_argument('--verbose', action='store_true', help='Whether to print status to stdout', default=False, required=False)
+    cli.parser.add_argument('--mute', action='store_true', help='Whether to mute notification', default=False, required=False)
+    
     args = cli.parse_cli()
     credentials = get_credential(args.host, args.credential_file)
     print("args = %s" % (args))
