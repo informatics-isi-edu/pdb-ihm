@@ -11,7 +11,15 @@ from pdb_dev.utils.shared import DCCTX, PDBDEV_CLI, cfg
 from deriva.utils.extras.model import print_catalog_model_extras, print_schema_model_extras, clear_catalog_annotations, print_table_model_extras, get_schemas, get_tables, get_columns, check_model_acl_types
 
 """
-# Extra asset_mappings definitions that is in .cpp. 
+# == variable names available during upload
+UploadMetadataReservedKeyNames = [
+    "URI", "file_name", "file_ext", "file_size", "base_path", "base_name", "content-disposition", "md5", "sha256",
+    "md5_base64", "sha256_base64", "schema", "table", "target_table", "_upload_year_", "_upload_month_", "_upload_day_",
+    "_upload_time_", "_identity_id", "_identity_display_name", "_identity_full_name", "_identity_email"]
+Note: base_path and file_ext depends on how regex is written in `file_pattern` to overwrite their defaults (e.g.
+file_ext default is pathlib.Path(file_path).suffix)
+
+# == Extra asset_mappings definitions that is in .cpp. 
     config = {
         "asset_mappings": [
             {
@@ -99,7 +107,7 @@ def get_upload_config():
                     "versioned_urls": True
                 },
                 "hatrac_templates": {
-                    "hatrac_uri": "/hatrac/pdb/submitted/uid/{globus_ID}/entry/mmcif/{file_name}",
+                    "hatrac_uri": "/hatrac/pdb/submitted/uid/{globus_ID}/entry/mmCIF/{md5}.{file_ext}",
                     "content-disposition": "filename*=UTF-8''{file_name}"
                 },
                 "record_query_template": "/entity/{target_table}/mmCIF_File_MD5={md5}&RCB=https%3A%2F%2Fauth.globus.org%2F{globus_ID}",
@@ -129,7 +137,7 @@ def get_upload_config():
                     "versioned_urls": True
                 },
                 "hatrac_templates": {
-                    "hatrac_uri": "/hatrac/pdb/submitted/uid/{globus_ID}/entry/image/{file_name}",
+                    "hatrac_uri": "/hatrac/pdb/submitted/uid/{globus_ID}/entry/image/{md5}.{file_ext}",
                     "content-disposition": "filename*=UTF-8''{file_name}"
                 },
                 "record_query_template": "/entity/{target_table}/RID={entry_rid}",

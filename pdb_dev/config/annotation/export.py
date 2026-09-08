@@ -22,7 +22,7 @@ def update_PDB_entry(model):
     table = schema.tables["entry"]    
 
     table.export_2019.update({
-	"compact" : {
+	"*" : {
 	    "templates" : [
 		{
 		    "displayname":"BDBag",

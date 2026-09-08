@@ -4,10 +4,12 @@ from deriva.core import ErmrestCatalog, AttrDict, get_credential, DEFAULT_CREDEN
 from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key, ForeignKey, tag, AttrDict
 from deriva.core import urlquote, urlunquote
 import requests.exceptions
-from ....utils.shared import DCCTX, PDBDEV_CLI, cfg
 from deriva.utils.extras.model import get_schemas, get_tables, get_columns, print_catalog_model_extras, print_presence_tag_annotations, clear_catalog_annotations, tag2name
-#from . import bulk_upload
+
+from ....utils.shared import DCCTX, PDBDEV_CLI, cfg
 from ...acl.ermrest_acl import GROUPS, initialize_policies
+from . import bulk_upload
+
 
 catalog_wide_annotation_tags = [tag["generated"], tag["immutable"], tag["non_deletable"], tag["required"]]
 catalog_specific_annotation_tags = [tag["chaise_config"], tag["bulk_upload"], tag["column_defaults"], tag["display"]]
@@ -251,7 +253,7 @@ def update_catalog_annotations(model):
     
     chaise_config = get_chaise_config(model.catalog.catalog_id)
     model.annotations[tag["chaise_config"]] = chaise_config
-    #bulk_upload.update_bulk_upload_annotations(model)
+    bulk_upload.update_bulk_upload_annotations(model)
     update_catalog_display(model)
     update_catalog_column_defaults(model)
     

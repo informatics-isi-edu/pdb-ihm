@@ -24,7 +24,8 @@ def update_IHMV(model):
 # -- =================================================================================
 # -- individual table updates
 
-    # Structure_mmCIF
+def update_IHMV_Structure_mmCIF(model):    
+    schema = model.schemas["IHMV"]    
     table = schema.tables["Structure_mmCIF"]
     table.display.update({'markdown_name' :  'Structure mmCIF', })
 
@@ -38,7 +39,9 @@ def update_IHMV(model):
         'comment': 'Upload IHMCIF (.cif) file. Use python-ihm to prepare IHMCIF file. Using other tools may not provide compliant files.',
     })
 
-    # Generated_File
+
+def update_IHMV_Generated_File(model):        
+    schema = model.schemas["IHMV"]        
     table = schema.tables["Generated_File"]
     table.comment = "Generated validation reports."
     table.display.update(
@@ -50,6 +53,8 @@ def update_IHMV_annotations(model):
     update_IHMV(model)
     
     # -- list of specific tables
+    update_IHMV_Structure_mmCIF(model)
+    update_IHMV_Generated_File(model)
 
 # -- =================================================================================    
 def main(server_name, catalog_id, credentials, args):
