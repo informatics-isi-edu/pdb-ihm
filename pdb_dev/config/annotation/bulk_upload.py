@@ -16,8 +16,8 @@ UploadMetadataReservedKeyNames = [
     "URI", "file_name", "file_ext", "file_size", "base_path", "base_name", "content-disposition", "md5", "sha256",
     "md5_base64", "sha256_base64", "schema", "table", "target_table", "_upload_year_", "_upload_month_", "_upload_day_",
     "_upload_time_", "_identity_id", "_identity_display_name", "_identity_full_name", "_identity_email"]
-Note: base_path and file_ext depends on how regex is written in `file_pattern` to overwrite their defaults (e.g.
-file_ext default is pathlib.Path(file_path).suffix)
+Note: All these are reserved word. Don't try to overwrite. Currently, file_ext can be overwritten, but base_name is
+computed based on file_ext.
 
 # == Extra asset_mappings definitions that is in .cpp. 
     config = {
@@ -87,6 +87,7 @@ def get_upload_config():
         "asset_mappings": [
             {
                 "column_map": {
+                    "RID": "{RID}",
                     "Method_Details": "Integrative modeling",
                     "mmCIF_File_MD5": "{md5}",
                     "mmCIF_File_URL": "{URI}",
@@ -94,7 +95,7 @@ def get_upload_config():
                     "mmCIF_File_Name": "{file_name}",
                     "mmCIF_File_Bytes": "{file_size}"
                 },
-                "file_pattern": "(?i)^.*/deriva/(?P<globus_ID>[^/]*)/entry/.*[.](?P<file_ext>cif)$",
+                "file_pattern": "(?i)^.*/deriva/(?P<globus_ID>[^/]*)/entry/.*[.](?P<f_ext>cif)$",
                 "target_table": [
                     "PDB",
                     "entry"
@@ -107,7 +108,7 @@ def get_upload_config():
                     "versioned_urls": True
                 },
                 "hatrac_templates": {
-                    "hatrac_uri": "/hatrac/pdb/submitted/uid/{globus_ID}/entry/mmCIF/{md5}.{file_ext}",
+                    "hatrac_uri": "/hatrac/pdb/submitted/uid/{globus_ID}/entry/mmCIF/{md5}.{f_ext}",
                     "content-disposition": "filename*=UTF-8''{file_name}"
                 },
                 "record_query_template": "/entity/{target_table}/mmCIF_File_MD5={md5}&RCB=https%3A%2F%2Fauth.globus.org%2F{globus_ID}",
@@ -124,7 +125,7 @@ def get_upload_config():
                     "Image_File_Name": "{file_name}",
                     "Image_File_Bytes": "{file_size}"
                 },
-                "dir_pattern": "(?i)^.*/deriva/(?P<globus_ID>[^/]*)/entry/(?P<base_name>[^/]*)[.](?P<file_ext>png|jpg|jpeg)",
+                "file_pattern": "(?i)^.*/deriva/(?P<globus_ID>[^/]*)/entry/(?P<f_basename>[^/]*)[.](?P<f_ext>png|jpg|jpeg)$",
                 "target_table": [
                     "PDB",
                     "entry"
@@ -137,13 +138,13 @@ def get_upload_config():
                     "versioned_urls": True
                 },
                 "hatrac_templates": {
-                    "hatrac_uri": "/hatrac/pdb/submitted/uid/{globus_ID}/entry/image/{md5}.{file_ext}",
+                    "hatrac_uri": "/hatrac/pdb/submitted/uid/{globus_ID}/entry/image/{md5}.{f_ext}",
                     "content-disposition": "filename*=UTF-8''{file_name}"
                 },
                 "record_query_template": "/entity/{target_table}/RID={entry_rid}",
                 "record_update_template": "/attributegroup/{target_table}/RID;Image_File_MD5,Image_File_URL,Image_File_Name,Image_File_Bytes",
                 "metadata_query_templates": [
-                    "/attribute/{target_table}/mmCIF_File_Name={base_name}.cif&RCB=https%3A%2F%2Fauth.globus.org%2F{globus_ID}/entry_rid:=RID"
+                    "/attribute/{target_table}/mmCIF_File_Name={f_basename}.cif&RCB=https%3A%2F%2Fauth.globus.org%2F{globus_ID}/entry_rid:=RID"
                 ],
                 "create_record_before_upload": False,
                 "require_record_update_template": True
