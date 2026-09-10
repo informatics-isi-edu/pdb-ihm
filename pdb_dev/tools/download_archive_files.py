@@ -47,6 +47,11 @@ def get_latest_archive_files(catalog, store, download_dir):
     archive_row = get_latest_pdb_archive(catalog)
     archive_rid = archive_row["RID"]
 
+    # == get latest archive entries. 
+    constraints=f"PDB:Entry_Latest_Archive/Archive={archive_rid}/$M"
+    entries = get_ermrest_query(catalog, "PDB", "entry", constraints=constraints)
+    print("latest_archive_entries [%d]: %s" % (len(entries), json.dumps(entries[0:1], indent=4)))
+    
     # == get latest archive entries' generated files with specific file type
     ftype_str = ",".join( [urlquote(t) for t in file_types] )
     constraints=f"Archive={archive_rid}/entry/F:=Entry_Generated_File/File_Type=any({ftype_str})/$F"
