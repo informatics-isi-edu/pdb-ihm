@@ -495,7 +495,20 @@ def update_PDB_entry(model):
             },
             ['PDB', 'entry_Process_Status_fkey'],
             { 'sourcekey' : 'entry_error_file_fkey'  },
-            ['PDB', 'entry_Accession_Code_fkey'],
+            {
+              'source': [{'outbound': ['PDB', 'entry_Accession_Code_fkey']}, 'RID'],
+              'display': {
+                # submitters should just see the rowname, other users should see the URL
+                # using the same check as other places (submitters that are not updaters)
+                'markdown_pattern': (
+                  '{{#if (and (isUserInAcl $site_var.acl_groups.entry_submitters) (not (isUserInAcl $site_var.acl_groups.entry_updaters)) )}}'
+                  '{{{$self.rowName}}}'
+                  '{{else}}'
+                  '[{{{$self.rowName}}}]({{{$self.uri.detailed}}})'
+                  '{{/if}}'
+                )
+              }
+            },
             'Deposit_Date',
             'Release_Date',
             'mmCIF_File_URL',
@@ -528,17 +541,23 @@ def update_PDB_entry(model):
             'Image_File_URL',
             ['PDB', 'entry_Workflow_Status_fkey'],
             'Method_Details',
-            ['PDB', 'entry_Process_Status_fkey'],
-            'Record_Status_Detail',
-            'Deposit_Date',
-            'Release_Date',
-            ['PDB', 'entry_Accession_Code_fkey'],
-            'Submitter_Flag',
-            'Submitter_Flag_Date',
+            {
+              'source': [{'outbound': ['PDB', 'entry_Process_Status_fkey']}, 'RID'],
+              'condition_key': 'is_not_submitter'
+            },
+            {'source': 'Record_Status_Detail', 'condition_key': 'is_not_submitter' },
+            {'source': 'Deposit_Date', 'condition_key': 'is_not_submitter' },
+            {'source': 'Release_Date', 'condition_key': 'is_not_submitter' },
+            {
+              'source': [{'outbound': ['PDB', 'entry_Accession_Code_fkey']}, 'RID'],
+              'condition_key': 'is_not_submitter'
+            },
+            {'source': 'Submitter_Flag', 'condition_key': 'is_not_submitter' },
+            {'source': 'Submitter_Flag_Date', 'condition_key': 'is_not_submitter' },
             'New_Chem_Comp_Pending',
             'Manual_Processing',
             'Notes',
-            'RID',
+            {'source': 'RID', 'condition_key': 'is_not_submitter' },
         ],
         'filter' :  {
             'and' :  [
