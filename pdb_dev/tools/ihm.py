@@ -39,7 +39,7 @@ def main():
     if args.rid: rids.add(args.rid)
     
     if args.clear_entries:
-        clear_entry(catalog, rids)
+        clear_entries(catalog, rids)
     elif args.check_entries:
         get_entries(catalog, rids, args.succint)
     
