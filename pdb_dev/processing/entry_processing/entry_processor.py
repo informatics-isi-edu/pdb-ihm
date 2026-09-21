@@ -64,7 +64,8 @@ mmCIF_hold_records="""_pdbx_database_status.status_code                     <sta
 _pdbx_database_status.entry_id                        <entry_id>
 _pdbx_database_status.deposit_site                    RCSB
 _pdbx_database_status.process_site                    RCSB
-_pdbx_database_status.recvd_initial_deposition_date   <deposition_date> 
+_pdbx_database_status.recvd_initial_deposition_date   <deposition_date>
+_pdbx_database_status.pdb_format_compatible           N
 #
 loop_
 _database_2.database_id 
@@ -77,7 +78,8 @@ mmCIF_release_records="""_pdbx_database_status.status_code                     <
 _pdbx_database_status.entry_id                        <entry_id>
 _pdbx_database_status.deposit_site                    RCSB
 _pdbx_database_status.process_site                    RCSB
-_pdbx_database_status.recvd_initial_deposition_date   <deposition_date> 
+_pdbx_database_status.recvd_initial_deposition_date   <deposition_date>
+_pdbx_database_status.pdb_format_compatible           N
 # 
 loop_
 _pdbx_audit_revision_history.ordinal
