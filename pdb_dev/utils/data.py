@@ -1,5 +1,6 @@
 import sys
 import json
+import logging
 from deriva.core import ErmrestCatalog, AttrDict, get_credential, DEFAULT_CREDENTIAL_FILE, tag, urlquote, DerivaServer, \
     get_credential, BaseCLI, topo_sorted, topo_ranked
 from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key, ForeignKey, DomainType, ArrayType
@@ -7,6 +8,7 @@ from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key,
 from deriva.utils.extras.data import get_ermrest_query, update_table_rows, delete_table_rows
 from .shared import PDBDEV_CLI, DCCTX
 
+logger = logging.getLogger(__name__)
 
 """
 add rows to a table
@@ -136,10 +138,10 @@ def clear_entry(catalog, entry_rid, update_last_mmcif_md5=True,
     updating_row = {"RID": entry_rid, "Last_mmCIF_File_MD5":None }
     if entry_row["Last_mmCIF_File_MD5"] != updating_row["Last_mmCIF_File_MD5"]:
         updated = update_table_rows(catalog, "PDB", "entry", payload=[updating_row], keys=["RID"], column_names=["Last_mmCIF_File_MD5"])
-        print("entry %s: Last_mmCIF_File_MD5 is set to None")
+        logger.info("entry %s: Last_mmCIF_File_MD5 is set to None")
 
 
-def clear_entries(catalog, entry_rids, update_last_mmcif_md5=True,
+def clear_entries(catalog, entry_rids, update_last_mmcif_md5=True, dry_run=False,
                   exclude_tnames=["Entry_Latest_Archive", "Accession_Code", "Curation_Log"]):
     """
     Clear all tables that reference entry row except those in exclude_tnames and set
@@ -148,6 +150,11 @@ def clear_entries(catalog, entry_rids, update_last_mmcif_md5=True,
     Args:
         exclude_tnames (str): exclude table names from being cleared
     """
+    
+    if not entry_rids: return
+    
+    logger.info("clear_entries: begins with RIDs [%d]: %s" % (len(entry_rids), entry_rids))
+    
     rows = get_ermrest_query(catalog, "PDB", "entry", constraints=f'RID=any({",".join(entry_rids)})')
     if len(rows) == 0:
         raise Exception(f"Error: no match found for {entry_rids}")
@@ -173,17 +180,21 @@ def clear_entries(catalog, entry_rids, update_last_mmcif_md5=True,
                 raise Exception("Unexpected event: id or rid is not part of reference to entry")
             # == delete 
             #print("clear_entry: tname: %s, constraints: %s" % (tname, constraints))
-            delete_table_rows(catalog, "PDB", tname, constraints=constraints)
+            delete_table_rows(catalog, "PDB", tname, constraints=constraints, dry_run=dry_run)
             break
                 
     # == update entry so the process_mmcif can go ahead later
     if not update_last_mmcif_md5: return
-    updating = {}
+    updating = []
     for row in rows: 
-        if entry_row["Last_mmCIF_File_MD5"] != None:
-            updating.append( {"RID": entry_rid, "Last_mmCIF_File_MD5":None } )
-    updated = update_table_rows(catalog, "PDB", "entry", payload=[updating_row], keys=["RID"], column_names=["Last_mmCIF_File_MD5"])
-    print("- clear_entries: set Last_mmCIF_File_MD5 is set to None for RID: %s" % (entry_rids))
+        if row["Last_mmCIF_File_MD5"] != None:
+            updating.append({"RID": row["RID"], "Last_mmCIF_File_MD5":None })
+    if updating:
+        if dry_run:
+            print("clear_entries: DRY_RUN updating Last_mmCIF_File_MD5 to None for RIDs [%d]: %s" % (len(updating), [ r["RID"] for r in updating] ))
+            return
+        updated = update_table_rows(catalog, "PDB", "entry", payload=updating, keys=["RID"], column_names=["Last_mmCIF_File_MD5"])
+        logger.info("clear_entries: Last_mmCIF_File_MD5 was updated to None for RIDs [%d]: %s" % (len(updated), [ r["RID"] for r in updated] ))
         
 
 def main(args):
@@ -197,7 +208,7 @@ def main(args):
         rids = set()
         if args.rids: rids = set(args.rids.split(","))
         if args.rid: rids.add(args.rid)
-        clear_entry(catalog, args.rid)
+        clear_entry(catalog, args.rid, dry_run=args.dry_run)
 
 # running the script:
 # >python -m pdb_dev.utils.data --host data-dev.pdb-ihm.org --catalog-id 99 --rid <RID> --clear-entry
@@ -205,6 +216,7 @@ def main(args):
 if __name__ == "__main__":
     cli = PDBDEV_CLI("pdb", None, 1)
     cli.parser.add_argument('--clear-entries', action='store_true', help='clear entry related tables', default=False, required=False)
+    #cli.parser.add_argument('--dry-run', action='store_true', help='dry run', default=False, required=False)    
     cli.parser.add_argument('--rids', metavar='<rids>',  action='store', type=str, help='rids to be cleared', required=False)
     args = cli.parse_cli()
     main(args)

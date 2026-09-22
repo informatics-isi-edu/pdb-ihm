@@ -26,6 +26,7 @@ def main():
     cli.parser.add_argument('--check-entries', action='store_true', help='get entries information ', default=False, required=False)
     cli.parser.add_argument('--succint', action='store_true', help='succint entry info', default=False, required=False)        
     cli.parser.add_argument('--rids', metavar='<rids>',  action='store', type=str, help='rids to be cleared', required=False)
+    # dry-run is supported through default args
     args = cli.parse_cli()
     
     server_name = args.host 
@@ -39,7 +40,7 @@ def main():
     if args.rid: rids.add(args.rid)
     
     if args.clear_entries:
-        clear_entries(catalog, rids)
+        clear_entries(catalog, rids, dry_run=args.dry_run)
     elif args.check_entries:
         get_entries(catalog, rids, args.succint)
     
