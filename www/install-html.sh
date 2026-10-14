@@ -40,7 +40,7 @@ case "$host" in
   data-dev.pdb-ihm.org)
     MAIN_URL="https://data-dev.pdb-ihm.org"
     IHMV_URL="https://validate-dev.pdb-ihm.org"
-    MAIN_CATALOG=50
+    MAIN_CATALOG=99
     IHMV_CATALOG=199
     STRIP=( -e '/%IF_PROD%/,/%ENDIF_PROD%/d' -e '/%IF_DEV%/d' -e '/%ENDIF_DEV%/d' )
     ;;
