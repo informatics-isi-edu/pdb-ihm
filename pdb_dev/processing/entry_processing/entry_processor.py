@@ -230,7 +230,8 @@ class EntryProcessor(PipelineProcessor):
         self.user_email = self.user_row["Email"]
         self.user_uuid = self.RCB2user_uuid(self.processing_row["RCB"]) # only the GUID
         self.hatrac_generated_prefix = f"{self.hatrac_root}/pdb/generated/uid/{self.user_uuid}/entry/id/{self.entry_id}"
-
+        self.generated_file_rows = []  # track files uploaded for cleanup process later
+        
         self.create_hatrac_uid_namespace(f"{self.hatrac_root}/pdb/generated/uid", self.processing_row["RCB"])
         
         
@@ -324,7 +325,6 @@ class EntryProcessor(PipelineProcessor):
                 # WHY DELETE? 
                 constraints="structure_id=%s&Entry_Related_File=%s" % (structure_id, related_file_rid)
                 delete_table_rows(self.catalog, "PDB", csv_tname, constraints=constraints)
-                #self.delete_rows("PDB", csv_tname, constraints=constraints)
             except Exception as e:
                 message = self.log_exception(e, notify=True, subject=subject)
                 raise ErmrestError("ERROR: tname: %s: cleanup restraint table %s failed while handling error (%s)." % (related_file_tname, csv_tname, message))
@@ -700,12 +700,11 @@ class EntryProcessor(PipelineProcessor):
             # -- export from cif file
             self.exportCIFContent(fw, output_cif_fpath, deriva_tables)
             fw.close()
-            
 
             if self.workflow_status in ["SUBMIT"]:
                 # == validateExportmmCIF. Note: Do not update cif file information unless it is in SUBMIT state
                 self.validateExportmmCIF(export_fpath, update_cif=True)
-
+                
                 # == Generate the Conform_Dictionary entries if update_cif is true                
                 self.generateConformDictionary(entry_id, entry_rid)
             
@@ -719,12 +718,13 @@ class EntryProcessor(PipelineProcessor):
                 'Process_Status': process_status,
                 'Record_Status_Detail': self.truncate_message(message),
             }
-            delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=f"Structure_Id={self.entry_id}")            
         finally:
             if fw and not fw.closed: fw.close()
             if dest_fpath and os.path.isfile(export_fpath) and export_fpath!=dest_fpath: shutil.copy2(export_fpath, dest_fpath)
             # -- in this case, clean up all local files since the file is not needed for downstream processing
             if self.workflow_status in ["SUBMIT"]:
+                constraints = "Structure_Id=%s/!File_MD5=any(%s)" % (self.entry_id, ','.join([r["File_MD5"] for r in self.generated_file_rows]))
+                delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=constraints)
                 self.update_processing_row(updating_row)
                 self.logger.debug(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
                 self.verbose: print(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
@@ -852,29 +852,23 @@ class EntryProcessor(PipelineProcessor):
             'Record_Status_Detail' : None,
         }
 
-        
         # == info from record to be processed
         filename = self.processing_row['mmCIF_File_Name']
         hatrac_url = self.processing_row['mmCIF_File_URL']
         file_bytes = self.processing_row['mmCIF_File_Bytes']
         md5 = self.processing_row['mmCIF_File_MD5']
         last_md5 = self.processing_row['Last_mmCIF_File_MD5']
-        
-        # == Check if we have a new mmCIF file
-        if md5 == last_md5:
-            message = f'The workflow status of the entry with RID={self.rid} was changed to RECORD READY. Same mmCIF file content. No processing performed.'
-            self.sendMail(subject, message)
-            self.update_processing_row(updating_row)
-            self.logger.debug('RID="{}", Skipping processing mmcif as the mmCIF file is unchanged'.format(self.rid))
-            self.logger.debug(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')
-            return    #TODO: uncomment
 
-        
         try:
+            # == Check if we have a new mmCIF file
+            if md5 == last_md5:
+                message = f'The workflow status of the entry with RID={self.rid} was changed to RECORD READY. Same mmCIF file content. No processing performed.'
+                return
+
             # == check file size
             if file_bytes == 0:
                 raise ProcessingError(f"ERROR process_mmCIF: Empty submitted cif file ({filename}). No content to process.")
-
+            
             input_cif_fname = f'{self.rid}_input.cif'
             input_cif_fpath = f'{processing_dir}/{input_cif_fname}'            
             output_cif_fpath = f'{processing_dir}/{self.rid}_output.cif'
@@ -885,7 +879,7 @@ class EntryProcessor(PipelineProcessor):
             hf.download_file(hatrac_url, processing_dir, input_cif_fname, verbose=False, hashes=["md5"])
             self.logger.debug("process_mmcif: download file from %s --> %s/%s" % (hatrac_url, processing_dir, input_cif_fname))            
             if self.verbose: print("process_mmcif: download file from %s --> %s/%s" % (hatrac_url, processing_dir, input_cif_fname))
-
+            
             # == convert to a new cif file using make_mmcif
             self.getMakeMmcifFile(input_cif_fpath, output_cif_fpath)
 
@@ -912,6 +906,9 @@ class EntryProcessor(PipelineProcessor):
                 'Record_Status_Detail': self.truncate_message(message),
             }
         finally:
+            # == clean up generated files if needed
+            constraints = "Structure_Id=%s/!File_MD5=any(%s)" % (self.entry_id, ','.join([r["File_MD5"] for r in self.generated_file_rows]))
+            delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=constraints)
             # == update ermrest
             self.update_processing_row(updating_row)
             self.logger.debug(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')
@@ -1311,7 +1308,6 @@ class EntryProcessor(PipelineProcessor):
         try:
             constraints="structure_id=%s&Entry_Related_File=%s" % (structure_id, related_file_rid)
             delete_table_rows(catalog, "PDB", tname, constraints=constraints)
-            #self.delete_rows("PDB", tname, constraints)
         except Exception as e:
             self.log_exception(e, notify=False, subject="Unable to delete rows in table %s" % (tname))
             raise ErmrestError("Unable to cleanup table %s with constraint: %s" % (tname, constraints))
@@ -1514,7 +1510,7 @@ class EntryProcessor(PipelineProcessor):
             
         # == there is an error: insert to ermrest
         if len(payload) == 0:
-            # -- clean up existing error files
+            # -- no errors: clean up existing error files
             delete_table_rows(self.catalog, "PDB", "Entry_Error_File", constraints=f"Entry_RID={entry_rid}")
         else:
             # -- upsert error files
@@ -1549,6 +1545,7 @@ class EntryProcessor(PipelineProcessor):
             'File_URL': hf.hatrac_url, 'File_Name': hf.file_name, 'File_MD5': hf.md5_hex, 'File_Bytes': hf.file_bytes,
             'File_Type': "mmCIF", 'Structure_Id': entry_id, 'Entry_RCB': entry_rcb
         }
+        # == insert/update ermrest
         inserted = insert_if_not_exist(self.catalog, "PDB", "Entry_Generated_File", payload=[file_row])
         if self.verbose: print("validateExportmmCIF: inserted Entry_Generated_File [%d]: %s" % (len(inserted), json.dumps(inserted, indent=4)))
         if len(inserted) == 0:
@@ -1560,7 +1557,9 @@ class EntryProcessor(PipelineProcessor):
             else:
                 if self.verbose: print("- validateExportmmCIF: Entry_Generated_File: cif file is unchanged: %s " % (file_row))
 
-    
+        # == Keep track of Entry_Generate_File rows 
+        self.generated_file_rows.append(file_row)
+
     def addCollectionRecords(self, fw):
         """Add collection data as part of the export
         
@@ -1705,8 +1704,8 @@ class EntryProcessor(PipelineProcessor):
                     'Entry_RCB': entry_RCB,
                     'File_Type': self.fname2ftype(hf.file_name)
                 })
-                
-            # == upsert records
+            
+            # == upsert ermrest records
             if self.verbose: print("- generate_ihmv_report: inserting [%d]: %s" % (len(ihmv_payload), json.dumps(ihmv_payload, indent=4)))
             inserted = insert_if_not_exist(self.catalog, "PDB", "Entry_Generated_File", ihmv_payload)
             if self.verbose: print("- generate_ihmv_report: inserted [%d]: %s" % (len(inserted), json.dumps(inserted, indent=4)))            
@@ -1723,6 +1722,10 @@ class EntryProcessor(PipelineProcessor):
                             break
                 updated = update_table_rows(self.catalog, "PDB", "Entry_Generated_File", column_names=["File_Name", "File_URL", "File_Bytes", "File_MD5"], payload=update_payload)
                 if self.verbose: print("- generate_ihmv_report: updated [%d]: %s" % (len(updated), json.dumps(updated, indent=4)))
+
+            # == Keey track of Entry_Generated_File rows
+            self.generated_file_rows.extend(ihmv_payload)
+                
         except TimeoutExpired:
             p.kill()
             raise SubProcessError("ERROR report_validation: IHMV TimeoutExpired")
@@ -1792,7 +1795,6 @@ class EntryProcessor(PipelineProcessor):
           4. renaming .json file
           5. upload to hatrac and update ermrest
         
-        TODO: py_rcsb_db still hardcode input/output. Therefore, can only perform one worker at a time
         """
         if self.verbose: print("== generate_PDB_JSON: %s, %s" % (cif_fpath, json_fpath))
         entry_rid = self.processing_row["RID"]
@@ -1821,6 +1823,8 @@ class EntryProcessor(PipelineProcessor):
         file_row = { 'File_URL': hf.hatrac_url, 'File_Name': hf.file_name, 'File_MD5': hf.md5_hex, 'File_Bytes': hf.file_bytes,
                      'File_Type': file_type, 'Structure_Id': entry_id, 'Entry_RCB': entry_rcb
                     }
+        
+        # == upsert ermrest records
         inserting = [file_row]
         if self.verbose: print("- generate_PDB_JSON: inserting Entry_Generated_File: %s" % (inserting))            
         inserted = insert_if_not_exist(self.catalog, "PDB", "Entry_Generated_File", payload=inserting)
@@ -1836,6 +1840,9 @@ class EntryProcessor(PipelineProcessor):
                 if self.verbose: print("- generate_PDB_JSON: updated JSON file in Entry_Generated_File: %s" % (json.dumps(file_row, indent=4)))
             else:
                 if self.verbose: print("-- generate_PDB_JSON: JSON file is unchanged: %s " % (file_row))
+
+        # == keey track of Entry_Generated_File rows 
+        self.generated_file_rows.append(file_row)
             
         return json_fpath
         
@@ -2027,12 +2034,13 @@ class EntryProcessor(PipelineProcessor):
                 'Process_Status': process_status,
                 'Record_Status_Detail': self.truncate_message(message, truncate_tail=False),
             }
-            delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=f"Structure_Id={self.entry_id}")            
         finally:
             if fr and not fr.closed: fr.close()
             if fw and not fw.closed: fw.close()
             # == update ermrest 
             if current_workflow_status == "RELEASE READY":
+                constraints = "Structure_Id=%s/!File_MD5=any(%s)" % (self.entry_id, ','.join([r["File_MD5"] for r in self.generated_file_rows]))
+                delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=constraints)
                 self.update_processing_row(updating_row)
                 self.logger.debug(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
                 self.verbose: print(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
@@ -2082,8 +2090,10 @@ class EntryProcessor(PipelineProcessor):
                 'Process_Status': process_status,
                 'Record_Status_Detail': self.truncate_message(message),
             }
-            delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=f"Structure_Id={self.entry_id}")            
         finally:
+            # == clean up Entry_Generated_File table
+            constraints = "Structure_Id=%s/!File_MD5=any(%s)" % (self.entry_id, ','.join([r["File_MD5"] for r in self.generated_file_rows]))
+            delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=constraints)
             # == update ermrest
             self.update_processing_row(updating_row)
             self.logger.debug(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
