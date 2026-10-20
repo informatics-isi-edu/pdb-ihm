@@ -46,6 +46,8 @@ setup(
             'pdb_entry_processing_worker = pdb_dev.processing.entry_processing.pdb_entry_processing_worker:main',
             'ihmv_worker = pdb_dev.processing.ihmv_worker:main',
             'pdb_worker = pdb_dev.processing.pdb_worker:main',
+            'pdb_update_model = pdb_dev.model.update_model:main',
+            'ihmv_update_model = pdb_dev.model.ihmv.update_model:main',            
         ]
     },
     # scripts
