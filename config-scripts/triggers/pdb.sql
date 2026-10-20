@@ -34,19 +34,29 @@ DECLARE
   reset_process_status boolean;
 BEGIN
   reset_process_status := false;
-  
+
+  -- Set image file to a default value
   IF NEW."Image_File_Name" IS NULL THEN
      NEW."Image_File_Name" := 'missing_image.png';
      NEW."Image_File_Bytes" := 35406;
      NEW."Image_File_URL" := '/hatrac/dev/pdb/public/images/missing_image.png:UTV3DLUONOXGI7D73RFIQMG6XU';
      NEW."Image_File_MD5" := '27994cb72f6d4780d9b09a85b9b5ac50';
   END IF;
-  
+
+  -- reset Submitter_Flag_Date
   IF NEW."Submitter_Flag" IS NULL OR  NEW."Submitter_Flag" IS FALSE
   THEN
     NEW."Submitter_Flag_Date" := NULL;
   END IF;
 
+  -- set User_mmCIF_File to latest user submitted mmCIF_File
+  -- Assuming that entry.RCB is the actual user
+  IF NEW."RCB" = NEW."RMB"
+    AND ( OLD."mmCIF_File_URL" != NEW."mmCIF_File_URL" OR OLD."mmCIF_File_Name" != NEW."mmCIF_File_Name" )
+  THEN
+    NEW."User_mmCIF_File_URL" := NEW."mmCIF_File_URL";
+    NEW."User_mmCIF_File_Name" := NEW."mmCIF_File_Name";
+  END IF;
 
   -- The mmcif file content has changed (note: assuming that md5 is not null), trigger processing workflow
   -- If submitter forgets to reset Workflow_Status, reset to DEPO.
@@ -76,6 +86,8 @@ BEGIN
         NEW."Process_Status" := 'Resume (trigger backend process)';
      END IF;
   END IF;
+
+
   RETURN NEW;
 
 END;
@@ -85,6 +97,8 @@ DROP TRIGGER IF EXISTS entry_trigger_before_update ON "PDB"."entry";
 CREATE TRIGGER entry_trigger_before_update
 BEFORE UPDATE ON "PDB"."entry"
 FOR EACH ROW EXECUTE PROCEDURE "PDB".entry_trigger_before_update();
+
+-- ---------------------------------------------------------------------
 
 -- ==================================================================================
 
@@ -143,13 +157,27 @@ BEFORE UPDATE ON "PDB"."Entry_Related_File"
 FOR EACH ROW EXECUTE PROCEDURE "PDB".entry_related_file_trigger_before_update();
 
 -- ==================================================================================
+-- Accession_Code
+-- 
 CREATE OR REPLACE FUNCTION "PDB".accession_code_trigger_before_update() RETURNS trigger LANGUAGE plpgsql
 AS $function$
+DECLARE
+  entry_rid text;
 BEGIN
+
+  -- do not allow direct reassignment. Need to clear first before assign a different Entry value.
   IF OLD."Entry" IS NOT NULL AND OLD."Entry" != NEW."Entry" THEN
-    RAISE EXCEPTION 'Entry value is not allowed to be updated';
+    RAISE EXCEPTION 'Entry value is not allowed to be updated directly';
     RETURN OLD;
   END IF;
+
+  -- Ensure that entry row doesn't refer to it
+  SELECT "RID" into entry_rid FROM "PDB"."entry" WHERE "Accession_Code" = NEW."Accession_Code";
+  IF entry_rid IS NOT NULL AND entry_rid != NEW."Entry" THEN
+    RAISE EXCEPTION 'Cannot reassign this accession code. Make sure to clear this accession code from entry %s first', entry_rid;
+    RETURN OLD;    
+  END IF;
+
   RETURN NEW;
 END;
 $function$;
