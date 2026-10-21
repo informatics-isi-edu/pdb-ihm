@@ -131,7 +131,7 @@ class PipelineProcessor(object):
         if not self.catalog:
             if not credentials: credentials = get_credential(self.host, self.credential_file)
             if not credentials:
-                raise Exception("ERROR: a proper credential or credential file is required. Provided credential_file: %s" % (credential_file))
+                raise Exception("ERROR: a proper credential or credential file is required. Provided credential_file: %s" % (self.credential_file))
             server = DerivaServer('https', self.host, credentials, session_config=session_config)
             self.catalog = server.connect_ermrest(self.catalog_id)            
         self.catalog.dcctx['cid'] = 'pipeline/pdb'
@@ -169,7 +169,7 @@ class PipelineProcessor(object):
         
         # -- archive/release time
         if kwargs.get('cutoff_time_pacific', None): self.cutoff_time_pacific = kwargs.get('cutoff_time_pacific') 
-        if kwargs.get('release_time_utc', None): self.release_time_pacific = kwargs.get('release_time_utc')
+        if kwargs.get('release_time_utc', None): self.release_time_utc = kwargs.get('release_time_utc')
 
         #print("- Processor init: mute: %s, verbose: %s, preserve: %s, log_file: %s, email_config_file: %s" % (self.mute, self.verbose, self.preserve, self.log_file, self.email_config_file))        
         #print("host: %s, catalog_id: %s, catalog: %s" % (self.host, self.catalog_id, self.catalog))
@@ -185,7 +185,7 @@ class PipelineProcessor(object):
         if base_rows is None and compare_rows is None: return True
         if len(base_rows) == 0 and len(compare_rows) == 0: return True
         id2compare_rows = { row["structure_id"]: row for row in compare_rows }
-        print("%s base_rows[%d]: %s" % (tname, len(existing_rows), base_rows))
+        print("%s base_rows[%d]: %s" % (tname, len(base_rows), base_rows))
         print("id2compare_rows: %s " % (json.dumps(id2compare_rows, indent=4)))
         
         different = False
@@ -458,13 +458,17 @@ class PipelineProcessor(object):
         Archive datetime is the upcoming Thursday 8 PM PT (or the value specified in the cutoff_time_pacific config parameter)
         """
         cutoff_time = time.strptime(self.cutoff_time_pacific, "%A %H:%M")
-        now = dt.now(pytz.timezone("America/Los_Angeles"))
+        pacific = pytz.timezone(pacific_timezone)
+        now = dt.now(pacific)
         now_to_cutoff_weekday = (cutoff_time.tm_wday - now.weekday()) % 7
         archive_datetime = now + timedelta(days=now_to_cutoff_weekday)
         #print("get_archive_datetime: weekday_diff = %s" % (now_to_cutoff_weekday))
         if now_to_cutoff_weekday == 0 and (now.hour > cutoff_time.tm_hour or (now.hour == cutoff_time.tm_hour and now.minute > cutoff_time.tm_min)):
             archive_datetime += timedelta(days=7)
         archive_datetime = archive_datetime.replace(hour=cutoff_time.tm_hour,minute=cutoff_time.tm_min,second=0,microsecond=0)
+        # pytz: timedelta arithmetic and replace() keep the UTC offset of `now`. Re-localize the wall-clock
+        # time so the offset is correct when a DST transition falls between now and the cutoff.
+        archive_datetime = pacific.localize(archive_datetime.replace(tzinfo=None))
         #print("archive pacific time: %s" % (str(archive_datetime)))
         if utz: 
             archive_datetime = archive_datetime.astimezone(timezone.utc)
@@ -540,7 +544,9 @@ class PipelineProcessor(object):
         et, ev, tb = sys.exc_info()
         tb_message = error_message + (body_prefix if body_prefix else "") + '\n' + ''.join(traceback.format_exception(et, ev, tb))
         if self.logger:
-            self.logger.error('-- Got exception "%s: %s"' % (et.__name__, str(ev)))
+            # log_exception may be called outside an except block, in which case sys.exc_info() is (None, None, None)
+            ename = et.__name__ if et else type(e).__name__
+            self.logger.error('-- Got exception "%s: %s"' % (ename, str(ev if ev else e)))
             self.logger.error('%s' % (tb_message))
         if notify:
             if not subject: subject = "Processing error"

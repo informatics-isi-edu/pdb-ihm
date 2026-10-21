@@ -46,7 +46,10 @@ class Config():
     def apply_hostname(self, host, catalog_id):
         self.host = host
         self.catalog_id = catalog_id
-        
+        # reset environment flags: cfg is a module-level singleton and may be re-applied with a different host
+        self.is_www = self.is_prod = self.is_staging = self.is_dev = False
+        self.hatrac_root = "/hatrac"
+
         if host == "data.pdb-ihm.org":
             self.is_www = True
             self.is_prod = True

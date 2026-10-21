@@ -42,6 +42,7 @@ import tempfile
 import ihm # for validation report
 from pathlib import Path
 import time
+import re
 
 from deriva.core import PollingErmrestCatalog, HatracStore, urlquote
 from deriva.core.utils import hash_utils as hu
@@ -734,7 +735,7 @@ class EntryProcessor(PipelineProcessor):
             else:
                 # re-raise in case it is not final processing step
                 if process_status != Process_Status_Terms['SUCCESS']:
-                    raise ProcessingException("ERROR export_mmCIF: unable to export mmCIF file")
+                    raise ProcessingError("ERROR export_mmCIF: unable to export mmCIF file")
                 
             return export_fpath
         
@@ -1482,7 +1483,7 @@ class EntryProcessor(PipelineProcessor):
             
             # Note: Returncode 0 doesn't mean no error files. Still need to check directory
             if returncode != 0:
-                raise SubProcessError('ERROR validateExportmmCIF: pyrcsb testSchemaDataPrepValidate-ihm failed for file "%s".\nstdout: %s\nstderr: %s\n' % (output_cif, stdoutdata, stderrdata))
+                raise SubProcessError('ERROR validateExportmmCIF: pyrcsb testSchemaDataPrepValidate-ihm failed for file "%s".\nstdout: %s\nstderr: %s\n' % (cif_fpath, stdoutdata, stderrdata))
         finally:
             # ensure to chdir back
             os.chdir(currentDirectory)
@@ -1615,7 +1616,7 @@ class EntryProcessor(PipelineProcessor):
         elif fname.endswith('_html.tar.gz'):
             file_type = 'Validation: HTML tar.gz'
         else:
-            self.logger.debug(f'Unknown file type got from the scientific validation: {fname}')
+            if cls.logger: cls.logger.debug(f'Unknown file type got from the scientific validation: {fname}')
             raise SubProcessError(f'ERROR IHMV.fname2ftype: IHMV generated unknown file type: {fname}')
         return file_type
         
@@ -1781,7 +1782,7 @@ class EntryProcessor(PipelineProcessor):
         ##os.chdir(currentDirectory)
         
         if returncode != 0:
-            raise SubProcessError('ERROR mmcif2json: pyrcsb testSchemaDataPrepValidate-ihm failed to generate json file for file "%s".\nstdout: %s\nstderr: %s\n' % (output_cif, stdoutdata, stderrdata)) 
+            raise SubProcessError('ERROR mmcif2json: pyrcsb testSchemaDataPrepValidate-ihm failed to generate json file for file "%s".\nstdout: %s\nstderr: %s\n' % (cif_fpath, stdoutdata, stderrdata)) 
 
         return json_fpath
         
@@ -1933,9 +1934,9 @@ class EntryProcessor(PipelineProcessor):
                 accession_code_row = rows[0]
                 primary_accession_code = self.get_primary_accession_code(self.primary_accession_code_mode, accession_code_row)
                 if accession_code_row['Accession_Code'] not in [primary_accession_code]:
-                    raise ProcessError(f'ERROR addReleaseRecords: primary_accession_code {primary_accession_code} different from Accession_Code column: {accesion_code_row["Accession_Code"]}')
+                    raise ProcessingError(f'ERROR addReleaseRecords: primary_accession_code {primary_accession_code} different from Accession_Code column: {accession_code_row["Accession_Code"]}')
             else:
-                raise ProcessError('ERROR addReleaseRecords: entry %s: Invalid number of accession codes assigned: %s' %s (entry_rid, len(rows)))
+                raise ProcessingError('ERROR addReleaseRecords: entry %s: Invalid number of accession codes assigned: %s' % (entry_rid, len(rows)))
 
             # == update database_2 and release info
             creation_time = self.processing_row['RCT']
@@ -2068,7 +2069,7 @@ class EntryProcessor(PipelineProcessor):
                 entry_row["Accession_Code"] = accession_code  # update, so Accession_Code is available in addReleaseRecords
             # == check not null accession code
             if accession_code == None:
-                raise ProcessError("ERROR set_accession_code. No PDB accession code found.")
+                raise ProcessingError("ERROR set_accession_code. No PDB accession code found.")
             # == export with release info
             if self.verbose: print("- set_accession_code: accession_code: %s " % (accession_code))
             self.addReleaseRecords()

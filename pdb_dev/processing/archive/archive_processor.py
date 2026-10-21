@@ -561,9 +561,9 @@ class ArchiveProcessor(PipelineProcessor):
                 if self.verbose: print("rollback: recovering pdb_archive with rid:%s " % (self.pdb_archive_rid))                
                 pdb_archive_rollback_payload = update_table_rows(self.catalog, "PDB", "PDB_Archive", keys=["RID"], payload=[self.pdb_archive])
                 if self.verbose: print('SUCCEEDED updated the PDB_Archive row with RID = %s' % (self.pdb_archive_rid))                                    
-                self.logger.info('SUCCEEDED updated the PDB_Archive row with RID = %s' % (self.pdb_archive_rid))                    
+                self.logger.info('SUCCEEDED updated the PDB_Archive row with RID = %s' % (self.pdb_archive_rid))
 
-        except:
+        except Exception as e:
             # HT: TODO: If failed to roll back, we should output the following into a file: archive_error_<date>
             #  1. self.PDB_Archive_row
             #  2. self.PDB_Archive_row_before
@@ -581,7 +581,7 @@ class ArchiveProcessor(PipelineProcessor):
             submission_date = dt.strptime(self.submission_time, '%Y-%m-%d %H:%M:%S%z').date()
             rollback_fpath = f'{self.log_dir}/rollback_dump_{submission_date}.json'
             dump_json_to_file(rollback_fpath, dump_object)
-            if self.verbse: print("ERROR: Unable to rollback. Will perform a dump at %s" % (rollback_fpath))
+            if self.verbose: print("ERROR: Unable to rollback. Will perform a dump at %s" % (rollback_fpath))
             self.logger.error("Unable to rollback. Will perform a dump at %s" % (rollback_fpath))
             subject = 'Error archiving files. Got exception during rollback.'            
             self.log_exception(e, notify=self.notify, subject=subject)
@@ -821,6 +821,12 @@ class ArchiveProcessor(PipelineProcessor):
 
         # send email or warning entries
         if self.processing_issues["incorrect filenames"] or self.processing_issues["missing files"]:
+            # issue messages are formatted as "Entry RID:<rid>, Accession_Code:..."
+            subject_rids = sorted({
+                m.group(1)
+                for msg in self.processing_issues["incorrect filenames"] + self.processing_issues["missing files"]
+                for m in [re.search(r'Entry RID:([^,\s]+)', msg)] if m
+            })
             subject = f'weekly archive errors/warnings: {", ".join(subject_rids)}'
             message_body = "The ERRORS and WARNINGS are reported below: (incorrect filenames are errors while missing files are warning): %s" % (json.dumps(self.processing_issues))
             if self.verbose: print("The ERRORS and WARNINGS are reported below: (incorrect filenames are errors while missing files are warning): %s" % (json.dumps(self.processing_issues)))
