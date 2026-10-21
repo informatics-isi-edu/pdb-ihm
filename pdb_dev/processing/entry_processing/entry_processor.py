@@ -187,7 +187,7 @@ class EntryProcessor(PipelineProcessor):
             self.logger = init_logger(log_level="info", log_file=self.log_file, name="entry_processor")
         
         super().__init__(
-            catalog=kwargs.get("catalog"), hostname=kwargs.get("hostname"), catalog_id=kwargs.get("catalog_id"),
+            catalog=kwargs.get("catalog"), store=kwargs.get("store"), hostname=kwargs.get("hostname"), catalog_id=kwargs.get("catalog_id"),
             credentials = kwargs.get("credentials"), cfg=kwargs.get("cfg"),
             email_config_file=kwargs.get("email_config_file"), verbose=kwargs.get("verbose"), mute=kwargs.get("mute"), preserve=kwargs.get("preserve"),
         )
@@ -487,7 +487,7 @@ class EntryProcessor(PipelineProcessor):
                     if len(pk) == 2:
                         results.sort(pb_table.column_definitions[pk[0]], pb_table.column_definitions[pk[1]])
                     elif len(pk) == 3:
-                        results.sort(pb_table.column_definitions[pk[0]], pb_table.column_definitions[pk[1]], pb_table.column_definiations[pk[2]])
+                        results.sort(pb_table.column_definitions[pk[0]], pb_table.column_definitions[pk[1]], pb_table.column_definitions[pk[2]])
                 else: 
                     pass # no sorting specified
                     
@@ -1203,7 +1203,7 @@ class EntryProcessor(PipelineProcessor):
         except FileError as e:
             raise FileError(e)
         except Exception as e:
-            raise FileError("CSV ERROR: unable to read file %s ()" % (fpath, e))
+            raise FileError("CSV ERROR: unable to read file %s (%s)" % (fpath, e))
         
 
         # == Read content from needed parent tables, so RID can be obtained in bulk.
