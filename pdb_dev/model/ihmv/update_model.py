@@ -20,6 +20,38 @@ GROUP BY s."RCB", s."File_Name"
 HAVING COUNT(s."RID") > 1
 ;
 """
+def migrate_Structure_mmCIF_File_Name(model):
+    sname = "IHMV"
+    tname = "Structure_mmCIF"
+    catalog = model.catalog
+
+    structures = get_ermrest_query(catalog, sname, tname)
+    rid2rows = { row["RID"]: row for row in structures }
+    
+    key2rows = {}
+    duplicates = []
+    for row in structures:
+        key = (row["RCB"], row["File_Name"])
+        if key in key2rows.keys():
+            duplicates.append(row["RID"])
+        else:
+            key2rows[key] = row
+
+    logger.info("Duplicate filenames [%d]: %s" % (len(duplicates), [ (rid2rows[rid]["RID"], rid2rows[rid]["RCB"], rid2rows[rid]["File_Name"]) for rid in duplicates]))
+    
+    updating = []
+    for rid in duplicates:
+        row = rid2rows[rid]
+        updating.append({
+            "RID": row["RID"],
+            "File_Name": row["File_Name"].replace(".cif", f'_{row["RID"]}.cif'),
+        })
+        
+    logger.info("migrate_Structure_mmCIF_File_Name: updating Structure_mmCIF [%d]: %s" % (len(updating), json.dumps(updating[0:10], indent=4)))
+    updated = update_table_rows(catalog, sname, tname, payload=updating, model=model, column_names=["File_Name"])
+    logger.info("migrate_Structure_mmCIF_File_Name: updated Structure_mmCIF [%d]: %s" % (len(updated), json.dumps(updated[0:10], indent=4)))
+        
+
 def update_Structure_mmCIF(model):
     sname = "IHMV"
     tname = "Structure_mmCIF"
@@ -40,6 +72,7 @@ def update_Structure_mmCIF(model):
 def update_ihmv_2026(model):
     """Update ihmv model
     """
+    migrate_Structure_mmCIF_File_Name(model)
     update_Structure_mmCIF(model)
 
     

@@ -4,19 +4,25 @@ BEGIN;
 CREATE OR REPLACE FUNCTION "PDB".entry_trigger_before_insert() RETURNS trigger LANGUAGE plpgsql 
 AS $function$
 DECLARE
-  accession_serial_last_value integer;
 BEGIN
+  -- set structure_id column
   NEW.id := 'D_' || NEW."RID";
   IF NEW."Submitter_Flag" IS NULL OR  NEW."Submitter_Flag" = 'false' THEN
      NEW."Submitter_Flag_Date" := NULL;
   END IF;
 
+  -- set default image columns
   IF NEW."Image_File_Name" IS NULL THEN
      NEW."Image_File_Name" := 'missing_image.png';
      NEW."Image_File_Bytes" := 35406;
      NEW."Image_File_URL" := '/hatrac/pdb/public/images/missing_image.png:SFJRT3MNZVDH55UY33CYR7FCD4';
      NEW."Image_File_MD5" := '27994cb72f6d4780d9b09a85b9b5ac50';
   END IF;
+
+  -- set User_mmCIF_File related columns
+  NEW."User_mmCIF_File_URL" := NEW."mmCIF_File_URL";
+  NEW."User_mmCIF_File_Name" := NEW."mmCIF_File_Name";
+
   RETURN NEW;
 END; 
 $function$;
@@ -49,13 +55,18 @@ BEGIN
     NEW."Submitter_Flag_Date" := NULL;
   END IF;
 
-  -- set User_mmCIF_File to latest user submitted mmCIF_File
-  -- Assuming that entry.RCB is the actual user
+  -- set User_mmCIF_File to latest user submitted mmCIF_File, assuming that entry.RCB is the actual user
   IF NEW."RCB" = NEW."RMB"
     AND ( OLD."mmCIF_File_URL" != NEW."mmCIF_File_URL" OR OLD."mmCIF_File_Name" != NEW."mmCIF_File_Name" )
   THEN
     NEW."User_mmCIF_File_URL" := NEW."mmCIF_File_URL";
     NEW."User_mmCIF_File_Name" := NEW."mmCIF_File_Name";
+  END IF;
+
+  -- set Accession_Issue_Date: the first time that the entry is set to HOLD
+  IF NEW."Workflow_Status" = 'HOLD' AND NEW."Accession_Code" IS NOT NULL AND OLD."Accession_Issue_Date" IS NULL
+  THEN
+    NEW."Accession_Issue_Date" := CURRENT_DATE;
   END IF;
 
   -- The mmcif file content has changed (note: assuming that md5 is not null), trigger processing workflow
