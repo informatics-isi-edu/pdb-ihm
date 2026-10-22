@@ -352,7 +352,7 @@ class EntryProcessor(PipelineProcessor):
                 self.logger.debug('tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, cval))
                 raise ProcessingError('ERROR getColumnValue: tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, cval))
             if '\n' in cval:
-                return '\n;{cval}\n;\n'
+                return f'\n;{cval}\n;\n'
             # specific rules for not quoting values (preferred). String begins with _ and cif keywords need to quoted or using multi-line format
             if '"' not in cval and "“" not in cval and "”" not in cval and "'" not in cval and ' ' not in cval and not cval.startswith('_') \
                and not cval.lower().startswith('global_') and not cval[:5].lower() in ('data_', 'save_', 'loop_', 'stop_'):
