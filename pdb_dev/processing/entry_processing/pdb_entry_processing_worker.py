@@ -175,7 +175,7 @@ _work_units.append(
         '/attributegroup/PDB:entry/RID',
         release_ready_row_job,
         claim_input_data=lambda row: {'RID': row['RID'], 'Process_Status': Process_Status_Terms['IN_PROGRESS_RELEASING_ENTRY']},
-        failure_input_data=lambda row, e: {'RID': row['RID'], 'Process_Status': Process_Status_Terms[ERROR_RELEASING_ENTRY]}
+        failure_input_data=lambda row, e: {'RID': row['RID'], 'Process_Status': Process_Status_Terms['ERROR_RELEASING_ENTRY']}
     )
 )
 

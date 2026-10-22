@@ -217,6 +217,7 @@ def update_PDB_chem_comp_atom(model):
 
 # ============================================================
 def update_model_2026(model):
+
     logger.info("== update_model_2026: begins ==")
 
     update_PDB_entry(model)

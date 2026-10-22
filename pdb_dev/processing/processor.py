@@ -131,7 +131,7 @@ class PipelineProcessor(object):
         if not self.catalog:
             if not credentials: credentials = get_credential(self.host, self.credential_file)
             if not credentials:
-                raise Exception("ERROR: a proper credential or credential file is required. Provided credential_file: %s" % (credential_file))
+                raise Exception("ERROR: a proper credential or credential file is required. Provided credential_file: %s" % (self.credential_file))
             server = DerivaServer('https', self.host, credentials, session_config=session_config)
             self.catalog = server.connect_ermrest(self.catalog_id)            
         self.catalog.dcctx['cid'] = 'pipeline/pdb'
@@ -169,7 +169,7 @@ class PipelineProcessor(object):
         
         # -- archive/release time
         if kwargs.get('cutoff_time_pacific', None): self.cutoff_time_pacific = kwargs.get('cutoff_time_pacific') 
-        if kwargs.get('release_time_utc', None): self.release_time_pacific = kwargs.get('release_time_utc')
+        if kwargs.get('release_time_utc', None): self.release_time_utc = kwargs.get('release_time_utc')
 
         #print("- Processor init: mute: %s, verbose: %s, preserve: %s, log_file: %s, email_config_file: %s" % (self.mute, self.verbose, self.preserve, self.log_file, self.email_config_file))        
         #print("host: %s, catalog_id: %s, catalog: %s" % (self.host, self.catalog_id, self.catalog))

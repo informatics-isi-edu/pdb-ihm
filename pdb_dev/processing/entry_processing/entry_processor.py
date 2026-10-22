@@ -30,7 +30,7 @@ import hashlib
 import smtplib
 from email.mime.text import MIMEText
 import socket
-from datetime import datetime
+from datetime import datetime, timezone
 from dateutil.parser import parse
 from socket import gaierror, EAI_AGAIN
 from requests import HTTPError
@@ -337,32 +337,37 @@ class EntryProcessor(PipelineProcessor):
 
             
     def getColumnValue(self, table_name, column_name, column_type, column_value):
-        """ Format column value based on type; mostly to handle text
+        """ Format column value based on type.
+        Text that begins with cif keywords e.g.(data_, save_, loop_, stop_, and global_) need to be quoted.
+        
+        Note: cif keywords can be found at: https://github.com/ihmwg/python-ihm/blob/2.10/ihm/format.py#L199-L218
         """
-        if column_value == None:
+        cval = column_value
+        if cval == None:
             return '.'
         if column_type in ['int4', 'float4']:
-            return str(column_value)
+            return str(cval)
         if column_type == 'text':
-            if '\t' in column_value:
-                self.logger.debug('tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
-                #self.export_error_message = 'ERROR getColumnValue: tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value)
-                raise ProcessingError('ERROR getColumnValue: tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
-            if '\n' in column_value:
-                return '\n;{}\n;\n'.format(column_value)
-            if '"' not in column_value and "“" not in column_value and "”" not in column_value and "'" not in column_value and ' ' not in column_value and not column_value.startswith('_'):
-                return column_value
-            if '"' not in column_value and "“" not in column_value and "”" not in column_value:
-                return '"{}"'.format(column_value)
-            if "'" not in column_value:
-                return "'{}'".format(column_value)
+            if '\t' in cval:
+                self.logger.debug('tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, cval))
+                raise ProcessingError('ERROR getColumnValue: tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, cval))
+            if '\n' in cval:
+                return '\n;{cval}\n;\n'
+            # specific rules for not quoting values (preferred). String begins with _ and cif keywords need to quoted or using multi-line format
+            if '"' not in cval and "“" not in cval and "”" not in cval and "'" not in cval and ' ' not in cval and not cval.startswith('_') \
+               and not cval.lower().startswith('global_') and not cval[:5].lower() in ('data_', 'save_', 'loop_', 'stop_'):
+                return cval
+            if '"' not in cval and "“" not in cval and "”" not in cval:
+                return f'"{cval}"'
+            if "'" not in cval:
+                return f"'{cval}'"
             else:
-                self.logger.debug('Both " and \' are in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
-                return '\n;{}\n;\n'.format(column_value)
-            raise ProcessingError('ERROR getColumnValue: Unhandled value in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
+                self.logger.debug('Both " and \' are in table: {}, column: {}, value: {}'.format(table_name, column_name, cval))
+                return f'\n;{cval}\n;\n'
+            raise ProcessingError('ERROR getColumnValue: Unhandled value in table: {table_name}, column: {column_name}, value: {cval}')
         else:
-            self.logger.debug('unknown type: {}, table: {}, column: {}'.format(column_type, table_name, column_name))
-            raise ProcessingError('ERROR getColumnValue: unknown type: {}, table: {}, column: {}'.format(column_type, table_name, column_name))
+            self.logger.debug(f'unknown type: {column_type}, table: {table_name}, column: {column_name}')
+            raise ProcessingError(f'ERROR getColumnValue: unknown type: {column_type}, table: {table_name}, column: {column_name}')
 
         
     def writeTableToCif(self, tname, cname2ctypes, results, fw):
@@ -734,7 +739,7 @@ class EntryProcessor(PipelineProcessor):
             else:
                 # re-raise in case it is not final processing step
                 if process_status != Process_Status_Terms['SUCCESS']:
-                    raise ProcessingException("ERROR export_mmCIF: unable to export mmCIF file")
+                    raise ProcessingError("ERROR export_mmCIF: unable to export mmCIF file")
                 
             return export_fpath
         
@@ -1482,7 +1487,7 @@ class EntryProcessor(PipelineProcessor):
             
             # Note: Returncode 0 doesn't mean no error files. Still need to check directory
             if returncode != 0:
-                raise SubProcessError('ERROR validateExportmmCIF: pyrcsb testSchemaDataPrepValidate-ihm failed for file "%s".\nstdout: %s\nstderr: %s\n' % (output_cif, stdoutdata, stderrdata))
+                raise SubProcessError('ERROR validateExportmmCIF: pyrcsb testSchemaDataPrepValidate-ihm failed for file "%s".\nstdout: %s\nstderr: %s\n' % (cif_fpath, stdoutdata, stderrdata))
         finally:
             # ensure to chdir back
             os.chdir(currentDirectory)
@@ -1615,7 +1620,7 @@ class EntryProcessor(PipelineProcessor):
         elif fname.endswith('_html.tar.gz'):
             file_type = 'Validation: HTML tar.gz'
         else:
-            self.logger.debug(f'Unknown file type got from the scientific validation: {fname}')
+            if cls.logger: cls.logger.debug(f'Unknown file type got from the scientific validation: {fname}')
             raise SubProcessError(f'ERROR IHMV.fname2ftype: IHMV generated unknown file type: {fname}')
         return file_type
         
@@ -1781,7 +1786,7 @@ class EntryProcessor(PipelineProcessor):
         ##os.chdir(currentDirectory)
         
         if returncode != 0:
-            raise SubProcessError('ERROR mmcif2json: pyrcsb testSchemaDataPrepValidate-ihm failed to generate json file for file "%s".\nstdout: %s\nstderr: %s\n' % (output_cif, stdoutdata, stderrdata)) 
+            raise SubProcessError('ERROR mmcif2json: pyrcsb testSchemaDataPrepValidate-ihm failed to generate json file for file "%s".\nstdout: %s\nstderr: %s\n' % (cif_fpath, stdoutdata, stderrdata)) 
 
         return json_fpath
         
@@ -1933,9 +1938,9 @@ class EntryProcessor(PipelineProcessor):
                 accession_code_row = rows[0]
                 primary_accession_code = self.get_primary_accession_code(self.primary_accession_code_mode, accession_code_row)
                 if accession_code_row['Accession_Code'] not in [primary_accession_code]:
-                    raise ProcessError(f'ERROR addReleaseRecords: primary_accession_code {primary_accession_code} different from Accession_Code column: {accesion_code_row["Accession_Code"]}')
+                    raise ProcessingError(f'ERROR addReleaseRecords: primary_accession_code {primary_accession_code} different from Accession_Code column: {accesion_code_row["Accession_Code"]}')
             else:
-                raise ProcessError('ERROR addReleaseRecords: entry %s: Invalid number of accession codes assigned: %s' %s (entry_rid, len(rows)))
+                raise ProcessingError('ERROR addReleaseRecords: entry %s: Invalid number of accession codes assigned: %s' %s (entry_rid, len(rows)))
 
             # == update database_2 and release info
             creation_time = self.processing_row['RCT']
@@ -2011,13 +2016,13 @@ class EntryProcessor(PipelineProcessor):
             # == Generate the Conform_Dictionary entries -- already done in export earlier
             self.generateConformDictionary(entry_id, entry_rid)
                 
-            # == re-generate validation report. TODO: UNCOMMENT
-            self.generate_ihmv_reports(final_fpath)
-                
             # == generate json for pdb publication
             json_fname = f'{entry_row['Accession_Code']}.json'
             json_fpath = f'{processing_dir}/{json_fname}'
             self.generate_PDB_JSON(final_fpath, json_fpath)
+
+            # == re-generate validation report. TODO: UNCOMMENT
+            self.generate_ihmv_reports(final_fpath)
             
         except Exception as e:
             if current_workflow_status != "RELEASE READY":
@@ -2068,7 +2073,7 @@ class EntryProcessor(PipelineProcessor):
                 entry_row["Accession_Code"] = accession_code  # update, so Accession_Code is available in addReleaseRecords
             # == check not null accession code
             if accession_code == None:
-                raise ProcessError("ERROR set_accession_code. No PDB accession code found.")
+                raise ProcessingError("ERROR set_accession_code. No PDB accession code found.")
             # == export with release info
             if self.verbose: print("- set_accession_code: accession_code: %s " % (accession_code))
             self.addReleaseRecords()
@@ -2080,6 +2085,8 @@ class EntryProcessor(PipelineProcessor):
                 'Record_Status_Detail' : None,
                 'Accession_Code' : accession_code,
             }
+            # -- disable this for now and let trigger address this property
+            #if not entry_row["Accession_Issue_Time"]: updating_row["Accession_Issue_Time"] = datetime.now(timezone.utc).isoformat()
         except Exception as e:
             process_status = Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES']
             subject = '%s %s: %s (%s)' % (entry_rid, current_workflow_status, process_status, self.user_email) 
