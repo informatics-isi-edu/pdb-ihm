@@ -128,7 +128,7 @@ class ArchiveProcessor(PipelineProcessor):
         self.email = self.email_config
         
         #self.printConfiguration()
-        self.submission_time = self.getArchiveDate()
+        self.submission_time = self.getArchiveDate()  # TODO: To use self.get_archive_datetime(utz=False, isoformat=True) 
         self.previous_submission_time = self.getPreviousArchiveDate(self.submission_time)
         if self.verbose: print("submission_time: %s, previous_submission_time: %s" % (self.submission_time, self.previous_submission_time))
 

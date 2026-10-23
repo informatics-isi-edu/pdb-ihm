@@ -42,6 +42,7 @@ import tempfile
 import ihm # for validation report
 from pathlib import Path
 import time
+import re
 
 from deriva.core import PollingErmrestCatalog, HatracStore, urlquote
 from deriva.core.utils import hash_utils as hu
@@ -279,10 +280,10 @@ class EntryProcessor(PipelineProcessor):
 
         current_workflow_status = self.workflow_status
         next_workflow_status = Next_Workflow_Status[current_workflow_status]
-        process_status = 'SUCCESS'
+        process_status = Process_Status_Terms['SUCCESS']        
         subject = '%s %s: %s (%s)' % (self.rid, next_workflow_status, process_status, self.user_email)
         message = f'The workflow status of the entry with RID={self.rid} was changed to {next_workflow_status}'
-        process_status = Process_Status_Terms['SUCCESS']
+
         
         # == Query for detecting the record to be processed
         row = self.processing_row
@@ -340,10 +341,12 @@ class EntryProcessor(PipelineProcessor):
         """ Format column value based on type.
         Text that begins with cif keywords e.g.(data_, save_, loop_, stop_, and global_) need to be quoted.
         
-        Note: cif keywords can be found at: https://github.com/ihmwg/python-ihm/blob/2.10/ihm/format.py#L199-L218
+        Note:
+          - `#?[]` do not need to be quoted. Empty string will be treated the same as None
+          - cif keywords can be found at: https://github.com/ihmwg/python-ihm/blob/2.10/ihm/format.py#L199-L218
         """
         cval = column_value
-        if cval == None:
+        if cval == None or cval == "":
             return '.'
         if column_type in ['int4', 'float4']:
             return str(cval)
@@ -677,8 +680,9 @@ class EntryProcessor(PipelineProcessor):
             'Record_Status_Detail' : None,
         }
 
+        fw = None
+        export_fpath = None
         try: 
-            fw = None
 
             # == download user-submitted file
             input_cif_fname = f'{entry_rid}_input.cif'            
@@ -725,7 +729,7 @@ class EntryProcessor(PipelineProcessor):
             }
         finally:
             if fw and not fw.closed: fw.close()
-            if dest_fpath and os.path.isfile(export_fpath) and export_fpath!=dest_fpath: shutil.copy2(export_fpath, dest_fpath)
+            if dest_fpath and export_fpath and os.path.isfile(export_fpath) and export_fpath!=dest_fpath: shutil.copy2(export_fpath, dest_fpath)
             # -- in this case, clean up all local files since the file is not needed for downstream processing
             if self.workflow_status in ["SUBMIT"]:
                 constraints = "Structure_Id=%s/!File_MD5=any(%s)" % (self.entry_id, ','.join([r["File_MD5"] for r in self.generated_file_rows]))
@@ -1356,12 +1360,12 @@ class EntryProcessor(PipelineProcessor):
             if tname in self.mmCIF_defaults.keys():
                 for col in self.mmCIF_defaults[tname]:
                     if col not in row.keys(): row[col] = '.'
-                
+                    
             # -- Set the ucode (case insensitive) values to upper case
             if tname in self.vocab_ucode.keys():
                 for col in self.vocab_ucode[tname]:
-                    if col in row.keys(): row[col] = row[col].upper()
-        
+                    if row.get(col) is not None: row[col] = row[col].upper()
+                    
         return rows
     
 
@@ -1432,7 +1436,7 @@ class EntryProcessor(PipelineProcessor):
            entry_rid (str): entry RID that we want to get accession code for
         """
         
-        # Check if we have already an Accession Code
+        # Check if we have already an Accession Code. The return rows can either be 0 or 1 due to unique constraint.
         rows = get_ermrest_query(self.catalog, "PDB", "Accession_Code", constraints=f"Entry={entry_rid}")
         if len(rows) == 1:
             accession_code =  rows[0]['Accession_Code']
