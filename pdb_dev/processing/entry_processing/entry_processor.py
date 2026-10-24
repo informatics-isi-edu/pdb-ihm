@@ -129,6 +129,13 @@ Next_Workflow_Status = {
     'REL': 'REL'
 }
 
+Workflow2Status_Error = {
+    'DEPO': Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'],
+    'SUBMIT': Process_Status_Terms['ERROR_GENERATING_mmCIF_FILE'],
+    'SUBMISSION COMPLETE': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'],
+    'RELEASE READY': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
+}
+
 class EntryProcessor(PipelineProcessor):
     """Network client for PDB entry processing.
     """
@@ -187,7 +194,7 @@ class EntryProcessor(PipelineProcessor):
             self.logger = init_logger(log_level="info", log_file=self.log_file, name="entry_processor")
         
         super().__init__(
-            catalog=kwargs.get("catalog"), hostname=kwargs.get("hostname"), catalog_id=kwargs.get("catalog_id"),
+            catalog=kwargs.get("catalog"), store=kwargs.get("store"), hostname=kwargs.get("hostname"), catalog_id=kwargs.get("catalog_id"),
             credentials = kwargs.get("credentials"), cfg=kwargs.get("cfg"),
             email_config_file=kwargs.get("email_config_file"), verbose=kwargs.get("verbose"), mute=kwargs.get("mute"), preserve=kwargs.get("preserve"),
         )
@@ -234,7 +241,32 @@ class EntryProcessor(PipelineProcessor):
         self.generated_file_rows = []  # track files uploaded for cleanup process later
         
         self.create_hatrac_uid_namespace(f"{self.hatrac_root}/pdb/generated/uid", self.processing_row["RCB"])
+
         
+    def delete_stale_generated_files(self, process_status, subject, message, updating_row):
+        """Delete Entry_Generated_Files that are not generated as part of this processing step.
+        
+        Note: Ermrest query with constraints any('') will returns no matches. 
+        """
+        keep_md5s = [ urlquote(r["File_MD5"]) for r in self.generated_file_rows]
+        constraints = "Structure_Id=%s" % (urlquote(self.entry_id))
+        if keep_md5s: constraints = "%s/!File_MD5=any(%s)" % (constraints, ','.join(keep_md5s))
+
+        try:
+            delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=constraints)
+        except Exception as e:
+            process_status = Workflow2Status_Error[self.workflow_status]
+            subject = '%s %s: %s (%s)' % (self.rid, self.workflow_status, process_status, self.user_email) # DEPO
+            message = self.log_exception(e, notify=False, subject=subject, body_prefix="Error occured in delete_stale_generated_files.")
+            status_detail = f' Previous error: {updating_row["Record_Status_Detail"]}' if updating_row["Record_Status_Detail"] else ''
+            updating_row = {
+                'RID': self.rid,
+                'Workflow_Status': 'ERROR',
+                'Process_Status': process_status,
+                'Record_Status_Detail': 'Error occured while deleting stale files.' + status_detail
+            }
+        finally:
+            return (process_status, subject, message, updating_row)
         
     """
     Start the process for generating pyramidal tiles
@@ -323,7 +355,6 @@ class EntryProcessor(PipelineProcessor):
             if self.verbose: print("process_entry_related_fiie: fail with subject: %s" % (subject))
             try:
                 # HT TODO: delete might fail due to dependency of child tables. We decided to go forward since it is less confusing to users
-                # WHY DELETE? 
                 constraints="structure_id=%s&Entry_Related_File=%s" % (structure_id, related_file_rid)
                 delete_table_rows(self.catalog, "PDB", csv_tname, constraints=constraints)
             except Exception as e:
@@ -494,7 +525,7 @@ class EntryProcessor(PipelineProcessor):
                     if len(pk) == 2:
                         results.sort(pb_table.column_definitions[pk[0]], pb_table.column_definitions[pk[1]])
                     elif len(pk) == 3:
-                        results.sort(pb_table.column_definitions[pk[0]], pb_table.column_definitions[pk[1]], pb_table.column_definiations[pk[2]])
+                        results.sort(pb_table.column_definitions[pk[0]], pb_table.column_definitions[pk[1]], pb_table.column_definitions[pk[2]])
                 else: 
                     pass # no sorting specified
                     
@@ -732,8 +763,9 @@ class EntryProcessor(PipelineProcessor):
             if dest_fpath and export_fpath and os.path.isfile(export_fpath) and export_fpath!=dest_fpath: shutil.copy2(export_fpath, dest_fpath)
             # -- in this case, clean up all local files since the file is not needed for downstream processing
             if self.workflow_status in ["SUBMIT"]:
-                constraints = "Structure_Id=%s/!File_MD5=any(%s)" % (self.entry_id, ','.join([r["File_MD5"] for r in self.generated_file_rows]))
-                delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=constraints)
+                # == delete stale generated files
+                (process_status, subject, message, updating_row) = self.delete_stale_generated_files(process_status, subject, message, updating_row)
+                # == update ermrest, notify, cleanup
                 self.update_processing_row(updating_row)
                 self.logger.debug(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
                 self.verbose: print(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
@@ -743,7 +775,7 @@ class EntryProcessor(PipelineProcessor):
             else:
                 # re-raise in case it is not final processing step
                 if process_status != Process_Status_Terms['SUCCESS']:
-                    raise ProcessingError("ERROR export_mmCIF: unable to export mmCIF file")
+                    raise ProcessingError("ERROR export_mmCIF: unable to export mmCIF file", details=message)
                 
             return export_fpath
         
@@ -916,9 +948,8 @@ class EntryProcessor(PipelineProcessor):
             }
         finally:
             # == clean up generated files if needed
-            constraints = "Structure_Id=%s/!File_MD5=any(%s)" % (self.entry_id, ','.join([r["File_MD5"] for r in self.generated_file_rows]))
-            delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=constraints)
-            # == update ermrest
+            (process_status, subject, message, updating_row) = self.delete_stale_generated_files(process_status, subject, message, updating_row)
+            # == update ermrest, notify, cleanup
             self.update_processing_row(updating_row)
             self.logger.debug(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')
             self.verbose: print(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')
@@ -1211,7 +1242,7 @@ class EntryProcessor(PipelineProcessor):
         except FileError as e:
             raise FileError(e)
         except Exception as e:
-            raise FileError("CSV ERROR: unable to read file %s ()" % (fpath, e))
+            raise FileError("CSV ERROR: unable to read file %s (%s)" % (fpath, e))
         
 
         # == Read content from needed parent tables, so RID can be obtained in bulk.
@@ -1856,10 +1887,10 @@ class EntryProcessor(PipelineProcessor):
         return json_fpath
         
         
-    def get_primary_accession_code(self, mode, accesion_code_row):
+    def get_primary_accession_code(self, mode, accession_code_row):
         """Get the primary accession code
         """
-        return accesion_code_row['PDBDEV_Accession_Code'] if mode == 'PDBDEV' else accesion_code_row['PDB_Accession_Code']
+        return accession_code_row['PDBDEV_Accession_Code'] if mode == 'PDBDEV' else accession_code_row['PDB_Accession_Code']
 
     def get_lower_accession_code(self, value):
         """Change to lower case
@@ -1879,14 +1910,14 @@ class EntryProcessor(PipelineProcessor):
         record = f'{record}#\n'
         return record
 
-    def get_database_2_string(self, mode, accesion_code_row):
+    def get_database_2_string(self, mode, accession_code_row):
         """Get the primary accession code
         """
         
         return '#' if mode == 'None' \
-            else None if mode == 'PDBDEV' and accesion_code_row["PDBDEV_Accession_Code"] == None \
-            else f'PDB-Dev {accesion_code_row["PDBDEV_Accession_Code"]} {self.get_primary_accession_code("PDBDEV", accesion_code_row)} ?' if mode == 'PDBDEV' \
-            else f'PDB {accesion_code_row["PDB_Accession_Code"]} {self.get_lower_accession_code(accesion_code_row["PDB_Extended_Code"])} 10.2210/pdb{self.get_lower_accession_code(accesion_code_row["PDB_Code"])}/pdb'
+            else None if mode == 'PDBDEV' and accession_code_row["PDBDEV_Accession_Code"] == None \
+            else f'PDB-Dev {accession_code_row["PDBDEV_Accession_Code"]} {self.get_primary_accession_code("PDBDEV", accession_code_row)} ?' if mode == 'PDBDEV' \
+            else f'PDB {accession_code_row["PDB_Accession_Code"]} {self.get_lower_accession_code(accession_code_row["PDB_Extended_Code"])} 10.2210/pdb{self.get_lower_accession_code(accession_code_row["PDB_Code"])}/pdb'
 
     
     def addReleaseRecords(self):
@@ -1942,9 +1973,9 @@ class EntryProcessor(PipelineProcessor):
                 accession_code_row = rows[0]
                 primary_accession_code = self.get_primary_accession_code(self.primary_accession_code_mode, accession_code_row)
                 if accession_code_row['Accession_Code'] not in [primary_accession_code]:
-                    raise ProcessingError(f'ERROR addReleaseRecords: primary_accession_code {primary_accession_code} different from Accession_Code column: {accesion_code_row["Accession_Code"]}')
+                    raise ProcessingError(f'ERROR addReleaseRecords: primary_accession_code {primary_accession_code} different from Accession_Code column: {accession_code_row["Accession_Code"]}')
             else:
-                raise ProcessingError('ERROR addReleaseRecords: entry %s: Invalid number of accession codes assigned: %s' %s (entry_rid, len(rows)))
+                raise ProcessingError('ERROR addReleaseRecords: entry %s: Invalid number of accession codes assigned: %s' % (entry_rid, len(rows)))
 
             # == update database_2 and release info
             creation_time = self.processing_row['RCT']
@@ -2048,11 +2079,12 @@ class EntryProcessor(PipelineProcessor):
             if fw and not fw.closed: fw.close()
             # == update ermrest 
             if current_workflow_status == "RELEASE READY":
-                constraints = "Structure_Id=%s/!File_MD5=any(%s)" % (self.entry_id, ','.join([r["File_MD5"] for r in self.generated_file_rows]))
-                delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=constraints)
+                # == delete stale files
+                (process_status, subject, message, updating_row) = self.delete_stale_generated_files(process_status, subject, message, updating_row)
+                # == update ermrest, notify
                 self.update_processing_row(updating_row)
                 self.logger.debug(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
-                self.verbose: print(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
+                if self.verbose: print(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
                 self.sendMail(subject, message)
             # == clean up regardless of status
             self.clean_directory(processing_dir, remove_dir=True)
@@ -2102,10 +2134,9 @@ class EntryProcessor(PipelineProcessor):
                 'Record_Status_Detail': self.truncate_message(message),
             }
         finally:
-            # == clean up Entry_Generated_File table
-            constraints = "Structure_Id=%s/!File_MD5=any(%s)" % (self.entry_id, ','.join([r["File_MD5"] for r in self.generated_file_rows]))
-            delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=constraints)
-            # == update ermrest
+            # == delete stale generated files
+            (process_status, subject, message, updating_row) = self.delete_stale_generated_files(process_status, subject, message, updating_row)
+            # == update ermrest and notify
             self.update_processing_row(updating_row)
             self.logger.debug(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
             self.verbose: print(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
