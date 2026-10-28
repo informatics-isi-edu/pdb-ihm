@@ -102,6 +102,9 @@ def main():
     args = cli.parse_cli()
     print("args = %s" % (args))
 
+    logger = init_logger(log_file=args.log_file, name="ihmv")
+    logger.info("=========== starts ihmv worker with args: %s" % (args))
+    
     credentials = get_credential(args.host, args.credential_file)
     if not credentials:
         logger.error(f"CREDENTIAL ERROR: No credentials established for host={args.host}.")
@@ -110,10 +113,6 @@ def main():
     store = HatracStore('https', args.host, credentials)
     catalog = server.connect_ermrest(args.catalog_id)
     model = catalog.getCatalogModel()
-
-    logger = init_logger(log_file=args.log_file, name="ihmv")
-    
-    logger.info("=========== starts ihmv worker with args: %s" % (args))
 
     dispatcher = JobDispatcher(args.host, args.catalog_id, args.credential_file, logger=logger)
     job_streams = [ IHMVJobStream(

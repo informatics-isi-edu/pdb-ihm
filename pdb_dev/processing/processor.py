@@ -175,10 +175,10 @@ class PipelineProcessor(object):
         #print("host: %s, catalog_id: %s, catalog: %s" % (self.host, self.catalog_id, self.catalog))
     
     @classmethod
-    def same_table_rows(cls, table, base_rows, compare_rows, key="structure_id"):
+    def x_same_table_rows(cls, table, base_rows, compare_rows, key="structure_id"):
         """Check whether content are all the same before deleting.
         
-        TODO: look up existing content based on keys
+        TODO: look up existing content based on keys. TO BE COMPLETED
         """
         return False
         tname = table.name
@@ -458,17 +458,24 @@ class PipelineProcessor(object):
         Archive datetime is the upcoming Thursday 8 PM PT (or the value specified in the cutoff_time_pacific config parameter)
         """
         cutoff_time = time.strptime(self.cutoff_time_pacific, "%A %H:%M")
-        now = dt.now(pytz.timezone("America/Los_Angeles"))
+        pacific = pytz.timezone("America/Los_Angeles")        
+        now = dt.now(pacific)
         now_to_cutoff_weekday = (cutoff_time.tm_wday - now.weekday()) % 7
-        archive_datetime = now + timedelta(days=now_to_cutoff_weekday)
         #print("get_archive_datetime: weekday_diff = %s" % (now_to_cutoff_weekday))
+        
+        archive_datetime = now + timedelta(days=now_to_cutoff_weekday)
         if now_to_cutoff_weekday == 0 and (now.hour > cutoff_time.tm_hour or (now.hour == cutoff_time.tm_hour and now.minute > cutoff_time.tm_min)):
             archive_datetime += timedelta(days=7)
         archive_datetime = archive_datetime.replace(hour=cutoff_time.tm_hour,minute=cutoff_time.tm_min,second=0,microsecond=0)
+        
+        # pytz: timedelta arithmetic and replace() keep the UTC offset of `now`. Re-localize the wall-clock
+        # time so the offset is correct when a DST transition falls between now and the cutoff.
+        archive_datetime = pacific.localize(archive_datetime.replace(tzinfo=None))
         #print("archive pacific time: %s" % (str(archive_datetime)))
-        if utz: 
-            archive_datetime = archive_datetime.astimezone(timezone.utc)
-        if self.verbose: print("archive returned time (utc=%s): %s " % (str(utz), str(archive_datetime)))
+        
+        if utz: archive_datetime = archive_datetime.astimezone(timezone.utc)
+        if self.verbose: print("- now: %s, archive returned time (utc=%s): %s " % (str(now), str(utz), str(archive_datetime)))
+        
         if isoformat:
             return str(archive_datetime)
         else: 
@@ -510,6 +517,9 @@ class PipelineProcessor(object):
         Caveat: Cutoff datetime and archive datetime are in Pacific time and release date is always Wednesday 0:00 UTC.
           Because of the time zone difference, any cutoff time between Tuesday 16:00 PT and Wednesday 00:00 PT will result in a wrong release date
           (release date before cutoff datetime). Do not set cutoff datetime between Tuesday 16:00 PT and Wednesday 00:00 PT.
+
+        TODO: mismatched of function name (pacific time is used instead of utc). Consider passing utz=True which will resolve late
+        Tuesday cutoff issue.
         """
         archive_datetime = dt.fromisoformat(self.get_archive_datetime(isoformat=True))
         release_time = time.strptime(self.release_time_utc, "%A %H:%M")
@@ -540,7 +550,9 @@ class PipelineProcessor(object):
         et, ev, tb = sys.exc_info()
         tb_message = error_message + (body_prefix if body_prefix else "") + '\n' + ''.join(traceback.format_exception(et, ev, tb))
         if self.logger:
-            self.logger.error('-- Got exception "%s: %s"' % (et.__name__, str(ev)))
+            # log_exception may be called outside an except block, in which case sys.exc_info() is (None, None, None)
+            ename = et.__name__ if et else type(e).__name__
+            self.logger.error('-- Got exception "%s: %s"' % (ename, str(ev if ev else e)))
             self.logger.error('%s' % (tb_message))
         if notify:
             if not subject: subject = "Processing error"

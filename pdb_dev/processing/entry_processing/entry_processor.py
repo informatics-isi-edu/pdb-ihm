@@ -258,7 +258,10 @@ class EntryProcessor(PipelineProcessor):
             process_status = Workflow2Status_Error[self.workflow_status]
             subject = '%s %s: %s (%s)' % (self.rid, self.workflow_status, process_status, self.user_email) # DEPO
             message = self.log_exception(e, notify=False, subject=subject, body_prefix="Error occured in delete_stale_generated_files.")
-            status_detail = f' Previous error: {updating_row["Record_Status_Detail"]}' if updating_row["Record_Status_Detail"] else ''
+            status_detail = ''
+            if updating_row["Record_Status_Detail"]:
+                status_detail = f' Previous error: {updating_row["Record_Status_Detail"]}' if updating_row["Record_Status_Detail"]
+                message = message + status_detail
             updating_row = {
                 'RID': self.rid,
                 'Workflow_Status': 'ERROR',
@@ -362,7 +365,7 @@ class EntryProcessor(PipelineProcessor):
                 raise ErmrestError("ERROR: tname: %s: cleanup restraint table %s failed while handling error (%s)." % (related_file_tname, csv_tname, message))
         finally:
             self.update_processing_row(updating_row)
-            self.logger.debug(f'== Ended process_Entry_Related_File RID="{self.rid}" with process_status = {process_status} ')
+            self.logger.info(f'== Ended process_Entry_Related_File RID="{self.rid}" with process_status = {process_status} ')
             self.verbose: print(f'== Ended process_Entry_Related_File RID="{self.rid}" with process_status = {process_status} ')
             self.sendMail(subject, message)
             self.clean_directory(processing_dir, remove_dir=True)
@@ -767,7 +770,7 @@ class EntryProcessor(PipelineProcessor):
                 (process_status, subject, message, updating_row) = self.delete_stale_generated_files(process_status, subject, message, updating_row)
                 # == update ermrest, notify, cleanup
                 self.update_processing_row(updating_row)
-                self.logger.debug(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
+                self.logger.info(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
                 self.verbose: print(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
                 self.sendMail(subject, message)
                 self.clean_directory(processing_dir, remove_dir=True)
@@ -904,7 +907,7 @@ class EntryProcessor(PipelineProcessor):
             # == Check if we have a new mmCIF file
             if md5 == last_md5:
                 message = f'The workflow status of the entry with RID={self.rid} was changed to RECORD READY. Same mmCIF file content. No processing performed.'
-                return
+                return  # finally is excuted before return
 
             # == check file size
             if file_bytes == 0:
@@ -951,7 +954,7 @@ class EntryProcessor(PipelineProcessor):
             (process_status, subject, message, updating_row) = self.delete_stale_generated_files(process_status, subject, message, updating_row)
             # == update ermrest, notify, cleanup
             self.update_processing_row(updating_row)
-            self.logger.debug(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')
+            self.logger.info(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')
             self.verbose: print(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')
             self.sendMail(subject, message)
             self.clean_directory(processing_dir, remove_dir=True)
@@ -2083,7 +2086,7 @@ class EntryProcessor(PipelineProcessor):
                 (process_status, subject, message, updating_row) = self.delete_stale_generated_files(process_status, subject, message, updating_row)
                 # == update ermrest, notify
                 self.update_processing_row(updating_row)
-                self.logger.debug(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
+                self.logger.info(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
                 if self.verbose: print(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
                 self.sendMail(subject, message)
             # == clean up regardless of status
@@ -2138,7 +2141,7 @@ class EntryProcessor(PipelineProcessor):
             (process_status, subject, message, updating_row) = self.delete_stale_generated_files(process_status, subject, message, updating_row)
             # == update ermrest and notify
             self.update_processing_row(updating_row)
-            self.logger.debug(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
+            self.logger.info(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
             self.verbose: print(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
             self.sendMail(subject, message)
             
