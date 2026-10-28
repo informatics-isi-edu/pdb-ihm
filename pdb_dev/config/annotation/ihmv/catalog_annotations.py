@@ -300,5 +300,4 @@ def main(server_name, catalog_id, credentials, args):
 if __name__ == '__main__':
     args = PDBDEV_CLI("PDB_Dev", None, 1).parse_cli()
     credentials = get_credential(args.host, args.credential_file)
-    print(credentials)
     main(args.host, args.catalog_id, credentials, args)

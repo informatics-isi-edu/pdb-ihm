@@ -199,7 +199,6 @@ def clear_entries(catalog, entry_rids, update_last_mmcif_md5=True, dry_run=False
 
 def main(args):
     credentials = get_credential(args.host, args.credential_file)
-    print("credentials: %s" % (credentials))
     catalog = ErmrestCatalog("https", args.host, args.catalog_id, credentials)
     catalog.dcctx['cid'] = DCCTX["cli"]
     #store = HatracStore("https", args.host, credentials)

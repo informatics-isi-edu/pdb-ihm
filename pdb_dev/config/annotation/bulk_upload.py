@@ -176,13 +176,16 @@ def main(server_name, catalog_id, credentials):
 
     if args.pre_print:
         print_bulk_upload_annotations(model)
+        
     # clear relevant annotations
     clear_catalog_annotations(model, [tag["bulk_upload"]])
     update_bulk_upload_annotations(model)
+    
     if args.post_print:
         print_bulk_upload_annotations(model)
+    
     if not args.dry_run:
-        #model.apply()
+        model.apply()
         pass
 
 # -- =================================================================================

@@ -33,6 +33,8 @@ from . import public
         
 def main():
     cli = PDBDEV_CLI("pdb_dev", None, "1.0")
+    cli.parser.add_argument('--schema', metavar='<schema>', help="schema name for printing annotations", default=False)
+    cli.parser.add_argument('--table', metavar='<table>', help="table name for print annotations", default=False)
     args = cli.parse_cli()
     credentials = get_credential(args.host, args.credential_file)
     

@@ -51,7 +51,7 @@ def migrate_accession_issue_time(model):
     
     catalog = model.catalog
     attributes=["Deposit_Date", "Accession_Issue_Time"]
-    entries = get_ermrest_query(catalog, "PDB", "entry", constraints="Accession_Issue_Time::null::", attributes=attributes)
+    entries = get_ermrest_query(catalog, "PDB", "entry", constraints="Accession_Issue_Time::null::/!Accession_Code::null::", attributes=attributes)
     
     updating = []
     for row in entries:
@@ -240,8 +240,8 @@ def update_model_2026(model):
 def main():
     """Update model main
     """
-    cli = PDBDEV_CLI('ad-hoc table creation tool', None, 1).parse_cli()
-    args = cli.parse_cli()        
+    cli = PDBDEV_CLI('pdb_dev', None, 1)
+    args = cli.parse_cli()
     credentials = cli.get_credential(args.host, credential_file=args.credential_file)
 
     server = DerivaServer('https', args.host, credentials)
