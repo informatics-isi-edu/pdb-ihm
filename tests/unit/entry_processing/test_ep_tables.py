@@ -72,8 +72,8 @@ def test_update_records_basic(proc):
     assert rows[1] == {"id": "2", "type": "NON-POLYMER", "details": "kept"}
 
 
-@pytest.mark.xfail(strict=True, reason="a null value in a vocab (ucode) column raises AttributeError on .upper()")
 def test_update_records_basic_null_ucode_value(proc):
+    """Regression: a null value in a vocab (ucode) column raised AttributeError on .upper()."""
     proc.vocab_ucode = {"entity": ["type"]}
     rows = [{"id": "1", "type": None}]
     proc.updateRecordsBasic(entity_table(), rows, "D_1-ABCD")

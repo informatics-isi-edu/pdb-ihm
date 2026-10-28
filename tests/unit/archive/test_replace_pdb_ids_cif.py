@@ -213,6 +213,52 @@ def test_create_pdb_comparison_reports_changes(tmp_path):
     assert "PDB 9A9V" in report
 
 
+def test_process_cif_tab_separated_loop_keeps_tabs(tmp_path):
+    text = "data_9A9V\nloop_\n_citation.id\n_citation.entry_id\n1\t9A9V\n#\n"
+    out = _run(tmp_path, text)
+    assert "1\tpdb_00009a9v" in out
+
+
+def test_process_cif_multiple_entry_id_loops(tmp_path):
+    text = ("data_9A9V\nloop_\n_citation.id\n_citation.entry_id\n1 9A9V\n#\n"
+            "loop_\n_software.ordinal\n_software.name\n1 IMP\n#\n"
+            "loop_\n_audit_author.entry_id\n_audit_author.name\n9A9V 'Doe, J.'\n#\n")
+    out = _run(tmp_path, text)
+    assert "1 pdb_00009a9v" in out
+    assert "1 IMP" in out                                  # loop without entry_id untouched
+    assert "pdb_00009a9v 'Doe, J.'" in out
+
+
+def test_process_cif_ignores_non_pdb_values_in_entry_id_column(tmp_path):
+    text = "data_9A9V\nloop_\n_citation.id\n_citation.entry_id\n1 D_1-ABCD\n2 .\n#\n"
+    out = _run(tmp_path, text)
+    assert "1 D_1-ABCD" in out and "2 ." in out
+
+
+def test_process_cif_data_block_with_non_pdb_name_unchanged(tmp_path):
+    out = _run(tmp_path, "data_D_1-ABCD\n_entry.id D_1-ABCD\n")
+    assert out == ["data_D_1-ABCD", "_entry.id D_1-ABCD"]
+
+
+def test_process_cif_is_idempotent(tmp_path):
+    first = _run(tmp_path, SAMPLE_CIF, "first.cif")
+    second = _run(tmp_path, "\n".join(first) + "\n", "second.cif")
+    assert second == first
+
+
+def test_create_pdb_comparison_skips_atom_site_rows(tmp_path):
+    src = tmp_path / "in.cif"
+    src.write_text("data_9A9V\n_entry.id 9A9V\n#\nloop_\n_atom_site.group_PDB\n_atom_site.label_comp_id\n"
+                   "ATOM 1ABC\nHETATM 2DEF\n#\n")
+    dst = tmp_path / "out.cif"
+    cif.process_cif_file(str(src), str(dst))
+    buf = io.StringIO()
+    cif.create_pdb_comparison(str(src), str(dst), buf)
+    report = buf.getvalue()
+    assert "1ABC" not in report and "2DEF" not in report
+    assert "_entry.id" in report
+
+
 def test_create_pdb_comparison_no_ids(tmp_path):
     src = tmp_path / "in.cif"
     src.write_text("data_test\n_struct.title 'nothing here'\n")

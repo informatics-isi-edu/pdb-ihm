@@ -42,6 +42,16 @@ def test_process_value_without_context_uses_pattern():
     assert rj.process_value("files/2024/x.cif.gz", None, None) == "files/2024/x.cif.gz"
 
 
+def test_process_value_with_context_handles_underscore_suffix():
+    # with the key as context, plain substring replacement does convert it
+    assert rj.process_value("8zz1_model.cif.gz", "8ZZ1", "pdb_00008zz1") == "pdb_00008zz1_model.cif.gz"
+
+
+def test_process_json_data_leaves_non_pdb_keys_and_values():
+    data = {"version": "1.0", "count": 3, "9ABCD": {"f": "9abcd.cif.gz"}}
+    assert rj.process_json_data(data) == data
+
+
 def test_process_value_recurses_into_lists_and_dicts():
     value = {"files": ["8zz1/a.cif.gz", {"p": "8zz1/b.json.gz"}], "n": 3}
     out = rj.process_value(value, "8zz1", "pdb_00008zz1")

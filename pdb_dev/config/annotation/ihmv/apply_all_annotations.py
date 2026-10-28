@@ -28,12 +28,18 @@ from . import public
 
 # -- =================================================================================
         
-def main(server_name, catalog_id, credentials, args):
-    server = DerivaServer('https', server_name, credentials)
-    catalog = server.connect_ermrest(catalog_id)
+def main():
+    cli = PDBDEV_CLI("pdb_dev", None, "1.0")
+    cli.parser.add_argument('--schema', metavar='<schema>', help="schema name for printing annotations", default=False)
+    cli.parser.add_argument('--table', metavar='<table>', help="table name for printing annotations", default=False)
+    args = cli.parse_cli()
+    credentials = get_credential(args.host, args.credential_file)
+    
+    server = DerivaServer('https', args.host, credentials)
+    catalog = server.connect_ermrest(args.catalog_id)
     catalog.dcctx['cid'] = DCCTX["annotation"]
     model = catalog.getCatalogModel()
-
+    
     if args.pre_print:
         if args.schema and args.table:
             print_table_model_extras(model, args.schema, args.table, annotations=True, acls=False, acl_bindings=False, exclude_default_fkey=False)
@@ -83,14 +89,6 @@ Note: This script doesn't clean up existing annotations in the database, and has
 '''
 
 if __name__ == '__main__':
-    cli = PDBDEV_CLI("PDB_Dev", None, "1.0")
-    cli.parser.add_argument('--schema', metavar='<schema>', help="print catalog acl script without applying", default=False)
-    cli.parser.add_argument('--table', metavar='<table>', help="print catalog acl script without applying", default=False)
-    args = cli.parse_cli()
-    credentials = get_credential(args.host, args.credential_file)
-    print(credentials)
 
-    if args.debug:
-        init_logging(level=logging.DEBUG)
-    
-    main(args.host, args.catalog_id, credentials, args)
+    sys.exit(main())
+

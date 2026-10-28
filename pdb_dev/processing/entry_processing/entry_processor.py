@@ -30,7 +30,7 @@ import hashlib
 import smtplib
 from email.mime.text import MIMEText
 import socket
-from datetime import datetime
+from datetime import datetime, timezone
 from dateutil.parser import parse
 from socket import gaierror, EAI_AGAIN
 from requests import HTTPError
@@ -127,6 +127,13 @@ Next_Workflow_Status = {
     'SUBMISSION COMPLETE': 'HOLD',
     'RELEASE READY': 'REL',
     'REL': 'REL'
+}
+
+Workflow2Status_Error = {
+    'DEPO': Process_Status_Terms['ERROR_PROCESSING_UPLOADED_mmCIF_FILE'],
+    'SUBMIT': Process_Status_Terms['ERROR_GENERATING_mmCIF_FILE'],
+    'SUBMISSION COMPLETE': Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES'],
+    'RELEASE READY': Process_Status_Terms['ERROR_RELEASING_ENTRY'],
 }
 
 class EntryProcessor(PipelineProcessor):
@@ -234,7 +241,35 @@ class EntryProcessor(PipelineProcessor):
         self.generated_file_rows = []  # track files uploaded for cleanup process later
         
         self.create_hatrac_uid_namespace(f"{self.hatrac_root}/pdb/generated/uid", self.processing_row["RCB"])
+
         
+    def delete_stale_generated_files(self, process_status, subject, message, updating_row):
+        """Delete Entry_Generated_Files that are not generated as part of this processing step.
+        
+        Note: Ermrest query with constraints any('') will returns no matches. 
+        """
+        keep_md5s = [ urlquote(r["File_MD5"]) for r in self.generated_file_rows]
+        constraints = "Structure_Id=%s" % (urlquote(self.entry_id))
+        if keep_md5s: constraints = "%s/!File_MD5=any(%s)" % (constraints, ','.join(keep_md5s))
+
+        try:
+            delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=constraints)
+        except Exception as e:
+            process_status = Workflow2Status_Error[self.workflow_status]
+            subject = '%s %s: %s (%s)' % (self.rid, self.workflow_status, process_status, self.user_email) # DEPO
+            message = self.log_exception(e, notify=False, subject=subject, body_prefix="Error occured in delete_stale_generated_files.")
+            status_detail = ''
+            if updating_row["Record_Status_Detail"]:
+                status_detail = f' Previous error: {updating_row["Record_Status_Detail"]}'
+                message = message + status_detail
+            updating_row = {
+                'RID': self.rid,
+                'Workflow_Status': 'ERROR',
+                'Process_Status': process_status,
+                'Record_Status_Detail': 'Error occured while deleting stale files.' + status_detail
+            }
+        finally:
+            return (process_status, subject, message, updating_row)
         
     """
     Start the process for generating pyramidal tiles
@@ -280,10 +315,10 @@ class EntryProcessor(PipelineProcessor):
 
         current_workflow_status = self.workflow_status
         next_workflow_status = Next_Workflow_Status[current_workflow_status]
-        process_status = 'SUCCESS'
+        process_status = Process_Status_Terms['SUCCESS']        
         subject = '%s %s: %s (%s)' % (self.rid, next_workflow_status, process_status, self.user_email)
         message = f'The workflow status of the entry with RID={self.rid} was changed to {next_workflow_status}'
-        process_status = Process_Status_Terms['SUCCESS']
+
         
         # == Query for detecting the record to be processed
         row = self.processing_row
@@ -323,7 +358,6 @@ class EntryProcessor(PipelineProcessor):
             if self.verbose: print("process_entry_related_fiie: fail with subject: %s" % (subject))
             try:
                 # HT TODO: delete might fail due to dependency of child tables. We decided to go forward since it is less confusing to users
-                # WHY DELETE? 
                 constraints="structure_id=%s&Entry_Related_File=%s" % (structure_id, related_file_rid)
                 delete_table_rows(self.catalog, "PDB", csv_tname, constraints=constraints)
             except Exception as e:
@@ -331,39 +365,46 @@ class EntryProcessor(PipelineProcessor):
                 raise ErmrestError("ERROR: tname: %s: cleanup restraint table %s failed while handling error (%s)." % (related_file_tname, csv_tname, message))
         finally:
             self.update_processing_row(updating_row)
-            self.logger.debug(f'== Ended process_Entry_Related_File RID="{self.rid}" with process_status = {process_status} ')
+            self.logger.info(f'== Ended process_Entry_Related_File RID="{self.rid}" with process_status = {process_status} ')
             self.verbose: print(f'== Ended process_Entry_Related_File RID="{self.rid}" with process_status = {process_status} ')
             self.sendMail(subject, message)
             self.clean_directory(processing_dir, remove_dir=True)
 
             
     def getColumnValue(self, table_name, column_name, column_type, column_value):
-        """ Format column value based on type; mostly to handle text
+        """ Format column value based on type.
+        Text that begins with cif keywords e.g.(data_, save_, loop_, stop_, and global_) need to be quoted.
+        
+        Note:
+          - `#?[]` do not need to be quoted. Empty string will be treated the same as None
+          - cif keywords can be found at: https://github.com/ihmwg/python-ihm/blob/2.10/ihm/format.py#L199-L218
         """
-        if column_value == None:
+        cval = column_value
+        if cval == None or cval == "":
             return '.'
         if column_type in ['int4', 'float4']:
-            return str(column_value)
+            return str(cval)
         if column_type == 'text':
-            if '\t' in column_value:
-                self.logger.debug('tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
-                #self.export_error_message = 'ERROR getColumnValue: tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value)
-                raise ProcessingError('ERROR getColumnValue: tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
-            if '\n' in column_value:
-                return '\n;{}\n;\n'.format(column_value)
-            if '"' not in column_value and "“" not in column_value and "”" not in column_value and "'" not in column_value and ' ' not in column_value and not column_value.startswith('_'):
-                return column_value
-            if '"' not in column_value and "“" not in column_value and "”" not in column_value:
-                return '"{}"'.format(column_value)
-            if "'" not in column_value:
-                return "'{}'".format(column_value)
+            if '\t' in cval:
+                self.logger.debug('tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, cval))
+                raise ProcessingError('ERROR getColumnValue: tab character in table: {}, column: {}, value: {}'.format(table_name, column_name, cval))
+            if '\n' in cval:
+                return f'\n;{cval}\n;\n'
+            # specific rules for not quoting values (preferred). String begins with _ and cif keywords need to quoted or using multi-line format
+            if '"' not in cval and "“" not in cval and "”" not in cval and "'" not in cval and ' ' not in cval and not cval.startswith('_') \
+               and not cval.lower().startswith('global_') and not cval[:5].lower() in ('data_', 'save_', 'loop_', 'stop_'):
+                return cval
+            if '"' not in cval and "“" not in cval and "”" not in cval:
+                return f'"{cval}"'
+            if "'" not in cval:
+                return f"'{cval}'"
             else:
-                self.logger.debug('Both " and \' are in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
-                return '\n;{}\n;\n'.format(column_value)
-            raise ProcessingError('ERROR getColumnValue: Unhandled value in table: {}, column: {}, value: {}'.format(table_name, column_name, column_value))
+                self.logger.debug('Both " and \' are in table: {}, column: {}, value: {}'.format(table_name, column_name, cval))
+                return f'\n;{cval}\n;\n'
+            raise ProcessingError('ERROR getColumnValue: Unhandled value in table: {table_name}, column: {column_name}, value: {cval}')
         else:
-            self.logger.debug('unknown type: {}, table: {}, column: {}'.format(column_type, table_name, column_name))
-            raise ProcessingError('ERROR getColumnValue: unknown type: {}, table: {}, column: {}'.format(column_type, table_name, column_name))
+            self.logger.debug(f'unknown type: {column_type}, table: {table_name}, column: {column_name}')
+            raise ProcessingError(f'ERROR getColumnValue: unknown type: {column_type}, table: {table_name}, column: {column_name}')
 
         
     def writeTableToCif(self, tname, cname2ctypes, results, fw):
@@ -673,8 +714,9 @@ class EntryProcessor(PipelineProcessor):
             'Record_Status_Detail' : None,
         }
 
+        fw = None
+        export_fpath = None
         try: 
-            fw = None
 
             # == download user-submitted file
             input_cif_fname = f'{entry_rid}_input.cif'            
@@ -721,21 +763,22 @@ class EntryProcessor(PipelineProcessor):
             }
         finally:
             if fw and not fw.closed: fw.close()
-            if dest_fpath and os.path.isfile(export_fpath) and export_fpath!=dest_fpath: shutil.copy2(export_fpath, dest_fpath)
+            if dest_fpath and export_fpath and os.path.isfile(export_fpath) and export_fpath!=dest_fpath: shutil.copy2(export_fpath, dest_fpath)
             # -- in this case, clean up all local files since the file is not needed for downstream processing
             if self.workflow_status in ["SUBMIT"]:
-                constraints = "Structure_Id=%s/!File_MD5=any(%s)" % (self.entry_id, ','.join([r["File_MD5"] for r in self.generated_file_rows]))
-                delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=constraints)
+                # == delete stale generated files
+                (process_status, subject, message, updating_row) = self.delete_stale_generated_files(process_status, subject, message, updating_row)
+                # == update ermrest, notify, cleanup
                 self.update_processing_row(updating_row)
-                self.logger.debug(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
-                self.verbose: print(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
+                self.logger.info(f'== Ended export_mmcif: RID="{entry_rid}" with process_status = {process_status} ')
+                self.verbose: print(f'== Ended export_mmcif: RID="{entry_rid}" with process_status = {process_status} ')
                 self.sendMail(subject, message)
                 self.clean_directory(processing_dir, remove_dir=True)
                 export_fpath = None
             else:
                 # re-raise in case it is not final processing step
                 if process_status != Process_Status_Terms['SUCCESS']:
-                    raise ProcessingError("ERROR export_mmCIF: unable to export mmCIF file")
+                    raise ProcessingError("ERROR export_mmCIF: unable to export mmCIF file", details=message)
                 
             return export_fpath
         
@@ -864,7 +907,7 @@ class EntryProcessor(PipelineProcessor):
             # == Check if we have a new mmCIF file
             if md5 == last_md5:
                 message = f'The workflow status of the entry with RID={self.rid} was changed to RECORD READY. Same mmCIF file content. No processing performed.'
-                return
+                return  # finally is excuted before return
 
             # == check file size
             if file_bytes == 0:
@@ -908,11 +951,10 @@ class EntryProcessor(PipelineProcessor):
             }
         finally:
             # == clean up generated files if needed
-            constraints = "Structure_Id=%s/!File_MD5=any(%s)" % (self.entry_id, ','.join([r["File_MD5"] for r in self.generated_file_rows]))
-            delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=constraints)
-            # == update ermrest
+            (process_status, subject, message, updating_row) = self.delete_stale_generated_files(process_status, subject, message, updating_row)
+            # == update ermrest, notify, cleanup
             self.update_processing_row(updating_row)
-            self.logger.debug(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')
+            self.logger.info(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')
             self.verbose: print(f'== Ended process_mmCIF RID="{self.rid}" with process_status = {process_status} ')
             self.sendMail(subject, message)
             self.clean_directory(processing_dir, remove_dir=True)
@@ -1352,12 +1394,12 @@ class EntryProcessor(PipelineProcessor):
             if tname in self.mmCIF_defaults.keys():
                 for col in self.mmCIF_defaults[tname]:
                     if col not in row.keys(): row[col] = '.'
-                
+                    
             # -- Set the ucode (case insensitive) values to upper case
             if tname in self.vocab_ucode.keys():
                 for col in self.vocab_ucode[tname]:
-                    if col in row.keys(): row[col] = row[col].upper()
-        
+                    if row.get(col) is not None: row[col] = row[col].upper()
+                    
         return rows
     
 
@@ -1428,7 +1470,7 @@ class EntryProcessor(PipelineProcessor):
            entry_rid (str): entry RID that we want to get accession code for
         """
         
-        # Check if we have already an Accession Code
+        # Check if we have already an Accession Code. The return rows can either be 0 or 1 due to unique constraint.
         rows = get_ermrest_query(self.catalog, "PDB", "Accession_Code", constraints=f"Entry={entry_rid}")
         if len(rows) == 1:
             accession_code =  rows[0]['Accession_Code']
@@ -1848,10 +1890,10 @@ class EntryProcessor(PipelineProcessor):
         return json_fpath
         
         
-    def get_primary_accession_code(self, mode, accesion_code_row):
+    def get_primary_accession_code(self, mode, accession_code_row):
         """Get the primary accession code
         """
-        return accesion_code_row['PDBDEV_Accession_Code'] if mode == 'PDBDEV' else accesion_code_row['PDB_Accession_Code']
+        return accession_code_row['PDBDEV_Accession_Code'] if mode == 'PDBDEV' else accession_code_row['PDB_Accession_Code']
 
     def get_lower_accession_code(self, value):
         """Change to lower case
@@ -1871,14 +1913,14 @@ class EntryProcessor(PipelineProcessor):
         record = f'{record}#\n'
         return record
 
-    def get_database_2_string(self, mode, accesion_code_row):
+    def get_database_2_string(self, mode, accession_code_row):
         """Get the primary accession code
         """
         
         return '#' if mode == 'None' \
-            else None if mode == 'PDBDEV' and accesion_code_row["PDBDEV_Accession_Code"] == None \
-            else f'PDB-Dev {accesion_code_row["PDBDEV_Accession_Code"]} {self.get_primary_accession_code("PDBDEV", accesion_code_row)} ?' if mode == 'PDBDEV' \
-            else f'PDB {accesion_code_row["PDB_Accession_Code"]} {self.get_lower_accession_code(accesion_code_row["PDB_Extended_Code"])} 10.2210/pdb{self.get_lower_accession_code(accesion_code_row["PDB_Code"])}/pdb'
+            else None if mode == 'PDBDEV' and accession_code_row["PDBDEV_Accession_Code"] == None \
+            else f'PDB-Dev {accession_code_row["PDBDEV_Accession_Code"]} {self.get_primary_accession_code("PDBDEV", accession_code_row)} ?' if mode == 'PDBDEV' \
+            else f'PDB {accession_code_row["PDB_Accession_Code"]} {self.get_lower_accession_code(accession_code_row["PDB_Extended_Code"])} 10.2210/pdb{self.get_lower_accession_code(accession_code_row["PDB_Code"])}/pdb'
 
     
     def addReleaseRecords(self):
@@ -2012,13 +2054,13 @@ class EntryProcessor(PipelineProcessor):
             # == Generate the Conform_Dictionary entries -- already done in export earlier
             self.generateConformDictionary(entry_id, entry_rid)
                 
-            # == re-generate validation report. TODO: UNCOMMENT
-            self.generate_ihmv_reports(final_fpath)
-                
             # == generate json for pdb publication
             json_fname = f'{entry_row['Accession_Code']}.json'
             json_fpath = f'{processing_dir}/{json_fname}'
             self.generate_PDB_JSON(final_fpath, json_fpath)
+
+            # == re-generate validation report. TODO: UNCOMMENT
+            self.generate_ihmv_reports(final_fpath)
             
         except Exception as e:
             if current_workflow_status != "RELEASE READY":
@@ -2040,11 +2082,12 @@ class EntryProcessor(PipelineProcessor):
             if fw and not fw.closed: fw.close()
             # == update ermrest 
             if current_workflow_status == "RELEASE READY":
-                constraints = "Structure_Id=%s/!File_MD5=any(%s)" % (self.entry_id, ','.join([r["File_MD5"] for r in self.generated_file_rows]))
-                delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=constraints)
+                # == delete stale files
+                (process_status, subject, message, updating_row) = self.delete_stale_generated_files(process_status, subject, message, updating_row)
+                # == update ermrest, notify
                 self.update_processing_row(updating_row)
-                self.logger.debug(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
-                self.verbose: print(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
+                self.logger.info(f'== Ended releasing record: RID="{entry_rid}" with process_status = {process_status} ')
+                if self.verbose: print(f'== Ended releasing record: RID="{entry_rid}" with process_status = {process_status} ')
                 self.sendMail(subject, message)
             # == clean up regardless of status
             self.clean_directory(processing_dir, remove_dir=True)
@@ -2081,6 +2124,8 @@ class EntryProcessor(PipelineProcessor):
                 'Record_Status_Detail' : None,
                 'Accession_Code' : accession_code,
             }
+            # -- disable this for now and let trigger address this property
+            #if not entry_row["Accession_Issue_Time"]: updating_row["Accession_Issue_Time"] = datetime.now(timezone.utc).isoformat()
         except Exception as e:
             process_status = Process_Status_Terms['ERROR_GENERATING_SYSTEM_FILES']
             subject = '%s %s: %s (%s)' % (entry_rid, current_workflow_status, process_status, self.user_email) 
@@ -2092,13 +2137,12 @@ class EntryProcessor(PipelineProcessor):
                 'Record_Status_Detail': self.truncate_message(message),
             }
         finally:
-            # == clean up Entry_Generated_File table
-            constraints = "Structure_Id=%s/!File_MD5=any(%s)" % (self.entry_id, ','.join([r["File_MD5"] for r in self.generated_file_rows]))
-            delete_table_rows(self.catalog, "PDB", "Entry_Generated_File", constraints=constraints)
-            # == update ermrest
+            # == delete stale generated files
+            (process_status, subject, message, updating_row) = self.delete_stale_generated_files(process_status, subject, message, updating_row)
+            # == update ermrest and notify
             self.update_processing_row(updating_row)
-            self.logger.debug(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
-            self.verbose: print(f'== Ended set_accession_code RID="{entry_rid}" with process_status = {process_status} ')
+            self.logger.info(f'== Ended set_accession_code: RID="{entry_rid}" with process_status = {process_status} ')
+            self.verbose: print(f'== Ended set_accession_code: RID="{entry_rid}" with process_status = {process_status} ')
             self.sendMail(subject, message)
             
 

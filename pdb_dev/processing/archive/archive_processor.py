@@ -128,7 +128,7 @@ class ArchiveProcessor(PipelineProcessor):
         self.email = self.email_config
         
         #self.printConfiguration()
-        self.submission_time = self.getArchiveDate()
+        self.submission_time = self.getArchiveDate()  # TODO: To use self.get_archive_datetime(utz=False, isoformat=True) 
         self.previous_submission_time = self.getPreviousArchiveDate(self.submission_time)
         if self.verbose: print("submission_time: %s, previous_submission_time: %s" % (self.submission_time, self.previous_submission_time))
 
@@ -560,7 +560,7 @@ class ArchiveProcessor(PipelineProcessor):
             if self.pdb_archive_updated:
                 if self.verbose: print("rollback: recovering pdb_archive with rid:%s " % (self.pdb_archive_rid))                
                 pdb_archive_rollback_payload = update_table_rows(self.catalog, "PDB", "PDB_Archive", keys=["RID"], payload=[self.pdb_archive])
-                if self.verbose: print('SUCCEEDED updated the PDB_Archive row with RID = %s' % (self.pdb_archive_rid))                                    
+                if self.verbose: print('SUCCEEDED updated the PDB_Archive row with RID = %s' % (self.pdb_archive_rid))
                 self.logger.info('SUCCEEDED updated the PDB_Archive row with RID = %s' % (self.pdb_archive_rid))
 
         except Exception as e:
@@ -821,13 +821,7 @@ class ArchiveProcessor(PipelineProcessor):
 
         # send email or warning entries
         if self.processing_issues["incorrect filenames"] or self.processing_issues["missing files"]:
-            # issue messages are formatted as "Entry RID:<rid>, Accession_Code:..."
-            subject_rids = sorted({
-                m.group(1)
-                for msg in self.processing_issues["incorrect filenames"] + self.processing_issues["missing files"]
-                for m in [re.search(r'Entry RID:([^,\s]+)', msg)] if m
-            })
-            subject = f'weekly archive errors/warnings: {", ".join(subject_rids)}'
+            subject = f'weekly archive errors/warnings' 
             message_body = "The ERRORS and WARNINGS are reported below: (incorrect filenames are errors while missing files are warning): %s" % (json.dumps(self.processing_issues))
             if self.verbose: print("The ERRORS and WARNINGS are reported below: (incorrect filenames are errors while missing files are warning): %s" % (json.dumps(self.processing_issues)))
             self.sendMail(subject, message_body)

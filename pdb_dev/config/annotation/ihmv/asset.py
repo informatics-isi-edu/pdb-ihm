@@ -6,6 +6,7 @@ import requests.exceptions
 from ....utils.shared import DCCTX, PDBDEV_CLI, cfg
 #from pdb_dev.utils.shared import DCCTX, PDBDEV_CLI, cfg
 from deriva.utils.extras.model import print_catalog_model_extras, print_schema_model_extras, print_table_model_extras, get_schemas, get_tables, get_columns, check_model_acl_types, tag2name, clear_all_schema_annotations
+from ..asset import print_asset_annotations
 
 # -- =================================================================================
 # -- asset related annotations
@@ -54,13 +55,12 @@ def main(server_name, catalog_id, credentials, args):
 
     if args.pre_print:
         print_asset_annotations(model)
-        #print_schema_annotations(model, schema_name)
     
     clear_asset_annotations(model)
     update_asset_annotations(model)
     
     if args.post_print:
-        print_schema_annotations(model, schema_name)
+        print_asset_annotations(model)
     if not args.dry_run:
         model.apply()
         pass
@@ -70,13 +70,7 @@ def main(server_name, catalog_id, credentials, args):
 
 if __name__ == '__main__':
     cli = PDBDEV_CLI("PDB-IHM", None, 1)
-    cli.parser.add_argument('--schema', metavar='<schema>', help="print catalog acl script without applying", default=False)
-    cli.parser.add_argument('--table', metavar='<table>', help="print catalog acl script without applying", default=False)
     args = cli.parse_cli()
     credentials = get_credential(args.host, args.credential_file)
-    print(credentials)
-
-    if args.debug:
-        init_logging(level=logging.DEBUG)
     
     main(args.host, args.catalog_id, credentials, args)

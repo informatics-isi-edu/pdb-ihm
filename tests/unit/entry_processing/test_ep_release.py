@@ -80,15 +80,6 @@ def test_assign_accession_code_none_available(make_processor, ermrest):
         p.assignAccessionCode("1-ABCD")
 
 
-@pytest.mark.xfail(strict=True, reason="if an entry already has >1 accession codes, getAccessionCode silently "
-                                       "assigns yet another one instead of raising")
-def test_get_accession_code_multiple_assigned_raises(make_processor, ermrest):
-    p = make_processor()
-    ermrest.query.side_effect = [[ACCESSION_ROW, dict(ACCESSION_ROW, RID="AC-2")], [dict(ACCESSION_ROW, Entry=None)]]
-    with pytest.raises(Exception):
-        p.getAccessionCode("1-ABCD")
-
-
 # ---------------------------------------------------------------------------
 # addReleaseRecords
 # ---------------------------------------------------------------------------

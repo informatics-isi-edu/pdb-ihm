@@ -229,7 +229,8 @@ def update_PDB_chem_comp(model):
     )
 
 # -- -----------------------------------------------------------------------------
-def update_PDB_chem_comp_atom(model):
+# DEPRECATED: table removed
+def x_update_PDB_chem_comp_atom(model):
     schema = model.schemas["PDB"]
     table = schema.tables["chem_comp_atom"]
     # ----------------------------
@@ -2113,7 +2114,7 @@ def update_PDB_base_annotations(model):
     update_PDB_audit_author(model)
     update_PDB_audit_conform(model)
     update_PDB_chem_comp(model)
-    update_PDB_chem_comp_atom(model)
+    #x_update_PDB_chem_comp_atom(model) # DEPRECATED
     update_PDB_citation(model)
     update_PDB_citation_author(model)
     update_PDB_entity(model)
@@ -2161,13 +2162,7 @@ def main(server_name, catalog_id, credentials, args):
 
 if __name__ == '__main__':
     cli = PDBDEV_CLI("PDB_Dev", None, 1)
-    cli.parser.add_argument('--schema', metavar='<schema>', help="print catalog acl script without applying", default=False)
-    cli.parser.add_argument('--table', metavar='<table>', help="print catalog acl script without applying", default=False)
     args = cli.parse_cli()
     credentials = get_credential(args.host, args.credential_file)
-    print(credentials)
 
-    if args.debug:
-        init_logging(level=logging.DEBUG)
-    
     main(args.host, args.catalog_id, credentials, args)

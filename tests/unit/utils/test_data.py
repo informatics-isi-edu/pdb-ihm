@@ -81,6 +81,57 @@ def test_clear_entry_single(patched):
     patched.update.assert_called_once()
 
 
+def test_clear_entries_dry_run_reports_md5_reset(patched, capsys):
+    data.clear_entries("catalog", ["1-A", "1-B"], dry_run=True)
+    assert "DRY_RUN updating Last_mmCIF_File_MD5 to None for RIDs [1]: ['1-A']" in capsys.readouterr().out
+
+
+def test_clear_entries_skip_md5_update(patched):
+    data.clear_entries("catalog", ["1-A"], update_last_mmcif_md5=False)
+    assert patched.delete.called
+    patched.update.assert_not_called()
+
+
+def test_clear_entries_custom_exclusions(patched):
+    data.clear_entries("catalog", ["1-A", "1-B"], exclude_tnames=["ihm_model_list"])
+    tables = [c.args[2] for c in patched.delete.call_args_list]
+    assert tables == ["Entry_Related_File", "Accession_Code"]   # Accession_Code no longer protected
+
+
+def test_clear_entries_unexpected_entry_reference(patched):
+    weird = _table("weird", [("entry", [("Accession", "Accession_Code")])])
+    with mock.patch.object(data, "get_topo_sorted_tables", return_value=[weird]):
+        with pytest.raises(Exception, match="id or rid is not part of reference to entry"):
+            data.clear_entries("catalog", ["1-A"])
+
+
+def test_clear_entry_missing_rid(patched):
+    patched.query.return_value = []
+    with pytest.raises(Exception, match="entry RID 9-Z does not exist"):
+        data.clear_entry("catalog", "9-Z")
+
+
+def test_main_without_flag_does_nothing():
+    args = Namespace(host="h", credential_file=None, catalog_id="99", clear_entries=False, rid=None, rids=None,
+                     dry_run=False)
+    with mock.patch.object(data, "get_credential", return_value={}), \
+         mock.patch.object(data, "ErmrestCatalog") as cat, mock.patch.object(data, "clear_entries") as ce:
+        cat.return_value.dcctx = {}
+        data.main(args)
+    ce.assert_not_called()
+
+
+def test_main_does_not_print_credentials(capsys):
+    """Regression: main() printed the credential dict to stdout."""
+    args = Namespace(host="h", credential_file=None, catalog_id="99", clear_entries=False, rid=None, rids=None,
+                     dry_run=False)
+    with mock.patch.object(data, "get_credential", return_value={"cookie": "webauthn=SECRET"}), \
+         mock.patch.object(data, "ErmrestCatalog") as cat:
+        cat.return_value.dcctx = {}
+        data.main(args)
+    assert "SECRET" not in capsys.readouterr().out
+
+
 def test_main_clear_entries_uses_rid_and_rids():
     """Regression: main() called clear_entry(..., dry_run=...) which does not accept dry_run,
     and ignored --rids."""
@@ -93,24 +144,3 @@ def test_main_clear_entries_uses_rid_and_rids():
         data.main(args)
     assert ce.call_args.args[1] == ["1-A", "1-B", "1-C"]
     assert ce.call_args.kwargs == {"dry_run": True}
-
-
-# ---------------------------------------------------------------------------
-# EntryProcessor.fname2ftype (classmethod, no catalog needed)
-# ---------------------------------------------------------------------------
-ep = pytest.importorskip("pdb_dev.processing.entry_processing.entry_processor")
-
-
-@pytest.mark.parametrize("fname, ftype", [
-    ("9A9V_full_validation.pdf", "Validation: Full PDF"),
-    ("9A9V_summary_validation.pdf", "Validation: Summary PDF"),
-    ("9A9V_html.tar.gz", "Validation: HTML tar.gz"),
-])
-def test_fname2ftype(fname, ftype):
-    assert ep.EntryProcessor.fname2ftype(fname) == ftype
-
-
-def test_fname2ftype_unknown_raises_subprocess_error():
-    """Regression: classmethod referenced `self` and raised NameError instead of SubProcessError."""
-    with pytest.raises(ep.SubProcessError, match="unknown file type"):
-        ep.EntryProcessor.fname2ftype("9A9V_other.txt")

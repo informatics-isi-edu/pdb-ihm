@@ -115,6 +115,5 @@ if __name__ == '__main__':
     cli = PDBDEV_CLI("PDB_Dev", None, 1)
     args = cli.parse_cli()
     credentials = get_credential(args.host, args.credential_file)
-    print("host name: %s, credential: %s" % (args.host, credentials))
 
     main(args.host, args.catalog_id, credentials, args)

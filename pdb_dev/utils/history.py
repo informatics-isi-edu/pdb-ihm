@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from deriva.core import DerivaServer, get_credential, urlquote
 from .shared import DCCTX, PDBDEV_CLI
 
+"""
 host = 'data.pdb-dev.org'
 credentials = get_credential(host)
 server = DerivaServer('https', host, credentials)
@@ -14,6 +15,7 @@ schema_name = 'PDB'
 table_name = 'entry'
 key_cols = ['RID']
 key_vals = ['2-TK8P']
+"""
 
 # -- ==============================================================================================
 def get_record_history(server, cid, sname, tname, kvals, kcols=['RID'], snap=None):

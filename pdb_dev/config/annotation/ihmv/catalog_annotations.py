@@ -232,7 +232,7 @@ def update_required_annotations(model):
     #required.update(get_columns(model, schema_names=["PDB"], table_names=["Data_Dictionary"], column_names=["Name", "Category", "Version", "Location"])) # already in model
     
     for column in required:
-        if column in columns_not_in_model: continue
+        #if column in columns_not_in_model: continue
         column.annotations[tag["required"]] = True
     
     
@@ -300,5 +300,4 @@ def main(server_name, catalog_id, credentials, args):
 if __name__ == '__main__':
     args = PDBDEV_CLI("PDB_Dev", None, 1).parse_cli()
     credentials = get_credential(args.host, args.credential_file)
-    print(credentials)
     main(args.host, args.catalog_id, credentials, args)

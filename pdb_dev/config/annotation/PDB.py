@@ -510,6 +510,7 @@ def update_PDB_entry(model):
               }
             },
             'Deposit_Date',
+            'Accession_Issue_Time',
             'Release_Date',
             'mmCIF_File_URL',
             { 'source' : 'mmCIF_File_Bytes', 'markdown_name' : 'mmCIF File Size',  },
@@ -552,6 +553,7 @@ def update_PDB_entry(model):
               'source': [{'outbound': ['PDB', 'entry_Accession_Code_fkey']}, 'RID'],
               'condition_key': 'is_not_submitter'
             },
+            'Accession_Issue_Time',
             {'source': 'Submitter_Flag', 'condition_key': 'is_not_submitter' },
             {'source': 'Submitter_Flag_Date', 'condition_key': 'is_not_submitter' },
             'New_Chem_Comp_Pending',
@@ -2563,13 +2565,7 @@ def main(server_name, catalog_id, credentials, args):
 
 if __name__ == '__main__':
     cli = PDBDEV_CLI("PDB_Dev", None, 1)
-    cli.parser.add_argument('--schema', metavar='<schema>', help="print catalog acl script without applying", default=False)
-    cli.parser.add_argument('--table', metavar='<table>', help="print catalog acl script without applying", default=False)
     args = cli.parse_cli()
     credentials = get_credential(args.host, args.credential_file)
-    print(credentials)
 
-    if args.debug:
-        init_logging(level=logging.DEBUG)
-    
     main(args.host, args.catalog_id, credentials, args)

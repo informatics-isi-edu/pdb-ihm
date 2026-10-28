@@ -67,7 +67,7 @@ def main(server_name, catalog_id, credentials, args):
         print_schema_annotations(model, "IHMV")
         
     clear_schema_annotations(model, "IHMV", per_schema_annotation_tags)
-    update_Vocab_annotations(model)
+    update_IHMV_annotations(model)
     
     if args.post_print:
         print_schema_annotations(model, "IHMV")
@@ -80,13 +80,7 @@ def main(server_name, catalog_id, credentials, args):
 
 if __name__ == '__main__':
     cli = PDBDEV_CLI("PDB-IHM", None, 1)
-    cli.parser.add_argument('--schema', metavar='<schema>', help="print catalog acl script without applying", default=False)
-    cli.parser.add_argument('--table', metavar='<table>', help="print catalog acl script without applying", default=False)
     args = cli.parse_cli()
     credentials = get_credential(args.host, args.credential_file)
-    print(credentials)
 
-    if args.debug:
-        init_logging(level=logging.DEBUG)
-    
     main(args.host, args.catalog_id, credentials, args)

@@ -47,7 +47,9 @@ setup(
             'ihmv_worker = pdb_dev.processing.ihmv_worker:main',
             'pdb_worker = pdb_dev.processing.pdb_worker:main',
             'pdb_update_model = pdb_dev.model.update_model:main',
-            'ihmv_update_model = pdb_dev.model.ihmv.update_model:main',            
+            'ihmv_update_model = pdb_dev.model.ihmv.update_model:main',
+            'pdb_set_annotations = pdb_dev.config.annotation.apply_all_annotations:main',
+            'ihmv_set_annotations = pdb_dev.config.annotation.ihmv.apply_all_annotations:main',
         ]
     },
     # scripts
@@ -66,10 +68,9 @@ setup(
     classifiers=[
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',        
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
+        'Programming Language :: Python :: 3.14',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ]

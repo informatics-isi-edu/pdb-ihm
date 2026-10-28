@@ -142,9 +142,8 @@ def test_entry_related_file_success(related, ermrest, file_format, delimiter):
     assert send.call_args.args[0].startswith("1-FILE RECORD READY: ")
 
 
-@pytest.mark.xfail(strict=True, reason="success subject uses the dict key 'SUCCESS' instead of the term 'Success' "
-                                       "used by every other step")
 def test_entry_related_file_success_subject_matches_other_steps(related):
+    """Regression: the success subject used the dict key 'SUCCESS' instead of the term 'Success'."""
     with mock.patch.object(related, "loadTableFromCSV"), mock.patch.object(related, "sendMail") as send:
         related.process_Entry_Related_File()
     assert send.call_args.args[0] == "1-FILE RECORD READY: Success (depositor@example.org)"
@@ -225,8 +224,24 @@ def test_export_mmcif_intermediate_step_returns_path_and_skips_validation(export
 def test_export_mmcif_intermediate_step_failure_raises(exporter):
     exporter.workflow_status = "SUBMISSION COMPLETE"
     exporter.exportErmrestData.side_effect = RuntimeError("ermrest down")
-    with pytest.raises(ep.ProcessingError, match="unable to export mmCIF file"):
+    with pytest.raises(ep.ProcessingError, match="unable to export mmCIF file") as exc:
         exporter.export_mmCIF()
+    assert "ermrest down" in exc.value.details        # the original error is passed on to the caller
+
+
+def test_export_mmcif_intermediate_failure_reaches_entry_status(make_processor, ermrest, fake_hatrac):
+    """addReleaseRecords (REL) records the export error passed up through ProcessingError.details."""
+    p = make_processor(row={"Accession_Code": "9ABC", "Release_Date": "2025-01-08"})
+    p.workflow_status = "RELEASE READY"
+    p.sendMail = mock.MagicMock()
+    p.getMakeMmcifFile = mock.MagicMock(side_effect=RuntimeError("make_mmcif crashed"))
+    accession = {"Accession_Code": "9ABC", "PDB_Accession_Code": "9ABC", "PDBDEV_Accession_Code": None,
+                 "PDB_Extended_Code": "PDB_00009ABC", "PDB_Code": "9ABC"}
+    ermrest.query.side_effect = lambda *a, **k: [accession] if a[2] == "Accession_Code" else []
+    p.addReleaseRecords()
+    payload = ermrest.update.call_args.kwargs["payload"][0]
+    assert payload["Process_Status"] == ep.Process_Status_Terms["ERROR_RELEASING_ENTRY"]
+    assert "make_mmcif crashed" in payload["Record_Status_Detail"]
 
 
 def test_export_mmcif_unknown_workflow_status(exporter):
@@ -235,13 +250,22 @@ def test_export_mmcif_unknown_workflow_status(exporter):
         exporter.export_mmCIF()
 
 
-@pytest.mark.xfail(strict=True, reason="if the download fails and dest_fpath is given, the finally block reads "
-                                       "export_fpath before assignment (UnboundLocalError) and hides the real error")
 def test_export_mmcif_early_failure_with_dest(exporter, fake_hatrac, tmp_path):
+    """Regression: if the download failed and dest_fpath was given, the finally block read export_fpath before
+    assignment (UnboundLocalError) and hid the real error."""
     exporter.workflow_status = "SUBMISSION COMPLETE"
     with mock.patch.object(fake_hatrac, "download_file", side_effect=RuntimeError("hatrac 404")):
-        with pytest.raises(ep.ProcessingError):
+        with pytest.raises(ep.ProcessingError, match="unable to export mmCIF file"):
             exporter.export_mmCIF(dest_fpath=str(tmp_path / "dest.cif"))
+    assert not (tmp_path / "dest.cif").exists()
+
+
+def test_export_mmcif_submit_early_failure_records_real_error(exporter, fake_hatrac, ermrest):
+    with mock.patch.object(fake_hatrac, "download_file", side_effect=RuntimeError("hatrac 404")):
+        exporter.export_mmCIF()
+    payload = last_payload(ermrest)
+    assert payload["Workflow_Status"] == "ERROR"
+    assert "hatrac 404" in payload["Record_Status_Detail"]
 
 
 # ---------------------------------------------------------------------------

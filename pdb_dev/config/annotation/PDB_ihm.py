@@ -4603,7 +4603,7 @@ def update_PDB_ihm_kinetic_rate(model):
             ['PDB', 'ihm_equilibrium_constant_determination_method_fkey'], 
             'equilibrium_constant_unit', 
             {
-                'source' : [{'outbound': ['PDB', 'ihm_kinetic_rate_multi_state_scheme_connectivity_combo1_fkey']}, 'RID'],
+                'source' : [{'outbound': ['PDB', 'ihm_kinetic_rate_multi_state_scheme_connectivity_begin_state_combo1_fkey']}, 'RID'],
                 'comment' : 'Identifier for the multi-state scheme connectivity',
                 'markdown_name' : 'Scheme Connectivity Id',
             },
@@ -6303,102 +6303,72 @@ def update_PDB_ihm_multi_state_scheme_connectivity(model):
     schema.tables["ihm_multi_state_scheme_connectivity"].display.update(
         {'name' : 'Multi-State Scheme Connectivities', 'comment_display' : {'*': {'table_comment_display': 'inline'}}, }
     )
+
+    table.source_definitions.update({
+        'fkeys' :  [],
+        'columns' :  True,
+        'sources' : {
+            'structure_fkey' : {
+                'source' : [{'outbound': ['PDB', 'ihm_multi_state_scheme_connectivity_structure_id_fkey']}, 'RID'],
+                'comment' : 'A reference to table entry.id.',
+                'markdown_name' : 'Structure Id',
+            },
+            'scheme_fkey' : {
+                'source' : [{'outbound': ['PDB', 'ihm_multi_state_scheme_connectivity_scheme_combo1_fkey']}, 'RID'],
+                'comment' : 'Identifier for the multi-state scheme',
+                'markdown_name' : 'Scheme Id',
+            },
+            'begin_state_fkey' : {
+                'source' : [{'outbound': ['PDB', 'ihm_multi_state_scheme_connectivity_begin_state_combo1_fkey']}, 'RID'],
+                'comment' : 'Identifier for the starting state in the multi-state scheme',
+                'markdown_name' : 'Begin State Id',
+            },
+            'end_state_fkey' : {
+                'source' : [{'outbound': ['PDB', 'ihm_multi_state_scheme_connectivity_end_state_combo2_fkey']}, 'RID'],
+                'comment' : 'Identifier for the ending state in the multi-state scheme',
+                'markdown_name' : 'End State Id',
+            },
+            'dataset_group_fkey' : {
+                'source' : [{'outbound': ['PDB', 'multi_state_scheme_connectivity_dataset_group_combo1_fkey']}, 'RID'],
+                'comment' : 'Identifier for the dataset group from which the multi-state scheme is obtained',
+                'markdown_name' : 'Dataset Group Id',
+            },
+            'rcb_fkey' : {
+                'source' : [{'outbound': ['PDB', 'ihm_multi_state_scheme_connectivity_RCB_fkey']}, 'RID'],
+                'markdown_name' : 'Created By',
+            },
+            'rmb_fkey' : {
+                'source' : [{'outbound': ['PDB', 'ihm_multi_state_scheme_connectivity_RMB_fkey']}, 'RID'],
+                'markdown_name' : 'Modified By',
+            },
+        }
+    })
     
     # ----------------------------
     schema.tables["ihm_multi_state_scheme_connectivity"].visible_columns.update({
         '*' :  [
-            'RID', 
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_multi_state_scheme_connectivity_structure_id_fkey']}, 'RID'],
-                'comment' : 'A reference to table entry.id.',
-                'markdown_name' : 'Structure Id',
-            },
-            'id', 
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_multi_state_scheme_connectivity_scheme_combo1_fkey']}, 'RID'],
-                'comment' : 'Identifier for the multi-state scheme',
-                'markdown_name' : 'Scheme Id',
-            },
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_multi_state_scheme_connectivity_modeling_1_combo1_fkey']}, 'RID'],
-                'comment' : 'Identifier for the starting state in the multi-state scheme',
-                'markdown_name' : 'Begin State Id',
-            },
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_multi_state_scheme_connectivity_modeling_2_combo2_fkey']}, 'RID'],
-                'comment' : 'Identifier for the ending state in the multi-state scheme',
-                'markdown_name' : 'End State Id',
-            },
-            {
-                'source' : [{'outbound': ['PDB', 'multi_state_scheme_connectivity_dataset_group_combo1_fkey']}, 'RID'],
-                'comment' : 'Identifier for the dataset group from which the multi-state scheme is obtained',
-                'markdown_name' : 'Dataset Group Id',
-            },
-            'details', 
-        ],
-        'entry' :  [
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_multi_state_scheme_connectivity_structure_id_fkey']}, 'RID'],
-                'comment' : 'A reference to table entry.id.',
-                'markdown_name' : 'Structure Id',
-            },
-            'id', 
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_multi_state_scheme_connectivity_scheme_combo1_fkey']}, 'RID'],
-                'comment' : 'Identifier for the multi-state scheme',
-                'markdown_name' : 'Scheme Id',
-            },
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_multi_state_scheme_connectivity_modeling_1_combo1_fkey']}, 'RID'],
-                'comment' : 'Identifier for the starting state in the multi-state scheme',
-                'markdown_name' : 'Begin State Id',
-            },
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_multi_state_scheme_connectivity_modeling_2_combo2_fkey']}, 'RID'],
-                'comment' : 'Identifier for the ending state in the multi-state scheme',
-                'markdown_name' : 'End State Id',
-            },
-            {
-                'source' : [{'outbound': ['PDB', 'multi_state_scheme_connectivity_dataset_group_combo1_fkey']}, 'RID'],
-                'comment' : 'Identifier for the dataset group from which the multi-state scheme is obtained',
-                'markdown_name' : 'Dataset Group Id',
-            },
-            'details', 
+            { 'source': 'RID' },
+            { 'sourcekey': 'structure_fkey' },
+            { 'source': 'id' },
+            { 'sourcekey': 'scheme_fkey' },
+            { 'sourcekey': 'begin_state_fkey' },
+            { 'sourcekey': 'end_state_fkey' },
+            { 'sourcekey': 'dataset_group_fkey' },
+            { 'source' : 'details' }, 
         ],
         'detailed' :  [
-            'RID', 
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_multi_state_scheme_connectivity_structure_id_fkey']}, 'RID'],
-                'comment' : 'A reference to table entry.id.',
-                'markdown_name' : 'Structure Id',
-            },
-            'id', 
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_multi_state_scheme_connectivity_scheme_combo1_fkey']}, 'RID'],
-                'comment' : 'Identifier for the multi-state scheme',
-                'markdown_name' : 'Scheme Id',
-            },
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_multi_state_scheme_connectivity_modeling_1_combo1_fkey']}, 'RID'],
-                'comment' : 'Identifier for the starting state in the multi-state scheme',
-                'markdown_name' : 'Begin State Id',
-            },
-            {
-                'source' : [{'outbound': ['PDB', 'ihm_multi_state_scheme_connectivity_modeling_2_combo2_fkey']}, 'RID'],
-                'comment' : 'Identifier for the ending state in the multi-state scheme',
-                'markdown_name' : 'End State Id',
-            },
-            {
-                'source' : [{'outbound': ['PDB', 'multi_state_scheme_connectivity_dataset_group_combo1_fkey']}, 'RID'],
-                'comment' : 'Identifier for the dataset group from which the multi-state scheme is obtained',
-                'markdown_name' : 'Dataset Group Id',
-            },
-            'details', 
-            ['PDB', 'ihm_multi_state_scheme_connectivity_RCB_fkey'], 
-            ['PDB', 'ihm_multi_state_scheme_connectivity_RMB_fkey'], 
-            'RCT', 
-            'RMT', 
-            ['PDB', 'ihm_multi_state_scheme_connectivity_Owner_fkey'], 
+            { 'source': 'RID' },
+            { 'sourcekey': 'structure_fkey' },
+            { 'source': 'id' },
+            { 'sourcekey': 'scheme_fkey' },
+            { 'sourcekey': 'begin_state_fkey' },
+            { 'sourcekey': 'end_state_fkey' },
+            { 'sourcekey': 'dataset_group_fkey' },
+            { 'source' : 'details' },
+            { 'sourcekey': 'rcb_fkey' },
+            { 'sourcekey': 'rmb_fkey' },
+            { 'source' : 'RCT' },
+            { 'source' : 'RMT' },
         ],
     })
 
@@ -6412,7 +6382,7 @@ def update_PDB_ihm_multi_state_scheme_connectivity(model):
     })
 
     # ----------------------------
-    schema.tables["ihm_multi_state_scheme_connectivity"].foreign_keys[(schema,"ihm_multi_state_scheme_connectivity_modeling_1_combo1_fkey")].foreign_key.update({
+    schema.tables["ihm_multi_state_scheme_connectivity"].foreign_keys[(schema,"ihm_multi_state_scheme_connectivity_begin_state_combo1_fkey")].foreign_key.update({
         'template_engine' :  'handlebars',
         'domain_filter_pattern' :  '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}',
     })
@@ -6424,7 +6394,7 @@ def update_PDB_ihm_multi_state_scheme_connectivity(model):
     })
 
     # ----------------------------
-    schema.tables["ihm_multi_state_scheme_connectivity"].foreign_keys[(schema,"ihm_multi_state_scheme_connectivity_modeling_2_combo2_fkey")].foreign_key.update({
+    schema.tables["ihm_multi_state_scheme_connectivity"].foreign_keys[(schema,"ihm_multi_state_scheme_connectivity_end_state_combo2_fkey")].foreign_key.update({
         'template_engine' :  'handlebars',
         'domain_filter_pattern' :  '{{#if _structure_id}}structure_id={{{_structure_id}}}{{/if}}',
     })
@@ -9932,13 +9902,7 @@ def main(server_name, catalog_id, credentials, args):
 
 if __name__ == '__main__':
     cli = PDBDEV_CLI("PDB_Dev", None, 1)
-    cli.parser.add_argument('--schema', metavar='<schema>', help="print catalog acl script without applying", default=False)
-    cli.parser.add_argument('--table', metavar='<table>', help="print catalog acl script without applying", default=False)
     args = cli.parse_cli()
     credentials = get_credential(args.host, args.credential_file)
-    print(credentials)
 
-    if args.debug:
-        init_logging(level=logging.DEBUG)
-    
     main(args.host, args.catalog_id, credentials, args)

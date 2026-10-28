@@ -50,5 +50,5 @@ if __name__ == '__main__':
     args = PDBDev_CLI("pdbdev", None, 1).parse_cli()
     credentials = get_credential(args.host, args.credential_file)
 
-    main(args.host, catalog_id, credentials)
+    main(args.host, args.catalog_id, credentials)
     

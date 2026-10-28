@@ -89,7 +89,7 @@ def update_bulk_upload_annotations(model):
     
     
 # -- ==========================================================================
-def main(server_name, catalog_id, credentials):
+def main(server_name, catalog_id, credentials, args):
     server = DerivaServer('https', server_name, credentials)
     catalog = server.connect_ermrest(catalog_id)
     catalog.dcctx['cid'] = DCCTX["annotation"]
@@ -116,4 +116,4 @@ if __name__ == '__main__':
     args = cli.parse_cli()
     credentials = get_credential(args.host, args.credential_file)
 
-    main(args.host, args.catalog_id, credentials)
+    main(args.host, args.catalog_id, credentials, args)

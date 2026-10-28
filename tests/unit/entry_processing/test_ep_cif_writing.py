@@ -95,21 +95,30 @@ def test_get_column_value_roundtrips_in_loop(proc, value):
     assert parse(buf.getvalue(), "t", ["id", "v"]) == [{"id": "1", "v": value}, {"id": "2", "v": "x"}]
 
 
-@pytest.mark.xfail(strict=True, reason="empty text is written unquoted (''), producing an invalid/missing CIF value; "
-                                       "it should be quoted ('') or mapped to '.'")
-def test_get_column_value_empty_string(proc):
+@pytest.mark.parametrize("ctype", ["text", "int4", "float4"])
+def test_get_column_value_empty_string_is_omitted(proc, ctype):
+    """An empty string is treated the same as None: written as '.' (omitted)."""
+    assert proc.getColumnValue("t", "a", ctype, "") == "."
+
+
+def test_get_column_value_empty_string_keeps_loop_columns_aligned(proc):
     buf = io.StringIO("data_test\n")
     proc.writeTableToCif("t", {"a": "text", "b": "text"}, [{"a": "", "b": "x"}, {"a": "y", "b": "z"}], buf)
-    assert parse(buf.getvalue(), "t", ["a", "b"]) == [{"a": "", "b": "x"}, {"a": "y", "b": "z"}]
+    assert parse(buf.getvalue(), "t", ["a", "b"]) == [{"a": None, "b": "x"}, {"a": "y", "b": "z"}]
 
 
-@pytest.mark.xfail(strict=True, reason="values starting with '#' or equal to reserved words (loop_, data_) are "
-                                       "written unquoted and break parsing")
-@pytest.mark.parametrize("value", ["#not-a-comment", "loop_", "data_x"])
-def test_get_column_value_reserved_tokens(proc, value):
+@pytest.mark.parametrize("value", ["loop_", "data_x", "save_frame", "stop_", "global_", "LOOP_", "Data_x"])
+def test_get_column_value_cif_keywords_are_quoted(proc, value):
+    """CIF keywords (data_, save_, loop_, stop_, global_; case-insensitive) must be quoted to survive parsing."""
+    assert proc.getColumnValue("t", "v", "text", value) == f'"{value}"'
     buf = io.StringIO("data_test\n")
     proc.writeTableToCif("t", {"id": "int4", "v": "text"}, [{"id": 1, "v": value}, {"id": 2, "v": "x"}], buf)
     assert parse(buf.getvalue(), "t", ["id", "v"])[0]["v"] == value
+
+
+@pytest.mark.parametrize("value", ["datax", "loops", "my_data_"])
+def test_get_column_value_keyword_lookalikes_stay_unquoted(proc, value):
+    assert proc.getColumnValue("t", "v", "text", value) == value
 
 
 # ---------------------------------------------------------------------------

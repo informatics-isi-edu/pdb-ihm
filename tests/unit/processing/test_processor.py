@@ -296,3 +296,186 @@ def test_utils_data_topo_sort_matches_processor():
     from pdb_dev.utils import data
     assert data.get_topo_sorted_tables(fake_catalog(), tname_only=True) == \
         PipelineProcessor.get_topo_sorted_tables(fake_catalog(), tname_only=True)
+
+
+def test_topo_ranked_tables_ranks_are_contiguous():
+    ranked = PipelineProcessor.get_topo_ranked_tables(fake_catalog(), tname_only=True)
+    assert list(ranked) == list(range(len(ranked)))
+    assert sorted(t for tier in ranked.values() for t in tier) == \
+        sorted(["entry", "entity", "entity_poly", "entity_poly_seq", "chem_comp", "Accession_Code"])
+
+
+# ---------------------------------------------------------------------------
+# release-date caveat (see "Flagged, not changed" in the project review doc)
+# ---------------------------------------------------------------------------
+def test_release_datetime_current_behavior_is_pacific_wednesday_midnight():
+    """Documents current behavior, not necessarily the intended one: the docstring says Wednesday 00:00 UTC,
+    but the value is Wednesday 00:00 in Pacific time. Only the date is used downstream, which is correct
+    for the default Thursday cutoff. Update this test if the decision is to switch to true UTC."""
+    p = make_processor()
+    with frozen_now(datetime(2025, 6, 2, 9, 0)):
+        release = p.get_release_datetime_utc(isoformat=False)
+    assert release.isoformat() == "2025-06-11T00:00:00-07:00"
+
+
+def test_release_datetime_custom_release_weekday():
+    p = make_processor(release_time_utc="Friday 00:00")
+    with frozen_now(datetime(2025, 6, 2, 9, 0)):                 # archive Thu 2025-06-05
+        assert p.get_release_datetime_utc(isoformat=False).date().isoformat() == "2025-06-06"
+
+
+def test_release_datetime_same_weekday_as_cutoff_moves_a_week():
+    p = make_processor(release_time_utc="Thursday 00:00")
+    with frozen_now(datetime(2025, 6, 2, 9, 0)):
+        assert p.get_release_datetime_utc(isoformat=False).date().isoformat() == "2025-06-12"
+
+
+# ---------------------------------------------------------------------------
+# ERMrest / Hatrac helpers
+# ---------------------------------------------------------------------------
+def test_get_user_row_joins_rcb_to_client_table():
+    p = make_processor()
+    user = {"ID": "https://auth.globus.org/u-1", "Email": "a@b", "Full_Name": "A"}
+    with mock.patch.object(P, "get_ermrest_query", return_value=[user]) as q:
+        assert p.get_user_row("PDB", "entry", "1-ABC") == user
+    args, kwargs = q.call_args
+    assert args[1:3] == ("PDB", "entry")
+    assert kwargs["constraints"] == "RID=1-ABC/B:=(M:RCB)=(public:ERMrest_Client:ID)"
+    assert kwargs["attributes"] == ["B:ID", "B:Email", "B:Full_Name"]
+
+
+def test_download_hatrac_file_returns_local_path(tmp_path):
+    p = make_processor()
+    with mock.patch.object(P, "HatracFile") as HF:
+        HF.return_value.file_path = str(tmp_path / "x.cif")
+        assert p.download_hatrac_file("/hatrac/a/x.cif", str(tmp_path), "x.cif") == str(tmp_path / "x.cif")
+    HF.return_value.download_file.assert_called_once_with("/hatrac/a/x.cif", str(tmp_path), "x.cif", verbose=True)
+
+
+@pytest.fixture
+def upload_dir(tmp_path):
+    for name in ["9ABC_full_validation.pdf", "9ABC_html.tar.gz", "notes.txt", "with space.pdf"]:
+        (tmp_path / name).write_text("x")
+    (tmp_path / "sub.pdf").mkdir()                        # directories are never uploaded
+    return tmp_path
+
+
+def _uploaded(HF):
+    return sorted(c.args[2] for c in HF.return_value.upload_file.call_args_list)
+
+
+def test_upload_file_groups_filters_and_sanitizes(upload_dir):
+    p = make_processor()
+    with mock.patch.object(P, "HatracFile") as HF:
+        HF.return_value.sanitize_filename.side_effect = lambda n: n.replace(" ", "_")
+        hfs = p.upload_file_groups(str(upload_dir), [r"\.pdf$"], "/hatrac/pdb/generated")
+    assert _uploaded(HF) == ["9ABC_full_validation.pdf", "with_space.pdf"]
+    assert len(hfs) == 2
+    urls = sorted(c.args[1] for c in HF.return_value.upload_file.call_args_list)
+    assert urls == ["/hatrac/pdb/generated/9ABC_full_validation.pdf", "/hatrac/pdb/generated/with_space.pdf"]
+
+
+def test_upload_file_groups_default_uploads_all_files_with_prefix(upload_dir):
+    p = make_processor()
+    with mock.patch.object(P, "HatracFile") as HF:
+        HF.return_value.sanitize_filename.side_effect = lambda n: n
+        p.upload_file_groups(str(upload_dir), None, "/hatrac/ns", file_prefix="1-ABC")
+    assert _uploaded(HF) == ["1-ABC_9ABC_full_validation.pdf", "1-ABC_9ABC_html.tar.gz", "1-ABC_notes.txt",
+                             "1-ABC_with space.pdf"]
+
+
+def test_upload_file_groups_adjusts_namespace_for_dev_root(upload_dir):
+    p = make_processor()
+    p.hatrac_root = "/hatrac/dev"
+    with mock.patch.object(P, "HatracFile") as HF:
+        HF.return_value.sanitize_filename.side_effect = lambda n: n
+        p.upload_file_groups(str(upload_dir), ["notes"], "/hatrac/pdb/generated")
+    assert HF.return_value.upload_file.call_args.args[1] == "/hatrac/dev/pdb/generated/notes.txt"
+
+
+def test_upload_file_groups_overlapping_filters_upload_twice(upload_dir):
+    """Documents current behavior: a file matching two filters is uploaded (and returned) twice."""
+    p = make_processor()
+    with mock.patch.object(P, "HatracFile") as HF:
+        HF.return_value.sanitize_filename.side_effect = lambda n: n
+        hfs = p.upload_file_groups(str(upload_dir), ["9ABC", r"\.pdf$"], "/hatrac/ns")
+    assert _uploaded(HF).count("9ABC_full_validation.pdf") == 2
+    assert len(hfs) == 4
+
+
+# ---------------------------------------------------------------------------
+# mail edge cases
+# ---------------------------------------------------------------------------
+MAIL_CFG = {"server": "smtp", "port": 465, "sender": "from@x", "receivers": "a@x", "curators": "",
+            "user": "u", "password": "pw", "footer": "--"}
+
+
+def test_sendmail_retries_on_temporary_dns_failure():
+    p = make_processor(email_config=MAIL_CFG, logger=mock.MagicMock())
+    err = P.socket.gaierror(P.socket.EAI_AGAIN, "temporary failure")
+    with mock.patch.object(P.smtplib, "SMTP_SSL", side_effect=[err, err, mock.MagicMock()]) as smtp, \
+         mock.patch.object(P.time, "sleep") as sleep:
+        p.sendMail("subj", "body")
+    assert smtp.call_count == 3
+    assert sleep.call_count == 2
+
+
+def test_sendmail_gives_up_after_retries():
+    logger = mock.MagicMock()
+    p = make_processor(email_config=MAIL_CFG, logger=logger)
+    err = P.socket.gaierror(P.socket.EAI_AGAIN, "temporary failure")
+    with mock.patch.object(P.smtplib, "SMTP_SSL", side_effect=err) as smtp, mock.patch.object(P.time, "sleep"):
+        p.sendMail("subj", "body")                       # must not raise
+    assert smtp.call_count == 11
+    assert "retry failed" in logger.error.call_args_list[0].args[0]
+
+
+def test_sendmail_other_errors_are_logged_not_raised():
+    logger = mock.MagicMock()
+    p = make_processor(email_config=MAIL_CFG, logger=logger)
+    with mock.patch.object(P.smtplib, "SMTP_SSL", side_effect=OSError("connection refused")):
+        p.sendMail("subj", "body")
+    assert "connection refused" in logger.error.call_args_list[0].args[0]
+
+
+def test_sendmail_without_logger_still_sends():
+    p = make_processor(email_config=MAIL_CFG)
+    p.logger = None
+    with mock.patch.object(P.smtplib, "SMTP_SSL") as smtp:
+        p.sendMail("subj", "body")
+    smtp.return_value.sendmail.assert_called_once()
+
+
+@pytest.mark.parametrize("cfg", [None, dict(MAIL_CFG, server=None), dict(MAIL_CFG, receivers="", curators="")])
+def test_sendmail_incomplete_config_is_noop(cfg):
+    p = make_processor(email_config=cfg)
+    p.email_config = cfg
+    with mock.patch.object(P.smtplib, "SMTP_SSL") as smtp:
+        p.sendMail("subj", "body")
+    smtp.assert_not_called()
+
+
+def test_send_linux_mail_command():
+    p = make_processor(email_config=MAIL_CFG, logger=mock.MagicMock())
+    with mock.patch.object(P.subprocess, "Popen") as popen:
+        popen.return_value.communicate.return_value = (b"", b"")
+        popen.return_value.returncode = 0
+        p.sendLinuxMail("subj", "body", "a@x")
+    assert popen.call_args.args[0] == ["/usr/bin/mail", "-r", "from@x", "-s", "DEV subj", "a@x"]
+
+
+def test_send_linux_mail_removes_temp_file():
+    p = make_processor(email_config=MAIL_CFG, logger=mock.MagicMock())
+    created = []
+    real_open = open
+
+    def tracking_open(path, mode="r", *a, **k):
+        if str(path).startswith("/tmp/") and str(path).endswith(".txt"):
+            created.append(path)
+        return real_open(path, mode, *a, **k)
+    with mock.patch.object(P.subprocess, "Popen") as popen, mock.patch("builtins.open", tracking_open):
+        popen.return_value.communicate.return_value = (b"", b"")
+        popen.return_value.returncode = 1
+        p.sendLinuxMail("subj", "body", None)            # None -> config receivers
+    assert created and not P.os.path.exists(created[0])
+    assert popen.call_args.args[0][-1] == "a@x"

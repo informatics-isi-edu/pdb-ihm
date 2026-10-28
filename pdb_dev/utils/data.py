@@ -210,7 +210,7 @@ def main(args):
         clear_entries(catalog, sorted(rids), dry_run=args.dry_run)
 
 # running the script:
-# >python -m pdb_dev.utils.data --host data-dev.pdb-ihm.org --catalog-id 99 --rid <RID> --clear-entries [--rids <RID1>,<RID2>] [--dry-run]
+# >python -m pdb_dev.utils.data --host data-dev.pdb-ihm.org --catalog-id 99 --rid <RID> --clear-entries --rids <rids>
 #
 if __name__ == "__main__":
     cli = PDBDEV_CLI("pdb", None, 1)
