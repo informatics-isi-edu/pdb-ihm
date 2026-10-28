@@ -143,10 +143,13 @@ def print_asset_annotations(model):
         for table in schema.tables.values():
             for cname in table.columns.elements:
                 column = table.columns[cname]
-                if column.asset:
+                # read the annotation directly: the column.asset property adds an empty {} asset annotation
+                # to every column that doesn't have one, which model.apply() would then save
+                asset = column.annotations.get(tag["asset"])
+                if asset:
                     print('    # ----------------------------')
                     print('    model.schemas["%s"].tables["%s"].columns["%s"].asset.update(' % (schema.name, table.name, column.name))
-                    print('%s' % (json.dumps(column.asset, indent=4)))
+                    print('%s' % (json.dumps(asset, indent=4)))
                     print(')\n')
         print()
     
@@ -173,13 +176,12 @@ def main(server_name, catalog_id, credentials, args):
 
     if args.pre_print:
         print_asset_annotations(model)
-        #print_schema_annotations(model, schema_name)
     
     clear_asset_annotations(model)
     update_asset_annotations(model)
     
     if args.post_print:
-        print_schema_annotations(model, schema_name)
+        print_asset_annotations(model)
     if not args.dry_run:
         model.apply()
         pass

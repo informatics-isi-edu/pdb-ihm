@@ -18,16 +18,17 @@ def update_PDB(model):
                                                                                         
 # -- ==========================================================================
 def print_citation_annotations(model):
+    # citation is a table annotation (Column has no .citation). Read it directly: the table.citation property
+    # adds an empty {} citation annotation to every table that doesn't have one, which model.apply() would save.
     for schema in model.schemas.values():
         print("def update_%s(model):" % (schema.name))
         for table in schema.tables.values():
-            for cname in table.columns.elements:
-                column = table.columns[cname]
-                if column.citation:
-                    print('    # ----------------------------')
-                    print('    model.schemas["%s"].tables["%s"].columns["%s"].asset.update(' % (schema.name, table.name, column.name))
-                    print('%s' % (json.dumps(column.asset, indent=4)))
-                    print(')\n')
+            citation = table.annotations.get(tag["citation"])
+            if citation:
+                print('    # ----------------------------')
+                print('    model.schemas["%s"].tables["%s"].citation.update(' % (schema.name, table.name))
+                print('%s' % (json.dumps(citation, indent=4)))
+                print(')\n')
         print()
     
 
@@ -49,13 +50,12 @@ def main(server_name, catalog_id, credentials, args):
 
     if args.pre_print:
         print_citation_annotations(model)
-        #print_schema_annotations(model, schema_name)
     
     clear_citation_annotations(model)
     update_citation_annotations(model)
     
     if args.post_print:
-        print_schema_annotations(model, schema_name)
+        print_citation_annotations(model)
     if not args.dry_run:
         model.apply()
         pass

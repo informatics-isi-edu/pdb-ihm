@@ -185,7 +185,7 @@ class PipelineProcessor(object):
         if base_rows is None and compare_rows is None: return True
         if len(base_rows) == 0 and len(compare_rows) == 0: return True
         id2compare_rows = { row["structure_id"]: row for row in compare_rows }
-        print("%s base_rows[%d]: %s" % (tname, len(existing_rows), base_rows))
+        print("%s base_rows[%d]: %s" % (tname, len(base_rows), base_rows))
         print("id2compare_rows: %s " % (json.dumps(id2compare_rows, indent=4)))
         
         different = False
