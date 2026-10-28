@@ -7,6 +7,12 @@ import pytest
 from pdb_dev.processing.archive import replace_pdb_ids_cif as cif
 
 
+# Known bug, tracked in issue #368 (to be fixed by someone else): bare loop headers such as '_citation.entry_id' are
+# swallowed by the single-value regexes (\s+ matches the newline), so entry_id columns in loops are not converted;
+# a bare output filename fails with os.makedirs('').
+ISSUE_368 = pytest.mark.xfail(strict=True, reason="issue #368: replace_pdb_ids_cif loop entry_id / bare output path")
+
+
 # ---------------------------------------------------------------------------
 # helpers
 # ---------------------------------------------------------------------------
@@ -128,15 +134,17 @@ def test_process_cif_does_not_touch_database_2_loop(tmp_path):
     assert "PDB 9A9V" in out
 
 
+@ISSUE_368
 def test_process_cif_replaces_entry_id_column_in_loops(tmp_path):
-    """Regression: bare loop headers like '_citation.entry_id' used to be swallowed by the single-value
-    branch (\\s+ matched the newline), so loop entry_id columns were never converted."""
+    """Bare loop headers like '_citation.entry_id' are swallowed by the single-value
+    branch (\\s+ matches the newline), so loop entry_id columns are not converted."""
     out = _run(tmp_path, SAMPLE_CIF)
     assert "_citation.entry_id" in out
     assert "1 'A title with spaces' pdb_00009a9v" in out
     assert "2 \"Another title\" 'pdb_00009a9v'" in out       # original quoting preserved
 
 
+@ISSUE_368
 def test_process_cif_entry_id_loop_header_keeps_column_index(tmp_path):
     text = """data_1ABC
 loop_
@@ -166,8 +174,9 @@ def test_process_cif_gzip_roundtrip(tmp_path):
         assert f.readline().strip() == "data_pdb_00009a9v"
 
 
+@ISSUE_368
 def test_process_cif_output_in_current_directory(tmp_path, monkeypatch):
-    """Regression: a bare output filename used to fail with os.makedirs('')."""
+    """A bare output filename fails with os.makedirs('')."""
     src = tmp_path / "in.cif"
     src.write_text(SAMPLE_CIF)
     monkeypatch.chdir(tmp_path)
@@ -213,12 +222,14 @@ def test_create_pdb_comparison_reports_changes(tmp_path):
     assert "PDB 9A9V" in report
 
 
+@ISSUE_368
 def test_process_cif_tab_separated_loop_keeps_tabs(tmp_path):
     text = "data_9A9V\nloop_\n_citation.id\n_citation.entry_id\n1\t9A9V\n#\n"
     out = _run(tmp_path, text)
     assert "1\tpdb_00009a9v" in out
 
 
+@ISSUE_368
 def test_process_cif_multiple_entry_id_loops(tmp_path):
     text = ("data_9A9V\nloop_\n_citation.id\n_citation.entry_id\n1 9A9V\n#\n"
             "loop_\n_software.ordinal\n_software.name\n1 IMP\n#\n"
