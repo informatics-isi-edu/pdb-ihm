@@ -24,15 +24,20 @@ from . import Vocab
 from . import public    
 #from . import _acl_admin # NOT IN MODEL
 
+
 # This script pull all the annotations in different scripts together and
 # apply them simultaneously. The operation is idempotent. 
 # -- ----------------------------------------------------------------------
 
 # -- =================================================================================
         
-def main(server_name, catalog_id, credentials, args):
-    server = DerivaServer('https', server_name, credentials)
-    catalog = server.connect_ermrest(catalog_id)
+def main():
+    cli = PDBDEV_CLI("pdb_dev", None, "1.0")
+    args = cli.parse_cli()
+    credentials = get_credential(args.host, args.credential_file)
+    
+    server = DerivaServer('https', args.host, credentials)
+    catalog = server.connect_ermrest(args.catalog_id)
     catalog.dcctx['cid'] = DCCTX["annotation"]
     model = catalog.getCatalogModel()
 
@@ -48,6 +53,7 @@ def main(server_name, catalog_id, credentials, args):
     # -- clear annotations
     model.clear(clear_comment=False, clear_annotations=True, clear_acls=False, clear_acl_bindings=False)
 
+    # -- legacy: to delete
     #catalog_annotations.clear_catalog_catalog_wide_annotations(model)
     #clear_schema_annotations(model, "Vocab", per_schema_annotation_tags)
     #clear_schema_annotations(model, "PDB", per_schema_annotation_tags)
@@ -70,12 +76,6 @@ def main(server_name, catalog_id, credentials, args):
     asset.update_asset_annotations(model)
     citation.update_citation_annotations(model)
     
-    '''    
-    viz_3d_display.update_viz_3d_display_annotations(model)
-    # -- per schema annotations
-    #public.update_public_annotations(model)
-    #_acl_admin.update__acl_admin_annotations(model)    
-    '''
 
     if args.post_print:
         if args.schema and args.table:
@@ -100,14 +100,5 @@ Note: This script doesn't clean up existing annotations in the database, and has
 '''
 
 if __name__ == '__main__':
-    cli = PDBDEV_CLI("PDB_Dev", None, "1.0")
-    cli.parser.add_argument('--schema', metavar='<schema>', help="print catalog acl script without applying", default=False)
-    cli.parser.add_argument('--table', metavar='<table>', help="print catalog acl script without applying", default=False)
-    args = cli.parse_cli()
-    credentials = get_credential(args.host, args.credential_file)
-    print(credentials)
-
-    if args.debug:
-        init_logging(level=logging.DEBUG)
     
-    main(args.host, args.catalog_id, credentials, args)
+    sys.exit(main())

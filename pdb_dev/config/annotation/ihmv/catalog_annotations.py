@@ -232,7 +232,7 @@ def update_required_annotations(model):
     #required.update(get_columns(model, schema_names=["PDB"], table_names=["Data_Dictionary"], column_names=["Name", "Category", "Version", "Location"])) # already in model
     
     for column in required:
-        if column in columns_not_in_model: continue
+        #if column in columns_not_in_model: continue
         column.annotations[tag["required"]] = True
     
     

@@ -229,7 +229,8 @@ def update_PDB_chem_comp(model):
     )
 
 # -- -----------------------------------------------------------------------------
-def update_PDB_chem_comp_atom(model):
+# DEPRECATED: table removed
+def x_update_PDB_chem_comp_atom(model):
     schema = model.schemas["PDB"]
     table = schema.tables["chem_comp_atom"]
     # ----------------------------
@@ -2113,7 +2114,7 @@ def update_PDB_base_annotations(model):
     update_PDB_audit_author(model)
     update_PDB_audit_conform(model)
     update_PDB_chem_comp(model)
-    update_PDB_chem_comp_atom(model)
+    #x_update_PDB_chem_comp_atom(model) # DEPRECATED
     update_PDB_citation(model)
     update_PDB_citation_author(model)
     update_PDB_entity(model)
