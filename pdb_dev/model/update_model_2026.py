@@ -44,26 +44,26 @@ def migrate_user_mmcif_files(model):
     logger.info("migrate_user_mmcif_files: updated entries [%d]: %s" % (len(updated), json.dumps(updated[0:2], indent=4)))
 
     
-def migrate_accession_issue_date(model):
-    """Populate Accession_Issue_Date of existing entries
+def migrate_accession_issue_time(model):
+    """Populate Accession_Issue_Time of existing entries
     """
-    logger.info("migrate_accession_issue_date - begins")
+    logger.info("migrate_accession_issue_time - begins")
     
     catalog = model.catalog
-    attributes=["Deposit_Date", "Accession_Issue_Date"]
-    entries = get_ermrest_query(catalog, "PDB", "entry", constraint="Accession_Issue_Date::null::", attributes=attributes)
+    attributes=["Deposit_Date", "Accession_Issue_Time"]
+    entries = get_ermrest_query(catalog, "PDB", "entry", constraints="Accession_Issue_Time::null::", attributes=attributes)
     
     updating = []
     for row in entries:
-        if not row["Accession_Issue_Date"]:
+        if not row["Accession_Issue_Time"]:
             updating.append({
                 "RID": row["RID"],
-                "Accession_Issue_Date": row["Deposit_Date"]
+                "Accession_Issue_Time": row["Deposit_Date"]
             })
             
-    logger.info("migrate_accession_issue_date: updating entries [%d]: %s" % (len(updating), json.dumps(updating[0:2], indent=4)))
-    updated = update_table_rows(catalog, "PDB", "entry", payload=updating, model=model, column_names=["Accession_Issue_Date"])
-    logger.info("migrate_accession_issue_date: updated entries [%d]: %s" % (len(updated), json.dumps(updated[0:2], indent=4)))
+    logger.info("migrate_accession_issue_time: updating entries [%d]: %s" % (len(updating), json.dumps(updating[0:2], indent=4)))
+    updated = update_table_rows(catalog, "PDB", "entry", payload=updating, model=model, column_names=["Accession_Issue_Time"])
+    logger.info("migrate_accession_issue_time: updated entries [%d]: %s" % (len(updated), json.dumps(updated[0:2], indent=4)))
     
 
 def update_PDB_entry(model):
@@ -87,22 +87,28 @@ def update_PDB_entry(model):
                     comment=cname2comments[cname],
                 ),
             )
-            logger.info("Create column: %s:%s - created" % (tname, cname))
+            logger.info("+ Create column: %s:%s - created" % (tname, cname))
         else:
             logger.info("Create column: %s:%s already exists" % (tname, cname))
 
-    # == accession_issue_date
+    # == accession_issue_date: drop
     cname = "Accession_Issue_Date"
+    if cname in table.columns.elements:
+        table.columns[cname].drop()
+        logger.info("+ Drop column: %s:%s - dropped" % (tname, cname))        
+        
+    # == accession_issue_time
+    cname = "Accession_Issue_Time"
     if cname not in table.columns.elements:
         table.create_column(
             Column.define(
                 cname,
-                builtin_types.date,
+                builtin_types.timestamptz,
                 nullok=True,
-                comment="Accession code issue date",
+                comment="Accession code issue time",
             ),
         )
-        logger.info("Create column: %s:%s - created" % (tname, cname))
+        logger.info("+ Create column: %s:%s - created" % (tname, cname))
     else:
         logger.info("Create column: %s:%s already exists" % (tname, cname))
     
@@ -119,7 +125,7 @@ def update_PDB_Entry_Generated_File(model):
     for cname in ["mmCIF_Schema_Version"]:
         if cname in table.columns.elements:
             table.columns[cname].drop()
-            logger.info("drop column: %s:%s - dropped" % (tname, cname))
+            logger.info("+ drop column: %s:%s - dropped" % (tname, cname))
         else:
             logger.info("drop column: %s:%s doesn't exist" % (tname, cname))
 
@@ -138,7 +144,7 @@ def update_PDB_ihm_multi_state_scheme_connectivity(model):
     cname = "State_RID"
     if cname in table.columns.elements:
         table.columns[cname].alter(name="Begin_State_RID")
-        logger.info("rename column: %s:%s - renamed" % (tname, cname))
+        logger.info("+ rename column: %s:%s - renamed" % (tname, cname))
     else:
         logger.info("rename column: %s:%s doesn't exist" % (tname, cname))        
         
@@ -152,7 +158,7 @@ def update_PDB_ihm_multi_state_scheme_connectivity(model):
                 nullok=True,
             ),
         )
-        logger.info("Create column: %s:%s - created" % (tname, cname))
+        logger.info("+ Create column: %s:%s - created" % (tname, cname))
     else:
         logger.info("Create column: %s:%s already exists" % (tname, cname))        
 
@@ -160,7 +166,7 @@ def update_PDB_ihm_multi_state_scheme_connectivity(model):
     ct_name = "ihm_multi_state_scheme_connectivity_modeling_1_combo1_fkey"
     if (schema, ct_name) in table.foreign_keys.elements:
         table.foreign_keys[(schema, ct_name)].drop()
-        logger.info("drop fkey: %s:%s - dropped" % (tname, ct_name))
+        logger.info("+ drop fkey: %s:%s - dropped" % (tname, ct_name))
     else:
         logger.info("drop fkey: %s:%s doesn't exist" % (tname, ct_name))
 
@@ -174,7 +180,7 @@ def update_PDB_ihm_multi_state_scheme_connectivity(model):
                 on_update="CASCADE"
             )
         )
-        logger.info("create fkey: %s:%s - created" % (tname, ct_name))
+        logger.info("+ create fkey: %s:%s - created" % (tname, ct_name))
     else:
         logger.info("create fkey: %s:%s already exists" % (tname, ct_name))
 
@@ -182,7 +188,7 @@ def update_PDB_ihm_multi_state_scheme_connectivity(model):
     ct_name = "ihm_multi_state_scheme_connectivity_modeling_2_combo2_fkey"
     if (schema, ct_name) in table.foreign_keys.elements:
         table.foreign_keys[(schema, ct_name)].drop()
-        logger.info("drop fkey: %s:%s - dropped" % (tname, ct_name))
+        logger.info("+ drop fkey: %s:%s - dropped" % (tname, ct_name))
     else:
         logger.info("drop fkey: %s:%s doesn't exist" % (tname, ct_name))        
         
@@ -196,7 +202,7 @@ def update_PDB_ihm_multi_state_scheme_connectivity(model):
                 on_update="CASCADE"
             )
         )
-        logger.info("create fkey: %s:%s - created" % (tname, ct_name))
+        logger.info("+ create fkey: %s:%s - created" % (tname, ct_name))
     else:
         logger.info("create fkey: %s:%s already exists" % (tname, ct_name))        
 
@@ -211,22 +217,23 @@ def update_PDB_chem_comp_atom(model):
     
     if tname in schema.tables.keys():
         schema.tables[tname].drop()
-        logger.info("drop table: %s - dropped" % (tname))
+        logger.info("+ drop table: %s - dropped" % (tname))
     else:
         logger.info("drop table: %s doesn't exist" % (tname))
 
 # ============================================================
 def update_model_2026(model):
 
-    logger.info("== update_model_2026: begins ==")
+    logger.info("=== update_model_2026: begins ===")
 
     update_PDB_entry(model)
-    migrate_user_mmcif_files(model)    
+    migrate_user_mmcif_files(model)
+    migrate_accession_issue_time(model)
     update_PDB_Entry_Generated_File(model)
     update_PDB_ihm_multi_state_scheme_connectivity(model)
     update_PDB_chem_comp_atom(model)
     
-    logger.info("== update_model_2026: ends ==")
+    logger.info("=== update_model_2026: ends ===")
 
 # ===================================================    
 

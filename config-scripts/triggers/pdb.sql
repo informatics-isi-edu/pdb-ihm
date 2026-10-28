@@ -56,6 +56,7 @@ BEGIN
   END IF;
 
   -- set User_mmCIF_File to latest user submitted mmCIF_File, assuming that entry.RCB is the actual user
+  -- curators can update those two fields directly 
   IF NEW."RCB" = NEW."RMB"
     AND ( OLD."mmCIF_File_URL" != NEW."mmCIF_File_URL" OR OLD."mmCIF_File_Name" != NEW."mmCIF_File_Name" )
   THEN
@@ -63,10 +64,12 @@ BEGIN
     NEW."User_mmCIF_File_Name" := NEW."mmCIF_File_Name";
   END IF;
 
-  -- set Accession_Issue_Date: the first time that the entry is set to HOLD
-  IF NEW."Workflow_Status" = 'HOLD' AND NEW."Accession_Code" IS NOT NULL AND OLD."Accession_Issue_Date" IS NULL
+  -- set Accession_Issue_Time: the first time that the entry is set to HOLD and "Accession_Issue_Time" is not provided
+  -- and Accession_Issue_Time is not set. This will allow pipeline to set this field.
+  IF NEW."Workflow_Status" = 'HOLD' AND NEW."Accession_Code" IS NOT NULL AND OLD."Accession_Issue_Time" IS NULL
+    AND NEW."Accession_Issue_Time" IS NULL
   THEN
-    NEW."Accession_Issue_Date" := CURRENT_DATE;
+    NEW."Accession_Issue_Time" := NOW();
   END IF;
 
   -- The mmcif file content has changed (note: assuming that md5 is not null), trigger processing workflow
