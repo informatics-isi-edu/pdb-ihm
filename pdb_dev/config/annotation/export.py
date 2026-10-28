@@ -126,8 +126,5 @@ if __name__ == '__main__':
     cli = PDBDEV_CLI("PDB_Dev", None, 1)
     args = cli.parse_cli()
     credentials = get_credential(args.host, args.credential_file)
-
-    if args.debug:
-        init_logging(level=logging.DEBUG)
     
     main(args.host, args.catalog_id, credentials, args)

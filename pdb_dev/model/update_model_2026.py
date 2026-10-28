@@ -242,7 +242,7 @@ def main():
     """
     cli = PDBDEV_CLI('pdb_dev', None, 1)
     args = cli.parse_cli()
-    credentials = cli.get_credential(args.host, credential_file=args.credential_file)
+    credentials = get_credential(args.host, credential_file=args.credential_file)
 
     server = DerivaServer('https', args.host, credentials)
     catalog = server.connect_ermrest(args.catalog_id)
