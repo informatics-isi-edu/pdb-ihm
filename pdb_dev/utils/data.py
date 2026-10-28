@@ -138,7 +138,7 @@ def clear_entry(catalog, entry_rid, update_last_mmcif_md5=True,
     updating_row = {"RID": entry_rid, "Last_mmCIF_File_MD5":None }
     if entry_row["Last_mmCIF_File_MD5"] != updating_row["Last_mmCIF_File_MD5"]:
         updated = update_table_rows(catalog, "PDB", "entry", payload=[updating_row], keys=["RID"], column_names=["Last_mmCIF_File_MD5"])
-        logger.info("entry %s: Last_mmCIF_File_MD5 is set to None")
+        logger.info("entry %s: Last_mmCIF_File_MD5 is set to None" % (entry_rid))
 
 
 def clear_entries(catalog, entry_rids, update_last_mmcif_md5=True, dry_run=False,
@@ -208,10 +208,10 @@ def main(args):
         rids = set()
         if args.rids: rids = set(args.rids.split(","))
         if args.rid: rids.add(args.rid)
-        clear_entry(catalog, args.rid, dry_run=args.dry_run)
+        clear_entries(catalog, sorted(rids), dry_run=args.dry_run)
 
 # running the script:
-# >python -m pdb_dev.utils.data --host data-dev.pdb-ihm.org --catalog-id 99 --rid <RID> --clear-entry
+# >python -m pdb_dev.utils.data --host data-dev.pdb-ihm.org --catalog-id 99 --rid <RID> --clear-entries --rids <rids>
 #
 if __name__ == "__main__":
     cli = PDBDEV_CLI("pdb", None, 1)

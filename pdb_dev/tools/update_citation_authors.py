@@ -24,7 +24,7 @@ def get_collection_entries(catalog, collection_id):
     attributes = ["id", "Accession_Code"] # columns from entry tables
     rows = get_ermrest_query(catalog, "PDB", "entry", constraints=constraints, attributes=attributes)
     if len(rows) == 0:
-        raise Exception("Collection id: %s doesn't exist" % (collection_rid))
+        raise Exception("Collection id: %s doesn't exist" % (collection_id))
     if verbose: print("rows[%d][0:4]: %s" % (len(rows), json.dumps(rows[:5], indent=4)))
     structure_id2entries = { row["id"] : row for row in rows }
     return structure_id2entries
@@ -35,7 +35,7 @@ def get_citations(catalog, collection_id):
     attributes = ["structure_id", "id", "title", "pdbx_database_id_DOI"] # columns from citation
     rows = get_ermrest_query(catalog, "PDB", "citation", constraints=constraints, attributes=attributes)
     if len(rows) == 0:
-        raise Exception("citation associated with Collection id: %s doesn't exist" % (collection_rid))
+        raise Exception("citation associated with Collection id: %s doesn't exist" % (collection_id))
     if verbose: print("rows[%d][0:4]: %s" % (len(rows), json.dumps(rows[:5], indent=4)))
     structure_id2citations = {}
     for row in rows:
