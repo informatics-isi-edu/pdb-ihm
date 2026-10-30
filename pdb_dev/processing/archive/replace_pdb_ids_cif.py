@@ -193,6 +193,18 @@ def create_pdb_comparison(input_filepath, output_filepath, diff_output):
         input_line = input_lines[line_num - 1] if line_num <= len(input_lines) else ""
         output_line = output_lines[line_num - 1] if line_num <= len(output_lines) else ""
 
+        # Record every changed line, whatever it contains; seen_lines keeps the checks below from adding it again
+        if input_line != output_line:
+            comparison_key = (line_num, input_line.rstrip('\n'), output_line.rstrip('\n'))
+            seen_lines.add(comparison_key)
+            comparisons.append(PDBComparison(
+                line_num=line_num,
+                field_name=extract_field_name(input_line) or input_line.strip()[:40] or "unknown",
+                original_string=comparison_key[1],
+                output_string=comparison_key[2],
+                changed=True
+            ))
+
         # Check if we're entering an _atom_site loop
         if input_line.strip() == 'loop_':
             in_atom_site_loop = False
@@ -382,7 +394,10 @@ def process_cif_file(input_filepath, output_filepath):
                 line = f"data_{extended_id}\n"
 
         # Check for _entry.id field
-        elif re.match(r'^_entry\.id\s+', line):
+        # Note: the single-value patterns below require a non-blank value on the same line ([ \t]+\S).
+        # Using \s+ would also match the newline of a bare loop header (e.g. "_citation.entry_id\n"),
+        # which then never gets registered as a loop header.
+        elif re.match(r'^_entry\.id[ \t]+\S', line):
             match = re.match(r'^_entry\.id\s+([A-Z0-9]{4})\s*$', line.strip(), re.IGNORECASE)
             if match:
                 pdb_id = match.group(1)
@@ -392,7 +407,7 @@ def process_cif_file(input_filepath, output_filepath):
                 line = f"{whitespace}{extended_id}\n"
 
         # Check for _struct.entry_id field
-        elif re.match(r'^_struct\.entry_id\s+', line):
+        elif re.match(r'^_struct\.entry_id[ \t]+\S', line):
             match = re.match(r'^_struct\.entry_id\s+([A-Z0-9]{4})\s*$', line.strip(), re.IGNORECASE)
             if match:
                 pdb_id = match.group(1)
@@ -402,7 +417,7 @@ def process_cif_file(input_filepath, output_filepath):
                 line = f"{whitespace}{extended_id}\n"
 
         # Check for _pdbx_database_status.entry_id field
-        elif re.match(r'^_pdbx_database_status\.entry_id\s+', line):
+        elif re.match(r'^_pdbx_database_status\.entry_id[ \t]+\S', line):
             match = re.match(r'^_pdbx_database_status\.entry_id\s+([A-Z0-9]{4})\s*$', line.strip(), re.IGNORECASE)
             if match:
                 pdb_id = match.group(1)
@@ -412,7 +427,7 @@ def process_cif_file(input_filepath, output_filepath):
                 line = f"{whitespace}{extended_id}\n"
 
         # Check for any other field ending with .entry_id (like _ihm_entry_collection_mapping.entry_id)
-        elif re.match(r'^_[^\.]+\.entry_id\s+', line):
+        elif re.match(r'^_[^\.]+\.entry_id[ \t]+\S', line):
             match = re.match(r'^(_[^\.]+\.entry_id\s+)([A-Z0-9]{4})\s*$', line.strip(), re.IGNORECASE)
             if match:
                 field_part = match.group(1)
@@ -526,7 +541,8 @@ def process_cif_file(input_filepath, output_filepath):
         i += 1
 
     # Write output
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    # Path.parent is "." for a bare filename; os.path.dirname() would return "" and makedirs("") fails
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     if output_path.name.endswith(".gz"):
         try:
             with gzip.open(output_path, 'wt', encoding='utf-8') as f:
