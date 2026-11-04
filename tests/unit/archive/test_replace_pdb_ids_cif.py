@@ -281,3 +281,38 @@ def test_create_pdb_comparison_no_ids(tmp_path):
     buf = io.StringIO()
     cif.create_pdb_comparison(str(src), str(src), buf)
     assert "No PDB IDs found" in buf.getvalue()
+
+
+# ---------------------------------------------------------------------------
+# loop handling: text fields, wrapped rows, end of loop (PR #370 review)
+# ---------------------------------------------------------------------------
+def test_process_cif_text_field_after_entry_id_loop_unchanged(tmp_path):
+    """python-ihm writes _struct right after the _ihm_entry_collection_mapping loop; a 4-character word in the
+    entry_id position of a text-field line must not be rewritten."""
+    text = ("data_9A34\nloop_\n_ihm_entry_collection_mapping.collection_id\n_ihm_entry_collection_mapping.entry_id\n"
+            "PDBDEV_G_1000001 9A34\n#\n_struct.entry_id 9A34\n_struct.pdbx_model_details\n"
+            ";Models were built from data with crosslinks.\nThe final ensemble\n;\n_struct.title 'x'\n#\n")
+    out = _run(tmp_path, text)
+    assert "PDBDEV_G_1000001 pdb_00009a34" in out
+    assert ";Models were built from data with crosslinks." in out
+    assert "_struct.entry_id pdb_00009a34" in out
+
+
+def test_process_cif_key_value_after_entry_id_loop_unchanged(tmp_path):
+    text = "data_9A9V\nloop_\n_m.collection_id\n_m.entry_id\nG1 9A9V\n#\n_s.a 1\n_s.c\nfoo Note\n#\n"
+    out = _run(tmp_path, text)
+    assert "G1 pdb_00009a9v" in out
+    assert "foo Note" in out
+
+
+def test_process_cif_text_field_inside_entry_id_loop(tmp_path):
+    text = "data_9A9V\nloop_\n_x.id\n_x.details\n_x.entry_id\n1\n;Some note with data\n;\n9A9V\n#\n"
+    out = _run(tmp_path, text)
+    assert ";Some note with data" in out
+    assert "pdb_00009a9v" in out[-2]
+
+
+def test_process_cif_row_wrapped_over_lines(tmp_path):
+    text = "data_9A9V\nloop_\n_x.id\n_x.name\n_x.entry_id\n1 'long name'\n9A9V\n2 other 9A9V\n#\n"
+    out = _run(tmp_path, text)
+    assert out[-4:-1] == ["1 'long name'", "pdb_00009a9v", "2 other pdb_00009a9v"]

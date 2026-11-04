@@ -377,11 +377,32 @@ def process_cif_file(input_filepath, output_filepath):
     entry_id_column = None
     in_database_2_loop = False
     current_pdb_id = None
+    in_text_field = False
+    loop_token_count = 0      # values seen so far in the current loop (a ';' text field counts as one)
 
     i = 0
     while i < len(lines):
         line = lines[i]
         original_line = line
+
+        # A ';' at the start of a line opens or closes a multi-line text field. Its lines are copied unchanged;
+        # inside a loop the whole field is one value of the current row.
+        if in_text_field or line.startswith(';'):
+            if line.startswith(';'):
+                if not in_text_field and in_loop and loop_headers:
+                    loop_token_count += 1
+                in_text_field = not in_text_field
+            output_lines.append(line)
+            i += 1
+            continue
+
+        # A loop ends at the first data name, loop_ or data_ after its values
+        if in_loop and loop_token_count and (line.startswith('_') or line.startswith('data_') or line.strip() == 'loop_'):
+            in_loop = False
+            loop_headers = []
+            entry_id_column = None
+            in_database_2_loop = False
+            loop_token_count = 0
 
         # Check for data_ block
         if line.startswith('data_'):
@@ -447,6 +468,7 @@ def process_cif_file(input_filepath, output_filepath):
             loop_headers = []
             entry_id_column = None
             in_database_2_loop = False
+            loop_token_count = 0
 
         # Check for loop headers (lines starting with _)
         elif in_loop and line.startswith('_'):
@@ -498,9 +520,11 @@ def process_cif_file(input_filepath, output_filepath):
                 if current:
                     parts.append(current)
 
-                # Process entry_id column if it exists
-                if entry_id_column < len(parts):
-                    value = parts[entry_id_column].strip()
+                # A row can span several lines, so find the entry_id values by their position in the loop
+                changed = False
+                for k, value in enumerate(parts):
+                    if (loop_token_count + k) % len(loop_headers) != entry_id_column:
+                        continue
                     # Remove quotes if present
                     unquoted_value = value
                     if value.startswith('"') and value.endswith('"'):
@@ -508,21 +532,26 @@ def process_cif_file(input_filepath, output_filepath):
                     elif value.startswith("'") and value.endswith("'"):
                         unquoted_value = value[1:-1]
 
-                    if is_pdb_id_simple(unquoted_value):
+                    if is_pdb_id(unquoted_value):
                         extended_id = convert_pdb_id(unquoted_value)
                         # Reconstruct the value with original quoting
                         if value.startswith('"') and value.endswith('"'):
-                            parts[entry_id_column] = f'"{extended_id}"'
+                            parts[k] = f'"{extended_id}"'
                         elif value.startswith("'") and value.endswith("'"):
-                            parts[entry_id_column] = f"'{extended_id}'"
+                            parts[k] = f"'{extended_id}'"
                         else:
-                            parts[entry_id_column] = extended_id
+                            parts[k] = extended_id
+                        changed = True
+                loop_token_count += len(parts)
 
-                        # Reconstruct line - try to preserve original format
-                        if '\t' in original_line_stripped:
-                            line = '\t'.join(parts) + '\n'
-                        else:
-                            line = ' '.join(parts) + '\n'
+                if changed:
+                    # Reconstruct line - try to preserve original format
+                    if '\t' in original_line_stripped:
+                        line = '\t'.join(parts) + '\n'
+                    else:
+                        line = ' '.join(parts) + '\n'
+            else:
+                loop_token_count += 1
 
         # Check for loop end (empty line or comment after data)
         elif in_loop and loop_headers:
@@ -536,6 +565,7 @@ def process_cif_file(input_filepath, output_filepath):
                     loop_headers = []
                     entry_id_column = None
                     in_database_2_loop = False
+                    loop_token_count = 0
 
         output_lines.append(line)
         i += 1
