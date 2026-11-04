@@ -211,6 +211,8 @@ def test_create_pdb_comparison_reports_changes(tmp_path):
     assert "CHANGED ENTRIES:" in report
     assert "UNCHANGED ENTRIES:" in report       # the _database_2 row stays
     assert "PDB 9A9V" in report
+    assert "Changed lines: 6\n" in report       # data_, _entry.id, _struct, 2 _citation rows, _pdbx_database_status
+    assert "Unchanged PDB ID occurrences: 1\n" in report
 
 
 def test_create_pdb_comparison_reports_every_changed_line(tmp_path):

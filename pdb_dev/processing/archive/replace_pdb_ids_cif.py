@@ -174,7 +174,7 @@ def find_pdb_ids_in_line(line, line_num):
 
 def create_pdb_comparison(input_filepath, output_filepath, diff_output):
     """
-    Create a detailed comparison showing all PDB ID occurrences.
+    Create a detailed comparison showing every changed line and every unchanged PDB ID occurrence.
     Writes to diff_output (file handle or stdout).
     """
     input_path = Path(input_filepath)
@@ -335,9 +335,9 @@ def create_pdb_comparison(input_filepath, output_filepath, diff_output):
     unchanged_comps = [c for c in comparisons if not c.changed]
 
     diff_output.write(f"Summary:\n")
-    diff_output.write(f"  Total PDB ID occurrences: {len(comparisons)}\n")
-    diff_output.write(f"  Changed: {len(changed_comps)}\n")
-    diff_output.write(f"  Unchanged: {len(unchanged_comps)}\n")
+    diff_output.write(f"  Total entries: {len(comparisons)}\n")
+    diff_output.write(f"  Changed lines: {len(changed_comps)}\n")
+    diff_output.write(f"  Unchanged PDB ID occurrences: {len(unchanged_comps)}\n")
     diff_output.write(f"\n{'=' * 80}\n\n")
 
     # Show changed entries first
