@@ -451,6 +451,7 @@ def update_PDB_entry(model):
             'RID',
             'id',
             'mmCIF_File_URL',
+            'User_mmCIF_File_URL',
             'Submitter_Flag_Date',
             'Image_File_URL',
             ['PDB', 'entry_Accession_Code_fkey'],
@@ -466,6 +467,7 @@ def update_PDB_entry(model):
             },
             'Deposit_Date',
             'Release_Date',
+            { 'source': 'Accession_Issue_Time'},
             'Method_Details',
             'New_Chem_Comp_Pending',
             'Manual_Processing',
@@ -510,12 +512,13 @@ def update_PDB_entry(model):
               }
             },
             'Deposit_Date',
-            'Accession_Issue_Time',
             'Release_Date',
+            { 'source': 'Accession_Issue_Time'},
             'mmCIF_File_URL',
-            { 'source' : 'mmCIF_File_Bytes', 'markdown_name' : 'mmCIF File Size',  },
+            { 'source' : 'mmCIF_File_Bytes', 'markdown_name' : 'Entry mmCIF File Size',  },
+            'User_mmCIF_File_URL',
             'Image_File_URL',
-            { 'source' : 'Image_File_Bytes', 'markdown_name' : 'Image File Size',  },
+            { 'source' : 'Image_File_Bytes', 'markdown_name' : 'Entry Image File Size',  },
             'Method_Details',
             'Submitter_Flag',
             'Submitter_Flag_Date',
@@ -539,6 +542,7 @@ def update_PDB_entry(model):
         ],
         'entry/edit' :  [
             'mmCIF_File_URL',
+            'User_mmCIF_File_URL',
             'Image_File_URL',
             ['PDB', 'entry_Workflow_Status_fkey'],
             'Method_Details',
@@ -553,7 +557,7 @@ def update_PDB_entry(model):
               'source': [{'outbound': ['PDB', 'entry_Accession_Code_fkey']}, 'RID'],
               'condition_key': 'is_not_submitter'
             },
-            'Accession_Issue_Time',
+            { 'source': 'Accession_Issue_Time'},
             {'source': 'Submitter_Flag', 'condition_key': 'is_not_submitter' },
             {'source': 'Submitter_Flag_Date', 'condition_key': 'is_not_submitter' },
             'New_Chem_Comp_Pending',
@@ -564,28 +568,34 @@ def update_PDB_entry(model):
         'filter' :  {
             'and' :  [
                 {
+                    'sourcekey': 'entry_rcb_fkey',
+                    'hide_null_choice' : True,
+                    'hide_not_null_choice' : True,
+                },
+                {
                     'source' : [{'outbound': ['PDB', 'entry_Accession_Code_fkey']}, 'RID'],
                     'markdown_name' : 'Accession Code',
                     'hide_null_choice' : False,
                     'hide_not_null_choice' : False,
                 },
                 {
-                    'sourcekey': 'entry_rcb_fkey',
+                    'source' : [{'outbound': ['PDB', 'entry_Workflow_Status_fkey']}, 'RID'],
+                    'markdown_name' : 'Workflow Status',
+                    'hide_null_choice' : True,
+                    'hide_not_null_choice' : True,
+                },
+                {
+                    'source' : [{'outbound': ['PDB', 'entry_Process_Status_fkey']}, 'RID'],
+                    'markdown_name' : 'Process Status',
                     'hide_null_choice' : True,
                     'hide_not_null_choice' : True,
                 },
                 { 'source' : 'Deposit_Date', 'markdown_name' : 'Deposit Date',  },
                 { 'source' : 'Release_Date', 'markdown_name' : 'Release Date',  },
                 { 'source' : 'Submitter_Flag_Date', 'markdown_name' : 'Last Communicated',  },
-                {
-                    'source' : [{'outbound': ['PDB', 'entry_Workflow_Status_fkey']}, 'RID'],
-                    'markdown_name' : 'Workflow Status',
-                    'hide_null_choice' : True,
-                    'hide_not_null_choice' : True,
-                },
-                { 'source' : [{'inbound': ['PDB', 'citation_author_structure_id_fkey']}, 'RID'], 'markdown_name' : 'Authors',  },
-                { 'source' : [{'inbound': ['PDB', 'citation_structure_id_fkey']}, 'RID'], 'markdown_name' : 'Citations',  },
-                { 'source' : [{'inbound': ['PDB', 'software_structure_id_fkey']}, 'RID'], 'markdown_name' : 'Software',  },
+                # { 'source' : [{'inbound': ['PDB', 'citation_author_structure_id_fkey']}, 'RID'], 'markdown_name' : 'Authors',  },
+                # { 'source' : [{'inbound': ['PDB', 'citation_structure_id_fkey']}, 'RID'], 'markdown_name' : 'Citations',  },
+                # { 'source' : [{'inbound': ['PDB', 'software_structure_id_fkey']}, 'RID'], 'markdown_name' : 'Software',  },
                 { 'source' : 'New_Chem_Comp_Pending', 'markdown_name' : 'New Chem Comp Pending',  },
                 { 'source' : 'Manual_Processing', 'markdown_name' : 'Manual Processing',  },
             ],
@@ -1677,7 +1687,7 @@ def update_PDB_entry(model):
 
    # ----------------------------
     schema.tables["entry"].columns["Image_File_URL"].display.update(
-        {'name' : 'User Provided Image File', }
+        {'name' : 'Entry Image File', }
     )
 
     # ----------------------------
@@ -1690,6 +1700,11 @@ def update_PDB_entry(model):
 
     # ----------------------------
     schema.tables["entry"].columns["mmCIF_File_URL"].display.update(
+        {'name' : 'Entry mmCIF File', }
+    )
+
+    # ----------------------------
+    schema.tables["entry"].columns["User_mmCIF_File_URL"].display.update(
         {'name' : 'User Provided mmCIF File', }
     )
 
@@ -1832,6 +1847,11 @@ def update_PDB_Curation_Log(model):
                 'comment' : 'Entry Accession Code',
                 'markdown_name' : 'Accession Code',
             },
+            {
+                'source' : [{'outbound': ['PDB', 'Curation_Log_Entry_fkey']}, 'Workflow_Status'],
+                'comment' : 'Entry Workflow Status',
+                'markdown_name' : 'Workflow Status',
+            },
             'Log_Date', 
             'Details', 
             'Submitter_Allow', 
@@ -1861,6 +1881,11 @@ def update_PDB_Curation_Log(model):
                 'source' : [{'outbound': ['PDB', 'Curation_Log_Entry_fkey']}, 'Accession_Code'],
                 'comment' : 'Entry Accession Code',
                 'markdown_name' : 'Accession Code',
+            },
+            {
+                'source' : [{'outbound': ['PDB', 'Curation_Log_Entry_fkey']}, 'Workflow_Status'],
+                'comment' : 'Entry Workflow Status',
+                'markdown_name' : 'Workflow Status',
             },
             'Log_Date', 
             'Details', 

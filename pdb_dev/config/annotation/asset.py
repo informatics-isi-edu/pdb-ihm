@@ -49,6 +49,16 @@ def update_PDB_entry_related(model):
             ".CIF"
         ]
     })
+    # ----------------------------
+    model.schemas["PDB"].tables["entry"].columns["User_mmCIF_File_URL"].asset.update({
+        "url_pattern": "%s/pdb/submitted/uid/{{#if _RCB}}{{#regexFindFirst _RCB \"[^/]+$\"}}{{this}}{{/regexFindFirst}}{{else}}{{#regexFindFirst $session.client.id \"[^/]+$\"}}{{this}}{{/regexFindFirst}}{{/if}}/entry/mmCIF/{{{User_mmCIF_File_Name}}}" % (cfg.hatrac_root),
+        "filename_column": "User_mmCIF_File_Name",
+        "template_engine": "handlebars",
+        "filename_ext_filter": [
+            ".cif",
+            ".CIF"
+        ]
+    })
 
     # ----------------------------
     model.schemas["PDB"].tables["Entry_Generated_File"].columns["File_URL"].asset.update({
