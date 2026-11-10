@@ -3,6 +3,7 @@
 import sys
 import json
 import logging
+from datetime import datetime as dt, timedelta, timezone
 
 from deriva.core import ErmrestCatalog, AttrDict, get_credential, DEFAULT_CREDENTIAL_FILE, tag, urlquote, DerivaServer, get_credential
 from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key, ForeignKey, DomainType, ArrayType
@@ -44,22 +45,42 @@ def migrate_user_mmcif_files(model):
     logger.info("migrate_user_mmcif_files: updated entries [%d]: %s" % (len(updated), json.dumps(updated[0:2], indent=4)))
 
     
-def migrate_accession_issue_time(model):
+def migrate_accession_issue_time(model, verbose=False):
     """Populate Accession_Issue_Time of existing entries
     """
     logger.info("migrate_accession_issue_time - begins")
     
     catalog = model.catalog
-    attributes=["Deposit_Date", "Accession_Issue_Time"]
-    entries = get_ermrest_query(catalog, "PDB", "entry", constraints="Accession_Issue_Time::null::/!Accession_Code::null::", attributes=attributes)
-    
+    constraints="Accession_Issue_Time::null::/!Accession_Code::null::/AC:=(Accession_Code)=(PDB:Accession_Code:Accession_Code)/$M"
+    #constraints="!Accession_Code::null::/AC:=(Accession_Code)=(PDB:Accession_Code:Accession_Code)/$M"    
+    attributes=["Accession_Code", "Deposit_Date", "Release_Date", "ac_rmt:=AC:RMT", "Accession_Issue_Time", ]
+    entries = get_ermrest_query(catalog, "PDB", "entry", constraints=constraints, attributes=attributes)
+    print("migrate_accession_issue_time: entries with accession: %d: %s" % (len(entries), json.dumps(entries[0:2], indent=4)))
+
     updating = []
     for row in entries:
-        if not row["Accession_Issue_Time"]:
-            updating.append({
-                "RID": row["RID"],
-                "Accession_Issue_Time": row["Deposit_Date"]
-            })
+        deposit_datetime = dt.fromisoformat(row["Deposit_Date"]).replace(tzinfo=timezone.utc)
+        ac_rmt_datetime = dt.fromisoformat(row["ac_rmt"])
+        release_datetime = dt.fromisoformat("2030-01-01").replace(tzinfo=timezone.utc)  # in case of no release_date        
+        if row["Release_Date"]: release_datetime = dt.fromisoformat(row["Release_Date"]).replace(tzinfo=timezone.utc)
+
+        # Only use ac_rmt if it is >= deposit_datetime+1 and <= release_datetime-1
+        ac_issue_time = deposit_datetime + timedelta(days=1)
+        if ac_rmt_datetime >= ac_issue_time and ac_rmt_datetime <= release_datetime - timedelta(days=1):
+            ac_issue_time = ac_rmt_datetime
+            if verbose: print("%s: deposit_dt: %s, release_dt: %s, ac_rmt_dt: %s, ac_issue_time: %s" % (row["Accession_Code"], deposit_datetime, release_datetime, ac_rmt_datetime, ac_issue_time))
+        elif row["Accession_Code"] in ["8ZZ1", "8ZZ2", "8ZZ3"]:
+            ac_issue_time = deposit_datetime
+            if verbose: print("+ %s: deposit_dt: %s, release_dt: %s, ac_rmt_dt: %s, ac_issue_time: %s +F" % (row["Accession_Code"], deposit_datetime, release_datetime, ac_rmt_datetime, ac_issue_time))
+        else:
+            if verbose: print("- %s: deposit_dt: %s, release_dt: %s, ac_rmt_dt: %s, ac_issue_time: %s -D" % (row["Accession_Code"], deposit_datetime, release_datetime, ac_rmt_datetime, ac_issue_time))
+            pass
+        
+        if not row["Accession_Issue_Time"] or dt.fromisoformat(row["Accession_Issue_Time"]) != ac_issue_time:
+            updating_row = row.copy()
+            updating_row["Accession_Issue_Time"] = ac_issue_time.isoformat()
+            updating.append(updating_row)
+            #print("* updating_row: old_issue_time:%s -> %s" % (row["Accession_Issue_Time"], json.dumps(updating_row, indent=4)))
             
     logger.info("migrate_accession_issue_time: updating entries [%d]: %s" % (len(updating), json.dumps(updating[0:2], indent=4)))
     updated = update_table_rows(catalog, "PDB", "entry", payload=updating, model=model, column_names=["Accession_Issue_Time"])

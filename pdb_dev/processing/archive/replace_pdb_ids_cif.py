@@ -174,7 +174,7 @@ def find_pdb_ids_in_line(line, line_num):
 
 def create_pdb_comparison(input_filepath, output_filepath, diff_output):
     """
-    Create a detailed comparison showing all PDB ID occurrences.
+    Create a detailed comparison showing every changed line and every unchanged PDB ID occurrence.
     Writes to diff_output (file handle or stdout).
     """
     input_path = Path(input_filepath)
@@ -192,6 +192,18 @@ def create_pdb_comparison(input_filepath, output_filepath, diff_output):
     for line_num in range(1, max_lines + 1):
         input_line = input_lines[line_num - 1] if line_num <= len(input_lines) else ""
         output_line = output_lines[line_num - 1] if line_num <= len(output_lines) else ""
+
+        # Record every changed line, whatever it contains; seen_lines keeps the checks below from adding it again
+        if input_line != output_line:
+            comparison_key = (line_num, input_line.rstrip('\n'), output_line.rstrip('\n'))
+            seen_lines.add(comparison_key)
+            comparisons.append(PDBComparison(
+                line_num=line_num,
+                field_name=extract_field_name(input_line) or input_line.strip()[:40] or "unknown",
+                original_string=comparison_key[1],
+                output_string=comparison_key[2],
+                changed=True
+            ))
 
         # Check if we're entering an _atom_site loop
         if input_line.strip() == 'loop_':
@@ -323,9 +335,9 @@ def create_pdb_comparison(input_filepath, output_filepath, diff_output):
     unchanged_comps = [c for c in comparisons if not c.changed]
 
     diff_output.write(f"Summary:\n")
-    diff_output.write(f"  Total PDB ID occurrences: {len(comparisons)}\n")
-    diff_output.write(f"  Changed: {len(changed_comps)}\n")
-    diff_output.write(f"  Unchanged: {len(unchanged_comps)}\n")
+    diff_output.write(f"  Total entries: {len(comparisons)}\n")
+    diff_output.write(f"  Changed lines: {len(changed_comps)}\n")
+    diff_output.write(f"  Unchanged PDB ID occurrences: {len(unchanged_comps)}\n")
     diff_output.write(f"\n{'=' * 80}\n\n")
 
     # Show changed entries first
@@ -365,11 +377,32 @@ def process_cif_file(input_filepath, output_filepath):
     entry_id_column = None
     in_database_2_loop = False
     current_pdb_id = None
+    in_text_field = False
+    loop_token_count = 0      # values seen so far in the current loop (a ';' text field counts as one)
 
     i = 0
     while i < len(lines):
         line = lines[i]
         original_line = line
+
+        # A ';' at the start of a line opens or closes a multi-line text field. Its lines are copied unchanged;
+        # inside a loop the whole field is one value of the current row.
+        if in_text_field or line.startswith(';'):
+            if line.startswith(';'):
+                if not in_text_field and in_loop and loop_headers:
+                    loop_token_count += 1
+                in_text_field = not in_text_field
+            output_lines.append(line)
+            i += 1
+            continue
+
+        # A loop ends at the first data name, loop_ or data_ after its values
+        if in_loop and loop_token_count and (line.startswith('_') or line.startswith('data_') or line.strip() == 'loop_'):
+            in_loop = False
+            loop_headers = []
+            entry_id_column = None
+            in_database_2_loop = False
+            loop_token_count = 0
 
         # Check for data_ block
         if line.startswith('data_'):
@@ -382,7 +415,10 @@ def process_cif_file(input_filepath, output_filepath):
                 line = f"data_{extended_id}\n"
 
         # Check for _entry.id field
-        elif re.match(r'^_entry\.id\s+', line):
+        # Note: the single-value patterns below require a non-blank value on the same line ([ \t]+\S).
+        # Using \s+ would also match the newline of a bare loop header (e.g. "_citation.entry_id\n"),
+        # which then never gets registered as a loop header.
+        elif re.match(r'^_entry\.id[ \t]+\S', line):
             match = re.match(r'^_entry\.id\s+([A-Z0-9]{4})\s*$', line.strip(), re.IGNORECASE)
             if match:
                 pdb_id = match.group(1)
@@ -392,7 +428,7 @@ def process_cif_file(input_filepath, output_filepath):
                 line = f"{whitespace}{extended_id}\n"
 
         # Check for _struct.entry_id field
-        elif re.match(r'^_struct\.entry_id\s+', line):
+        elif re.match(r'^_struct\.entry_id[ \t]+\S', line):
             match = re.match(r'^_struct\.entry_id\s+([A-Z0-9]{4})\s*$', line.strip(), re.IGNORECASE)
             if match:
                 pdb_id = match.group(1)
@@ -402,7 +438,7 @@ def process_cif_file(input_filepath, output_filepath):
                 line = f"{whitespace}{extended_id}\n"
 
         # Check for _pdbx_database_status.entry_id field
-        elif re.match(r'^_pdbx_database_status\.entry_id\s+', line):
+        elif re.match(r'^_pdbx_database_status\.entry_id[ \t]+\S', line):
             match = re.match(r'^_pdbx_database_status\.entry_id\s+([A-Z0-9]{4})\s*$', line.strip(), re.IGNORECASE)
             if match:
                 pdb_id = match.group(1)
@@ -412,7 +448,7 @@ def process_cif_file(input_filepath, output_filepath):
                 line = f"{whitespace}{extended_id}\n"
 
         # Check for any other field ending with .entry_id (like _ihm_entry_collection_mapping.entry_id)
-        elif re.match(r'^_[^\.]+\.entry_id\s+', line):
+        elif re.match(r'^_[^\.]+\.entry_id[ \t]+\S', line):
             match = re.match(r'^(_[^\.]+\.entry_id\s+)([A-Z0-9]{4})\s*$', line.strip(), re.IGNORECASE)
             if match:
                 field_part = match.group(1)
@@ -432,6 +468,7 @@ def process_cif_file(input_filepath, output_filepath):
             loop_headers = []
             entry_id_column = None
             in_database_2_loop = False
+            loop_token_count = 0
 
         # Check for loop headers (lines starting with _)
         elif in_loop and line.startswith('_'):
@@ -483,9 +520,11 @@ def process_cif_file(input_filepath, output_filepath):
                 if current:
                     parts.append(current)
 
-                # Process entry_id column if it exists
-                if entry_id_column < len(parts):
-                    value = parts[entry_id_column].strip()
+                # A row can span several lines, so find the entry_id values by their position in the loop
+                changed = False
+                for k, value in enumerate(parts):
+                    if (loop_token_count + k) % len(loop_headers) != entry_id_column:
+                        continue
                     # Remove quotes if present
                     unquoted_value = value
                     if value.startswith('"') and value.endswith('"'):
@@ -493,21 +532,26 @@ def process_cif_file(input_filepath, output_filepath):
                     elif value.startswith("'") and value.endswith("'"):
                         unquoted_value = value[1:-1]
 
-                    if is_pdb_id_simple(unquoted_value):
+                    if is_pdb_id(unquoted_value):
                         extended_id = convert_pdb_id(unquoted_value)
                         # Reconstruct the value with original quoting
                         if value.startswith('"') and value.endswith('"'):
-                            parts[entry_id_column] = f'"{extended_id}"'
+                            parts[k] = f'"{extended_id}"'
                         elif value.startswith("'") and value.endswith("'"):
-                            parts[entry_id_column] = f"'{extended_id}'"
+                            parts[k] = f"'{extended_id}'"
                         else:
-                            parts[entry_id_column] = extended_id
+                            parts[k] = extended_id
+                        changed = True
+                loop_token_count += len(parts)
 
-                        # Reconstruct line - try to preserve original format
-                        if '\t' in original_line_stripped:
-                            line = '\t'.join(parts) + '\n'
-                        else:
-                            line = ' '.join(parts) + '\n'
+                if changed:
+                    # Reconstruct line - try to preserve original format
+                    if '\t' in original_line_stripped:
+                        line = '\t'.join(parts) + '\n'
+                    else:
+                        line = ' '.join(parts) + '\n'
+            else:
+                loop_token_count += 1
 
         # Check for loop end (empty line or comment after data)
         elif in_loop and loop_headers:
@@ -521,12 +565,14 @@ def process_cif_file(input_filepath, output_filepath):
                     loop_headers = []
                     entry_id_column = None
                     in_database_2_loop = False
+                    loop_token_count = 0
 
         output_lines.append(line)
         i += 1
 
     # Write output
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    # Path.parent is "." for a bare filename; os.path.dirname() would return "" and makedirs("") fails
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     if output_path.name.endswith(".gz"):
         try:
             with gzip.open(output_path, 'wt', encoding='utf-8') as f:

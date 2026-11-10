@@ -173,6 +173,22 @@ class PipelineProcessor(object):
 
         #print("- Processor init: mute: %s, verbose: %s, preserve: %s, log_file: %s, email_config_file: %s" % (self.mute, self.verbose, self.preserve, self.log_file, self.email_config_file))        
         #print("host: %s, catalog_id: %s, catalog: %s" % (self.host, self.catalog_id, self.catalog))
+        if self.verbose:
+            session = self.catalog.get_authn_session().json()
+            session_str = self.get_session_summary(session)
+            if self.logger: self.logger.info("* session info: %s" % (session_str))
+            print("* processor: session info: %s" % (session_str))
+
+    @staticmethod
+    def get_session_summary(session):
+        session_str = "client: %s, since: %s, expires: %s, groups[%d]: %s" % (
+            ( session["client"].get("id"), session["client"].get("display_name") ) if "client" in session.keys() else None,
+            session.get("since", None),
+            session.get("expires", None),
+            len(session.get("attributes", [])),
+            [ attr.get("display_name") for attr in session.get("attributes", []) ],
+        )
+        return session_str
     
     @classmethod
     def x_same_table_rows(cls, table, base_rows, compare_rows, key="structure_id"):
@@ -538,7 +554,7 @@ class PipelineProcessor(object):
     # ------------------------------------------------------------------------
     # the caller sometimes need the error message to be included in ermrest.
     # Note: In this function: e = ev
-    # HT TODO: return the error message for now
+    # HT TODO: return the error message for now, printout session infor here for ermrest exception
     def log_exception(self, e, notify=False, subject=None, body_prefix=None, receivers=None):
         """
         log exception, send email notificatioin if specified

@@ -479,3 +479,50 @@ def test_send_linux_mail_removes_temp_file():
         p.sendLinuxMail("subj", "body", None)            # None -> config receivers
     assert created and not P.os.path.exists(created[0])
     assert popen.call_args.args[0][-1] == "a@x"
+
+
+# ---------------------------------------------------------------------------
+# session summary (logged when verbose and by the workers at start-up)
+# ---------------------------------------------------------------------------
+SESSION = {
+    "client": {"id": "https://auth.example.org/abc-123", "display_name": "worker@example.org",
+               "email": "worker@example.org"},
+    "attributes": [{"id": "https://auth.example.org/g1", "display_name": "pdb-curators"},
+                   {"id": "https://auth.example.org/g2", "display_name": "pdb-admins"}],
+    "since": "2026-11-09T10:00:00+00:00",
+    "expires": "2026-11-09T11:00:00+00:00",
+    "seconds_remaining": 3600,
+    "tokens": {"access_token": "SECRET-TOKEN"},          # must never be printed or logged
+}
+
+
+def test_get_session_summary():
+    summary = PipelineProcessor.get_session_summary(SESSION)
+    assert summary == ("client: ('https://auth.example.org/abc-123', 'worker@example.org'), "
+                       "since: 2026-11-09T10:00:00+00:00, expires: 2026-11-09T11:00:00+00:00, "
+                       "groups[2]: ['pdb-curators', 'pdb-admins']")
+    assert "SECRET" not in summary
+
+
+def test_get_session_summary_anonymous_session():
+    assert PipelineProcessor.get_session_summary({}) == "client: None, since: None, expires: None, groups[0]: []"
+
+
+def test_init_verbose_logs_session_summary(capsys):
+    logger = mock.MagicMock()
+    catalog = mock.MagicMock()
+    catalog.dcctx = {}
+    catalog.get_authn_session.return_value.json.return_value = SESSION
+    make_processor(catalog=catalog, verbose=True, logger=logger)
+    logged = logger.info.call_args.args[0]
+    assert logged.startswith("* session info: client: ('https://auth.example.org/abc-123'")
+    out = capsys.readouterr().out
+    assert "* processor: session info:" in out
+    assert "SECRET" not in out + logged
+
+
+def test_init_not_verbose_does_not_query_session():
+    catalog = mock.MagicMock()
+    catalog.dcctx = {}
+    make_processor(catalog=catalog, verbose=False)
+    catalog.get_authn_session.assert_not_called()

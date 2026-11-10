@@ -51,6 +51,11 @@ def proc(make_processor):
     ("text", "plain", "plain"),
     ("text", "has space", '"has space"'),
     ("text", "_starts_with_underscore", '"_starts_with_underscore"'),
+    ("text", "#hash", '"#hash"'),
+    ("text", "[open", '"[open"'),
+    ("text", "]close", '"]close"'),
+    ("text", "#it's", '"#it\'s"'),
+    ("text", '[say "hi"]', "'[say \"hi\"]'"),
     ("text", 'say "hi"', "'say \"hi\"'"),
     ("text", "it's", '"it\'s"'),
     ("text", "smart “quotes”", "'smart “quotes”'"),
@@ -78,6 +83,7 @@ def test_get_column_value_rejects_unsupported_types(proc, ctype):
 ROUNDTRIP_VALUES = [
     "plain", "has space", "_underscore", 'say "hi"', "it's", "both ' and \"", "multi\nline\ntext",
     "9A9V", "1.5", "x" * 300,
+    "#hash", "#", "[open", "]close", "[]", "#it's", "a#b", "a[1]", "$var",
 ]
 
 
@@ -118,6 +124,18 @@ def test_get_column_value_cif_keywords_are_quoted(proc, value):
 
 @pytest.mark.parametrize("value", ["datax", "loops", "my_data_"])
 def test_get_column_value_keyword_lookalikes_stay_unquoted(proc, value):
+    assert proc.getColumnValue("t", "v", "text", value) == value
+
+
+@pytest.mark.parametrize("value", ["#", "#hash", "[", "[open", "]", "]close", "_"])
+def test_get_column_value_leading_hash_bracket_underscore_are_quoted(proc, value):
+    """Values starting with '#', '_', '[' or ']' are quoted (requested by Brinda 2026-11-09)."""
+    assert proc.getColumnValue("t", "v", "text", value) == f'"{value}"'
+
+
+@pytest.mark.parametrize("value", ["a#b", "a[1]", "x]", "x_", "$var", "?"])
+def test_get_column_value_other_special_characters_stay_unquoted(proc, value):
+    """Only a leading '#', '_', '[' or ']' triggers quoting; '$' and '?' are not quoted."""
     assert proc.getColumnValue("t", "v", "text", value) == value
 
 

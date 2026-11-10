@@ -277,7 +277,7 @@ def process_entry(args, existing_logger=None):
     if existing_logger:
         logger = existing_logger
     else:
-        logger = init_logger(log_file=args.log_file, name="pdb_process_entryr")
+        logger = init_logger(log_file=args.log_file, name="pdb_process_entry")
         
     try:
         config_filename = args.config 

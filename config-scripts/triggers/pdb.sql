@@ -1,3 +1,6 @@
+-- Apply the file, as ermrest, run the command
+-- >psql -d <catalog-name> -f <file>
+--
 BEGIN;
 
 -- before insert
@@ -172,7 +175,8 @@ FOR EACH ROW EXECUTE PROCEDURE "PDB".entry_related_file_trigger_before_update();
 
 -- ==================================================================================
 -- Accession_Code
--- 
+--
+
 CREATE OR REPLACE FUNCTION "PDB".accession_code_trigger_before_update() RETURNS trigger LANGUAGE plpgsql
 AS $function$
 DECLARE
@@ -188,7 +192,7 @@ BEGIN
   -- Ensure that entry row doesn't refer to it
   SELECT "RID" into entry_rid FROM "PDB"."entry" WHERE "Accession_Code" = NEW."Accession_Code";
   IF entry_rid IS NOT NULL AND entry_rid != NEW."Entry" THEN
-    RAISE EXCEPTION 'Cannot reassign this accession code. Make sure to clear this accession code from entry %s first', entry_rid;
+    RAISE EXCEPTION 'Cannot reassign accession code %. Make sure to clear this accession code from entry % first', NEW."Accession_Code", entry_rid;
     RETURN OLD;    
   END IF;
 
