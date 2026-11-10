@@ -377,7 +377,7 @@ class EntryProcessor(PipelineProcessor):
         
         Note:
           - `?` do not need to be quoted. Empty string will be treated the same as None
-          - column values of ["#", "[", "]"] or starts with ('_', '#', '[', ']') needs to be quored (requested by Brinda 20261109)
+          - column values starts with ('#', '_', '[', ']') needs to be quored (requested by Brinda 20261109)
           - cif keywords can be found at: https://github.com/ihmwg/python-ihm/blob/2.10/ihm/format.py#L199-L218
         """
         cval = column_value
@@ -393,7 +393,7 @@ class EntryProcessor(PipelineProcessor):
                 return f'\n;{cval}\n;\n'
             # specific rules for not quoting values (preferred). String begins with _ and cif keywords need to quoted or using multi-line format
             if '"' not in cval and "“" not in cval and "”" not in cval and "'" not in cval and ' ' not in cval \
-               and cval not in ["#", "[", "]"] and not cval.startswith(('_', '#', '[', ']')) \
+               and not cval.startswith(('#', '_', '[', ']')) \
                and not cval.lower().startswith('global_') and not cval[:5].lower() in ('data_', 'save_', 'loop_', 'stop_'):
                 return cval
             if '"' not in cval and "“" not in cval and "”" not in cval:
