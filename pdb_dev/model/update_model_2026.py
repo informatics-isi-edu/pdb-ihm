@@ -51,8 +51,8 @@ def migrate_accession_issue_time(model, verbose=False):
     logger.info("migrate_accession_issue_time - begins")
     
     catalog = model.catalog
-    #constraints="Accession_Issue_Time::null::/!Accession_Code::null::/AC:=(Accession_Code)=(PDB:Accession_Code:Accession_Code)/$M"
-    constraints="!Accession_Code::null::/AC:=(Accession_Code)=(PDB:Accession_Code:Accession_Code)/$M"    
+    constraints="Accession_Issue_Time::null::/!Accession_Code::null::/AC:=(Accession_Code)=(PDB:Accession_Code:Accession_Code)/$M"
+    #constraints="!Accession_Code::null::/AC:=(Accession_Code)=(PDB:Accession_Code:Accession_Code)/$M"    
     attributes=["Accession_Code", "Deposit_Date", "Release_Date", "ac_rmt:=AC:RMT", "Accession_Issue_Time", ]
     entries = get_ermrest_query(catalog, "PDB", "entry", constraints=constraints, attributes=attributes)
     print("migrate_accession_issue_time: entries with accession: %d: %s" % (len(entries), json.dumps(entries[0:2], indent=4)))
@@ -64,7 +64,7 @@ def migrate_accession_issue_time(model, verbose=False):
         release_datetime = dt.fromisoformat("2030-01-01").replace(tzinfo=timezone.utc)  # in case of no release_date        
         if row["Release_Date"]: release_datetime = dt.fromisoformat(row["Release_Date"]).replace(tzinfo=timezone.utc)
 
-        # Only use ac_rmt if it is >= deposit_datetime+1 and <= release_datetime+1
+        # Only use ac_rmt if it is >= deposit_datetime+1 and <= release_datetime-1
         ac_issue_time = deposit_datetime + timedelta(days=1)
         if ac_rmt_datetime >= ac_issue_time and ac_rmt_datetime <= release_datetime - timedelta(days=1):
             ac_issue_time = ac_rmt_datetime
