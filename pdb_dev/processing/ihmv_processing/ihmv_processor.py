@@ -320,7 +320,7 @@ def main(server_name, catalog_id, credentials, args):
 
 if __name__ == '__main__':
     cli = PDBDEV_CLI("ihmv", None, 1)
-    pdbihm_config_file = os.getenv("PDBIHM_CONFIG", None)
+    pdbihm_config_file = os.getenv("PDBIHM_CONFIG", os.getenv("PDB_CONFIG", None))
     scratch_dir = os.getenv("SCRATCH_DIR", None)
     log_file = os.getenv("LOG_FILE", "/tmp/log/ihmv_processing/ihmv_processor.log")
     

@@ -931,7 +931,7 @@ class ArchiveProcessor(PipelineProcessor):
         resp = self.catalog.get(url)
         resp.raise_for_status()
         rows = resp.json()
-        self.logger.debug(f'Previous submission time\n\n{json.dumps(rows, indent=4)}\n')
+        self.logger.info(f'Previous submission time: {rows}')
         if len(rows) > 0 and rows[0]['previous_submission_time'] != None:
             previous_submission_time = rows[0]['previous_submission_time'].replace("T", " ")
             

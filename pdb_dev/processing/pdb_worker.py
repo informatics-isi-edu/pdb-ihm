@@ -222,11 +222,19 @@ def main():
     store = HatracStore('https', args.host, credentials)
     catalog = server.connect_ermrest(args.catalog_id)
     model = catalog.getCatalogModel()
-
-    logger = init_logger(log_file=args.log_file, name="pdb_worker")
-    #logger = init_logger(log_file=args.log_file, name=__name__)    
+    session = catalog.get_authn_session().json()
+    session_str = PipelineProcessor.get_session_summary(session)
     
+    log_level = "debug" if args.debug else "info"
+    logger = init_logger(log_level=log_level, log_file=args.log_file, name="pdb_worker")
+    #logger = init_logger(log_file=args.log_file, name=__name__)    
     logger.info("======== starts entry_processing worker with args: %s" % (args))
+    if args.debug:
+        logger.debug("* pdb_worker session: %s" % (json.dumps(session, indent=4)))
+        if args.verbose: print("- **pdb_worker session: %s" % (json.dumps(session, indent=4)))
+    else:
+        logger.info("* pdb_worker session: %s" % (session_str))
+        print("- ** pdb_worker session: %s" % (session_str))
 
     dispatcher = JobDispatcher(args.host, args.catalog_id, args.credential_file, logger=logger)
 

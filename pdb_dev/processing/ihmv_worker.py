@@ -89,7 +89,7 @@ def main():
     IHMV Validation Processing worker
     """
     cli = PDBDEV_CLI("ihmv", None, 1)
-    pdbihm_config_file = os.getenv("PDBIHM_CONFIG", None)
+    pdbihm_config_file = os.getenv("PDBIHM_CONFIG", os.getenv("PDB_CONFIG", None))
     scratch_dir = os.getenv("SCRATCH_DIR", None)
     log_file = os.getenv("LOG_FILE", "/tmp/log/ihmv_processing/ihmv_worker.log")
     
@@ -113,7 +113,11 @@ def main():
     store = HatracStore('https', args.host, credentials)
     catalog = server.connect_ermrest(args.catalog_id)
     model = catalog.getCatalogModel()
-
+    session = catalog.get_authn_session().json()
+    session_str = PipelineProcessor.get_session_summary(session)
+    logger.info("* ihmv_worker session: %s" % (session_str))
+    print("* ihmv_worker session: %s" % (session_str))    
+    
     dispatcher = JobDispatcher(args.host, args.catalog_id, args.credential_file, logger=logger)
     job_streams = [ IHMVJobStream(
         '/entity/M:=IHMV:Structure_mmCIF/Processing_Status=any(New,Reprocess)@sort(RMT,RID)?limit=1',

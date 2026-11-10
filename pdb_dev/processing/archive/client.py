@@ -191,8 +191,6 @@ def main():
     cli.parser.add_argument( '--archive-dir', action='store', type=str, help='PDB-IHM archive dir', required=False)
     args = cli.parse_cli()
 
-    credentials = get_credential(args.host, args.credential_file)
-
     # execute beta archive only
     if args.beta_archive_only:
         print("beta-archive-only: parent dir: %s " % (args.archive_dir))
