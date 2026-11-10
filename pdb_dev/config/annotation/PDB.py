@@ -557,7 +557,7 @@ def update_PDB_entry(model):
               'source': [{'outbound': ['PDB', 'entry_Accession_Code_fkey']}, 'RID'],
               'condition_key': 'is_not_submitter'
             },
-            { 'source': 'Accession_Issue_Time'},
+            { 'source': 'Accession_Issue_Time', 'condition_key': 'is_not_submitter'},
             {'source': 'Submitter_Flag', 'condition_key': 'is_not_submitter' },
             {'source': 'Submitter_Flag_Date', 'condition_key': 'is_not_submitter' },
             'New_Chem_Comp_Pending',
