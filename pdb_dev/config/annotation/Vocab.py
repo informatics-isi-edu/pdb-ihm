@@ -67,6 +67,22 @@ def update_Vocab_System_Generated_File_Type(model):
             "Description",
         ]
     })
+
+# ------------------------------------------------------------------------------------
+def update_Vocab_File_Type(model):
+    schema = model.schemas["Vocab"]
+    table = schema.tables["File_Type"]
+
+    # ----------------------------
+    schema.tables["File_Type"].visible_columns.update({
+        "*": [
+            "RID",
+            "Name",
+            "Description",
+            "Table_Name",
+            "Rank",
+        ]
+    })
     
 # -- ---------------------------------------------------------------------------------
 def update_Vocab_Process_Status(model):
@@ -152,6 +168,7 @@ def update_Vocab_annotations(model):
     # -- list of specific tables
     update_Vocab_Data_Dictionary_Name(model)
     update_Vocab_System_Generated_File_Type(model)
+    update_Vocab_File_Type(model)
     update_Vocab_Process_Status(model)
     update_Vocab_Workflow_Status(model)
 
