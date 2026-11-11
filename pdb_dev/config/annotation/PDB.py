@@ -2261,6 +2261,7 @@ def update_PDB_IHM_New_Chem_Comp(model):
             'chem_comp_type_fkey' : {
                 'source' : [{'outbound': ['PDB', 'IHM_New_Chem_Comp_Type_fkey']}, 'RID'],
                 'comment' : 'Type of chemical component',
+                'markdown_name' : 'Chem Comp Type',
             },
             'pdbx_release_status_fkey' : { 
                 'source' : [{'outbound': ['PDB', 'IHM_New_Chem_Comp_pdbx_release_status_fkey']}, 'RID'],
@@ -2294,7 +2295,7 @@ def update_PDB_IHM_New_Chem_Comp(model):
     table.visible_columns.update({
         '*' :  [
             'RID', 
-            'comp_id',
+            { 'source' : 'comp_id', 'markdown_name' : 'Comp Id', },
             { 'sourcekey': 'chem_comp_type_fkey' },
             { 'sourcekey': 'pdbx_release_status_fkey' },
             { 'sourcekey': 'pdbx_processing_site_fkey' },
@@ -2311,7 +2312,7 @@ def update_PDB_IHM_New_Chem_Comp(model):
         ],
         'detailed' :  [
             'RID', 
-            'comp_id',
+            { 'source' : 'comp_id', 'markdown_name' : 'Comp Id', },
             { 'sourcekey': 'chem_comp_type_fkey' },
             { 'sourcekey': 'pdbx_release_status_fkey' },
             { 'sourcekey': 'pdbx_processing_site_fkey' },
