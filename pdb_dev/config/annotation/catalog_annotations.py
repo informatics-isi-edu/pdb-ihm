@@ -1,13 +1,18 @@
 import sys
 import json
+import requests.exceptions
+import logging
+
 from deriva.core import ErmrestCatalog, AttrDict, get_credential, DEFAULT_CREDENTIAL_FILE, tag, urlquote, DerivaServer, get_credential, BaseCLI
 from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key, ForeignKey, tag, AttrDict
 from deriva.core import urlquote, urlunquote
-import requests.exceptions
-from ...utils.shared import DCCTX, PDBDEV_CLI, cfg
 from deriva.utils.extras.model import get_schemas, get_tables, get_columns, print_catalog_model_extras, print_presence_tag_annotations, clear_catalog_annotations, tag2name
+
+from ...utils.shared import DCCTX, PDBDEV_CLI, cfg
 from . import bulk_upload
 from ..acl.ermrest_acl import GROUPS, initialize_policies
+
+logger = logging.getLogger(__name__)
 
 catalog_wide_annotation_tags = [tag["generated"], tag["immutable"], tag["non_deletable"], tag["required"], "tag:isrd.isi.edu,2026:auditing-configuration"]
 catalog_specific_annotation_tags = [tag["chaise_config"], tag["bulk_upload"], tag["column_defaults"], tag["display"]]
@@ -1263,6 +1268,7 @@ def remove_catalog_generated(model):
 
 # -- update annotations across multiple schemas
 def update_catalog_wide_annotations(model):
+    logger.info("-- update annotations: update_catalog_wide_annotations - begins")    
     #if not schemas_not_in_model: set_elements_not_in_model(model)
     
     # -- catalog-wide annotations
@@ -1270,9 +1276,12 @@ def update_catalog_wide_annotations(model):
     update_required_annotations(model)
     update_auditing_configuration(model)
 
+    logger.info("-- update annotations: update_catalog_wide_annotations - ends")        
 # -- ---------------------------------------------------------------------------------
 # catalog annotation
 def update_catalog_annotations(model):
+    logger.info("-- update annotations: update_catalog_annotations - begins")
+
     initialize_policies(model.catalog)
     
     chaise_config = get_chaise_config(model.catalog.catalog_id)
@@ -1280,7 +1289,8 @@ def update_catalog_annotations(model):
     bulk_upload.update_bulk_upload_annotations(model)
     update_catalog_display(model)
     update_catalog_column_defaults(model)
-    
+
+    logger.info("-- update annotations: update_catalog_annotations - ends")    
 # -- ---------------------------------------------------------------------------------
 # catalog annotation
 def clear_catalog_catalog_wide_annotations(model):

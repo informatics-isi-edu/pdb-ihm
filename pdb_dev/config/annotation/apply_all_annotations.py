@@ -2,14 +2,16 @@
 
 import sys
 import json
+import requests.exceptions
+import logging
+
 from deriva.core import init_logging, logging
 from deriva.core import ErmrestCatalog, AttrDict, get_credential, DEFAULT_CREDENTIAL_FILE, tag, urlquote, DerivaServer, get_credential, BaseCLI
 from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key, ForeignKey
 from deriva.core import urlquote, urlunquote
-import requests.exceptions
-from ...utils.shared import DCCTX, PDBDEV_CLI
 from deriva.utils.extras.model import print_catalog_model_extras, print_schema_model_extras, print_table_model_extras, per_schema_annotation_tags, clear_schema_annotations
 
+from ...utils.shared import DCCTX, PDBDEV_CLI
 from . import catalog_annotations
 from . import export
 from . import asset
@@ -24,6 +26,7 @@ from . import Vocab
 from . import public    
 #from . import _acl_admin # NOT IN MODEL
 
+logger = logging.getLogger(__name__)
 
 # This script pull all the annotations in different scripts together and
 # apply them simultaneously. The operation is idempotent. 
@@ -43,6 +46,8 @@ def main():
     catalog.dcctx['cid'] = DCCTX["annotation"]
     model = catalog.getCatalogModel()
 
+    logger.info("== apply_all_annotations: begins with args: %s" % (args))
+    
     if args.pre_print:
         if args.schema and args.table:
             print_table_model_extras(model, args.schema, args.table, annotations=True, acls=False, acl_bindings=False, exclude_default_fkey=False)
@@ -78,7 +83,6 @@ def main():
     asset.update_asset_annotations(model)
     citation.update_citation_annotations(model)
     
-
     if args.post_print:
         if args.schema and args.table:
             print_table_model_extras(model, args.schema, args.table, annotations=True, acls=False, acl_bindings=False, exclude_default_fkey=False)
@@ -89,10 +93,13 @@ def main():
         return
     if not args.dry_run:
         model.apply()
-        print("Model changes have been applied")
+        print("Annotation changes have been applied")
         pass
-    
 
+    #print("entry.table-display: %s" % (json.dumps(model.schemas["PDB"].tables["entry"].annotations[tag["table_display"]], indent=4)))
+    
+    logger.info("== apply_all_annotations: ends")
+    
 # -- =================================================================================
 '''
 To run the annotation updates:

@@ -1,11 +1,15 @@
 import json
+import requests.exceptions
+import logging
+
 from deriva.core import ErmrestCatalog, AttrDict, get_credential, DEFAULT_CREDENTIAL_FILE, tag, urlquote, DerivaServer, get_credential, BaseCLI
 from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key, ForeignKey
 from deriva.core import urlquote, urlunquote
-import requests.exceptions
-from ...utils.shared import DCCTX, PDBDEV_CLI
 from deriva.utils.extras.model import print_schema_model_extras, print_table_model_extras, print_schema_annotations, per_schema_annotation_tags, clear_schema_annotations
 
+from ...utils.shared import DCCTX, PDBDEV_CLI
+
+logger = logging.getLogger(__name__)
 
 # -- ==========================================================================================================
 def update_PDB_ihm_2dem_class_average_fitting(model):
@@ -9792,7 +9796,7 @@ def update_PDB_ihm_struct_assembly_details(model):
 
 # -- ==========================================================================================================    
 def update_PDB_ihm_annotations(model):
-
+    logger.info("-- update annotations: annotations in PDB_ihm - begins")
     # -- list of specific tables
 
     update_PDB_ihm_2dem_class_average_fitting(model)
@@ -9875,7 +9879,8 @@ def update_PDB_ihm_annotations(model):
     update_PDB_ihm_struct_assembly_class_link(model)
     update_PDB_ihm_struct_assembly_details(model)
     
-
+    logger.info("-- update annotations: annotations in PDB_ihm - ends")
+    
 # -- =================================================================================    
 def main(server_name, catalog_id, credentials, args):
     server = DerivaServer('https', server_name, credentials)

@@ -1,19 +1,24 @@
 import json
+import requests.exceptions
+import logging
+
 from deriva.core import ErmrestCatalog, AttrDict, get_credential, DEFAULT_CREDENTIAL_FILE, tag, urlquote, DerivaServer, get_credential, BaseCLI
 from deriva.core.ermrest_model import builtin_types, Schema, Table, Column, Key, ForeignKey
 from deriva.core import urlquote, urlunquote
-import requests.exceptions
-from ...utils.shared import DCCTX, PDBDEV_CLI, cfg
 from deriva.utils.extras.model import print_schema_model_extras, print_table_model_extras, print_schema_annotations, per_schema_annotation_tags, clear_schema_annotations, tag2name
+
+from ...utils.shared import DCCTX, PDBDEV_CLI, cfg
 from .PDB_base import update_PDB_base_annotations
 from .PDB_ihm import update_PDB_ihm_annotations
 
+logger = logging.getLogger(__name__)
 
 # -- =================================================================================
 # -- schema level annotation
 # TODO: In progress. Still need to be tested
 def update_PDB(model):
     schema = model.schemas["PDB"]
+    logger.info("update annotations: update PDB schema level")
     
     schema.display.update({
         'name_style' : { 'title_case' : True, 'underline_space' : True, },
@@ -43,7 +48,9 @@ def update_PDB(model):
 def update_PDB_entry(model):
     schema = model.schemas["PDB"]
     table = schema.tables["entry"]
-
+    
+    logger.info(f"update annotations: {schema.name}:{table.name}")
+        
     table.display.update({'markdown_name' :  'Entry^*^', })
 
     table.table_display.update({
@@ -1740,7 +1747,8 @@ def update_PDB_entry(model):
 def update_PDB_Accession_Code(model):
     schema = model.schemas["PDB"]
     table = schema.tables["Accession_Code"]
-
+    logger.info(f"update annotations: {schema.name}:{table.name}")
+    
     table.source_definitions.update({
         'fkeys' :  [],
         'columns' :  True,
@@ -1828,6 +1836,7 @@ def update_PDB_Accession_Code(model):
 def update_PDB_Curation_Log(model):
     schema = model.schemas["PDB"]
     table = schema.tables["Curation_Log"]
+    logger.info(f"update annotations: {schema.name}:{table.name}")    
     # ----------------------------
     schema.tables["Curation_Log"].display.update(
         {'name' : 'Curation Log', 'comment_display' : {'*': {'table_comment_display': 'inline'}}, }
@@ -1901,6 +1910,8 @@ def update_PDB_Curation_Log(model):
 def update_PDB_Data_Dictionary(model):
     schema = model.schemas["PDB"]
     table = schema.tables["Data_Dictionary"]
+    logger.info(f"update annotations: {schema.name}:{table.name}")
+    
     # ----------------------------
     schema.tables["Data_Dictionary"].table_display.update({
         'row_name' : { 'row_markdown_pattern' : '{{{Name}}} (v {{{Version}}})', },
@@ -1941,6 +1952,8 @@ def update_PDB_Data_Dictionary(model):
 def update_PDB_Entry_Error_File(model):
     schema = model.schemas["PDB"]
     table = schema.tables["Entry_Error_File"]
+    logger.info(f"update annotations: {schema.name}:{table.name}")
+    
     # ----------------------------
     schema.tables["Entry_Error_File"].display.update(
         {'name' : 'System Generated mmCIF Validation Error Files', 'comment_display' : {'*': {'table_comment_display': 'inline'}}, }
@@ -1985,6 +1998,7 @@ def update_PDB_Entry_Error_File(model):
 def update_PDB_Entry_Generated_File(model):
     schema = model.schemas["PDB"]
     table = schema.tables["Entry_Generated_File"]
+    logger.info(f"update annotations: {schema.name}:{table.name}")
     
     # ----------------------------
     schema.tables["Entry_Generated_File"].display.update(
@@ -2056,7 +2070,8 @@ def update_PDB_Entry_Generated_File(model):
 def update_PDB_Entry_Latest_Archive(model):
     schema = model.schemas["PDB"]
     table = schema.tables["Entry_Latest_Archive"]
-
+    logger.info(f"update annotations: {schema.name}:{table.name}")
+    
     table.table_display.update({
         'compact' : { 'row_order' : [{'column': 'Submission_Time', 'descending': True}], },
     })
@@ -2121,6 +2136,8 @@ def update_PDB_Entry_Latest_Archive(model):
 def update_PDB_Entry_Related_File(model):
     schema = model.schemas["PDB"]
     table = schema.tables["Entry_Related_File"]
+    logger.info(f"update annotations: {schema.name}:{table.name}")
+    
     # ----------------------------
     schema.tables["Entry_Related_File"].display.update(
         {'name' : 'Uploaded Restraint Files', 'comment_display' : {'*': {'table_comment_display': 'inline'}}, }
@@ -2199,6 +2216,8 @@ def update_PDB_Entry_Related_File(model):
 def update_PDB_Entry_Related_File_Templates(model):
     schema = model.schemas["PDB"]
     table = schema.tables["Entry_Related_File_Templates"]
+    logger.info(f"update annotations: {schema.name}:{table.name}")
+    
     # ----------------------------
     schema.tables["Entry_Related_File_Templates"].display.update(
         {'name' : 'CSV Templates for Restraint Files', }
@@ -2229,7 +2248,8 @@ def update_PDB_Entry_Related_File_Templates(model):
 def update_PDB_IHM_New_Chem_Comp(model):
     schema = model.schemas["PDB"]
     table = schema.tables["IHM_New_Chem_Comp"]
-
+    logger.info(f"update annotations: {schema.name}:{table.name}")
+    
     table.display.update({
         'name_style' : { 'title_case' : False, 'underline_space' : True, },
     })
@@ -2315,7 +2335,7 @@ def update_PDB_IHM_New_Chem_Comp(model):
 def update_PDB_PDB_Archive(model):
     schema = model.schemas["PDB"]
     table = schema.tables["PDB_Archive"]
-
+    logger.info(f"update annotations: {schema.name}:{table.name}")
     
     table.display.update({
         'name_style' : { 'title_case' : False, 'underline_space' : True, },
@@ -2430,6 +2450,8 @@ def update_PDB_PDB_Archive(model):
 def update_PDB_Supported_Dictionary(model):
     schema = model.schemas["PDB"]
     table = schema.tables["Supported_Dictionary"]
+    logger.info(f"update annotations: {schema.name}:{table.name}")
+    
     # ----------------------------
     schema.tables["Supported_Dictionary"].visible_columns.update({
         '*' :  [
@@ -2472,13 +2494,16 @@ def update_PDB_Supported_Dictionary(model):
 
 # -- =================================================================================    
 def update_PDB_annotations(model):
+
+    logger.info("-- update annotations: annotations in PDB - begins")
+    
     update_PDB(model)
     
     # -- list of specific tables    
-    update_PDB_entry(model)
     update_PDB_base_annotations(model)
     update_PDB_ihm_annotations(model)
-    
+
+    update_PDB_entry(model)
     update_PDB_Accession_Code(model)
     update_PDB_Curation_Log(model)
     update_PDB_Data_Dictionary(model)
@@ -2490,6 +2515,8 @@ def update_PDB_annotations(model):
     if cfg.is_dev: update_PDB_IHM_New_Chem_Comp(model)
     update_PDB_PDB_Archive(model)
     update_PDB_Supported_Dictionary(model)
+
+    logger.info("-- update annotations: annotations in PDB - ends")
     
 # --------------------------------------------------------------
 def test_formats(model):
