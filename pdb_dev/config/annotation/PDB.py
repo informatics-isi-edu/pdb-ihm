@@ -47,7 +47,7 @@ def update_PDB_entry(model):
     table.display.update({'markdown_name' :  'Entry^*^', })
 
     table.table_display.update({
-        'compact' : { 'row_order' : [{'column': 'RCT', 'descending': True}], },
+        'compact' : { 'row_order' : [{'column': 'RMT', 'descending': True}], },
         'row_name' : { 'row_markdown_pattern' : '{{{id}}}', },
     })
 
