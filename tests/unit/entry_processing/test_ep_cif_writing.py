@@ -98,7 +98,8 @@ def test_get_column_value_rejects_unsupported_types(proc, ctype):
 ROUNDTRIP_VALUES = [
     "plain", "has space", "_underscore", 'say "hi"', "it's", "both ' and \"", "multi\nline\ntext",
     "9A9V", "1.5", "x" * 300,
-    "#hash", "#", "[open", "]close", "[]", "#it's", "a#b", "a[1]", "$var",
+    "#hash", "#", "[open", "]close", "[]", "#it's", "a#b", "a[1]", "$var", "$", ";semicolon", ";", "a;b",
+    "a#b#c", "#'both' \"quotes\"",
 ]
 
 
@@ -142,16 +143,31 @@ def test_get_column_value_keyword_lookalikes_stay_unquoted(proc, value):
     assert proc.getColumnValue("t", "v", "text", value) == value
 
 
-@pytest.mark.parametrize("value", ["#", "#hash", "[", "[open", "]", "]close", "_"])
-def test_get_column_value_leading_hash_bracket_underscore_are_quoted(proc, value):
-    """Values starting with '#', '_', '[' or ']' are quoted (requested by Brinda 2026-11-09)."""
+@pytest.mark.parametrize("value", ["#", "#hash", "[", "[open", "]", "]close", "_", "$", "$dollar", ";", ";semicolon"])
+def test_get_column_value_leading_special_characters_are_quoted(proc, value):
+    """Values starting with '#', '_', '[', ']', '$' or ';' are quoted (Brinda 2026-11-09; '$' and ';' issue #374)."""
     assert proc.getColumnValue("t", "v", "text", value) == f'"{value}"'
 
 
-@pytest.mark.parametrize("value", ["a[1]", "x]", "x_", "?"])
+@pytest.mark.parametrize("value", ["a#b", "x#", "a#b#c"])
+def test_get_column_value_hash_anywhere_is_quoted(proc, value):
+    """A '#' anywhere in the value triggers quoting (issue #374)."""
+    assert proc.getColumnValue("t", "v", "text", value) == f'"{value}"'
+
+
+@pytest.mark.parametrize("value", ["a[1]", "x]", "x_", "a$b", "a;b", "?"])
 def test_get_column_value_other_special_characters_stay_unquoted(proc, value):
-    """Only a leading '#', '_', '[' or ']' triggers quoting; '$' and '?' are not quoted."""
+    """'[', ']', '_', '$' and ';' only trigger quoting at the start; '?' is never quoted."""
     assert proc.getColumnValue("t", "v", "text", value) == value
+
+
+@pytest.mark.parametrize("value, expected", [
+    ("#it's", '"#it\'s"'),                         # contains ' -> double quotes
+    ('$say "hi"', "'$say \"hi\"'"),               # contains " -> single quotes
+    (';both \' and "', '\n;;both \' and "\n;\n'),  # contains both -> multi-line text field
+])
+def test_get_column_value_leading_special_character_with_quotes(proc, value, expected):
+    assert proc.getColumnValue("t", "v", "text", value) == expected
 
 
 # ---------------------------------------------------------------------------
