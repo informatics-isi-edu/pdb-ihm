@@ -45,15 +45,30 @@ def proc(make_processor):
 # ---------------------------------------------------------------------------
 @pytest.mark.parametrize("ctype, value, expected", [
     ("text", None, "."),
+    ("text", "", "."),
+    ("text", ".", "."),    
     ("int4", None, "."),
     ("int4", 42, "42"),
     ("float4", 1.5, "1.5"),
     ("text", "plain", "plain"),
     ("text", "has space", '"has space"'),
+    ("text", "has#hash", '"has#hash"'),    
     ("text", "_starts_with_underscore", '"_starts_with_underscore"'),
     ("text", "#hash", '"#hash"'),
     ("text", "[open", '"[open"'),
     ("text", "]close", '"]close"'),
+    ("text", "$dollar", '"$dollar"'),
+    ("text", ";semicolon", '";semicolon"'),
+    ("text", 'global_cval', '"global_cval"'),
+    ("text", 'data_cval', '"data_cval"'),
+    ("text", 'save_cval', '"save_cval"'),
+    ("text", 'loop_cval', '"loop_cval"'),
+    ("text", 'stop_cval', '"stop_cval"'),
+    ("text", 'Global_cval', '"Global_cval"'),
+    ("text", 'Data_cval', '"Data_cval"'),
+    ("text", 'Save_cval', '"Save_cval"'),
+    ("text", 'Loop_cval', '"Loop_cval"'),
+    ("text", 'Stop_cval', '"Stop_cval"'),
     ("text", "#it's", '"#it\'s"'),
     ("text", '[say "hi"]', "'[say \"hi\"]'"),
     ("text", 'say "hi"', "'say \"hi\"'"),
@@ -133,7 +148,7 @@ def test_get_column_value_leading_hash_bracket_underscore_are_quoted(proc, value
     assert proc.getColumnValue("t", "v", "text", value) == f'"{value}"'
 
 
-@pytest.mark.parametrize("value", ["a#b", "a[1]", "x]", "x_", "$var", "?"])
+@pytest.mark.parametrize("value", ["a[1]", "x]", "x_", "?"])
 def test_get_column_value_other_special_characters_stay_unquoted(proc, value):
     """Only a leading '#', '_', '[' or ']' triggers quoting; '$' and '?' are not quoted."""
     assert proc.getColumnValue("t", "v", "text", value) == value
