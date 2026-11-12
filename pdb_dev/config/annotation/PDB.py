@@ -2513,7 +2513,7 @@ def update_PDB_annotations(model):
     update_PDB_Entry_Latest_Archive(model)
     update_PDB_Entry_Related_File(model)
     update_PDB_Entry_Related_File_Templates(model)
-    if cfg.is_dev: update_PDB_IHM_New_Chem_Comp(model)
+    update_PDB_IHM_New_Chem_Comp(model)
     update_PDB_PDB_Archive(model)
     update_PDB_Supported_Dictionary(model)
 
